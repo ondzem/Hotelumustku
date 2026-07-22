@@ -2457,7 +2457,7 @@ h3 {
     flex-direction: column;
     align-items: center;
     gap: 22px;
-    margin-bottom: 40px;
+    margin-bottom: 56px;
   }
 
   .mobile-nav-link {
@@ -2470,11 +2470,6 @@ h3 {
 
   .mobile-nav-link:hover {
     opacity: 0.8;
-  }
-
-  .mobile-menu-booking {
-    width: auto;
-    min-width: 200px;
   }
 
   /* Středový mobilní nadpis (posunutý níže) */
@@ -2515,6 +2510,24 @@ h3 {
     background-color: var(--accent-button);
     color: var(--primary-dark);
     border-radius: 1px;
+  }
+
+  /* Výjimka pro tlačítko v rozbaleném mobilním menu (vyšší specifita) */
+  .mobile-menu-overlay .mobile-menu-booking {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: fit-content !important;
+    height: 46px !important;
+    padding: 0 26px !important;
+    font-size: 20px !important;
+    font-weight: 500 !important;
+    line-height: 1 !important;
+    border-radius: 1px !important;
+    background-color: var(--accent-button) !important;
+    color: var(--primary-dark) !important;
+    text-decoration: none !important;
+    white-space: nowrap !important;
   }
 
   .btn-rooms {
@@ -2578,25 +2591,33 @@ h3 {
     height: auto;
   }
 
-  /* Středový nadpis (posunutý níže na 54 %) */
+  /* Středový nadpis (posunutý níže na 54 %, zmenšený na 31px) */
   .hero-title {
     top: 54%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 90%;
     max-width: 650px;
-    font-size: 36px;
+    font-size: 31px;
     white-space: normal;
   }
 
-  /* Tlačítka přiblížená těsně pod hlavním nadpisem */
+  /* Tlačítka přiblížená těsně pod hlavním nadpisem (jemně zmenšená pro tablety) */
   .hero-buttons {
-    top: calc(54% + 72px);
+    top: calc(54% + 68px);
     bottom: auto;
     left: 50%;
     transform: translateX(-50%);
     width: auto;
-    gap: 16px;
+    height: 40px;
+    gap: 14px;
+  }
+
+  .btn-booking,
+  .btn-rooms {
+    padding: 0 24px;
+    height: 40px;
+    font-size: 15.5px;
   }
 
   .btn-rooms {

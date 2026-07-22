@@ -6,16 +6,20 @@ Všechna tlačítka napříč celým webem (Hero, Zázemí/O nás, Sleva sekce, 
 
 ### 1. Rozměry a typografie
 * **Výška**:
+  * Mobil (pod 768px): `36px`
+  * Tablet (768px - 1028px): `40px`
   * Standardní desktop (1440px): `45px`
   * Velký desktop (1750px+): `48px`
   * Ultra-wide 4K (2200px+): `52px`
 * **Typografie**:
-  * Font-size: `17px` (1440px), `18px` (1750px+), `19.5px` (2200px+)
+  * Font-size: `14.5px` (Mobil < 768px), `15.5px` (Tablet 768px-1028px), `17px` (1440px), `18px` (1750px+), `19.5px` (2200px+)
   * Font-weight: `500` (Medium)
   * Radius: `1px` (`border-radius: 1px`)
 
 ### 2. Konzistentní boční padding (Postranní odsazení)
 * Šířka všech tlačítek se vypočítává z délky textu + stejného bočního paddingu:
+  * Mobil (pod 768px): `padding: 0 20px;`
+  * Tablet (768px - 1028px): `padding: 0 24px;`
   * Standardní desktop (1440px): `padding: 0 28px;`
   * Velký desktop (1750px+): `padding: 0 32px;`
   * Ultra-wide 4K (2200px+): `padding: 0 36px;`
