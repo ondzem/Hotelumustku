@@ -67,7 +67,28 @@ document.querySelector('#app').innerHTML = `
           <a href="#aktivity" class="nav-link">Okolí</a>
           <a href="#kontakt" class="nav-link">Kontakt</a>
         </div>
+
+        <!-- Mobilní tlačítko menu (Hamburger) -->
+        <button class="mobile-menu-btn" id="mobile-menu-toggle" aria-label="Otevřít menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
       </header>
+
+      <!-- Mobilní navigace (Drawer Overlay) -->
+      <div class="mobile-menu-overlay" id="mobile-menu-overlay">
+        <button class="mobile-menu-close" id="mobile-menu-close" aria-label="Zavřít menu">&times;</button>
+        <nav class="mobile-menu-nav">
+          <a href="#ubytovani" class="mobile-nav-link">O nás</a>
+          <a href="#pokoje" class="mobile-nav-link">Ubytování</a>
+          <a href="#wellness" class="mobile-nav-link">Stravování</a>
+          <a href="#wellness" class="mobile-nav-link">Skupinové akce</a>
+          <a href="#aktivity" class="mobile-nav-link">Okolí</a>
+          <a href="#kontakt" class="mobile-nav-link">Kontakt</a>
+        </nav>
+        <button class="btn btn-booking mobile-menu-booking" id="mobile-menu-booking">Rezervovat pobyt</button>
+      </div>
 
       <!-- Středový nadpis -->
       <h1 class="hero-title">Objevte klidné ubytování v Jizerských horách.</h1>
@@ -508,6 +529,38 @@ const bookingAction = () => {
 document.querySelector('#booking-btn').addEventListener('click', bookingAction);
 document.querySelector('#cta-booking-btn').addEventListener('click', bookingAction);
 document.querySelector('#promo-booking-btn').addEventListener('click', bookingAction);
+if (document.querySelector('#mobile-menu-booking')) {
+  document.querySelector('#mobile-menu-booking').addEventListener('click', bookingAction);
+}
+
+// Mobilní menu toggle logic
+const menuToggle = document.getElementById('mobile-menu-toggle');
+const menuClose = document.getElementById('mobile-menu-close');
+const menuOverlay = document.getElementById('mobile-menu-overlay');
+const mobileLinks = document.querySelectorAll('.mobile-nav-link');
+
+if (menuToggle && menuOverlay) {
+  menuToggle.addEventListener('click', () => {
+    menuOverlay.classList.add('is-active');
+    document.body.style.overflow = 'hidden';
+  });
+}
+
+if (menuClose && menuOverlay) {
+  menuClose.addEventListener('click', () => {
+    menuOverlay.classList.remove('is-active');
+    document.body.style.overflow = '';
+  });
+}
+
+mobileLinks.forEach(link => {
+  link.addEventListener('click', () => {
+    if (menuOverlay) {
+      menuOverlay.classList.remove('is-active');
+      document.body.style.overflow = '';
+    }
+  });
+});
 
 document.querySelector('#rooms-btn').addEventListener('click', () => {
   document.querySelector('#pokoje').scrollIntoView({ behavior: 'smooth' });

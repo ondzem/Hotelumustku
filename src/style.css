@@ -2328,3 +2328,272 @@ h3 {
   height: auto;
   display: block;
 }
+
+/* ====================================================
+   MOBILNÍ A TABLETOVÁ RESPONZIVITA (HERO SEKCE 1:1 SVG)
+   ==================================================== */
+
+/* Skrytí mobilního menu na desktopu */
+.mobile-menu-btn,
+.mobile-menu-overlay {
+  display: none;
+}
+
+/* ----------------------------------------------------
+   MOBILNÍ ZAŘÍZENÍ (max-width: 768px)
+   ---------------------------------------------------- */
+@media (max-width: 768px) {
+  .hero-section {
+    height: 95vh;
+    min-height: 540px;
+    max-height: 750px;
+  }
+
+  .hero-inner {
+    width: 100%;
+    height: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
+  }
+
+  .site-header {
+    top: 18px;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+  }
+
+  .nav-left,
+  .nav-right {
+    display: none !important;
+  }
+
+  .header-logo {
+    width: 75px;
+    height: auto;
+  }
+
+  .header-logo img {
+    width: 100%;
+    height: auto;
+  }
+
+  /* Mobilní Hamburger tlačítko */
+  .mobile-menu-btn {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    z-index: 20;
+  }
+
+  .mobile-menu-btn span {
+    display: block;
+    width: 26px;
+    height: 2px;
+    background-color: #ffffff;
+    border-radius: 2px;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  /* Mobilní Menu Overlay (Drawer) */
+  .mobile-menu-overlay {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: #2E3128;
+    z-index: 999;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    box-sizing: border-box;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .mobile-menu-overlay.is-active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .mobile-menu-close {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    font-size: 38px;
+    color: #ffffff;
+    background: none;
+    border: none;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  .mobile-menu-nav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+    margin-bottom: 40px;
+  }
+
+  .mobile-nav-link {
+    font-size: 22px;
+    font-weight: 500;
+    color: #ffffff;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .mobile-nav-link:hover {
+    opacity: 0.8;
+  }
+
+  .mobile-menu-booking {
+    width: auto;
+    min-width: 200px;
+  }
+
+  /* Středový mobilní nadpis */
+  .hero-title {
+    position: absolute;
+    top: 46%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 340px;
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    white-space: normal;
+    text-align: center;
+    margin: 0;
+  }
+
+  /* Mobilní tlačítko "Rezervovat pobyt" */
+  .hero-buttons {
+    position: absolute;
+    top: auto;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    height: 45px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .btn-booking {
+    padding: 0 28px;
+    height: 45px;
+    font-size: 17px;
+    font-weight: 500;
+    background-color: var(--accent-button);
+    color: var(--primary-dark);
+    border-radius: 1px;
+  }
+
+  .btn-rooms {
+    display: none !important;
+  }
+
+  .bottom-left-controls {
+    display: none !important;
+  }
+
+  /* Spodní vycentrovaná šipka pro mobil */
+  .scroll-down-btn {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+  }
+}
+
+/* ----------------------------------------------------
+   TABLETOVÁ RESPONZIVITA (769px - 1024px)
+   ---------------------------------------------------- */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .hero-section {
+    height: 90vh;
+    min-height: 600px;
+  }
+
+  .hero-inner {
+    width: 100%;
+    padding: 0 32px;
+    box-sizing: border-box;
+  }
+
+  .site-header {
+    top: 24px;
+    padding: 0 32px;
+    justify-content: space-between;
+  }
+
+  .nav-left,
+  .nav-right {
+    gap: 20px;
+  }
+
+  .nav-link {
+    font-size: 15px;
+  }
+
+  .header-logo {
+    width: 85px;
+    height: auto;
+  }
+
+  .hero-title {
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 650px;
+    font-size: 36px;
+    white-space: normal;
+  }
+
+  .hero-buttons {
+    top: auto;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    gap: 16px;
+  }
+
+  .btn-rooms {
+    display: inline-flex !important;
+  }
+
+  .bottom-left-controls {
+    bottom: 24px;
+    left: 32px;
+  }
+
+  .scroll-down-btn {
+    bottom: 24px;
+    right: 32px;
+    left: auto;
+    transform: none;
+  }
+}
