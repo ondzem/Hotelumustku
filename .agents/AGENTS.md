@@ -20,3 +20,12 @@ Všechna tlačítka napříč celým webem (Hero, Zázemí/O nás, Sleva sekce, 
   * Velký desktop (1750px+): `padding: 0 32px;`
   * Ultra-wide 4K (2200px+): `padding: 0 36px;`
 * Pravidlo: `width: fit-content` / `display: inline-flex; align-items: center; justify-content: center; white-space: nowrap;`
+
+## 📐 Pravidlo pro responzivitu kontejnerů (Fluid Grid System 1025px - 1500px+)
+
+Všechny vnitřní kontejnery sekcí (`.hero-inner`, `.about-inner`, `.promo-inner`, `.rooms-inner`, `.services-inner`, `.reviews-inner`, `.features-inner`, `.surroundings-inner`, `.cta-inner`, `.footer-inner`) MUSÍ používat fluidní šířku:
+
+1. **Max-width vs Width**:
+   - Používat výhradně `width: 100%; max-width: 1440px; margin: 0 auto; box-sizing: border-box;` (nikdy statické `width: 1440px;` bez `max-width: 100%`).
+2. **Responzivita mezi 1025px a 1500px**:
+   - Na obrazovkách se šířkou 1025px – 1440px (menší notebooky, otevřené DevTools) se obsah musí plynule přizpůsobovat, vycentrovat a nesmí docházet k přetékání ani useknutí krajních prvků (jako šipka dolů, logo nebo ovládací prvky).
