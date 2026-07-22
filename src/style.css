@@ -1234,6 +1234,21 @@ h3 {
   color: var(--primary);
 }
 
+/* Optimalizace vykreslování: Vynucené přednostní načítání Hero sekce */
+.about-section,
+.promo-banner,
+.panoramic-section,
+.rooms-section,
+.services-section,
+.reviews-section,
+.features-section,
+.surroundings-section,
+.cta-section,
+.site-footer {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 800px;
+}
+
 /* ----------------------------------------------------
    Sekce Zázemí / O nás (Sjednocené 33px okraje, tlačítka a pozice)
    ---------------------------------------------------- */

@@ -1,0 +1,14 @@
+/videos/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/Uvodni stranka/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/Icons/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/Logo/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/Decoration/*
+  Cache-Control: public, max-age=31536000, immutable

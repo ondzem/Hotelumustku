@@ -42,8 +42,10 @@ document.querySelector('#app').innerHTML = `
       loop 
       playsinline 
       preload="auto" 
+      fetchpriority="high"
       poster="/Uvodni stranka/Uvodní fotka - hero sekce.webp"
     >
+      <source src="/videos/hero_video.mp4" type="video/mp4">
       <source src="https://jpvnvjcktpxyxrvsdukm.supabase.co/storage/v1/object/public/hotel-videos/Video%20Hero%20sekce.mp4" type="video/mp4">
     </video>
     <div class="hero-overlay"></div>
@@ -112,24 +114,24 @@ document.querySelector('#app').innerHTML = `
       
       <!-- Fotka 1: Vpravo nahoře -->
       <div class="about-img-top">
-        <img src="/Uvodni stranka/Vyhled z balkonu na skokanky.webp" alt="Vyhlídka ze skokanských můstků">
+        <img src="/Uvodni stranka/Vyhled z balkonu na skokanky.webp" alt="Vyhlídka ze skokanských můstků" loading="lazy" decoding="async">
       </div>
 
       <!-- Fotka 2: Dole uprostřed -->
       <div class="about-img-bottom">
-        <img src="/Uvodni stranka/Pohled na hotel ze z predni strany.webp" alt="Hotel u Můstku budova">
+        <img src="/Uvodni stranka/Pohled na hotel ze z predni strany.webp" alt="Hotel u Můstku budova" loading="lazy" decoding="async">
       </div>
 
       <!-- Stínová dekorace listu vlevo dole -->
       <div class="about-shadow-decor">
-        <img src="/Decoration/list_shadow.png" alt="" aria-hidden="true">
+        <img src="/Decoration/list_shadow.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
       </div>
     </div>
   </section>
 
   <!-- PROMO BANNER (SLEVA SEKCE 1:1 REPLIKA) -->
   <section class="promo-banner">
-    <img src="/Decoration/Hory - dekorace.webp" alt="" class="promo-contour-img" aria-hidden="true">
+    <img src="/Decoration/Hory - dekorace.webp" alt="" class="promo-contour-img" aria-hidden="true" loading="lazy" decoding="async">
     <div class="promo-inner">
       <div class="promo-content">
         <h2 class="promo-title">Jak získat nejvýhodnější pobyt?</h2>
@@ -143,7 +145,7 @@ document.querySelector('#app').innerHTML = `
 
   <!-- PANORAMATICKÝ NÁHLED (FOTKA ZAHRADY A TERASY POD BANNEREM) -->
   <section class="panoramic-section" id="galerie">
-    <img src="/Uvodni stranka/Fotka Zahrady a Terasy.webp" alt="Zahrada a terasa Hotelu u Můstku" class="panoramic-img">
+    <img src="/Uvodni stranka/Fotka Zahrady a Terasy.webp" alt="Zahrada a terasa Hotelu u Můstku" class="panoramic-img" loading="lazy" decoding="async">
   </section>
 
   <!-- SEKCE NABÍDKA POKOJŮ (1:1 REPLIKA DLE SVG PŘEDLOHY) -->
@@ -158,17 +160,17 @@ document.querySelector('#app').innerHTML = `
       <div class="rooms-cards-grid">
         <!-- Pokoj 1 (Vlevo) -->
         <div class="room-photo-card room-card-left">
-          <img src="/Uvodni stranka/Pokoj 1.webp" alt="Útulný pokoj s dřevěnými trámy">
+          <img src="/Uvodni stranka/Pokoj 1.webp" alt="Útulný pokoj s dřevěnými trámy" loading="lazy" decoding="async">
         </div>
 
         <!-- Pokoj 3 (Uprostřed - posunutý dolů) -->
         <div class="room-photo-card room-card-center">
-          <img src="/Uvodni stranka/Pokoj 3.webp" alt="Světlý pokoj s výhledem">
+          <img src="/Uvodni stranka/Pokoj 3.webp" alt="Světlý pokoj s výhledem" loading="lazy" decoding="async">
         </div>
 
         <!-- Pokoj 2 (Vpravo) -->
         <div class="room-photo-card room-card-right">
-          <img src="/Uvodni stranka/Pokoj 2.webp" alt="Komfortní dvoulůžkový pokoj">
+          <img src="/Uvodni stranka/Pokoj 2.webp" alt="Komfortní dvoulůžkový pokoj" loading="lazy" decoding="async">
         </div>
       </div>
     </div>
@@ -183,7 +185,7 @@ document.querySelector('#app').innerHTML = `
         <!-- Karta 1: Stravování (Vlevo) -->
         <div class="service-card service-card-left">
           <div class="service-img-wrap">
-            <img src="/Uvodni stranka/stravovani.webp" alt="Stravování v Hotelu u Můstku">
+            <img src="/Uvodni stranka/stravovani.webp" alt="Stravování v Hotelu u Můstku" loading="lazy" decoding="async">
           </div>
           <div class="service-card-body">
             <h3 class="service-card-title">Stravování</h3>
@@ -195,7 +197,7 @@ document.querySelector('#app').innerHTML = `
         <!-- Karta 2: Skupinové Akce (Vpravo - posunutá dolů) -->
         <div class="service-card service-card-right">
           <div class="service-img-wrap">
-            <img src="/Uvodni stranka/skupinove_akce_zelena_profesionalni_uprava.webp" alt="Skupinové akce v Hotelu u Můstku">
+            <img src="/Uvodni stranka/skupinove_akce_zelena_profesionalni_uprava.webp" alt="Skupinové akce v Hotelu u Můstku" loading="lazy" decoding="async">
           </div>
           <div class="service-card-body">
             <h3 class="service-card-title">Skupinové Akce</h3>
@@ -216,10 +218,10 @@ document.querySelector('#app').innerHTML = `
         <div class="reviews-slider-track" id="reviews-track">
           <!-- Recenze 1 -->
           <div class="review-card">
-            <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon">
+            <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
             <p class="review-quote">Byli jsme jen na 3 dny ale naprostá spokojenost. Pokud pojedeme do těchto končin znovu, určitě se ubytujeme opět tady.</p>
             <div class="review-contour-bg">
-              <img src="/Decoration/hory_contour.png" alt="" aria-hidden="true">
+              <img src="/Decoration/hory_contour.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
             </div>
             <div class="review-footer">
               <span class="review-author-name">Martin Novák</span>
@@ -229,10 +231,10 @@ document.querySelector('#app').innerHTML = `
           
           <!-- Recenze 2 -->
           <div class="review-card">
-            <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon">
+            <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
             <p class="review-quote">Nádherný výhled na skokanské můstky a úžasná snídaně! Personál neuvěřitelně milý a ochotný.</p>
             <div class="review-contour-bg">
-              <img src="/Decoration/hory_contour.png" alt="" aria-hidden="true">
+              <img src="/Decoration/hory_contour.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
             </div>
             <div class="review-footer">
               <span class="review-author-name">Lucie Králová</span>
@@ -242,10 +244,10 @@ document.querySelector('#app').innerHTML = `
           
           <!-- Recenze 3 -->
           <div class="review-card">
-            <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon">
+            <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
             <p class="review-quote">Perfektní čistota pokojů, pohodlné matrace a klid na spaní. Ideální výchozí bod pro turistiku v Jizerkách.</p>
             <div class="review-contour-bg">
-              <img src="/Decoration/hory_contour.png" alt="" aria-hidden="true">
+              <img src="/Decoration/hory_contour.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
             </div>
             <div class="review-footer">
               <span class="review-author-name">Pavel Dvořák</span>
@@ -255,10 +257,10 @@ document.querySelector('#app').innerHTML = `
 
           <!-- Recenze 4 -->
           <div class="review-card">
-            <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon">
+            <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
             <p class="review-quote">Skvělá zimní dovolená! Úschovna lyží hned v hotelu a kousek na sjezdovky. Rádi se sem příští rok vrátíme.</p>
             <div class="review-contour-bg">
-              <img src="/Decoration/hory_contour.png" alt="" aria-hidden="true">
+              <img src="/Decoration/hory_contour.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
             </div>
             <div class="review-footer">
               <span class="review-author-name">Eva Šimková</span>
@@ -268,10 +270,10 @@ document.querySelector('#app').innerHTML = `
 
           <!-- Recenze 5 -->
           <div class="review-card">
-            <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon">
+            <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
             <p class="review-quote">Vynikající domácí kuchyně a posezení na terase přímo nad splavem. Velká spokojenost s celým naším pobytem.</p>
             <div class="review-contour-bg">
-              <img src="/Decoration/hory_contour.png" alt="" aria-hidden="true">
+              <img src="/Decoration/hory_contour.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
             </div>
             <div class="review-footer">
               <span class="review-author-name">Tomáš Procházka</span>
@@ -303,7 +305,7 @@ document.querySelector('#app').innerHTML = `
           <!-- Výhoda 1 -->
           <div class="feature-item">
             <div class="feature-icon">
-              <img src="/Icons/Ikona - spolecenska herna.webp" alt="Vnitřní společenská herna">
+              <img src="/Icons/Ikona - spolecenska herna.webp" alt="Vnitřní společenská herna" loading="lazy" decoding="async">
             </div>
             <p class="feature-text">
               <strong>Vnitřní společenská herna</strong> pro zábavu za každého počasí.
@@ -313,7 +315,7 @@ document.querySelector('#app').innerHTML = `
           <!-- Výhoda 2 -->
           <div class="feature-item">
             <div class="feature-icon">
-              <img src="/Icons/Ikona - venkovni prvky.webp" alt="Dětské venkovní herní prvky">
+              <img src="/Icons/Ikona - venkovni prvky.webp" alt="Dětské venkovní herní prvky" loading="lazy" decoding="async">
             </div>
             <p class="feature-text">
               <strong>Dětské venkovní herní prvky</strong> pro radost vašich nejmenších.
@@ -323,7 +325,7 @@ document.querySelector('#app').innerHTML = `
           <!-- Výhoda 3 -->
           <div class="feature-item">
             <div class="feature-icon">
-              <img src="/Icons/Ikona - venkovni posezeni.webp" alt="Relaxace na dřevěné terase">
+              <img src="/Icons/Ikona - venkovni posezeni.webp" alt="Relaxace na dřevěné terase" loading="lazy" decoding="async">
             </div>
             <p class="feature-text">
               <strong>Relaxace na dřevěné terase</strong> s uklidňujícím šuměním splavu řeky.
@@ -339,7 +341,7 @@ document.querySelector('#app').innerHTML = `
           <!-- Výhoda 4 -->
           <div class="feature-item">
             <div class="feature-icon">
-              <img src="/Icons/Ikona - ohniste.webp" alt="Zahrada s ohništěm">
+              <img src="/Icons/Ikona - ohniste.webp" alt="Zahrada s ohništěm" loading="lazy" decoding="async">
             </div>
             <p class="feature-text">
               <strong>Zahrada s ohništěm</strong> a grilem pro příjemné večery.
@@ -349,7 +351,7 @@ document.querySelector('#app').innerHTML = `
           <!-- Výhoda 5 -->
           <div class="feature-item">
             <div class="feature-icon">
-              <img src="/Icons/Ikona - polopenze.webp" alt="Domácí polopenze">
+              <img src="/Icons/Ikona - polopenze.webp" alt="Domácí polopenze" loading="lazy" decoding="async">
             </div>
             <p class="feature-text">
               <strong>Domácí polopenze</strong> s pestrou nabídkou kvalitních jídel.
@@ -359,7 +361,7 @@ document.querySelector('#app').innerHTML = `
           <!-- Výhoda 6 -->
           <div class="feature-item">
             <div class="feature-icon">
-              <img src="/Icons/Ikona - turistika a cyklistika.webp" alt="Turistické a cyklistické trasy">
+              <img src="/Icons/Ikona - turistika a cyklistika.webp" alt="Turistické a cyklistické trasy" loading="lazy" decoding="async">
             </div>
             <p class="feature-text">
               <strong>Turistické a cyklistické trasy</strong> začínající přímo u hotelu.
@@ -379,7 +381,7 @@ document.querySelector('#app').innerHTML = `
         <!-- Karta 1 -->
         <div class="surrounding-card">
           <div class="surrounding-card-img-wrap">
-            <img src="/Uvodni stranka/Vodopady Jizerky.webp" alt="Vodopády na Černé Desné">
+            <img src="/Uvodni stranka/Vodopady Jizerky.webp" alt="Vodopády na Černé Desné" loading="lazy" decoding="async">
           </div>
           <h3 class="surrounding-card-title">VODOPÁDY NA ČERNÉ DESNÉ</h3>
         </div>
@@ -387,7 +389,7 @@ document.querySelector('#app').innerHTML = `
         <!-- Karta 2 -->
         <div class="surrounding-card">
           <div class="surrounding-card-img-wrap">
-            <img src="/Uvodni stranka/Rozhledna Stepanka.webp" alt="Rozhledna Štěpánka">
+            <img src="/Uvodni stranka/Rozhledna Stepanka.webp" alt="Rozhledna Štěpánka" loading="lazy" decoding="async">
           </div>
           <h3 class="surrounding-card-title">ROZHLEDNA ŠTĚPÁNKA</h3>
         </div>
@@ -395,7 +397,7 @@ document.querySelector('#app').innerHTML = `
         <!-- Karta 3 -->
         <div class="surrounding-card">
           <div class="surrounding-card-img-wrap">
-            <img src="/Uvodni stranka/Tanvaldsky spicak.webp" alt="Ski Areál Tanvaldský Špičák">
+            <img src="/Uvodni stranka/Tanvaldsky spicak.webp" alt="Ski Areál Tanvaldský Špičák" loading="lazy" decoding="async">
           </div>
           <h3 class="surrounding-card-title">SKI AREÁL TANVALDSKÝ ŠPIČÁK</h3>
         </div>
@@ -403,7 +405,7 @@ document.querySelector('#app').innerHTML = `
         <!-- Karta 4 -->
         <div class="surrounding-card">
           <div class="surrounding-card-img-wrap">
-            <img src="/Uvodni stranka/Liberec zoo.webp" alt="ZOO Liberec">
+            <img src="/Uvodni stranka/Liberec zoo.webp" alt="ZOO Liberec" loading="lazy" decoding="async">
           </div>
           <h3 class="surrounding-card-title">ZOO LIBEREC</h3>
         </div>
@@ -435,7 +437,7 @@ document.querySelector('#app').innerHTML = `
   <!-- ZÁPATÍ (FOOTER) - 1:1 REPLIKA DLE SVG PŘEDLOHY -->
   <footer class="site-footer" id="kontakt">
     <div class="footer-contour-bg">
-      <img src="/Decoration/Dekorace footer.png" alt="" aria-hidden="true">
+      <img src="/Decoration/Dekorace footer.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
     </div>
 
     <div class="footer-inner">
@@ -490,7 +492,7 @@ document.querySelector('#app').innerHTML = `
       <div class="footer-bottom-row">
         <div class="footer-copyright">© 2026 All Rights Reserved.</div>
         <div class="footer-logo-wrap">
-          <img src="/Logo/white logo.webp" alt="Hotel U Můstku">
+          <img src="/Logo/white logo.webp" alt="Hotel U Můstku" loading="lazy" decoding="async">
         </div>
         <div class="footer-author">Vytvořil <a href="https://ozeman.cz" target="_blank" rel="noopener">ozeman.cz</a></div>
       </div>
