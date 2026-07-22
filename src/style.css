@@ -1,0 +1,2315 @@
+/* ----------------------------------------------------
+   Hotel u Můstku - Globální CSS & Design Systém (Desktop)
+   ---------------------------------------------------- */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  /* Barevná paleta vytažená z Figma předlohy */
+  --primary: #2e3128;         /* Temná olivová */
+  --accent: #697947;          /* Olivově zelená */
+  --accent-hover: #546239;    /* Tmavší olivová */
+  --accent-light: #f7f4ee;    /* Světlá krémová */
+  --accent-button: #e5e0d7;   /* Pískově šedá pro hlavní tlačítko */
+  
+  --bg-main: #fbfbf9;         /* Teplé bílé pozadí */
+  --bg-secondary: #f2f2f2;    /* Světle šedé pozadí pro banner / recenze */
+  --bg-surface: #ffffff;      /* Čistě bílé pozadí pro karty */
+  --bg-dark: #2e3128;         /* Tmavé pozadí pro zápatí */
+  
+  --text-main: #2e3128;       /* Hlavní barva textu */
+  --text-muted: #5e6356;      /* Tlumený text */
+  --text-light: #ffffff;      /* Text na tmavém pozadí */
+  
+  --border: #dad4d3;          /* Okraje a linky */
+  --border-light: #e5e0d7;    /* Jemnější okraje */
+  
+  --font-family: 'Outfit', sans-serif;
+  
+  --shadow-sm: 0 2px 4px rgba(46, 49, 40, 0.05);
+  --shadow-md: 0 12px 30px rgba(46, 49, 40, 0.08);
+  --shadow-lg: 0 20px 50px rgba(46, 49, 40, 0.12);
+  --radius-sm: 4px;
+  --radius-md: 8px;
+}
+
+/* ----------------------------------------------------
+   Moderní CSS Reset
+   ---------------------------------------------------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body, h1, h2, h3, h4, p, ul, ol, figure {
+  margin: 0;
+  padding: 0;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-main);
+  background-color: var(--bg-main);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: var(--font-family);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+/* ----------------------------------------------------
+   Hero Sekce (Full-Width + Centered Content Wrapper)
+   ---------------------------------------------------- */
+.hero-section {
+  position: relative;
+  width: 100%;
+  height: 95vh;
+  min-height: 760px;
+  background-image: url('/Uvodni stranka/Uvodní fotka - hero sekce.webp');
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+
+/* Video na pozadí */
+.hero-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+  pointer-events: none;
+  /* HW akcelerace, vyhnutí šumu a jemný tmavší filmový filtr pro maskování komprese */
+  transform: translateZ(0) scale(1.002);
+  backface-visibility: hidden;
+  will-change: transform;
+  filter: brightness(0.92) contrast(1.08) saturate(1.05);
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* Tmavé překrytí přes celou šířku (Jemně ztmavný filtr) */
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.65) 0%, rgba(0, 0, 0, 0.38) 50%, rgba(0, 0, 0, 0.68) 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Vnitřní mřížka uzamčená na 1440px a vycentrovaná */
+.hero-inner {
+  position: relative;
+  width: 1440px;
+  height: 100%;
+  margin: 0 auto;
+}
+
+/* Hlavička s dokonale symetrickým Flexboxem */
+.site-header {
+  position: absolute;
+  top: 16px;
+  left: 0;
+  width: 100%;
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  z-index: 10;
+}
+
+.nav-left, .nav-right {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  flex: 1;
+}
+
+.nav-left {
+  justify-content: flex-end;
+}
+
+.nav-right {
+  justify-content: flex-start;
+}
+
+.nav-link {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.nav-link:hover {
+  opacity: 0.8;
+}
+
+.header-logo {
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Zmenšený a tenčí nadpis (weight 500 - Medium, přizpůsobený pro 95vh) */
+.hero-title {
+  position: absolute;
+  top: 404px;
+  left: 0;
+  width: 100%;
+  color: #ffffff;
+  font-size: 44px;
+  font-weight: 500;
+  text-align: center;
+  margin: 0;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  z-index: 10;
+  white-space: nowrap;
+}
+
+/* Tlačítka (Jemně zvětšený odstup pod nadpisem - top: 496px) */
+.hero-buttons {
+  position: absolute;
+  top: 496px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 414px;
+  height: 45px;
+  display: flex;
+  gap: 24px;
+  z-index: 10;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 45px;
+  padding: 0 28px;
+  font-size: 17px;
+  font-weight: 500;
+  border-radius: 1px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: none;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.btn-booking {
+  padding: 0 28px;
+  background-color: var(--accent-button);
+  color: var(--primary-dark);
+}
+
+.btn-booking:hover {
+  background-color: #d1cbc1;
+}
+
+.btn-rooms {
+  padding: 0 28px;
+  background-color: transparent;
+  color: #ffffff;
+  border: 1px solid var(--accent-button);
+}
+
+.btn-rooms:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: #ffffff;
+}
+
+/* Spodní ovládací prvky (Vycentrované na 100% výškovou osu se šipkou) */
+.bottom-left-controls {
+  position: absolute;
+  left: 33px;
+  bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  z-index: 10;
+  height: 41px;
+}
+
+.control-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.control-icon {
+  width: 26px;
+  height: 26px;
+}
+
+/* Spodní šipka dolů (Stylizovaná jako tlačítko Nabídka pokojů s ohraničením) */
+.scroll-down-btn {
+  position: absolute;
+  right: 33px;
+  bottom: 20px;
+  width: 41px;
+  height: 41px;
+  border-radius: 50%;
+  border: 1px solid var(--accent-button);
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.scroll-down-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: #ffffff;
+}
+
+/* ----------------------------------------------------
+   Responzivita pro velká a XXXL zařízení (Desktopy 1750px+)
+   ---------------------------------------------------- */
+@media (min-width: 1750px) {
+  .hero-inner {
+    width: 1620px;
+  }
+
+  .site-header {
+    top: 24px;
+    gap: 48px;
+    padding: 0 60px;
+  }
+
+  .nav-left, .nav-right {
+    gap: 44px;
+  }
+
+  .nav-link {
+    font-size: 18px;
+  }
+
+  .header-logo {
+    width: 110px;
+    height: 110px;
+  }
+
+  .hero-title {
+    top: 435px;
+    font-size: 50px;
+  }
+
+  .hero-buttons {
+    top: 520px;
+    width: 444px;
+  }
+
+  .btn-booking {
+    padding: 0 32px;
+    height: 48px;
+    font-size: 18px;
+  }
+
+  .btn-rooms {
+    padding: 0 32px;
+    height: 48px;
+    font-size: 18px;
+  }
+
+  .bottom-left-controls {
+    bottom: 28px;
+    left: 48px;
+    gap: 32px;
+    height: 46px;
+    align-items: center;
+  }
+
+  .control-item {
+    font-size: 18px;
+    gap: 14px;
+  }
+
+  .control-icon {
+    width: 30px;
+    height: 30px;
+  }
+
+  .scroll-down-btn {
+    bottom: 28px;
+    right: 48px;
+    width: 46px;
+    height: 46px;
+  }
+
+  .scroll-down-btn svg {
+    width: 46px;
+    height: 46px;
+  }
+
+  /* Sekce Zázemí / O nás (1750px+) */
+  .about-section {
+    height: 1195px;
+    padding-top: 15px;
+  }
+
+  .about-inner {
+    width: 1620px;
+  }
+
+  .about-content {
+    left: 48px;
+    top: 185px;
+    width: 720px;
+  }
+
+  .about-title {
+    font-size: 38px;
+    margin-bottom: 36px;
+  }
+
+  .about-text {
+    max-width: 680px;
+  }
+
+  .about-text p {
+    font-size: 20px;
+    margin-bottom: 28px;
+  }
+
+  .about-text p:last-child {
+    margin-bottom: 60px;
+  }
+
+  .btn-about {
+    padding: 0 32px;
+    height: 48px;
+    font-size: 18px;
+  }
+
+  .about-img-top {
+    right: 48px;
+    top: 145px;
+    width: 650px;
+    height: 620px;
+  }
+
+  .about-img-bottom {
+    left: 580px;
+    top: 495px;
+    width: 500px;
+    height: 500px;
+  }
+
+  .about-shadow-decor {
+    left: 0px;
+    top: 655px;
+    width: 450px;
+    height: 450px;
+  }
+
+  /* Promo banner / Sleva sekce (1750px+) */
+  .promo-banner {
+    height: 480px;
+  }
+
+  .promo-inner {
+    width: 1620px;
+    padding: 0 48px;
+  }
+
+  .promo-content {
+    max-width: 680px;
+  }
+
+  .promo-title {
+    font-size: 38px;
+    margin-bottom: 24px;
+  }
+
+  .promo-desc {
+    font-size: 20px;
+  }
+
+  .btn-promo {
+    padding: 0 32px;
+    height: 52px;
+    font-size: 18px;
+  }
+
+  .panoramic-section {
+    height: 460px;
+  }
+
+  /* Sekce Naše nabídka pokojů (1750px+) */
+  .rooms-section {
+    padding: 160px 0 180px 0;
+  }
+
+  .rooms-inner {
+    width: 1620px;
+    padding: 0 48px;
+  }
+
+  .rooms-header-block {
+    max-width: 780px;
+    margin-bottom: 0px;
+  }
+
+  .rooms-title {
+    font-size: 38px;
+    margin-bottom: 24px;
+  }
+
+  .rooms-desc {
+    font-size: 20px;
+  }
+
+  .btn-rooms-offer {
+    padding: 0 32px;
+    height: 52px;
+    font-size: 18px;
+  }
+
+  .rooms-cards-grid {
+    max-width: 1360px;
+    margin-top: 0px;
+    gap: 40px;
+  }
+
+  .room-photo-card {
+    width: 375px;
+    height: 410px;
+  }
+
+  .room-card-left {
+    margin-top: 56px;
+  }
+
+  .room-card-center {
+    margin-top: 200px;
+  }
+
+  /* Sekce Co dalšího nabízíme? (1750px+) */
+  .services-section {
+    padding: 112px 0 70px 0;
+  }
+
+  .services-inner {
+    width: 1620px;
+    padding: 0 48px;
+  }
+
+  .services-title {
+    font-size: 38px;
+    margin-bottom: 72px;
+    padding-left: 0;
+  }
+
+  .services-cards-wrap {
+    max-width: 1524px;
+    gap: 154px;
+  }
+
+  .service-card {
+    width: 685px;
+  }
+
+  .service-card-right {
+    margin-top: 140px;
+  }
+
+  .service-img-wrap {
+    height: 380px;
+  }
+
+  .service-card-title {
+    font-size: 27px;
+  }
+
+  .service-card-desc {
+    font-size: 17px;
+    max-width: 640px;
+  }
+
+  .btn-service-more {
+    padding: 0 32px;
+    height: 48px;
+    font-size: 18px;
+  }
+
+  /* Sekce Recenze (1750px+) */
+  .reviews-section {
+    padding: 60px 0 120px 0;
+  }
+
+  .reviews-inner {
+    width: 1620px;
+    padding: 0 48px;
+  }
+
+  .reviews-title {
+    font-size: 38px;
+    margin-bottom: 48px;
+    padding-left: 0;
+  }
+
+  .reviews-slider-viewport {
+    max-width: 1524px;
+  }
+
+  .reviews-slider-track {
+    gap: 39px;
+  }
+
+  .review-card {
+    width: 482px;
+    height: 210px;
+    padding: 28px 28px 20px 28px;
+  }
+
+  .review-quote {
+    font-size: 17px;
+    max-width: 390px;
+  }
+
+  .review-author-name {
+    font-size: 18px;
+  }
+
+  .review-date {
+    font-size: 14.5px;
+  }
+
+  .reviews-nav-controls {
+    padding-left: 0;
+  }
+
+  .review-nav-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* Sekce Výhody hotelu (1750px+) */
+  .features-inner {
+    width: 1620px;
+    padding: 0 48px;
+  }
+
+  .features-title {
+    font-size: 38px;
+    margin-bottom: 78px;
+    padding-left: 0;
+  }
+
+  .features-grid {
+    max-width: 1524px;
+    gap: 40px;
+  }
+
+  .features-row {
+    gap: 68px;
+  }
+
+  .feature-item {
+    width: 464px;
+    gap: 22px;
+  }
+
+  .feature-icon {
+    width: 122px;
+    height: 122px;
+  }
+
+  .feature-text {
+    font-size: 18px;
+    max-width: 320px;
+  }
+
+  /* Sekce Aktivity v okolí (1750px+) */
+  .surroundings-section {
+    padding: 100px 0 160px 0;
+  }
+
+  .surroundings-inner {
+    width: 1620px;
+    padding: 0 48px;
+  }
+
+  .surroundings-title {
+    font-size: 38px;
+    margin-bottom: 60px;
+  }
+
+  .surroundings-cards-grid {
+    max-width: 1524px;
+    gap: 32px;
+  }
+
+  .surrounding-card {
+    width: 357px;
+  }
+
+  .surrounding-card-img-wrap {
+    height: 440px;
+  }
+
+  .surrounding-card-title {
+    font-size: 16.5px;
+    margin-top: 20px;
+  }
+
+  .surroundings-footer {
+    max-width: 1524px;
+  }
+
+  .surroundings-nav-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .btn-surroundings-more {
+    height: 48px;
+    padding: 0 32px;
+    font-size: 18px;
+  }
+
+  /* CTA Sekce (1750px+) */
+  .cta-section {
+    height: 450px;
+    background: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.35)), url('/Uvodni stranka/CTA sekce.webp') center 10%/cover no-repeat;
+  }
+
+  .cta-title {
+    font-size: 38px;
+    margin-bottom: 36px;
+  }
+
+  .btn-cta {
+    height: 48px;
+    padding: 0 32px;
+    font-size: 18px;
+  }
+
+  /* Zápatí / Footer (1750px+) */
+  .footer-inner {
+    width: 1620px;
+    padding: 0 48px;
+  }
+
+  .footer-columns-grid,
+  .footer-bottom-row {
+    max-width: 1524px;
+  }
+
+  .footer-col-heading {
+    font-size: 22px;
+    margin-bottom: 24px;
+  }
+
+  .footer-contact-link,
+  .footer-address-text,
+  .footer-links-list a {
+    font-size: 16.5px;
+  }
+
+  .footer-logo-wrap {
+    width: 125px;
+  }
+}
+
+@media (min-width: 2200px) {
+  .hero-inner {
+    width: 1880px;
+  }
+
+  .site-header {
+    top: 32px;
+    gap: 64px;
+    padding: 0 80px;
+  }
+
+  .nav-left, .nav-right {
+    gap: 52px;
+  }
+
+  .nav-link {
+    font-size: 20px;
+  }
+
+  .header-logo {
+    width: 125px;
+    height: 125px;
+  }
+
+  .hero-title {
+    top: 450px;
+    font-size: 58px;
+  }
+
+  .hero-buttons {
+    top: 538px;
+    width: 484px;
+  }
+
+  .btn-booking {
+    padding: 0 36px;
+    height: 52px;
+    font-size: 19.5px;
+  }
+
+  .btn-rooms {
+    padding: 0 36px;
+    height: 52px;
+    font-size: 19.5px;
+  }
+
+  .bottom-left-controls {
+    bottom: 36px;
+    left: 64px;
+    gap: 40px;
+    height: 52px;
+    align-items: center;
+  }
+
+  .control-item {
+    font-size: 20px;
+    gap: 16px;
+  }
+
+  .control-icon {
+    width: 34px;
+    height: 34px;
+  }
+
+  .scroll-down-btn {
+    bottom: 36px;
+    right: 64px;
+    width: 52px;
+    height: 52px;
+  }
+
+  .scroll-down-btn svg {
+    width: 52px;
+    height: 52px;
+  }
+
+  /* Sekce Zázemí / O nás (2200px+) */
+  .about-section {
+    height: 1320px;
+  }
+
+  .about-inner {
+    width: 1880px;
+  }
+
+  .about-content {
+    left: 64px;
+    top: 190px;
+    width: 820px;
+  }
+
+  .about-title {
+    font-size: 44px;
+    margin-bottom: 40px;
+  }
+
+  .about-text {
+    max-width: 760px;
+  }
+
+  .about-text p {
+    font-size: 22px;
+    margin-bottom: 32px;
+  }
+
+  .about-text p:last-child {
+    margin-bottom: 68px;
+  }
+
+  .btn-about {
+    padding: 0 36px;
+    height: 52px;
+    font-size: 19.5px;
+  }
+
+  .about-img-top {
+    right: 64px;
+    top: 140px;
+    width: 760px;
+    height: 720px;
+  }
+
+  .about-img-bottom {
+    left: 680px;
+    top: 540px;
+    width: 580px;
+    height: 580px;
+  }
+
+  .about-shadow-decor {
+    left: 10px;
+    top: 720px;
+    width: 520px;
+    height: 520px;
+  }
+
+  /* Promo banner / Sleva sekce (2200px+) */
+  .promo-banner {
+    height: 520px;
+  }
+
+  .promo-inner {
+    width: 1880px;
+    padding: 0 64px;
+  }
+
+  .promo-content {
+    max-width: 780px;
+  }
+
+  .promo-title {
+    font-size: 44px;
+    margin-bottom: 28px;
+  }
+
+  .promo-desc {
+    font-size: 22px;
+  }
+
+  .btn-promo {
+    padding: 0 36px;
+    height: 56px;
+    font-size: 19.5px;
+  }
+
+  .panoramic-section {
+    height: 540px;
+  }
+
+  /* Sekce Naše nabídka pokojů (2200px+) */
+  .rooms-section {
+    padding: 180px 0 200px 0;
+  }
+
+  .rooms-inner {
+    width: 1880px;
+    padding: 0 64px;
+  }
+
+  .rooms-header-block {
+    max-width: 880px;
+    margin-bottom: 0px;
+  }
+
+  .rooms-title {
+    font-size: 44px;
+    margin-bottom: 28px;
+  }
+
+  .rooms-desc {
+    font-size: 22px;
+  }
+
+  .btn-rooms-offer {
+    padding: 0 36px;
+    height: 56px;
+    font-size: 19.5px;
+  }
+
+  .rooms-cards-grid {
+    max-width: 1560px;
+    margin-top: 0px;
+    gap: 50px;
+  }
+
+  .room-photo-card {
+    width: 430px;
+    height: 470px;
+  }
+
+  .room-card-left {
+    margin-top: 64px;
+  }
+
+  .room-card-center {
+    margin-top: 230px;
+  }
+
+  /* Sekce Co dalšího nabízíme? (2200px+) */
+  .services-section {
+    padding: 125px 0 80px 0;
+  }
+
+  .services-inner {
+    width: 1880px;
+    padding: 0 64px;
+  }
+
+  .services-title {
+    font-size: 44px;
+    margin-bottom: 84px;
+    padding-left: 0;
+  }
+
+  .services-cards-wrap {
+    max-width: 1752px;
+    gap: 172px;
+  }
+
+  .service-card {
+    width: 790px;
+  }
+
+  .service-card-right {
+    margin-top: 160px;
+  }
+
+  .service-img-wrap {
+    height: 440px;
+  }
+
+  .service-card-title {
+    font-size: 30px;
+  }
+
+  .service-card-desc {
+    font-size: 19px;
+    max-width: 740px;
+  }
+
+  .btn-service-more {
+    padding: 0 36px;
+    height: 52px;
+    font-size: 19.5px;
+  }
+
+  /* Sekce Recenze (2200px+) */
+  .reviews-section {
+    padding: 70px 0 130px 0;
+  }
+
+  .reviews-inner {
+    width: 1880px;
+    padding: 0 64px;
+  }
+
+  .reviews-title {
+    font-size: 44px;
+    margin-bottom: 56px;
+    padding-left: 0;
+  }
+
+  .reviews-slider-viewport {
+    max-width: 1752px;
+  }
+
+  .reviews-slider-track {
+    gap: 42px;
+  }
+
+  .review-card {
+    width: 556px;
+    height: 240px;
+    padding: 32px 32px 24px 32px;
+  }
+
+  .review-quote {
+    font-size: 19px;
+    max-width: 450px;
+  }
+
+  .review-author-name {
+    font-size: 20px;
+  }
+
+  .review-date {
+    font-size: 16px;
+  }
+
+  .reviews-nav-controls {
+    padding-left: 0;
+  }
+
+  .review-nav-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* Sekce Výhody hotelu (2200px+) */
+  .features-inner {
+    width: 1880px;
+    padding: 0 64px;
+  }
+
+  .features-title {
+    font-size: 44px;
+    margin-bottom: 88px;
+    padding-left: 0;
+  }
+
+  .features-grid {
+    max-width: 1752px;
+    gap: 48px;
+  }
+
+  .features-row {
+    gap: 72px;
+  }
+
+  .feature-item {
+    width: 536px;
+    gap: 26px;
+  }
+
+  .feature-icon {
+    width: 142px;
+    height: 142px;
+  }
+
+  .feature-text {
+    font-size: 20px;
+    max-width: 370px;
+  }
+
+  /* Sekce Aktivity v okolí (2200px+) */
+  .surroundings-section {
+    padding: 110px 0 170px 0;
+  }
+
+  .surroundings-inner {
+    width: 1880px;
+    padding: 0 64px;
+  }
+
+  .surroundings-title {
+    font-size: 44px;
+    margin-bottom: 72px;
+  }
+
+  .surroundings-cards-grid {
+    max-width: 1752px;
+    gap: 40px;
+  }
+
+  .surrounding-card {
+    width: 408px;
+  }
+
+  .surrounding-card-img-wrap {
+    height: 500px;
+  }
+
+  .surrounding-card-title {
+    font-size: 18.5px;
+    margin-top: 22px;
+  }
+
+  .surroundings-footer {
+    max-width: 1752px;
+  }
+
+  .surroundings-nav-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .btn-surroundings-more {
+    height: 52px;
+    padding: 0 36px;
+    font-size: 19.5px;
+  }
+
+  /* CTA Sekce (2200px+) */
+  .cta-section {
+    height: 500px;
+    background: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.35)), url('/Uvodni stranka/CTA sekce.webp') center 10%/cover no-repeat;
+  }
+
+  .cta-title {
+    font-size: 44px;
+    margin-bottom: 40px;
+  }
+
+  .btn-cta {
+    height: 52px;
+    padding: 0 36px;
+    font-size: 19.5px;
+  }
+
+  /* Zápatí / Footer (2200px+) */
+  .footer-inner {
+    width: 1880px;
+    padding: 0 64px;
+  }
+
+  .footer-columns-grid,
+  .footer-bottom-row {
+    max-width: 1752px;
+  }
+
+  .footer-col-heading {
+    font-size: 24px;
+    margin-bottom: 28px;
+  }
+
+  .footer-contact-link,
+  .footer-address-text,
+  .footer-links-list a {
+    font-size: 18px;
+  }
+
+  .footer-logo-wrap {
+    width: 140px;
+  }
+}
+
+/* ----------------------------------------------------
+   Společné styly pro další sekce stránky
+   ---------------------------------------------------- */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+h2 {
+  font-size: 40px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--primary);
+}
+
+h3 {
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--primary);
+}
+
+/* ----------------------------------------------------
+   Sekce Zázemí / O nás (Sjednocené 33px okraje, tlačítka a pozice)
+   ---------------------------------------------------- */
+.about-section {
+  position: relative;
+  width: 100%;
+  height: 1099px;
+  padding-top: 15px;
+  background-color: #ffffff;
+  overflow: hidden;
+}
+
+.about-inner {
+  position: relative;
+  width: 1440px;
+  height: 100%;
+  margin: 0 auto;
+}
+
+/* Levý textový blok (Zarovnáno na 33px od levého kraje) */
+.about-content {
+  position: absolute;
+  left: 33px;
+  top: 171px;
+  width: 640px;
+  z-index: 5;
+}
+
+.about-title {
+  font-size: 34px;
+  font-weight: 600;
+  color: #000000;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  margin: 0 0 32px 0;
+  white-space: nowrap;
+}
+
+.about-text {
+  max-width: 600px;
+}
+
+.about-text p {
+  font-size: 18px;
+  font-weight: 400;
+  color: #111111;
+  line-height: 1.55;
+  margin: 0 0 24px 0;
+}
+
+.about-text p:last-child {
+  margin-bottom: 56px;
+}
+
+.btn-about {
+  height: 45px;
+  padding: 0 28px;
+  background-color: #697947;
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 500;
+  border-radius: 1px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-about:hover {
+  background-color: #58663b;
+}
+
+/* Fotka 1: Vpravo nahoře (Zarovnáno na 33px od pravého kraje) */
+.about-img-top {
+  position: absolute;
+  right: 33px;
+  top: 135px;
+  width: 580px;
+  height: 560px;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.about-img-top img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+/* Fotka 2: Dole uprostřed (Posunutá více doprava a trochu nahoru) */
+.about-img-bottom {
+  position: absolute;
+  left: 520px;
+  top: 455px;
+  width: 449px;
+  height: 452px;
+  z-index: 3;
+  overflow: hidden;
+}
+
+.about-img-bottom img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+/* Stínový list vlevo dole (Posunutý více doleva k okraji) */
+.about-shadow-decor {
+  position: absolute;
+  left: -10px;
+  top: 608px;
+  width: 401.9px;
+  height: 401.9px;
+  transform: rotate(18.046deg);
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.about-shadow-decor img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.img-overlap:hover img {
+  transform: scale(1.05);
+}
+
+.btn-section {
+  background-color: var(--accent);
+  color: var(--text-light);
+  padding: 14px 28px;
+  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+}
+
+.btn-section:hover {
+  background-color: var(--accent-hover);
+}
+
+/* ----------------------------------------------------
+   Sleva sekce / Promo banner (1:1 replika dle SVG předlohy)
+   ---------------------------------------------------- */
+.promo-banner {
+  position: relative;
+  width: 100%;
+  height: 440px;
+  background-color: #f2f2f2;
+  overflow: hidden;
+}
+
+.promo-contour-img {
+  position: absolute;
+  bottom: -150px;
+  left: 0;
+  width: 100%;
+  height: auto;
+  opacity: 0.65;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.promo-inner {
+  position: relative;
+  width: 1440px;
+  height: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 33px;
+  z-index: 2;
+}
+
+.promo-content {
+  max-width: 580px;
+}
+
+.promo-title {
+  font-size: 34px;
+  font-weight: 600;
+  color: #000000;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  margin: 0 0 20px 0;
+  white-space: nowrap;
+}
+
+.promo-desc {
+  font-size: 18px;
+  font-weight: 400;
+  color: #111111;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.promo-desc strong {
+  font-weight: 700;
+  color: #000000;
+}
+
+.btn-promo {
+  height: 49px;
+  padding: 0 28px;
+  background-color: #697947;
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 500;
+  border-radius: 1px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-promo:hover {
+  background-color: #58663b;
+}
+
+/* Panoramatický náhled (Fotka pod promo bannerem) */
+.panoramic-section {
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+  position: relative;
+}
+
+.panoramic-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+/* ----------------------------------------------------
+   Sekce Naše nabídka pokojů (1:1 replika dle SVG předlohy)
+   ---------------------------------------------------- */
+/* ----------------------------------------------------
+   Sekce Naše nabídka pokojů (1:1 replika dle SVG předlohy)
+   ---------------------------------------------------- */
+.rooms-section {
+  position: relative;
+  width: 100%;
+  padding: 140px 0 160px 0;
+  background-color: #ffffff;
+}
+
+.rooms-inner {
+  position: relative;
+  width: 1440px;
+  margin: 0 auto;
+  padding: 0 33px;
+}
+
+.rooms-header-block {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 0 auto;
+}
+
+.rooms-title {
+  font-size: 34px;
+  font-weight: 600;
+  color: #000000;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  margin: 0 0 20px 0;
+}
+
+.rooms-desc {
+  font-size: 18px;
+  font-weight: 400;
+  color: #111111;
+  line-height: 1.55;
+  margin: 0 0 32px 0;
+}
+
+.btn-rooms-offer {
+  height: 49px;
+  padding: 0 28px;
+  background-color: #697947;
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 500;
+  border-radius: 1px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+  margin: 0 auto;
+  white-space: nowrap;
+}
+
+.btn-rooms-offer:hover {
+  background-color: #58663b;
+}
+
+/* Tři fotokarty - vršek pravé fotokarty je přesně ve stejné výšce jako spodek tlačítka */
+.rooms-cards-grid {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-width: 1187px;
+  margin: 0 auto;
+  gap: 30px;
+  position: relative;
+  z-index: 2;
+}
+
+.room-photo-card {
+  width: 327px;
+  height: 358px;
+  overflow: hidden;
+  border-radius: 1px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.room-photo-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+.room-photo-card:hover img {
+  transform: scale(1.04);
+}
+
+.room-card-right {
+  margin-top: 0px;
+}
+
+.room-card-left {
+  margin-top: 49px;
+}
+
+.room-card-center {
+  margin-top: 177px;
+}
+
+/* ----------------------------------------------------
+   Sekce Co dalšího nabízíme? / Upsell (1:1 replika dle SVG předlohy)
+   ---------------------------------------------------- */
+.services-section {
+  position: relative;
+  width: 100%;
+  padding: 100px 0 60px 0;
+  background-color: #f2f2f2;
+}
+
+.services-inner {
+  position: relative;
+  width: 1440px;
+  margin: 0 auto;
+  padding: 0 33px;
+}
+
+.services-title {
+  font-size: 34px;
+  font-weight: 600;
+  color: #000000;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  text-align: left;
+  margin: 0 0 64px 0;
+  padding-left: 0;
+}
+
+.services-cards-wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-width: 1374px;
+  margin: 0 auto;
+  gap: 134px;
+}
+
+.service-card {
+  width: 620px;
+  background-color: transparent;
+}
+
+.service-card-left {
+  margin-top: 0px;
+}
+
+.service-card-right {
+  margin-top: 124px;
+}
+
+.service-img-wrap {
+  width: 100%;
+  height: 350px;
+  overflow: hidden;
+  border-radius: 1px;
+}
+
+.service-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+.service-card:hover .service-img-wrap img {
+  transform: scale(1.03);
+}
+
+.service-card-body {
+  padding: 24px 0 0 0;
+}
+
+.service-card-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #000000;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  margin: 0 0 12px 0;
+}
+
+.service-card-desc {
+  font-size: 15px;
+  font-weight: 400;
+  color: #111111;
+  line-height: 1.5;
+  margin: 0 0 36px 0;
+  max-width: 580px;
+}
+
+.btn-service-more {
+  height: 45px;
+  padding: 0 28px;
+  background-color: #697947;
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 500;
+  border-radius: 1px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-service-more:hover {
+  background-color: #58663b;
+}
+
+/* ----------------------------------------------------
+   Sekce Recenze (1:1 replika dle SVG předlohy)
+   ---------------------------------------------------- */
+.reviews-section {
+  position: relative;
+  width: 100%;
+  padding: 50px 0 110px 0;
+  background-color: #f2f2f2;
+}
+
+.reviews-inner {
+  position: relative;
+  width: 1440px;
+  margin: 0 auto;
+  padding: 0 33px;
+}
+
+.reviews-title {
+  font-size: 34px;
+  font-weight: 600;
+  color: #000000;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  text-align: left;
+  margin: 0 0 40px 0;
+  padding-left: 0;
+}
+
+.reviews-slider-viewport {
+  position: relative;
+  width: 100%;
+  max-width: 1374px;
+  margin: 0 auto 36px auto;
+  overflow: hidden;
+  cursor: grab;
+  user-select: none;
+}
+
+.reviews-slider-viewport.is-dragging {
+  cursor: grabbing;
+}
+
+.reviews-slider-track {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  width: max-content;
+  will-change: transform;
+}
+
+.review-card {
+  position: relative;
+  width: 434px;
+  height: 184px;
+  flex-shrink: 0;
+  background-color: #ffffff;
+  border-radius: 5px;
+  padding: 24px 24px 18px 24px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.review-google-icon {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 28px;
+  height: 29px;
+  object-fit: contain;
+  z-index: 3;
+}
+
+.review-quote {
+  font-size: 15px;
+  font-weight: 400;
+  color: #111111;
+  line-height: 1.45;
+  margin: 0;
+  max-width: 350px;
+  position: relative;
+  z-index: 2;
+}
+
+.review-contour-bg {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 117px;
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.review-contour-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: bottom;
+  display: block;
+}
+
+.review-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  position: relative;
+  z-index: 2;
+  margin-top: auto;
+}
+
+.review-author-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000000;
+}
+
+.review-date {
+  font-size: 13px;
+  font-weight: 400;
+  color: #888888;
+}
+
+.reviews-nav-controls {
+  display: flex;
+  gap: 10px;
+  padding-left: 0;
+  margin-top: 12px;
+}
+
+.review-nav-btn {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background-color: #DAD4D3;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.review-nav-btn:hover {
+  background-color: #c4bebd;
+}
+
+/* ----------------------------------------------------
+   Sekce Výhody hotelu / Více než jen ubytování (1:1 replika dle SVG předlohy)
+   ---------------------------------------------------- */
+.features-section {
+  position: relative;
+  width: 100%;
+  padding: 90px 0 110px 0;
+  background-color: #ffffff;
+}
+
+.features-inner {
+  position: relative;
+  width: 1440px;
+  margin: 0 auto;
+  padding: 0 33px;
+}
+
+.features-title {
+  font-size: 34px;
+  font-weight: 600;
+  color: #000000;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  text-align: left;
+  margin: 0 0 68px 0;
+  padding-left: 0;
+}
+
+.features-grid {
+  display: flex;
+  flex-direction: column;
+  max-width: 1374px;
+  margin: 0 auto;
+  gap: 34px;
+}
+
+.features-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 60px;
+}
+
+.features-divider {
+  width: 100%;
+  height: 1px;
+  background-color: #E0E0E0;
+  margin: 6px 0;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  width: 418px;
+  box-sizing: border-box;
+}
+
+
+
+.feature-icon {
+  width: 107px;
+  height: 107px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feature-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.feature-text {
+  font-size: 16px;
+  font-weight: 400;
+  color: #111111;
+  line-height: 1.45;
+  margin: 0;
+  max-width: 250px;
+}
+
+.feature-text strong {
+  font-weight: 600;
+  color: #000000;
+}
+
+/* ----------------------------------------------------
+   Sekce Aktivity v okolí (1:1 replika dle SVG předlohy)
+   ---------------------------------------------------- */
+.surroundings-section {
+  position: relative;
+  width: 100%;
+  padding: 90px 0 150px 0;
+  background-color: #ffffff;
+}
+
+.surroundings-inner {
+  position: relative;
+  width: 1440px;
+  margin: 0 auto;
+  padding: 0 33px;
+}
+
+.surroundings-title {
+  font-size: 34px;
+  font-weight: 600;
+  color: #000000;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  text-align: left;
+  margin: 0 0 50px 0;
+  padding-left: 0;
+}
+
+.surroundings-cards-grid {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-width: 1374px;
+  margin: 0 auto 54px auto;
+  gap: 24px;
+}
+
+.surrounding-card {
+  width: 298px;
+  box-sizing: border-box;
+}
+
+.surrounding-card-img-wrap {
+  width: 100%;
+  height: 369px;
+  overflow: hidden;
+  border-radius: 1px;
+}
+
+.surrounding-card-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+.surrounding-card:hover .surrounding-card-img-wrap img {
+  transform: scale(1.04);
+}
+
+.surrounding-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #000000;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 1.35;
+  margin: 18px 0 0 0;
+  text-align: left;
+}
+
+.surroundings-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1374px;
+  margin: 0 auto;
+}
+
+.surroundings-nav-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.surroundings-nav-btn {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background-color: #DAD4D3;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.surroundings-nav-btn:hover {
+  background-color: #c4bebd;
+}
+
+.btn-surroundings-more {
+  height: 45px;
+  padding: 0 28px;
+  background-color: #697947;
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 500;
+  border-radius: 1px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-surroundings-more:hover {
+  background-color: #58663b;
+}
+
+/* ----------------------------------------------------
+   CTA Sekce (1:1 replika dle SVG předlohy)
+   ---------------------------------------------------- */
+.cta-section {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  background: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.35)), url('/Uvodni stranka/CTA sekce.webp') center 10%/cover no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.cta-inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  z-index: 2;
+  width: 100%;
+  max-width: 850px;
+  padding: 0 20px;
+}
+
+.cta-title {
+  font-size: 34px;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  text-align: center;
+  margin: 0 0 32px 0;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.btn-cta {
+  height: 45px;
+  padding: 0 28px;
+  background-color: #E5E0D7;
+  color: #000000;
+  font-size: 17px;
+  font-weight: 500;
+  border-radius: 1px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-cta:hover {
+  background-color: #d6cfc5;
+}
+
+/* ----------------------------------------------------
+   Zápatí / Footer (1:1 replika dle SVG předlohy)
+   ---------------------------------------------------- */
+.site-footer {
+  position: relative;
+  width: 100%;
+  padding: 85px 0 38px 0;
+  background-color: #2E3128;
+  color: #ffffff;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.footer-contour-bg {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.footer-contour-bg img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.footer-inner {
+  position: relative;
+  width: 1440px;
+  margin: 0 auto;
+  padding: 0 33px;
+  z-index: 2;
+}
+
+.footer-columns-grid {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-width: 1374px;
+  margin: 0 auto 102px auto;
+  gap: 60px;
+}
+
+/* Sloupec 1: Kontakty */
+.footer-col-contact {
+  width: 380px;
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-contact-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 0;
+}
+
+.footer-contact-item svg {
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+
+.footer-contact-link {
+  font-size: 16px;
+  font-weight: 500;
+  color: #ffffff;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.footer-contact-link:hover {
+  opacity: 0.8;
+}
+
+.footer-divider-line {
+  width: 100%;
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.25);
+  margin: 4px 0;
+}
+
+.footer-address-item {
+  align-items: flex-start;
+  padding-top: 14px;
+}
+
+.footer-address-item svg {
+  margin-top: 3px;
+}
+
+.footer-address-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 15px;
+  font-weight: 400;
+  color: #ffffff;
+  line-height: 1.4;
+}
+
+/* Sloupec 2 & 3: Rychlé odkazy a Právní doložky */
+.footer-col-links,
+.footer-col-legal {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-col-heading {
+  font-size: 20px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 20px 0;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.footer-links-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-links-list a {
+  font-size: 15px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-links-list a:hover {
+  color: #ffffff;
+}
+
+/* Spodní lišta */
+.footer-bottom-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1374px;
+  margin: 0 auto;
+  padding-top: 10px;
+  border-top: none;
+}
+
+.footer-copyright,
+.footer-author {
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.footer-author a {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.footer-author a:hover {
+  color: #ffffff;
+}
+
+.footer-logo-wrap {
+  width: 110px;
+  display: flex;
+  justify-content: center;
+}
+
+.footer-logo-wrap img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
