@@ -53,8 +53,7 @@ document.querySelector('#app').innerHTML = `
       <!-- Hlavička (Navigace a logo) -->
       <header class="site-header">
         <div class="nav-left">
-          <a href="#ubytovani" class="nav-link">O nás</a>
-          <a href="#pokoje" class="nav-link">Ubytování</a>
+          <a href="#pokoje" class="nav-link">Nabídka pokojů</a>
           <a href="#wellness" class="nav-link">Stravování</a>
         </div>
         
@@ -63,8 +62,8 @@ document.querySelector('#app').innerHTML = `
         </div>
         
         <div class="nav-right">
-          <a href="#wellness" class="nav-link">Skupinové akce</a>
           <a href="#aktivity" class="nav-link">Okolí</a>
+          <a href="#wellness" class="nav-link">Akce</a>
           <a href="#kontakt" class="nav-link">Kontakt</a>
         </div>
 
@@ -80,14 +79,25 @@ document.querySelector('#app').innerHTML = `
       <div class="mobile-menu-overlay" id="mobile-menu-overlay">
         <button class="mobile-menu-close" id="mobile-menu-close" aria-label="Zavřít menu">&times;</button>
         <nav class="mobile-menu-nav">
-          <a href="#ubytovani" class="mobile-nav-link">O nás</a>
-          <a href="#pokoje" class="mobile-nav-link">Ubytování</a>
+          <a href="#pokoje" class="mobile-nav-link">Nabídka pokojů</a>
           <a href="#wellness" class="mobile-nav-link">Stravování</a>
-          <a href="#wellness" class="mobile-nav-link">Skupinové akce</a>
           <a href="#aktivity" class="mobile-nav-link">Okolí</a>
+          <a href="#wellness" class="mobile-nav-link">Akce</a>
           <a href="#kontakt" class="mobile-nav-link">Kontakt</a>
         </nav>
         <button class="btn btn-booking mobile-menu-booking" id="mobile-menu-booking">Rezervovat pobyt</button>
+
+        <!-- Spodní přepínání Léto / Zima v mobilním menu -->
+        <div class="mobile-season-toggle">
+          <div class="control-item">
+            <img src="/Icons/sun_icon.png" alt="Slunce" class="control-icon">
+            <span>Léto</span>
+          </div>
+          <div class="control-item">
+            <img src="/Icons/snowflake_icon.png" alt="Vločka" class="control-icon">
+            <span>Zima</span>
+          </div>
+        </div>
       </div>
 
       <!-- Středový nadpis -->
@@ -496,10 +506,9 @@ document.querySelector('#app').innerHTML = `
         <div class="footer-col footer-col-links">
           <h3 class="footer-col-heading">Rychlé odkazy</h3>
           <ul class="footer-links-list">
-            <li><a href="#about">O nás</a></li>
             <li><a href="#pokoje">Ubytování</a></li>
             <li><a href="#sluzby">Stravování</a></li>
-            <li><a href="#sluzby">Skupinové akce</a></li>
+            <li><a href="#sluzby">Akce</a></li>
             <li><a href="#aktivity">Okolí</a></li>
             <li><a href="#kontakt">Kontakt</a></li>
           </ul>

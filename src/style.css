@@ -150,7 +150,7 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 32px;
+  gap: 36px;
   z-index: 10;
   box-sizing: border-box;
 }
@@ -327,7 +327,7 @@ a {
 
   .site-header {
     top: 24px;
-    gap: 48px;
+    gap: 44px;
     padding: 0 60px;
   }
 
@@ -774,7 +774,7 @@ a {
 
   .site-header {
     top: 32px;
-    gap: 64px;
+    gap: 52px;
     padding: 0 80px;
   }
 
@@ -2481,6 +2481,34 @@ h3 {
     opacity: 0.8;
   }
 
+  /* Spodní přepínání Léto / Zima v mobilním hamburger menu */
+  .mobile-season-toggle {
+    position: absolute;
+    bottom: 36px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    z-index: 10;
+  }
+
+  .mobile-season-toggle .control-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .mobile-season-toggle .control-icon {
+    width: 24px;
+    height: 24px;
+  }
+
   /* Středový mobilní nadpis (posunutý níže) */
   .hero-title {
     position: absolute;
@@ -3037,7 +3065,7 @@ h3 {
   .reviews-section {
     position: relative;
     width: 100%;
-    padding: clamp(75px, 8vw, 95px) 0 clamp(85px, 10vw, 115px) 0;
+    padding: clamp(40px, 5vw, 55px) 0 clamp(85px, 10vw, 115px) 0;
     background-color: #f2f2f2;
   }
 
@@ -3606,12 +3634,13 @@ h3 {
   .site-header {
     top: 24px;
     padding: 0 32px;
-    justify-content: space-between;
+    justify-content: center;
+    gap: 20px;
   }
 
   .nav-left,
   .nav-right {
-    gap: 16px;
+    gap: 20px;
   }
 
   .nav-link {
@@ -3619,7 +3648,7 @@ h3 {
   }
 
   .header-logo {
-    width: 80px;
+    width: 100px;
     height: auto;
   }
 
@@ -3659,6 +3688,17 @@ h3 {
   .bottom-left-controls {
     bottom: 28px;
     left: 32px;
+    gap: 16px;
+  }
+
+  .bottom-left-controls .control-item {
+    font-size: 13.5px;
+    gap: 8px;
+  }
+
+  .bottom-left-controls .control-icon {
+    width: 20px;
+    height: 20px;
   }
 
   .scroll-down-btn {
