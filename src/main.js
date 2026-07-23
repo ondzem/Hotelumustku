@@ -350,34 +350,36 @@ const getFooterHTML = () => `
   <!-- PATIČKA (SITE FOOTER 1:1 REPLIKA) -->
   <footer class="site-footer" id="kontakt">
     <div class="footer-contour-bg">
-      <img src="/Decoration/Hory - dekorace.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+      <img src="/Decoration/Dekorace footer.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
     </div>
+
     <div class="footer-inner">
+      <div class="footer-mobile-logo">
+        <img src="/Logo/white logo.webp" alt="Hotel U Můstku" loading="lazy" decoding="async">
+      </div>
+
       <div class="footer-columns-grid">
         <!-- Sloupec 1: Kontakty -->
         <div class="footer-col footer-col-contact">
           <div class="footer-contact-item">
-            <svg width="20" height="16" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 2H18V14H2V2Z" stroke="white" stroke-width="1.5"/><path d="M2 3L10 9L18 3" stroke="white" stroke-width="1.5"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
             <a href="mailto:hotel@umustku.cz" class="footer-contact-link">hotel@umustku.cz</a>
           </div>
           <div class="footer-divider-line"></div>
+
           <div class="footer-contact-item">
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3.5 1.5C3.5 1.5 6 1.5 7.5 4.5L6 6.5C7.5 9.5 8.5 10.5 11.5 12L13.5 10.5C16.5 12 16.5 14.5 16.5 14.5C16.5 16 14 16.5 12.5 16.5C5 16.5 1.5 13 1.5 5.5C1.5 4 2 1.5 3.5 1.5Z" stroke="white" stroke-width="1.5"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
             <a href="tel:+420777666273" class="footer-contact-link">+420 777 666 273</a>
           </div>
           <div class="footer-divider-line"></div>
+
           <div class="footer-contact-item footer-address-item">
-            <svg width="16" height="20" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 1C4.13 1 1 4.13 1 8C1 13.25 8 19 8 19C8 19 15 13.25 15 8C15 4.13 11.87 1 8 1Z" stroke="white" stroke-width="1.5"/><circle cx="8" cy="8" r="2.5" stroke="white" stroke-width="1.5"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
             <div class="footer-address-text">
               <span>Údolní 368</span>
               <span>468 61 Desná v Jizerských horách 1</span>
             </div>
           </div>
-        </div>
-
-        <!-- Mobilní samostatné Logo -->
-        <div class="footer-mobile-logo">
-          <img src="/Logo/white logo.webp" alt="Hotel u Můstku Logo" loading="lazy" decoding="async">
         </div>
 
         <!-- Sloupec 2: Rychlé odkazy -->
@@ -402,13 +404,13 @@ const getFooterHTML = () => `
         </div>
       </div>
 
-      <!-- Spodní řádek: Autorská práva a logo -->
+      <!-- Spodní lišta -->
       <div class="footer-bottom-row">
-        <span class="footer-copyright">© 2026 Hotel u Můstku. Všechna práva vyhrazena.</span>
+        <div class="footer-copyright">© 2026 All Rights Reserved.</div>
         <div class="footer-logo-wrap">
-          <img src="/Logo/white logo.webp" alt="Hotel u Můstku Logo" loading="lazy" decoding="async">
+          <img src="/Logo/white logo.webp" alt="Hotel U Můstku" loading="lazy" decoding="async">
         </div>
-        <span class="footer-author">Vytvořil Ondřej Zeman</span>
+        <div class="footer-author">Vytvořil <a href="https://ozeman.cz" target="_blank" rel="noopener">ozeman.cz</a></div>
       </div>
     </div>
   </footer>
