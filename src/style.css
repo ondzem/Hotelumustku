@@ -3708,6 +3708,72 @@ h3 {
     transform: none;
   }
 
+  /* Specifická pravidla pro Rooms Hero na tabletu (769px - 1028px) */
+  .rooms-hero-section {
+    height: 90vh;
+    min-height: 560px;
+    max-height: 700px;
+  }
+
+  .rooms-hero-section .rooms-hero-title {
+    top: 44%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 500px;
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1.25;
+    text-align: center;
+  }
+
+  .rooms-hero-subtitle {
+    top: calc(44% + 40px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 320px;
+    font-size: 14.5px;
+    line-height: 1.4;
+    text-align: center;
+  }
+
+  .rooms-date-picker-bar {
+    width: 75%;
+    max-width: 480px;
+    padding: 8px 12px;
+    gap: 10px;
+  }
+
+  .rooms-date-picker-bar .date-picker-fields-group {
+    gap: 6px;
+    flex: 1;
+  }
+
+  .rooms-date-picker-bar .date-picker-field {
+    width: auto;
+    flex: 1;
+    height: 38px;
+    padding: 0 10px;
+    gap: 6px;
+  }
+
+  .rooms-date-picker-bar .date-picker-label {
+    font-size: 13px;
+  }
+
+  .rooms-date-picker-bar .date-picker-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .rooms-date-picker-bar .rooms-search-btn {
+    height: 38px;
+    padding: 0 16px;
+    font-size: 13.5px;
+    flex-shrink: 0;
+  }
+
   /* ----------------------------------------------------
      SEKCE ZÁZEMÍ / O NÁS - TABLETOVÁ RESPONZIVITA (769px - 1028px)
      ---------------------------------------------------- */
@@ -4295,6 +4361,57 @@ h3 {
    RESPONZIVITA MEZI 1029px a 1500px (Laptopy / DevTools)
    ---------------------------------------------------- */
 @media (min-width: 1029px) and (max-width: 1500px) {
+  /* Specifická pravidla pro Rooms Hero na laptopech (1029px - 1500px) */
+  .rooms-hero-section .rooms-hero-title {
+    top: 44%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 34px;
+    font-weight: 600;
+  }
+
+  .rooms-hero-subtitle {
+    top: calc(44% + 44px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 86%;
+    max-width: 360px;
+    font-size: 15.5px;
+    line-height: 1.4;
+  }
+
+  .rooms-date-picker-bar {
+    width: 75%;
+    max-width: 580px;
+    padding: 10px 14px;
+    gap: 12px;
+  }
+
+  .rooms-date-picker-bar .date-picker-fields-group {
+    gap: 12px;
+    flex: 1;
+  }
+
+  .rooms-date-picker-bar .date-picker-field {
+    width: auto;
+    flex: 1;
+    max-width: 225px;
+    height: 46px;
+    padding: 0 18px;
+    gap: 12px;
+  }
+
+  .rooms-date-picker-bar .date-picker-label {
+    font-size: 15px;
+  }
+
+  .rooms-date-picker-bar .rooms-search-btn {
+    height: 46px;
+    padding: 0 28px;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
   .about-section {
     height: auto;
     padding: clamp(120px, 8.5vw, 160px) 0;
@@ -4737,5 +4854,629 @@ h3 {
     width: 100%;
     max-width: 1374px;
     margin: 0 auto;
+  }
+}
+
+/* ====================================================
+   STRÁNKA NABÍDKA POKOJŮ (UBYTOVÁNÍ PAGE)
+   ==================================================== */
+
+/* Section 1: Hero Sekce Pro Pokojovou Stránku */
+/* Section 1: Hero Sekce Pro Pokojovou Stránku (90 % viewpointu) */
+.rooms-hero-section {
+  position: relative;
+  width: 100%;
+  height: 90vh;
+  min-height: 700px;
+  background-image: url('/hezky pokoj 1.png');
+  background-size: cover;
+  background-position: center;
+  overflow: visible;
+}
+
+.rooms-hero-subtitle {
+  position: absolute;
+  top: 468px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 780px;
+  font-size: 18px;
+  font-weight: 400;
+  color: #ffffff;
+  text-align: center;
+  margin: 0;
+  line-height: 1.5;
+  z-index: 10;
+}
+
+/* Date Picker Bar - ukotvený dole na rozhraní hero sekce a sekce pod ním */
+.rooms-date-picker-bar {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 50%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #E5E0DA;
+  border-radius: 1px;
+  padding: 12px 18px;
+  width: 90%;
+  max-width: 920px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  box-sizing: border-box;
+  gap: 24px;
+  z-index: 20;
+}
+
+.date-picker-fields-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.date-picker-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  border-radius: 1px;
+  padding: 0 20px;
+  height: 48px;
+  width: 225px;
+  box-sizing: border-box;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.date-picker-label {
+  font-size: 16px;
+  font-weight: 500;
+  color: #111111;
+}
+
+.date-picker-icon {
+  width: 22px;
+  height: 22px;
+  color: #4A4D43;
+  flex-shrink: 0;
+}
+
+.rooms-search-btn {
+  background-color: #697947;
+  color: #ffffff;
+  height: 46px;
+  padding: 0 32px;
+  font-size: 16.5px;
+  font-weight: 500;
+  border-radius: 1px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s ease;
+}
+
+.rooms-search-btn:hover {
+  background-color: #58673a;
+}
+
+/* Posunutí spodní šipky dolů o něco výše */
+.rooms-hero-section .scroll-down-btn {
+  bottom: 48px;
+}
+
+/* Section 2: Room Cards List Sekce (horní odsazení zvětšeno o 40px kvůli přesahující vyhledávací liště) */
+.rooms-list-section {
+  position: relative;
+  width: 100%;
+  background-color: #ffffff;
+  padding: 170px 0 130px 0;
+}
+
+.rooms-list-inner {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 33px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 130px;
+}
+
+.room-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 60px;
+  width: 100%;
+}
+
+.room-card-image-wrap {
+  width: 50%;
+  max-width: 640px;
+  height: auto;
+  aspect-ratio: 640 / 420;
+  border-radius: 1px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.room-card-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.room-card-content {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.room-card-title {
+  font-size: 32px;
+  font-weight: 600;
+  color: #000000;
+  margin: 0 0 16px 0;
+  line-height: 1.25;
+}
+
+.room-card-desc {
+  font-size: 16px;
+  font-weight: 400;
+  color: #333333;
+  line-height: 1.6;
+  margin: 0 0 32px 0;
+  max-width: 540px;
+}
+
+.room-card-buttons {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.room-card .btn-booking {
+  background-color: #697947;
+  color: #ffffff;
+  height: 45px;
+  padding: 0 28px;
+  font-size: 17px;
+  font-weight: 500;
+  border-radius: 1px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  transition: background-color 0.2s ease;
+}
+
+.room-card .btn-booking:hover {
+  background-color: #58673a;
+}
+
+.room-card .btn-rooms {
+  background-color: transparent;
+  color: #2E3128;
+  border: 1px solid #697947;
+  height: 45px;
+  padding: 0 28px;
+  font-size: 17px;
+  font-weight: 500;
+  border-radius: 1px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.room-card .btn-rooms:hover {
+  background-color: rgba(105, 121, 71, 0.1);
+  border-color: #58673a;
+}
+
+/* Text toggles pro desktop vs mobil */
+.desktop-only-text {
+  display: block;
+}
+.mobile-only-text {
+  display: none;
+}
+.btn-rooms-mobile-cta {
+  display: none;
+}
+
+/* Media Query pro mobil (< 768px) u Rooms Page */
+@media (max-width: 768px) {
+  .desktop-only-text {
+    display: none !important;
+  }
+
+  .mobile-only-text {
+    display: block !important;
+    font-size: 26px;
+    font-weight: 500;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    color: #ffffff;
+    text-align: center;
+    max-width: 340px;
+    margin: 0 auto;
+  }
+
+  .rooms-hero-section {
+    position: relative;
+    width: 100%;
+    height: 95vh;
+    min-height: 540px;
+    max-height: 750px;
+    background-image: url('/mobil hezky pokoj.webp') !important;
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+  }
+
+  .rooms-hero-section .rooms-hero-title {
+    position: absolute;
+    top: 54%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 340px;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    z-index: 10;
+  }
+
+  .btn-rooms-mobile-cta {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: calc(54% + 68px);
+    left: 50%;
+    transform: translateX(-50%);
+    height: 36px;
+    padding: 0 20px;
+    font-size: 14.5px;
+    font-weight: 500;
+    border-radius: 1px;
+    background-color: #E5E0DA;
+    color: #111111;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+    z-index: 10;
+    transition: background-color 0.2s ease;
+  }
+
+  .rooms-hero-section .rooms-hero-subtitle,
+  .rooms-hero-section .rooms-date-picker-bar {
+    display: none !important;
+  }
+
+  .rooms-hero-section .scroll-down-btn {
+    position: absolute;
+    bottom: 52px;
+    left: 50%;
+    transform: translateX(-50%);
+    right: auto !important;
+    top: auto !important;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid #E5E0DA;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+  }
+
+  .rooms-list-section {
+    padding: clamp(105px, 11vw, 125px) 0 clamp(115px, 13vw, 145px) 0 !important;
+  }
+
+  .rooms-list-inner {
+    padding: 0 24px !important;
+    gap: clamp(90px, 12vw, 110px) !important;
+  }
+
+  .room-card {
+    flex-direction: column !important;
+    gap: 20px !important;
+    width: 100% !important;
+  }
+
+  .room-card-image-wrap {
+    width: 100% !important;
+    max-width: 100% !important;
+    aspect-ratio: 327 / 210 !important;
+    border-radius: 1px !important;
+    overflow: hidden !important;
+    order: -1 !important;
+  }
+
+  /* Card 1: Zarovnání NALEVO (stejně jako u sekce Co dalšího nabízíme) */
+  .room-card:nth-child(1) .room-card-content {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    text-align: left !important;
+  }
+
+  .room-card:nth-child(1) .room-card-title {
+    font-size: 24px !important;
+    font-weight: 600 !important;
+    text-align: left !important;
+    margin: 0 0 14px 0 !important;
+    width: 100% !important;
+  }
+
+  .room-card:nth-child(1) .room-card-desc {
+    font-size: 14.5px !important;
+    font-weight: 400 !important;
+    line-height: 1.5 !important;
+    color: #333333 !important;
+    text-align: left !important;
+    margin: 0 0 24px 0 !important;
+    max-width: 100% !important;
+  }
+
+  .room-card:nth-child(1) .room-card-buttons {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 12px !important;
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: auto !important;
+  }
+
+  /* Card 2: Zarovnání NAPRAVO (stejně jako u sekce Co dalšího nabízíme) */
+  .room-card:nth-child(2) .room-card-content {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    text-align: right !important;
+  }
+
+  .room-card:nth-child(2) .room-card-title {
+    font-size: 24px !important;
+    font-weight: 600 !important;
+    text-align: right !important;
+    margin: 0 0 14px 0 !important;
+    width: 100% !important;
+  }
+
+  .room-card:nth-child(2) .room-card-desc {
+    font-size: 14.5px !important;
+    font-weight: 400 !important;
+    line-height: 1.5 !important;
+    color: #333333 !important;
+    text-align: right !important;
+    margin: 0 0 24px 0 !important;
+    max-width: 100% !important;
+  }
+
+  .room-card:nth-child(2) .room-card-buttons {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 12px !important;
+    width: 100% !important;
+    margin-left: auto !important;
+    margin-right: 0 !important;
+  }
+
+  .room-card .btn-booking,
+  .room-card .btn-room-primary {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background-color: #697947 !important;
+    color: #ffffff !important;
+    height: 36px !important;
+    padding: 0 20px !important;
+    font-size: 14.5px !important;
+    font-weight: 500 !important;
+    border-radius: 1px !important;
+    border: none !important;
+    white-space: nowrap !important;
+  }
+
+  .room-card .btn-rooms,
+  .room-card .btn-room-secondary {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background-color: transparent !important;
+    color: #111111 !important;
+    border: 1px solid #333333 !important;
+    height: 36px !important;
+    padding: 0 20px !important;
+    font-size: 14.5px !important;
+    font-weight: 500 !important;
+    border-radius: 1px !important;
+    white-space: nowrap !important;
+  }
+}
+
+/* Media Query pro tablet (769px - 1028px) pro Rooms Page - Na konci souboru pro 100% přednost */
+@media (min-width: 769px) and (max-width: 1028px) {
+  .rooms-hero-section {
+    height: 90vh !important;
+    min-height: 560px !important;
+    max-height: 720px !important;
+  }
+
+  .rooms-hero-section .rooms-hero-title {
+    position: absolute !important;
+    top: calc(48% + 20px) !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 90% !important;
+    max-width: 480px !important;
+    font-size: 31px !important;
+    font-weight: 600 !important;
+    line-height: 1.25 !important;
+    text-align: center !important;
+    margin: 0 !important;
+  }
+
+  .rooms-hero-subtitle {
+    position: absolute !important;
+    top: calc(48% + 58px) !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 85% !important;
+    max-width: 330px !important;
+    font-size: 14.5px !important;
+    line-height: 1.4 !important;
+    text-align: center !important;
+    margin: 0 !important;
+    z-index: 10 !important;
+  }
+
+  .rooms-date-picker-bar {
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 50% !important;
+    transform: translate(-50%, 50%) !important;
+    width: 80% !important;
+    max-width: 560px !important;
+    padding: 10px 14px !important;
+    gap: 12px !important;
+    box-sizing: border-box !important;
+    z-index: 20 !important;
+  }
+
+  .rooms-date-picker-bar .date-picker-fields-group {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    flex: 1 !important;
+  }
+
+  .rooms-date-picker-bar .date-picker-field {
+    width: auto !important;
+    flex: 1 !important;
+    height: 40px !important;
+    padding: 0 12px !important;
+    gap: 6px !important;
+  }
+
+  .rooms-date-picker-bar .date-picker-label {
+    font-size: 13.5px !important;
+  }
+
+  .rooms-date-picker-bar .date-picker-icon {
+    width: 17px !important;
+    height: 17px !important;
+  }
+
+  .rooms-date-picker-bar .rooms-search-btn {
+    height: 40px !important;
+    padding: 0 18px !important;
+    font-size: 14px !important;
+    flex-shrink: 0 !important;
+  }
+}
+
+/* Media Query pro laptopy (1029px - 1500px) pro Rooms Page - Na konci souboru pro 100% přednost */
+@media (min-width: 1029px) and (max-width: 1500px) {
+  .rooms-hero-section .rooms-hero-title {
+    position: absolute !important;
+    top: calc(46% + 20px) !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    font-size: 36px !important;
+    font-weight: 600 !important;
+  }
+
+  .rooms-hero-subtitle {
+    position: absolute !important;
+    top: calc(46% + 64px) !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 86% !important;
+    max-width: 380px !important;
+    font-size: 15.5px !important;
+    line-height: 1.4 !important;
+  }
+
+  .rooms-date-picker-bar {
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 50% !important;
+    transform: translate(-50%, 50%) !important;
+    width: 80% !important;
+    max-width: 680px !important;
+    padding: 10px 16px !important;
+    gap: 14px !important;
+  }
+
+  .rooms-date-picker-bar .date-picker-fields-group {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    flex: 1 !important;
+  }
+
+  .rooms-date-picker-bar .date-picker-field {
+    width: auto !important;
+    flex: 1 !important;
+    max-width: 210px !important;
+    height: 42px !important;
+    padding: 0 14px !important;
+    gap: 8px !important;
+  }
+
+  .rooms-date-picker-bar .date-picker-label {
+    font-size: 14px !important;
+  }
+
+  .rooms-date-picker-bar .rooms-search-btn {
+    height: 42px !important;
+    padding: 0 22px !important;
+    font-size: 15px !important;
+    flex-shrink: 0 !important;
+  }
+}
+
+/* Zarovnání Card 2 (Pokoje s výhledem) doprava k obrázku na tabletech, laptopech a desktopu (>768px) */
+@media (min-width: 769px) {
+  .room-card:nth-child(2) .room-card-content {
+    align-items: flex-end !important;
+    text-align: right !important;
+  }
+
+  .room-card:nth-child(2) .room-card-title {
+    text-align: right !important;
+    width: 100% !important;
+  }
+
+  .room-card:nth-child(2) .room-card-desc {
+    text-align: right !important;
+    margin-left: auto !important;
+  }
+
+  .room-card:nth-child(2) .room-card-buttons {
+    justify-content: flex-end !important;
+    width: 100% !important;
+    margin-left: auto !important;
+    margin-right: 0 !important;
   }
 }
