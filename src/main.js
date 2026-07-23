@@ -365,7 +365,7 @@ document.querySelector('#app').innerHTML = `
               <img src="/Icons/Ikona - ohniste.webp" alt="Zahrada s ohništěm" loading="lazy" decoding="async">
             </div>
             <p class="feature-text">
-              <strong>Zahrada s ohništěm</strong> a grilem pro příjemné večery.
+              <strong>Oplocená zahrada s ohništěm</strong> a grilem pro příjemné večery.
             </p>
           </div>
 
@@ -665,6 +665,9 @@ if (reviewsTrack && reviewsViewport) {
 
   // Inicializace pozice bez animace
   updatePosition(false);
+  window.addEventListener('resize', () => updatePosition(false));
+  window.addEventListener('load', () => updatePosition(false));
+  requestAnimationFrame(() => updatePosition(false));
 
   const checkBoundary = () => {
     if (currentIndex >= totalOriginal * 2) {

@@ -1267,9 +1267,11 @@ h3 {
 
 .about-inner {
   position: relative;
-  width: 1440px;
+  width: 100%;
+  max-width: 1440px;
   height: 100%;
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
 /* Levý textový blok (Zarovnáno na 33px od levého kraje) */
@@ -1418,13 +1420,15 @@ h3 {
 
 .promo-contour-img {
   position: absolute;
-  bottom: -150px;
+  top: 0;
   left: 0;
   width: 100%;
-  height: auto;
+  height: 100%;
   opacity: 0.65;
   pointer-events: none;
   z-index: 1;
+  object-fit: cover;
+  object-position: center 35%;
 }
 
 .promo-inner {
@@ -2554,6 +2558,697 @@ h3 {
     align-items: center;
     justify-content: center;
   }
+
+  /* ----------------------------------------------------
+     SEKCE ZÁZEMÍ / O NÁS - MOBILNÍ REPLIKA (< 768px)
+     ---------------------------------------------------- */
+  .about-section {
+    height: auto;
+    padding: 85px 0 85px 0;
+    position: relative;
+    overflow: hidden;
+    background-color: #ffffff;
+  }
+
+  .about-inner {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    padding: 0 24px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  .about-content {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    max-width: 100%;
+    z-index: 5;
+    margin-bottom: 48px;
+  }
+
+  .about-title {
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.24;
+    letter-spacing: -0.015em;
+    color: #000000;
+    margin: 0 0 24px 0;
+    white-space: normal;
+  }
+
+  .about-text {
+    max-width: 100%;
+  }
+
+  .about-text p {
+    font-size: 15px;
+    font-weight: 400;
+    color: #111111;
+    line-height: 1.52;
+    margin: 0 0 20px 0;
+  }
+
+  .about-text p:last-child {
+    margin-bottom: 32px;
+  }
+
+  .btn-about {
+    height: 36px;
+    padding: 0 20px;
+    font-size: 14.5px;
+    font-weight: 500;
+    border-radius: 1px;
+    background-color: #697947;
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    white-space: nowrap;
+  }
+
+  /* Fotky a jejich vrstvení */
+  .about-img-top {
+    position: relative;
+    right: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 325 / 314;
+    z-index: 1;
+    overflow: hidden;
+  }
+
+  .about-img-top img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  .about-img-bottom {
+    position: relative;
+    left: auto;
+    right: 0;
+    top: auto;
+    margin-top: -21.5%;
+    margin-left: auto;
+    width: 71.38%;
+    height: auto;
+    aspect-ratio: 232 / 234;
+    z-index: 3;
+    overflow: hidden;
+  }
+
+  .about-img-bottom img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  .about-shadow-decor {
+    position: absolute;
+    left: -20px;
+    bottom: -20px;
+    top: auto;
+    width: 260px;
+    height: 260px;
+    transform: rotate(18.046deg);
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.45;
+  }
+
+  .about-shadow-decor img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+
+  /* ----------------------------------------------------
+     PROMO BANNER / SLEVA SEKCE - MOBILNÍ REPLIKA (< 768px)
+     ---------------------------------------------------- */
+  .promo-banner {
+    height: auto;
+    padding: 75px 0 65px 0;
+    background-color: #f2f2f2;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .promo-contour-img {
+    display: block !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.65;
+    pointer-events: none;
+    z-index: 1;
+    object-fit: cover;
+    object-position: center 35%;
+  }
+
+  .promo-inner {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    padding: 0 24px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  .promo-content {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 28px;
+  }
+
+  .promo-title {
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    color: #000000;
+    margin: 0 0 20px 0;
+    white-space: normal;
+  }
+
+  .promo-desc {
+    font-size: 15px;
+    font-weight: 400;
+    color: #111111;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .promo-action {
+    width: 100%;
+  }
+
+  .btn-promo {
+    height: 36px;
+    padding: 0 20px;
+    font-size: 14.5px;
+    font-weight: 500;
+    border-radius: 1px;
+    background-color: #697947;
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    white-space: nowrap;
+  }
+
+  .panoramic-section {
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .panoramic-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+    object-position: center;
+    aspect-ratio: 385 / 414;
+  }
+
+  /* ----------------------------------------------------
+     SEKCE NABÍDKA POKOJŮ - MOBILNÍ REPLIKA (< 768px)
+     ---------------------------------------------------- */
+  .rooms-section {
+    position: relative;
+    width: 100%;
+    padding: clamp(75px, 8vw, 95px) 0 clamp(85px, 10vw, 115px) 0;
+    background-color: #ffffff;
+  }
+
+  .rooms-inner {
+    width: 100%;
+    max-width: 100%;
+    padding: 0 24px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .rooms-header-block {
+    text-align: center;
+    max-width: 100%;
+    margin-bottom: clamp(54px, 8vw, 70px);
+  }
+
+  .rooms-title {
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    color: #000000;
+    margin: 0 0 20px 0;
+    white-space: normal;
+  }
+
+  .rooms-desc {
+    font-size: 15px;
+    font-weight: 400;
+    color: #111111;
+    line-height: 1.5;
+    margin: 0 auto 28px auto;
+    max-width: 520px;
+  }
+
+  .btn-rooms-offer {
+    height: 36px;
+    padding: 0 20px;
+    font-size: 14.5px;
+    font-weight: 500;
+    border-radius: 1px;
+    background-color: #697947;
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    white-space: nowrap;
+    margin: 0 auto;
+  }
+
+  .rooms-cards-grid {
+    position: relative;
+    width: 100%;
+    max-width: 580px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(24px, 4vw, 36px);
+  }
+
+  .room-photo-card {
+    border-radius: 1px;
+    overflow: hidden;
+  }
+
+  .room-card-right {
+    order: 1;
+    position: relative;
+    margin-left: 0;
+    margin-right: auto;
+    margin-top: 0;
+    width: clamp(212px, 58%, 340px);
+    height: auto;
+    aspect-ratio: 212 / 232;
+    z-index: 1;
+  }
+
+  .room-card-left {
+    order: 2;
+    position: relative;
+    margin-left: auto;
+    margin-right: 0;
+    margin-top: 0;
+    width: clamp(219px, 60%, 355px);
+    height: auto;
+    aspect-ratio: 219 / 240;
+    z-index: 2;
+  }
+
+  .room-card-center {
+    display: none;
+  }
+
+  /* ----------------------------------------------------
+     SEKCE CO DALŠÍHO NABÍZÍME / UPSELL - MOBILNÍ REPLIKA (< 768px)
+     ---------------------------------------------------- */
+  .services-section {
+    position: relative;
+    width: 100%;
+    padding: clamp(75px, 8vw, 95px) 0 clamp(85px, 10vw, 115px) 0;
+    background-color: #f2f2f2;
+  }
+
+  .services-inner {
+    width: 100%;
+    max-width: 100%;
+    padding: 0 24px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .services-title {
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    color: #000000;
+    margin: 0 0 36px 0;
+    text-align: left;
+    white-space: normal;
+  }
+
+  .services-cards-wrap {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    gap: clamp(80px, 12vw, 100px);
+  }
+
+  .service-card {
+    width: 100%;
+    max-width: 100%;
+    background-color: transparent;
+  }
+
+  .service-card-left {
+    margin-top: 0px;
+    text-align: left;
+  }
+
+  .service-card-left .service-card-body {
+    text-align: left;
+  }
+
+  .service-card-left .btn-service-more {
+    margin-left: 0;
+    margin-right: auto;
+  }
+
+  .service-card-right {
+    margin-top: 0px;
+    text-align: right;
+  }
+
+  .service-card-right .service-card-body {
+    text-align: right;
+  }
+
+  .service-card-right .btn-service-more {
+    margin-left: auto;
+    margin-right: 0;
+  }
+
+  .service-img-wrap {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 327 / 185;
+    overflow: hidden;
+    border-radius: 1px;
+  }
+
+  .service-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  .service-card-body {
+    padding: 20px 0 0 0;
+  }
+
+  .service-card-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: #000000;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    margin: 0 0 12px 0;
+  }
+
+  .service-card-desc {
+    font-size: 15px;
+    font-weight: 400;
+    color: #111111;
+    line-height: 1.5;
+    margin: 0 0 24px 0;
+  }
+
+  .btn-service-more {
+    height: 36px;
+    padding: 0 20px;
+    font-size: 14.5px;
+    font-weight: 500;
+    border-radius: 1px;
+    background-color: #697947;
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    width: fit-content;
+  }
+
+  /* ----------------------------------------------------
+     SEKCE RECENZE - MOBILNÍ REPLIKA (< 768px)
+     ---------------------------------------------------- */
+  .reviews-section {
+    position: relative;
+    width: 100%;
+    padding: clamp(75px, 8vw, 95px) 0 clamp(85px, 10vw, 115px) 0;
+    background-color: #f2f2f2;
+  }
+
+  .reviews-inner {
+    width: 100%;
+    max-width: 100%;
+    padding: 0 24px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .reviews-title {
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    color: #000000;
+    margin: 0 0 36px 0;
+    text-align: left;
+    white-space: normal;
+  }
+
+  .reviews-slider-viewport {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 0 24px 0;
+    overflow: hidden;
+  }
+
+  .reviews-slider-track {
+    display: flex;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .review-card {
+    position: relative;
+    width: calc(100vw - 48px) !important;
+    max-width: 500px !important;
+    flex: 0 0 calc(100vw - 48px) !important;
+    flex-shrink: 0 !important;
+    height: auto !important;
+    min-height: 184px;
+    background-color: #ffffff;
+    border-radius: 5px;
+    padding: 24px 20px 20px 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+  }
+
+  .review-google-icon {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    z-index: 10;
+  }
+
+  .review-quote {
+    font-size: 15px;
+    font-weight: 400;
+    color: #111111;
+    line-height: 1.5;
+    margin: 0 0 24px 0;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-right: 32px;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 2;
+  }
+
+  .review-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+    margin-top: auto;
+  }
+
+  .review-author-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: #000000;
+  }
+
+  .review-date {
+    font-size: 14px;
+    font-weight: 400;
+    color: #777777;
+  }
+
+  .reviews-nav-controls {
+    display: flex;
+    gap: 12px;
+    margin-top: 0;
+    padding-left: 0;
+  }
+
+  .review-nav-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #DAD4D3;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ----------------------------------------------------
+     SEKCE VÝHODY HOTELU / VÍCE NEŽ JEN UBYTOVÁNÍ - MOBILNÍ REPLIKA (< 768px)
+     ---------------------------------------------------- */
+  .features-section {
+    position: relative;
+    width: 100%;
+    padding: clamp(75px, 8vw, 95px) 0 clamp(85px, 10vw, 115px) 0;
+    background-color: #ffffff;
+  }
+
+  .features-inner {
+    width: 100%;
+    max-width: 100%;
+    padding: 0 24px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .features-title {
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    color: #000000;
+    margin: 0 0 36px 0;
+    text-align: left;
+    white-space: normal;
+  }
+
+  .features-grid {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    gap: 32px;
+  }
+
+  .features-row {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    gap: 32px;
+  }
+
+  .features-divider {
+    display: none;
+  }
+
+  .feature-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .features-row:nth-child(1) .feature-item:nth-child(1) { order: 1; }
+  .features-row:nth-child(1) .feature-item:nth-child(2) { order: 3; }
+  .features-row:nth-child(1) .feature-item:nth-child(3) { order: 2; }
+  .features-row:nth-child(3) .feature-item:nth-child(1) { order: 4; }
+  .features-row:nth-child(3) .feature-item:nth-child(2) { order: 5; }
+  .features-row:nth-child(3) .feature-item:nth-child(3) { order: 6; }
+
+  .feature-icon {
+    width: 95px;
+    height: 95px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .feature-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+
+  .feature-text {
+    font-size: 15px;
+    font-weight: 400;
+    color: #111111;
+    line-height: 1.45;
+    margin: 0;
+    max-width: 100%;
+    flex: 1;
+  }
+
+  .feature-text strong {
+    font-weight: 600;
+    color: #000000;
+  }
 }
 
 /* ----------------------------------------------------
@@ -2635,4 +3330,795 @@ h3 {
     left: auto;
     transform: none;
   }
+
+  /* ----------------------------------------------------
+     SEKCE ZÁZEMÍ / O NÁS - TABLETOVÁ RESPONZIVITA (769px - 1028px)
+     ---------------------------------------------------- */
+  .about-section {
+    height: auto;
+    padding: clamp(110px, 9vw, 140px) 0;
+    position: relative;
+    overflow: hidden;
+    background-color: #ffffff;
+  }
+
+  .about-inner {
+    width: 100%;
+    max-width: 100%;
+    padding: 0 32px;
+    box-sizing: border-box;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    min-height: clamp(500px, 60vw, 680px);
+  }
+
+  .about-content {
+    position: relative;
+    left: auto;
+    top: 0;
+    margin-top: clamp(10px, 2.5vw, 30px);
+    width: 48%;
+    max-width: 460px;
+    z-index: 5;
+  }
+
+  .about-title {
+    font-size: 29px;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    color: #000000;
+    margin: 0 0 24px 0;
+    white-space: normal;
+  }
+
+  .about-text {
+    max-width: 100%;
+  }
+
+  .about-text p {
+    font-size: 16px;
+    font-weight: 400;
+    color: #111111;
+    line-height: 1.52;
+    margin: 0 0 20px 0;
+  }
+
+  .about-text p:last-child {
+    margin-bottom: 36px;
+  }
+
+  .btn-about {
+    height: 40px;
+    padding: 0 24px;
+    font-size: 15.5px;
+    font-weight: 500;
+    border-radius: 1px;
+  }
+
+  .about-img-top {
+    position: absolute;
+    right: 32px;
+    top: 0;
+    width: 44%;
+    height: auto;
+    aspect-ratio: 580 / 560;
+    z-index: 1;
+  }
+
+  .about-img-bottom {
+    position: absolute;
+    left: auto !important;
+    right: 32px;
+    bottom: 0;
+    top: auto;
+    width: 34%;
+    height: auto;
+    aspect-ratio: 449 / 452;
+    z-index: 3;
+  }
+
+  .about-shadow-decor {
+    position: absolute;
+    left: clamp(-10px, 14vw - 110px, 50px);
+    top: clamp(340px, 42vw, 410px);
+    bottom: auto;
+    width: 280px;
+    height: 280px;
+    transform: rotate(18deg);
+    z-index: 0;
+    opacity: 0.45;
+  }
+
+  /* Sleva sekce - Tablet */
+  .promo-banner {
+    height: auto;
+    padding: clamp(85px, 8vw, 115px) 0;
+    background-color: #f2f2f2;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .promo-contour-img {
+    display: block !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.65;
+    pointer-events: none;
+    z-index: 1;
+    object-fit: cover;
+    object-position: center 35%;
+  }
+
+  .promo-inner {
+    width: 100%;
+    padding: 0 32px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .promo-content {
+    max-width: 100%;
+    margin-bottom: 28px;
+  }
+
+  .promo-title {
+    font-size: 29px;
+    font-weight: 600;
+    white-space: normal;
+    margin-bottom: 20px;
+  }
+
+  .btn-promo {
+    height: 40px;
+    padding: 0 24px;
+    font-size: 15.5px;
+    font-weight: 500;
+    border-radius: 1px;
+  }
+
+  .panoramic-section {
+    width: 100%;
+    height: auto;
+    max-height: 460px;
+    overflow: hidden;
+  }
+
+  .panoramic-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    aspect-ratio: auto;
+  }
+
+  /* Sekce Nabídka pokojů - Tablet */
+  .rooms-section {
+    position: relative;
+    width: 100%;
+    padding: clamp(110px, 9vw, 140px) 0;
+    background-color: #ffffff;
+  }
+
+  .rooms-inner {
+    width: 100%;
+    padding: 0 32px;
+    box-sizing: border-box;
+  }
+
+  .rooms-header-block {
+    text-align: center;
+    max-width: 620px;
+    margin: 0 auto 0 auto;
+  }
+
+  .rooms-title {
+    font-size: 29px;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+
+  .rooms-desc {
+    font-size: 16px;
+    line-height: 1.52;
+    margin-bottom: 32px;
+  }
+
+  .btn-rooms-offer {
+    height: 40px;
+    padding: 0 24px;
+    font-size: 15.5px;
+    font-weight: 500;
+    border-radius: 1px;
+  }
+
+  .rooms-cards-grid {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .room-photo-card {
+    width: 31.5%;
+    height: auto;
+    aspect-ratio: 327 / 358;
+    border-radius: 1px;
+    overflow: hidden;
+  }
+
+  .room-card-left {
+    position: relative;
+    width: 31.5%;
+    margin-top: 30px;
+    margin-bottom: 0;
+    margin-left: 0;
+  }
+
+  .room-card-center {
+    display: block;
+    position: relative;
+    width: 31.5%;
+    margin-top: 100px;
+  }
+
+  .room-card-right {
+    position: relative;
+    width: 31.5%;
+    margin-top: 0px;
+    margin-left: 0;
+  }
+
+  /* Sekce Co dalšího nabízíme - Tablet */
+  .services-section {
+    position: relative;
+    width: 100%;
+    padding: clamp(110px, 9vw, 140px) 0;
+    background-color: #f2f2f2;
+  }
+
+  .services-inner {
+    width: 100%;
+    padding: 0 32px;
+    box-sizing: border-box;
+  }
+
+  .services-title {
+    font-size: 29px;
+    font-weight: 600;
+    margin-bottom: 48px;
+    text-align: left;
+  }
+
+  .services-cards-wrap {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 32px;
+    max-width: 100%;
+  }
+
+  .service-card {
+    width: 48%;
+  }
+
+  .service-card-left {
+    margin-top: 0px;
+    text-align: left;
+  }
+
+  .service-card-left .service-card-body,
+  .service-card-right .service-card-body {
+    text-align: left;
+  }
+
+  .service-card-left .btn-service-more,
+  .service-card-right .btn-service-more {
+    margin-left: 0;
+    margin-right: auto;
+  }
+
+  .service-card-right {
+    margin-top: 60px;
+    text-align: left;
+  }
+
+  .service-img-wrap {
+    height: auto;
+    aspect-ratio: 580 / 330;
+  }
+
+  .service-card-title {
+    font-size: 23px;
+  }
+
+  .service-card-desc {
+    font-size: 15.5px;
+    margin-bottom: 28px;
+  }
+
+  .btn-service-more {
+    height: 40px;
+    padding: 0 24px;
+    font-size: 15.5px;
+    font-weight: 500;
+    border-radius: 1px;
+  }
+
+  /* Sekce Recenze - Tablet */
+  .reviews-section {
+    position: relative;
+    width: 100%;
+    padding: clamp(50px, 5vw, 70px) 0 clamp(110px, 9vw, 140px) 0;
+    background-color: #f2f2f2;
+  }
+
+  .reviews-inner {
+    width: 100%;
+    padding: 0 32px;
+    box-sizing: border-box;
+  }
+
+  .reviews-title {
+    font-size: 29px;
+    font-weight: 600;
+    margin-bottom: 40px;
+    text-align: left;
+  }
+
+  .reviews-slider-viewport {
+    margin-bottom: 28px;
+  }
+
+  .review-card {
+    position: relative;
+    width: clamp(340px, 45vw, 420px);
+    height: auto;
+    min-height: 190px;
+    padding: 24px 24px 20px 24px;
+    box-sizing: border-box;
+  }
+
+  .review-google-icon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    z-index: 10;
+  }
+
+  .review-quote {
+    padding-right: 36px;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .reviews-nav-controls {
+    margin-top: 16px;
+  }
+
+  /* Sekce Výhody hotelu - Tablet */
+  .features-section {
+    position: relative;
+    width: 100%;
+    padding: clamp(110px, 9vw, 140px) 0;
+    background-color: #ffffff;
+  }
+
+  .features-inner {
+    width: 100%;
+    padding: 0 32px;
+    box-sizing: border-box;
+  }
+
+  .features-title {
+    font-size: 29px;
+    font-weight: 600;
+    margin-bottom: 48px;
+    text-align: left;
+  }
+
+  .features-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    width: 100%;
+  }
+
+  .features-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    width: 100%;
+  }
+
+  .features-divider {
+    display: block;
+    width: 100%;
+    height: 1px;
+    background-color: #E0E0E0;
+    margin: 4px 0;
+  }
+
+  .feature-item {
+    width: 31.5%;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .features-row:nth-child(1) .feature-item:nth-child(1) { order: initial; }
+  .features-row:nth-child(1) .feature-item:nth-child(2) { order: initial; }
+  .features-row:nth-child(1) .feature-item:nth-child(3) { order: initial; }
+  .features-row:nth-child(3) .feature-item:nth-child(1) { order: initial; }
+  .features-row:nth-child(3) .feature-item:nth-child(2) { order: initial; }
+  .features-row:nth-child(3) .feature-item:nth-child(3) { order: initial; }
+
+  .feature-icon {
+    width: 75px;
+    height: 75px;
+    flex-shrink: 0;
+  }
+
+  .feature-text {
+    font-size: 14.5px;
+    line-height: 1.45;
+    max-width: 100%;
+  }
+}
+
+/* ----------------------------------------------------
+   RESPONZIVITA MEZI 1029px a 1500px (Laptopy / DevTools)
+   ---------------------------------------------------- */
+@media (min-width: 1029px) and (max-width: 1500px) {
+  .about-section {
+    height: auto;
+    padding: clamp(120px, 8.5vw, 160px) 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .about-inner {
+    width: 100%;
+    max-width: 1440px;
+    padding: 0 33px;
+    box-sizing: border-box;
+    position: relative;
+    min-height: clamp(730px, 63vw, 900px);
+  }
+
+  .about-content {
+    position: absolute;
+    top: clamp(10px, 2vw, 30px);
+    left: 33px;
+    width: 46%;
+    max-width: 580px;
+    z-index: 5;
+  }
+
+  .about-title {
+    font-size: clamp(28px, 2.5vw, 34px);
+    white-space: normal;
+  }
+
+  .about-img-top {
+    position: absolute;
+    top: 0;
+    right: 33px;
+    width: 42%;
+    max-width: 580px;
+    height: auto;
+    aspect-ratio: 580 / 560;
+    z-index: 1;
+  }
+
+  .about-img-bottom {
+    position: absolute;
+    left: auto !important;
+    right: 33px;
+    bottom: 0;
+    top: auto;
+    width: 33%;
+    max-width: 449px;
+    height: auto;
+    aspect-ratio: 449 / 452;
+    z-index: 3;
+  }
+
+  .about-shadow-decor {
+    position: absolute;
+    left: clamp(40px, 6vw, 140px);
+    top: clamp(380px, 34vw, 480px);
+    bottom: auto;
+    width: clamp(380px, 32vw, 450px);
+    height: clamp(380px, 32vw, 450px);
+    transform: rotate(18deg);
+    z-index: 0;
+    opacity: 0.45;
+  }
+
+  /* Sleva sekce - Desktop 1029px-1500px */
+  .promo-banner {
+    height: auto;
+    padding: clamp(90px, 7vw, 130px) 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .promo-contour-img {
+    display: block !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.65;
+    pointer-events: none;
+    z-index: 1;
+    object-fit: cover;
+    object-position: center 35%;
+  }
+
+  .promo-inner {
+    width: 100%;
+    max-width: 1440px;
+    padding: 0 33px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    z-index: 2;
+  }
+
+  .promo-content {
+    max-width: 580px;
+    margin-bottom: 0;
+  }
+
+  .promo-title {
+    font-size: clamp(28px, 2.5vw, 34px);
+    white-space: normal;
+  }
+
+  .btn-promo {
+    height: 45px;
+    padding: 0 28px;
+    font-size: 17px;
+    font-weight: 500;
+    border-radius: 1px;
+  }
+
+  .panoramic-section {
+    width: 100%;
+    height: 400px;
+    overflow: hidden;
+  }
+
+  .panoramic-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    aspect-ratio: auto;
+  }
+
+  /* Sekce Nabídka pokojů - Desktop 1029px-1500px */
+  .rooms-section {
+    position: relative;
+    width: 100%;
+    padding: clamp(120px, 8.5vw, 160px) 0;
+  }
+
+  .rooms-inner {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 33px;
+    box-sizing: border-box;
+  }
+
+  .rooms-header-block {
+    text-align: center;
+    max-width: 680px;
+    margin: 0 auto 0 auto;
+  }
+
+  .rooms-title {
+    font-size: clamp(28px, 2.5vw, 34px);
+    margin-bottom: 20px;
+  }
+
+  .btn-rooms-offer {
+    height: 45px;
+    padding: 0 28px;
+    font-size: 17px;
+    font-weight: 500;
+    border-radius: 1px;
+  }
+
+  .rooms-cards-grid {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    max-width: 1187px;
+    margin: 0 auto;
+    gap: 30px;
+  }
+
+  .room-photo-card {
+    width: 327px;
+    height: 358px;
+  }
+
+  .room-card-left {
+    position: relative;
+    width: 327px;
+    margin-top: 49px;
+    margin-bottom: 0;
+  }
+
+  .room-card-center {
+    display: block;
+    position: relative;
+    width: 327px;
+    margin-top: 177px;
+  }
+
+  .room-card-right {
+    position: relative;
+    width: 327px;
+    margin-top: 0px;
+  }
+
+  /* Sekce Co dalšího nabízíme - Desktop 1029px-1500px */
+  .services-section {
+    position: relative;
+    width: 100%;
+    padding: clamp(120px, 8.5vw, 160px) 0;
+    background-color: #f2f2f2;
+  }
+
+  .services-inner {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 33px;
+    box-sizing: border-box;
+  }
+
+  .services-title {
+    font-size: clamp(28px, 2.5vw, 34px);
+    margin-bottom: 64px;
+    text-align: left;
+  }
+
+  .services-cards-wrap {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    max-width: 1374px;
+    margin: 0 auto;
+    gap: clamp(40px, 6vw, 134px);
+  }
+
+  .service-card {
+    width: 47%;
+    max-width: 620px;
+  }
+
+  .service-card-left {
+    margin-top: 0px;
+    text-align: left;
+  }
+
+  .service-card-left .service-card-body,
+  .service-card-right .service-card-body {
+    text-align: left;
+  }
+
+  .service-card-left .btn-service-more,
+  .service-card-right .btn-service-more {
+    margin-left: 0;
+    margin-right: auto;
+  }
+
+  .service-card-right {
+    margin-top: 124px;
+    text-align: left;
+  }
+
+  .service-img-wrap {
+    height: 350px;
+  }
+
+  .btn-service-more {
+    height: 45px;
+    padding: 0 28px;
+    font-size: 17px;
+    font-weight: 500;
+    border-radius: 1px;
+  }
+
+  /* Sekce Recenze - Desktop 1029px-1500px */
+  .reviews-section {
+    position: relative;
+    width: 100%;
+    padding: clamp(50px, 4.5vw, 70px) 0 clamp(100px, 8vw, 140px) 0;
+    background-color: #f2f2f2;
+  }
+
+  .reviews-inner {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 33px;
+    box-sizing: border-box;
+  }
+
+  .reviews-title {
+    font-size: clamp(28px, 2.5vw, 34px);
+    margin-bottom: 40px;
+    text-align: left;
+  }
+
+  /* Sekce Výhody hotelu - Desktop 1029px-1500px */
+  .features-section {
+    position: relative;
+    width: 100%;
+    padding: clamp(120px, 8.5vw, 160px) 0;
+    background-color: #ffffff;
+  }
+
+  .features-inner {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 33px;
+    box-sizing: border-box;
+  }
+
+  .features-title {
+    font-size: clamp(28px, 2.5vw, 34px);
+    margin-bottom: 56px;
+    text-align: left;
+  }
+
+  .features-grid {
+    max-width: 1374px;
+    margin: 0 auto;
+  }
+
+  .features-row {
+    gap: clamp(20px, 4vw, 60px);
+  }
+
+  .feature-item {
+    width: 31.5%;
+    max-width: 418px;
+  }
+
+  .features-row:nth-child(1) .feature-item:nth-child(1) { order: initial; }
+  .features-row:nth-child(1) .feature-item:nth-child(2) { order: initial; }
+  .features-row:nth-child(1) .feature-item:nth-child(3) { order: initial; }
+  .features-row:nth-child(3) .feature-item:nth-child(1) { order: initial; }
+  .features-row:nth-child(3) .feature-item:nth-child(2) { order: initial; }
+  .features-row:nth-child(3) .feature-item:nth-child(3) { order: initial; }
 }
