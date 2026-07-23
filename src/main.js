@@ -715,6 +715,58 @@ const initInteractivity = () => {
 
     if (nextBtn) nextBtn.addEventListener('click', () => { currentIndex++; updatePosition(true); });
     if (prevBtn) prevBtn.addEventListener('click', () => { currentIndex--; updatePosition(true); });
+
+    // Touch Swipe & Drag Support Pro Recenze Slider
+    let startX = 0;
+    let startY = 0;
+    let isDragging = false;
+
+    reviewsViewport.addEventListener('touchstart', (e) => {
+      if (e.touches.length > 1) return;
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      isDragging = true;
+    }, { passive: true });
+
+    reviewsViewport.addEventListener('touchend', (e) => {
+      if (!isDragging) return;
+      isDragging = false;
+      const deltaX = startX - e.changedTouches[0].clientX;
+      const deltaY = startY - e.changedTouches[0].clientY;
+      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 30) {
+        if (deltaX > 0) {
+          currentIndex++;
+        } else {
+          currentIndex--;
+        }
+        updatePosition(true);
+      }
+    }, { passive: true });
+
+    reviewsViewport.addEventListener('mousedown', (e) => {
+      startX = e.clientX;
+      startY = e.clientY;
+      isDragging = true;
+    });
+
+    reviewsViewport.addEventListener('mouseup', (e) => {
+      if (!isDragging) return;
+      isDragging = false;
+      const deltaX = startX - e.clientX;
+      const deltaY = startY - e.clientY;
+      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 30) {
+        if (deltaX > 0) {
+          currentIndex++;
+        } else {
+          currentIndex--;
+        }
+        updatePosition(true);
+      }
+    });
+
+    reviewsViewport.addEventListener('mouseleave', () => {
+      isDragging = false;
+    });
   }
 
   // Surroundings Slider
@@ -769,19 +821,72 @@ const initInteractivity = () => {
     updatePosition(false);
     window.addEventListener('resize', () => updatePosition(false));
 
-    if (surrNextBtn) surrNextBtn.addEventListener('click', () => {
+    const handleNext = () => {
       const maxScroll = getMaxScroll();
       if (currentIndex * getCardStep() < maxScroll - 5) {
         currentIndex++;
         updatePosition(true);
       }
-    });
+    };
 
-    if (surrPrevBtn) surrPrevBtn.addEventListener('click', () => {
+    const handlePrev = () => {
       if (currentIndex > 0) {
         currentIndex--;
         updatePosition(true);
       }
+    };
+
+    if (surrNextBtn) surrNextBtn.addEventListener('click', handleNext);
+    if (surrPrevBtn) surrPrevBtn.addEventListener('click', handlePrev);
+
+    // Touch Swipe & Drag Support Pro Okolí Slider
+    let surrStartX = 0;
+    let surrStartY = 0;
+    let surrIsDragging = false;
+
+    surroundingsViewport.addEventListener('touchstart', (e) => {
+      if (e.touches.length > 1) return;
+      surrStartX = e.touches[0].clientX;
+      surrStartY = e.touches[0].clientY;
+      surrIsDragging = true;
+    }, { passive: true });
+
+    surroundingsViewport.addEventListener('touchend', (e) => {
+      if (!surrIsDragging) return;
+      surrIsDragging = false;
+      const deltaX = surrStartX - e.changedTouches[0].clientX;
+      const deltaY = surrStartY - e.changedTouches[0].clientY;
+      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 30) {
+        if (deltaX > 0) {
+          handleNext();
+        } else {
+          handlePrev();
+        }
+      }
+    }, { passive: true });
+
+    surroundingsViewport.addEventListener('mousedown', (e) => {
+      surrStartX = e.clientX;
+      surrStartY = e.clientY;
+      surrIsDragging = true;
+    });
+
+    surroundingsViewport.addEventListener('mouseup', (e) => {
+      if (!surrIsDragging) return;
+      surrIsDragging = false;
+      const deltaX = surrStartX - e.clientX;
+      const deltaY = surrStartY - e.clientY;
+      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 30) {
+        if (deltaX > 0) {
+          handleNext();
+        } else {
+          handlePrev();
+        }
+      }
+    });
+
+    surroundingsViewport.addEventListener('mouseleave', () => {
+      surrIsDragging = false;
     });
   }
 
