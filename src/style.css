@@ -2048,7 +2048,7 @@ h3 {
 .surroundings-footer {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   max-width: 1374px;
   margin: 0 auto;
 }
@@ -2184,6 +2184,10 @@ h3 {
   width: 100%;
   height: auto;
   display: block;
+}
+
+.footer-mobile-logo {
+  display: none !important;
 }
 
 .footer-inner {
@@ -2381,6 +2385,7 @@ h3 {
   .header-logo {
     width: 78px;
     height: auto;
+    margin-left: -5px;
   }
 
   .header-logo img {
@@ -3249,6 +3254,338 @@ h3 {
     font-weight: 600;
     color: #000000;
   }
+
+  /* ----------------------------------------------------
+     SEKCE AKTIVITY V OKOLÍ - MOBILNÍ REPLIKA (< 768px)
+     ---------------------------------------------------- */
+  .surroundings-section {
+    position: relative;
+    width: 100%;
+    padding: clamp(50px, 5vw, 65px) 0 clamp(115px, 12vw, 145px) 0;
+    background-color: #ffffff;
+  }
+
+  .surroundings-inner {
+    width: 100%;
+    max-width: 100%;
+    padding: 0 24px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .surroundings-title {
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    color: #000000;
+    margin: 0 0 36px 0;
+    text-align: left;
+    white-space: normal;
+  }
+
+  .surroundings-slider-viewport {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 0 24px 0;
+    overflow: hidden;
+    cursor: grab;
+    user-select: none;
+  }
+
+  .surroundings-slider-viewport.is-dragging {
+    cursor: grabbing;
+  }
+
+  .surroundings-cards-grid {
+    display: flex;
+    align-items: stretch;
+    gap: 24px;
+    width: max-content;
+    will-change: transform;
+    margin: 0;
+    max-width: none;
+  }
+
+  .surroundings-nav-controls {
+    display: none !important;
+  }
+
+  .surrounding-card {
+    width: clamp(270px, 75vw, 300px) !important;
+    max-width: 300px !important;
+    flex: 0 0 clamp(270px, 75vw, 300px) !important;
+    flex-shrink: 0 !important;
+  }
+
+  .surrounding-card-img-wrap {
+    width: 100%;
+    height: clamp(340px, 88vw, 375px);
+    border-radius: 1px;
+    overflow: hidden;
+  }
+
+  .surrounding-card-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  .surrounding-card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #000000;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 1.35;
+    margin: 14px 0 0 0;
+    text-align: left;
+  }
+
+  .surroundings-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    gap: 0;
+  }
+
+  .btn-surroundings-more {
+    height: 36px;
+    padding: 0 20px;
+    font-size: 14.5px;
+    font-weight: 500;
+    border-radius: 1px;
+    background-color: #697947;
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    width: fit-content;
+    margin-top: 36px;
+  }
+
+  /* Sekce CTA (Dopřejte si zasloužený odpočinek) - Mobilní replika (< 768px) */
+  .cta-section {
+    position: relative;
+    width: 100%;
+    height: 313px;
+    background: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.35)), url('/Uvodni stranka/CTA sekce.webp') center 20%/cover no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+
+  .cta-inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    z-index: 2;
+    width: 100%;
+    max-width: 100%;
+    padding: 0 24px;
+    box-sizing: border-box;
+  }
+
+  .cta-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    text-align: center;
+    margin: 0 0 24px 0;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+    white-space: normal;
+  }
+
+  .btn-cta {
+    height: 36px;
+    padding: 0 20px;
+    background-color: #E5E0D7;
+    color: #000000;
+    font-size: 14.5px;
+    font-weight: 500;
+    border-radius: 1px;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    width: fit-content;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Zápatí / Footer - Mobilní replika (< 768px) */
+  .site-footer {
+    position: relative;
+    width: 100%;
+    padding: 48px 0 32px 0;
+    background-color: #2E3128;
+    color: #ffffff;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  .footer-contour-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.35;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+  }
+
+  .footer-contour-bg img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 1200px;
+    height: 320px;
+    transform: translate(-50%, -50%) rotate(90deg);
+    object-fit: fill;
+  }
+
+  .footer-inner {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 100%;
+    padding: 0 24px;
+    box-sizing: border-box;
+  }
+
+  .footer-mobile-logo {
+    display: block !important;
+    text-align: left;
+    margin: 0 0 32px -15px;
+  }
+
+  .footer-mobile-logo img {
+    width: 85px;
+    height: auto;
+    display: block;
+  }
+
+  .footer-columns-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 40px;
+    width: 100%;
+    margin-bottom: 56px;
+  }
+
+  .footer-col-contact {
+    width: 100%;
+  }
+
+  .footer-contact-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 8px 0;
+  }
+
+  .footer-contact-item svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  .footer-contact-link {
+    font-size: 18px;
+    font-weight: 500;
+    color: #ffffff;
+    line-height: 1.3;
+  }
+
+  .footer-address-item {
+    align-items: center !important;
+    padding-top: 10px;
+  }
+
+  .footer-address-item svg {
+    margin-top: 0 !important;
+  }
+
+  .footer-address-text {
+    font-size: 18px;
+    font-weight: 500;
+    color: #ffffff;
+    line-height: 1.3;
+  }
+
+  .footer-divider-line {
+    width: 100%;
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.2);
+    margin: 14px 0;
+  }
+
+  .footer-col-links {
+    margin-top: 28px;
+  }
+
+  .footer-col-legal {
+    margin-bottom: 36px;
+  }
+
+  .footer-col-heading {
+    font-size: 22px;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0 0 18px 0;
+    line-height: 1.25;
+  }
+
+  .footer-links-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .footer-links-list a {
+    font-size: 15px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .footer-bottom-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding-top: 24px;
+    border-top: none;
+  }
+
+  .footer-bottom-row .footer-logo-wrap {
+    display: none !important;
+  }
+
+  .footer-copyright,
+  .footer-author {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+  }
 }
 
 /* ----------------------------------------------------
@@ -3780,6 +4117,138 @@ h3 {
     line-height: 1.45;
     max-width: 100%;
   }
+
+  /* Sekce Aktivity v okolí - Tablet */
+  .surroundings-section {
+    position: relative;
+    width: 100%;
+    padding: clamp(60px, 5.5vw, 80px) 0 clamp(140px, 11vw, 175px) 0;
+    background-color: #ffffff;
+  }
+
+  .surroundings-inner {
+    width: 100%;
+    padding: 0 32px;
+    box-sizing: border-box;
+  }
+
+  .surroundings-title {
+    font-size: 29px;
+    font-weight: 600;
+    margin-bottom: 40px;
+    text-align: left;
+  }
+
+  .surroundings-slider-viewport {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    margin-bottom: 32px;
+    cursor: grab;
+  }
+
+  .surroundings-cards-grid {
+    display: flex;
+    gap: 24px;
+    width: max-content;
+    margin: 0;
+    max-width: none;
+  }
+
+  .surrounding-card {
+    width: clamp(270px, 36vw, 320px) !important;
+    flex: 0 0 clamp(270px, 36vw, 320px) !important;
+  }
+
+  .surrounding-card-img-wrap {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 298 / 369;
+    max-height: 380px;
+  }
+
+  .surroundings-nav-controls {
+    display: flex !important;
+    gap: 12px;
+  }
+
+  .surroundings-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .btn-surroundings-more {
+    height: 40px;
+    padding: 0 24px;
+    font-size: 15.5px;
+    font-weight: 500;
+    border-radius: 1px;
+    background-color: #697947;
+    color: #ffffff;
+  }
+
+  /* Sekce CTA - Tablet */
+  .cta-section {
+    height: clamp(330px, 42vw, 380px);
+    background: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.35)), url('/Uvodni stranka/CTA sekce.webp') center 15%/cover no-repeat;
+  }
+
+  .cta-title {
+    font-size: clamp(28px, 3.5vw, 32px);
+    font-weight: 600;
+    margin-bottom: 28px;
+  }
+
+  .btn-cta {
+    height: 40px;
+    padding: 0 24px;
+    font-size: 15.5px;
+    font-weight: 500;
+    border-radius: 1px;
+  }
+
+  /* Zápatí / Footer - Tablet */
+  .site-footer {
+    padding: clamp(60px, 6vw, 75px) 0 clamp(36px, 4vw, 45px) 0;
+  }
+
+  .footer-contour-bg {
+    bottom: auto;
+    top: 125px;
+    opacity: 0.45;
+  }
+
+  .footer-inner {
+    width: 100%;
+    padding: 0 32px;
+    box-sizing: border-box;
+  }
+
+  .footer-mobile-logo {
+    display: none !important;
+  }
+
+  .footer-columns-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 40px;
+    margin-bottom: 60px;
+  }
+
+  .footer-bottom-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
+  .footer-bottom-row .footer-logo-wrap img {
+    width: 90px;
+    height: auto;
+  }
 }
 
 /* ----------------------------------------------------
@@ -4121,4 +4590,112 @@ h3 {
   .features-row:nth-child(3) .feature-item:nth-child(1) { order: initial; }
   .features-row:nth-child(3) .feature-item:nth-child(2) { order: initial; }
   .features-row:nth-child(3) .feature-item:nth-child(3) { order: initial; }
+
+  /* Sekce Aktivity v okolí - Desktop 1029px-1500px */
+  .surroundings-section {
+    position: relative;
+    width: 100%;
+    padding: clamp(60px, 5vw, 85px) 0 clamp(150px, 10vw, 190px) 0;
+    background-color: #ffffff;
+  }
+
+  .surroundings-inner {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 33px;
+    box-sizing: border-box;
+  }
+
+  .surroundings-title {
+    font-size: clamp(28px, 2.5vw, 34px);
+    margin-bottom: 50px;
+    text-align: left;
+  }
+
+  .surroundings-slider-viewport {
+    width: 100%;
+    overflow: visible;
+    margin-bottom: 54px;
+  }
+
+  .surroundings-cards-grid {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100% !important;
+    max-width: 1374px;
+    margin: 0 auto;
+    gap: 24px;
+    transform: none !important;
+  }
+
+  .surrounding-card {
+    width: 23.5% !important;
+    max-width: 298px !important;
+    flex: 0 1 23.5% !important;
+    flex-shrink: 1 !important;
+  }
+
+  .surrounding-card-img-wrap {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 298 / 369;
+    max-height: 369px;
+  }
+
+  .surroundings-nav-controls {
+    display: flex !important;
+    gap: 10px;
+  }
+
+  .surroundings-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    max-width: 1374px;
+    margin: 0 auto;
+  }
+
+  .btn-surroundings-more {
+    height: 45px;
+    padding: 0 28px;
+    font-size: 17px;
+    font-weight: 500;
+    border-radius: 1px;
+  }
+
+  /* Zápatí / Footer - Desktop 1029px-1500px */
+  .site-footer {
+    width: 100%;
+    position: relative;
+    padding: clamp(70px, 6vw, 85px) 0 clamp(30px, 3vw, 38px) 0;
+  }
+
+  .footer-contour-bg {
+    bottom: auto;
+    top: 120px;
+    opacity: 0.5;
+  }
+
+  .footer-inner {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 clamp(24px, 2.5vw, 33px);
+    box-sizing: border-box;
+  }
+
+  .footer-columns-grid {
+    width: 100%;
+    max-width: 1374px;
+    margin: 0 auto clamp(60px, 7vw, 102px) auto;
+    gap: clamp(30px, 4vw, 60px);
+  }
+
+  .footer-bottom-row {
+    width: 100%;
+    max-width: 1374px;
+    margin: 0 auto;
+  }
 }

@@ -398,37 +398,39 @@ document.querySelector('#app').innerHTML = `
     <div class="surroundings-inner">
       <h2 class="surroundings-title">Co vše můžete v okolí podniknout?</h2>
       
-      <div class="surroundings-cards-grid">
-        <!-- Karta 1 -->
-        <div class="surrounding-card">
-          <div class="surrounding-card-img-wrap">
-            <img src="/Uvodni stranka/Vodopady Jizerky.webp" alt="Vodopády na Černé Desné" loading="lazy" decoding="async">
+      <div class="surroundings-slider-viewport" id="surroundings-viewport">
+        <div class="surroundings-cards-grid" id="surroundings-track">
+          <!-- Karta 1 -->
+          <div class="surrounding-card">
+            <div class="surrounding-card-img-wrap">
+              <img src="/Uvodni stranka/Rozhledna Stepanka.webp" alt="Rozhledna Štěpánka" loading="lazy" decoding="async">
+            </div>
+            <h3 class="surrounding-card-title">ROZHLEDNA ŠTĚPÁNKA</h3>
           </div>
-          <h3 class="surrounding-card-title">VODOPÁDY NA ČERNÉ DESNÉ</h3>
-        </div>
-        
-        <!-- Karta 2 -->
-        <div class="surrounding-card">
-          <div class="surrounding-card-img-wrap">
-            <img src="/Uvodni stranka/Rozhledna Stepanka.webp" alt="Rozhledna Štěpánka" loading="lazy" decoding="async">
+          
+          <!-- Karta 2 -->
+          <div class="surrounding-card">
+            <div class="surrounding-card-img-wrap">
+              <img src="/Uvodni stranka/Vodopady Jizerky.webp" alt="Vodopády na Černé Desné" loading="lazy" decoding="async">
+            </div>
+            <h3 class="surrounding-card-title">VODOPÁDY NA ČERNÉ DESNÉ</h3>
           </div>
-          <h3 class="surrounding-card-title">ROZHLEDNA ŠTĚPÁNKA</h3>
-        </div>
-        
-        <!-- Karta 3 -->
-        <div class="surrounding-card">
-          <div class="surrounding-card-img-wrap">
-            <img src="/Uvodni stranka/Tanvaldsky spicak.webp" alt="Ski Areál Tanvaldský Špičák" loading="lazy" decoding="async">
+          
+          <!-- Karta 3 -->
+          <div class="surrounding-card">
+            <div class="surrounding-card-img-wrap">
+              <img src="/Uvodni stranka/Tanvaldsky spicak.webp" alt="Ski Areál Tanvaldský Špičák" loading="lazy" decoding="async">
+            </div>
+            <h3 class="surrounding-card-title">SKI AREÁL TANVALDSKÝ ŠPIČÁK</h3>
           </div>
-          <h3 class="surrounding-card-title">SKI AREÁL TANVALDSKÝ ŠPIČÁK</h3>
-        </div>
-        
-        <!-- Karta 4 -->
-        <div class="surrounding-card">
-          <div class="surrounding-card-img-wrap">
-            <img src="/Uvodni stranka/Liberec zoo.webp" alt="ZOO Liberec" loading="lazy" decoding="async">
+          
+          <!-- Karta 4 -->
+          <div class="surrounding-card">
+            <div class="surrounding-card-img-wrap">
+              <img src="/Uvodni stranka/Liberec zoo.webp" alt="ZOO Liberec" loading="lazy" decoding="async">
+            </div>
+            <h3 class="surrounding-card-title">ZOO LIBEREC</h3>
           </div>
-          <h3 class="surrounding-card-title">ZOO LIBEREC</h3>
         </div>
       </div>
       
@@ -462,6 +464,10 @@ document.querySelector('#app').innerHTML = `
     </div>
 
     <div class="footer-inner">
+      <div class="footer-mobile-logo">
+        <img src="/Logo/white logo.webp" alt="Hotel U Můstku" loading="lazy" decoding="async">
+      </div>
+
       <div class="footer-columns-grid">
         <!-- Sloupec 1: Kontakty -->
         <div class="footer-col footer-col-contact">
@@ -741,4 +747,160 @@ if (reviewsTrack && reviewsViewport) {
   reviewsViewport.addEventListener('touchstart', dragStart, { passive: true });
   reviewsViewport.addEventListener('touchmove', dragMove, { passive: true });
   reviewsViewport.addEventListener('touchend', dragEnd);
+}
+
+// --- INTERAKTIVNÍ SLIDER PRO AKTIVITY V OKOLÍ (BEZ MEZER NA KONCI) ---
+const surroundingsTrack = document.getElementById('surroundings-track');
+const surroundingsViewport = document.getElementById('surroundings-viewport');
+const surrPrevBtn = document.getElementById('surroundings-prev');
+const surrNextBtn = document.getElementById('surroundings-next');
+
+if (surroundingsTrack && surroundingsViewport) {
+  const cards = Array.from(surroundingsTrack.children);
+  let currentIndex = 0;
+
+  const getCardStep = () => {
+    if (cards.length === 0) return 0;
+    const cardWidth = cards[0].offsetWidth;
+    const style = window.getComputedStyle(surroundingsTrack);
+    const gap = parseFloat(style.gap) || 24;
+    return cardWidth + gap;
+  };
+
+  const getMaxScroll = () => {
+    return Math.max(0, surroundingsTrack.scrollWidth - surroundingsViewport.offsetWidth);
+  };
+
+  const updateBtnState = (offset, maxScroll) => {
+    if (surrPrevBtn) {
+      if (offset <= 2) {
+        surrPrevBtn.style.opacity = '0.4';
+        surrPrevBtn.style.cursor = 'default';
+      } else {
+        surrPrevBtn.style.opacity = '1';
+        surrPrevBtn.style.cursor = 'pointer';
+      }
+    }
+    if (surrNextBtn) {
+      if (offset >= maxScroll - 5) {
+        surrNextBtn.style.opacity = '0.4';
+        surrNextBtn.style.cursor = 'default';
+      } else {
+        surrNextBtn.style.opacity = '1';
+        surrNextBtn.style.cursor = 'pointer';
+      }
+    }
+  };
+
+  const updatePosition = (animated = true) => {
+    if (window.innerWidth >= 1029) {
+      surroundingsTrack.style.transform = 'none';
+      surroundingsTrack.style.transition = 'none';
+      return;
+    }
+
+    const step = getCardStep();
+    const maxScroll = getMaxScroll();
+    let targetOffset = currentIndex * step;
+
+    if (targetOffset > maxScroll) {
+      targetOffset = maxScroll;
+    }
+
+    if (animated) {
+      surroundingsTrack.style.transition = 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)';
+    } else {
+      surroundingsTrack.style.transition = 'none';
+    }
+
+    surroundingsTrack.style.transform = `translateX(-${targetOffset}px)`;
+    updateBtnState(targetOffset, maxScroll);
+  };
+
+  // Inicializace pozice bez animace
+  updatePosition(false);
+  window.addEventListener('resize', () => updatePosition(false));
+  window.addEventListener('load', () => updatePosition(false));
+  requestAnimationFrame(() => updatePosition(false));
+
+  const slideNext = () => {
+    const maxScroll = getMaxScroll();
+    const step = getCardStep();
+    let currentOffset = currentIndex * step;
+    if (currentOffset < maxScroll - 5) {
+      currentIndex++;
+      updatePosition(true);
+    }
+  };
+
+  const slidePrev = () => {
+    if (currentIndex > 0) {
+      currentIndex--;
+      updatePosition(true);
+    }
+  };
+
+  if (surrNextBtn) surrNextBtn.addEventListener('click', slideNext);
+  if (surrPrevBtn) surrPrevBtn.addEventListener('click', slidePrev);
+
+  // Dragging / Swiping (Myš i Touch)
+  let startX = 0;
+  let isDragging = false;
+
+  const getPositionX = (e) => (e.type.includes('mouse') ? e.pageX : e.touches[0].clientX);
+
+  const dragStart = (e) => {
+    if (window.innerWidth >= 1029) return;
+    isDragging = true;
+    startX = getPositionX(e);
+    surroundingsTrack.style.transition = 'none';
+    surroundingsViewport.classList.add('is-dragging');
+  };
+
+  const dragMove = (e) => {
+    if (!isDragging || window.innerWidth >= 1029) return;
+    const currentX = getPositionX(e);
+    const diff = currentX - startX;
+    const maxScroll = getMaxScroll();
+    let targetOffset = - (currentIndex * getCardStep()) + diff;
+
+    // Resistance overflow at edges
+    if (targetOffset > 0) {
+      targetOffset = targetOffset * 0.3;
+    } else if (-targetOffset > maxScroll) {
+      const overflow = -targetOffset - maxScroll;
+      targetOffset = -(maxScroll + overflow * 0.3);
+    }
+
+    surroundingsTrack.style.transform = `translateX(${targetOffset}px)`;
+  };
+
+  const dragEnd = (e) => {
+    if (!isDragging || window.innerWidth >= 1029) return;
+    isDragging = false;
+    surroundingsViewport.classList.remove('is-dragging');
+    const endX = e.type.includes('mouse') ? e.pageX : (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientX : startX);
+    const diff = endX - startX;
+    const maxScroll = getMaxScroll();
+    const step = getCardStep();
+
+    if (diff < -40 && (currentIndex * step) < maxScroll - 5) {
+      slideNext();
+    } else if (diff > 40 && currentIndex > 0) {
+      slidePrev();
+    } else {
+      updatePosition(true);
+    }
+  };
+
+  surroundingsViewport.addEventListener('mousedown', dragStart);
+  surroundingsViewport.addEventListener('mousemove', dragMove);
+  surroundingsViewport.addEventListener('mouseup', dragEnd);
+  surroundingsViewport.addEventListener('mouseleave', () => {
+    if (isDragging) dragEnd({ pageX: startX, type: 'mouse' });
+  });
+
+  surroundingsViewport.addEventListener('touchstart', dragStart, { passive: true });
+  surroundingsViewport.addEventListener('touchmove', dragMove, { passive: true });
+  surroundingsViewport.addEventListener('touchend', dragEnd);
 }
