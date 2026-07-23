@@ -123,7 +123,7 @@ const getReviewsHTML = () => `
             <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
             <p class="review-quote">Byli jsme jen na 3 dny ale naprostá spokojenost. Pokud pojedeme do těchto končin znovu, určitě se ubytujeme opět tady.</p>
             <div class="review-contour-bg">
-              <img src="/Decoration/hory_contour.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
             </div>
             <div class="review-footer">
               <span class="review-author-name">Martin Novák</span>
@@ -136,7 +136,7 @@ const getReviewsHTML = () => `
             <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
             <p class="review-quote">Nádherný výhled na skokanské můstky a úžasná snídaně! Personál neuvěřitelně milý a ochotný.</p>
             <div class="review-contour-bg">
-              <img src="/Decoration/hory_contour.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
             </div>
             <div class="review-footer">
               <span class="review-author-name">Lucie Králová</span>
@@ -149,7 +149,7 @@ const getReviewsHTML = () => `
             <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
             <p class="review-quote">Perfektní čistota pokojů, pohodlné matrace a klid na spaní. Ideální výchozí bod pro turistiku v Jizerskách.</p>
             <div class="review-contour-bg">
-              <img src="/Decoration/hory_contour.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
             </div>
             <div class="review-footer">
               <span class="review-author-name">Pavel Dvořák</span>
@@ -162,7 +162,7 @@ const getReviewsHTML = () => `
             <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
             <p class="review-quote">Skvělá zimní dovolená! Úschovna lyží hned v hotelu a kousek na sjezdovky. Rádi se sem příští rok vrátíme.</p>
             <div class="review-contour-bg">
-              <img src="/Decoration/hory_contour.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
             </div>
             <div class="review-footer">
               <span class="review-author-name">Eva Šimková</span>
@@ -175,7 +175,7 @@ const getReviewsHTML = () => `
             <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
             <p class="review-quote">Vynikající domácí kuchyně a posezení na terase přímo nad splavem. Velká spokojenost s celým naším pobytem.</p>
             <div class="review-contour-bg">
-              <img src="/Decoration/hory_contour.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
             </div>
             <div class="review-footer">
               <span class="review-author-name">Tomáš Procházka</span>
@@ -569,7 +569,7 @@ const getRoomsPageHTML = () => `
       <!-- Card 1: Pokoje přízemí -->
       <div class="room-card">
         <div class="room-card-image-wrap">
-          <img src="/balkony 1.png" alt="Pokoje přízemí" loading="lazy" decoding="async">
+          <img src="/balkony 1.webp" alt="Pokoje přízemí" loading="lazy" decoding="async">
         </div>
         <div class="room-card-content">
           <h2 class="room-card-title">Pokoje přízemí</h2>
@@ -592,7 +592,7 @@ const getRoomsPageHTML = () => `
           </div>
         </div>
         <div class="room-card-image-wrap">
-          <img src="/vyhled 1.png" alt="Pokoje s výhledem" loading="lazy" decoding="async">
+          <img src="/vyhled 1.webp" alt="Pokoje s výhledem" loading="lazy" decoding="async">
         </div>
       </div>
     </div>
