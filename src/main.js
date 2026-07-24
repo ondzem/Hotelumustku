@@ -428,10 +428,10 @@ const getHomePageHTML = () => `
       playsinline 
       preload="auto" 
       fetchpriority="high"
-      poster="/Uvodni stranka/Uvodní fotka - hero sekce.webp"
+      poster="/Uvodni stranka/Uvodní fotka - hero sekce.webp"
     >
+      <source src="https://jpvnvjcktpxyxrvsdukm.supabase.co/storage/v1/object/public/hotel-videos/hero_master_v5.mp4" type="video/mp4">
       <source src="/videos/hero_video.mp4" type="video/mp4">
-      <source src="https://jpvnvjcktpxyxrvsdukm.supabase.co/storage/v1/object/public/hotel-videos/Video%20Hero%20sekce.mp4" type="video/mp4">
     </video>
     <div class="hero-overlay"></div>
     <div class="hero-inner">
@@ -642,10 +642,14 @@ const initInteractivity = () => {
   if (heroVideo) {
     heroVideo.playbackRate = 0.85;
     heroVideo.play().catch(() => {});
+
+    let isHeroInView = true;
+
     if ('IntersectionObserver' in window && heroSection) {
       const videoObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-          if (entry.isIntersecting) {
+          isHeroInView = entry.isIntersecting;
+          if (isHeroInView && !document.hidden) {
             heroVideo.playbackRate = 0.85;
             heroVideo.play().catch(() => {});
           } else {
@@ -655,6 +659,16 @@ const initInteractivity = () => {
       }, { threshold: 0.05 });
       videoObserver.observe(heroSection);
     }
+
+    // Page Visibility API - automatické pozastavení při překliku do jiné aplikace nebo záložky
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        heroVideo.pause();
+      } else if (isHeroInView) {
+        heroVideo.playbackRate = 0.85;
+        heroVideo.play().catch(() => {});
+      }
+    });
   }
 
   // Reviews Slider
