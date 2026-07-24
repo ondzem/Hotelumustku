@@ -1736,7 +1736,7 @@ h3 {
 .reviews-section {
   position: relative;
   width: 100%;
-  padding: 50px 0 110px 0;
+  padding: 40px 0 110px 0;
   background-color: #f2f2f2;
 }
 
@@ -3072,7 +3072,7 @@ h3 {
   .reviews-section {
     position: relative;
     width: 100%;
-    padding: clamp(40px, 5vw, 55px) 0 clamp(85px, 10vw, 115px) 0;
+    padding: clamp(30px, 4vw, 45px) 0 clamp(85px, 10vw, 115px) 0;
     background-color: #f2f2f2;
   }
 
@@ -6049,7 +6049,7 @@ h3 {
 /* 5. Stravování Sekce v Detailu */
 .room-detail-dining-section {
   width: 100%;
-  padding: 105px 0 75px 0;
+  padding: 115px 0 75px 0;
   background-color: #ffffff;
 }
 
@@ -6100,6 +6100,14 @@ h3 {
   transition: background-color 0.2s ease;
   margin-top: 78px;
   align-self: flex-start;
+}
+
+.desktop-dining-btn {
+  display: inline-flex;
+}
+
+.mobile-dining-btn {
+  display: none;
 }
 
 .btn-dining-more:hover {
@@ -6516,7 +6524,7 @@ h3 {
   }
 
   .room-breakdown-section {
-    padding: 80px 0 100px 0 !important;
+    padding: 80px 0 115px 0 !important;
     background-color: #f2f2f2 !important;
   }
 
@@ -6587,10 +6595,9 @@ h3 {
   }
 
   .room-carousel-slide {
-    flex: 0 0 78vw !important;
-    min-width: 78vw !important;
-    max-width: 280px !important;
-    height: 235px !important;
+    flex: 0 0 clamp(240px, 72vw, 360px) !important;
+    min-width: clamp(240px, 72vw, 360px) !important;
+    height: clamp(235px, 52vw, 360px) !important;
   }
 
   .drawer-arrows-wrap {
@@ -6620,6 +6627,274 @@ h3 {
 
   .room-breakdown-footer-note {
     display: none !important;
+  }
+
+  .room-detail-dining-section {
+    padding: 80px 0 80px 0 !important;
+    background-color: #ffffff !important;
+  }
+
+  .room-detail-dining-inner {
+    padding: 0 24px !important;
+  }
+
+  .room-detail-dining-title {
+    font-size: 26px !important;
+    font-weight: 600 !important;
+    color: #000000 !important;
+    text-align: left !important;
+    margin-bottom: 32px !important;
+  }
+
+  .room-detail-dining-section .services-cards-wrap {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 48px !important;
+  }
+
+  .room-detail-dining-section .service-card {
+    width: 100% !important;
+  }
+
+  .room-detail-dining-section .service-card-img-wrap {
+    width: 100% !important;
+    height: clamp(235px, 62vw, 360px) !important;
+    border-radius: 1px !important;
+    overflow: hidden !important;
+    margin-bottom: 20px !important;
+  }
+
+  .room-detail-dining-section .service-card-img-wrap img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+
+  .room-detail-dining-section .service-card-title {
+    font-size: 24px !important;
+    font-weight: 600 !important;
+    color: #000000 !important;
+    margin-bottom: 12px !important;
+  }
+
+  .service-card-left .service-card-title,
+  .service-card-left .service-card-desc {
+    text-align: left !important;
+  }
+
+  .service-card-right .service-card-title,
+  .service-card-right .service-card-desc {
+    text-align: right !important;
+  }
+
+  .room-detail-dining-section .service-card-desc {
+    font-size: 15px !important;
+    font-weight: 400 !important;
+    line-height: 1.45 !important;
+    color: #111111 !important;
+    margin-bottom: 20px !important;
+  }
+
+  .btn-dining-more {
+    height: 36px !important;
+    padding: 0 20px !important;
+    font-size: 14.5px !important;
+    font-weight: 500 !important;
+    border-radius: 1px !important;
+    background-color: #697947 !important;
+    color: #ffffff !important;
+    border: none !important;
+  }
+
+  .desktop-dining-btn {
+    display: none !important;
+  }
+
+  .mobile-dining-btn {
+    display: inline-flex !important;
+    margin-left: auto !important;
+    margin-right: 0 !important;
+    margin-top: 8px !important;
+  }
+
+  .room-detail-features-section {
+    padding: 70px 0 80px 0 !important;
+    background-color: #ffffff !important;
+  }
+
+  .room-detail-features-inner {
+    padding: 0 24px !important;
+  }
+
+  .room-detail-features-title {
+    font-size: 26px !important;
+    font-weight: 600 !important;
+    color: #000000 !important;
+    text-align: left !important;
+    margin-bottom: 32px !important;
+  }
+
+  .room-features-cards-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 40px !important;
+  }
+
+  .room-feature-img-wrap {
+    width: 100% !important;
+    height: clamp(235px, 62vw, 360px) !important;
+    border-radius: 1px !important;
+    overflow: hidden !important;
+    margin-bottom: 16px !important;
+  }
+
+  .room-feature-img-wrap img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+  }
+
+  .room-feature-card-title {
+    font-size: 24px !important;
+    font-weight: 600 !important;
+    color: #000000 !important;
+    text-align: left !important;
+    margin: 0 0 8px 0 !important;
+  }
+
+  .room-feature-card-desc {
+    font-size: 15px !important;
+    font-weight: 400 !important;
+    line-height: 1.45 !important;
+    color: #111111 !important;
+    text-align: left !important;
+    margin: 0 !important;
+  }
+
+  .room-terms-section {
+    padding: 70px 0 115px 0 !important;
+    background-color: #f2f2f2 !important;
+  }
+
+  .room-terms-inner {
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 0 24px !important;
+  }
+
+  .room-terms-main-title {
+    order: 1 !important;
+    font-size: 26px !important;
+    font-weight: 600 !important;
+    color: #000000 !important;
+    text-align: left !important;
+    margin-bottom: 40px !important;
+  }
+
+  .room-terms-content-wrap {
+    display: contents !important;
+  }
+
+  .room-terms-right-side {
+    display: contents !important;
+  }
+
+  .check-times-container {
+    order: 2 !important;
+    margin-top: 0 !important;
+    margin-bottom: 56px !important;
+    padding-bottom: 0 !important;
+    gap: 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+
+  .check-time-item {
+    gap: 12px !important;
+  }
+
+  .check-text-label {
+    font-size: 15.5px !important;
+  }
+
+  .storno-table-container {
+    order: 3 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .storno-table-row {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    padding: 16px 0 !important;
+    border-bottom: 1px solid #C8C8C8 !important;
+  }
+
+  .storno-label-group {
+    margin-bottom: 8px !important;
+  }
+
+  .storno-time-label {
+    font-size: 17px !important;
+    font-weight: 600 !important;
+  }
+
+  .storno-fee-group {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: baseline !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+  }
+
+  .storno-fee-val {
+    font-size: 18px !important;
+    font-weight: 600 !important;
+  }
+
+  .storno-fee-sub {
+    font-size: 13.5px !important;
+    font-weight: 400 !important;
+    color: #444444 !important;
+  }
+
+  .room-terms-footer-note {
+    order: 4 !important;
+    font-size: 14.5px !important;
+    font-weight: 400 !important;
+    line-height: 1.45 !important;
+    color: #111111 !important;
+    text-align: left !important;
+    margin-top: 32px !important;
+    margin-bottom: 0 !important;
+  }
+
+  .btn-terms-cta {
+    order: 5 !important;
+    margin-top: 44px !important;
+    align-self: flex-start !important;
+    height: 36px !important;
+    padding: 0 20px !important;
+    font-size: 14.5px !important;
+    font-weight: 500 !important;
+    border-radius: 1px !important;
+    background-color: #697947 !important;
+    color: #ffffff !important;
+    border: none !important;
+    display: inline-flex !important;
+  }
+}
+
+@media (max-width: 400px) {
+  .btn-toggle-details .toggle-text {
+    display: inline-block !important;
+    width: 78px !important;
+    text-align: right !important;
+    word-break: break-word !important;
+    line-height: 1.25 !important;
   }
 }
 
@@ -6751,6 +7026,91 @@ h3 {
     flex: 0 0 380px !important;
     min-width: 380px !important;
     height: 280px !important;
+  }
+
+  .room-detail-dining-section {
+    padding: 90px 0 90px 0 !important;
+  }
+
+  .room-detail-dining-inner {
+    padding: 0 32px !important;
+  }
+
+  .room-detail-dining-title {
+    font-size: 32px !important;
+    font-weight: 600 !important;
+    margin-bottom: 40px !important;
+    text-align: left !important;
+  }
+
+  .btn-dining-more {
+    height: 40px !important;
+    padding: 0 24px !important;
+    font-size: 15.5px !important;
+  }
+
+  .room-detail-features-section {
+    padding: 80px 0 90px 0 !important;
+  }
+
+  .room-detail-features-inner {
+    padding: 0 32px !important;
+  }
+
+  .room-detail-features-title {
+    font-size: 32px !important;
+    font-weight: 600 !important;
+    margin-bottom: 40px !important;
+    text-align: left !important;
+  }
+
+  .room-features-cards-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 24px !important;
+  }
+
+  .room-feature-img-wrap {
+    height: clamp(220px, 30vw, 320px) !important;
+  }
+
+  .room-terms-section {
+    padding: 80px 0 90px 0 !important;
+    background-color: #f2f2f2 !important;
+  }
+
+  .room-terms-inner {
+    padding: 0 32px !important;
+  }
+
+  .room-terms-main-title {
+    font-size: 32px !important;
+    font-weight: 600 !important;
+    margin-bottom: 40px !important;
+  }
+
+  .room-terms-content-wrap {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 40px !important;
+  }
+
+  .room-terms-right-side {
+    display: flex !important;
+    flex-direction: row-reverse !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+  }
+
+  .check-times-container {
+    margin-top: 0 !important;
+  }
+
+  .btn-terms-cta {
+    height: 40px !important;
+    padding: 0 24px !important;
+    font-size: 15.5px !important;
   }
 }
 

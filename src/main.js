@@ -1105,6 +1105,8 @@ const getRoomGroundFloorHTML = () => `
   <!-- 6. STRAVOVÁNÍ V HOTELU -->
   <section class="room-detail-dining-section">
     <div class="room-detail-dining-inner">
+      <h2 class="room-detail-dining-title">Co dalšího nabízíme?</h2>
+
       <div class="services-cards-wrap">
         <!-- Karta 1: Snídaně -->
         <div class="service-card service-card-left">
@@ -1114,8 +1116,11 @@ const getRoomGroundFloorHTML = () => `
           <div class="service-card-body">
             <h3 class="service-card-title">Snídaně</h3>
             <div class="service-card-desc-wrap">
-              <p class="service-card-desc">Snídaně se podávají formou bohatého švédského stolu v naší útulné jídelně. Těšit se můžete na čerstvé pečivo, sýry, uzeniny, cereálie i teplé pokrmy.</p>
-              <button class="btn btn-booking btn-dining-more">Zjistit více o stravování</button>
+              <p class="service-card-desc">
+                <span class="desktop-sub-text">Snídaně se podávají formou bohatého švédského stolu v naší útulné jídelně. Těšit se můžete na čerstvé pečivo, sýry, uzeniny, cereálie i teplé pokrmy.</span>
+                <span class="mobile-sub-text">V ceně ubytování se podává formou švédských stolů od 8:00 do 9:00 hod.</span>
+              </p>
+              <button class="btn btn-booking btn-dining-more desktop-dining-btn">Zjistit více o stravování</button>
             </div>
           </div>
         </div>
@@ -1123,12 +1128,16 @@ const getRoomGroundFloorHTML = () => `
         <!-- Karta 2: Polopenze (Večeře) -->
         <div class="service-card service-card-right">
           <div class="service-card-img-wrap">
-            <img src="/Uvodni stranka/skupinove_akce_zelena_profesionalni_uprava.webp" alt="Polopenze v Hotelu u Můstku" loading="lazy" decoding="async">
+            <img src="/Polopenze vecere.webp" alt="Polopenze v Hotelu u Můstku" loading="lazy" decoding="async">
           </div>
           <div class="service-card-body">
             <h3 class="service-card-title">Polopenze (Večeře)</h3>
             <div class="service-card-desc-wrap">
-              <p class="service-card-desc">Domácí dvouchodové večeře (polévka a hlavní chod) připravované z poctivých surovin podle tradičních receptů české i mezinárodní kuchyně.</p>
+              <p class="service-card-desc">
+                <span class="desktop-sub-text">Domácí dvouchodové večeře (polévka a hlavní chod) připravované z poctivých surovin podle tradičních receptů české i mezinárodní kuchyně.</span>
+                <span class="mobile-sub-text">+195 Kč / osoba / den - ryze domácí česká kuchyně, jednotné 2chodové menu podávané v 18:00 hod.</span>
+              </p>
+              <button class="btn btn-booking btn-dining-more mobile-dining-btn">Zjistit více o stravování</button>
             </div>
           </div>
         </div>
@@ -1148,7 +1157,10 @@ const getRoomGroundFloorHTML = () => `
             <img src="/IMG_1458 1.webp" alt="Máte Mazlíčka?" loading="lazy" decoding="async">
           </div>
           <h3 class="room-feature-card-title">Máte Mazlíčka?</h3>
-          <p class="room-feature-card-desc">150 Kč / den hotel je i pro mazlíčky, nutné vodítko v areálu.</p>
+          <p class="room-feature-card-desc">
+            <span class="desktop-sub-text">150 Kč / den hotel je i pro mazlíčky, nutné vodítko v areálu.</span>
+            <span class="mobile-sub-text">150 Kč / den hotel je dog-friendly, nutné vodítko v areálu.</span>
+          </p>
         </div>
 
         <!-- Karta 2: Nabíjení Elektrokola -->
@@ -1157,16 +1169,22 @@ const getRoomGroundFloorHTML = () => `
             <img src="/IMG_1437 1.webp" alt="Nabíjení Elektrokola" loading="lazy" decoding="async">
           </div>
           <h3 class="room-feature-card-title">Nabíjení Elektrokola</h3>
-          <p class="room-feature-card-desc">15 Kč / den - bezpečné dobíjení v uzamykatelné kolárně.</p>
+          <p class="room-feature-card-desc">
+            <span class="desktop-sub-text">15 Kč / den - bezpečné dobíjení v uzamykatelné kolárně.</span>
+            <span class="mobile-sub-text">15 Kč / den - bezpečné dobíjení v uzamykatelné kolárně.</span>
+          </p>
         </div>
 
         <!-- Karta 3: Parkování -->
         <div class="room-feature-card">
           <div class="room-feature-img-wrap">
-            <img src="/IMG_1443 1.webp" alt="Parkování" loading="lazy" decoding="async">
+            <img src="/desna_parkovani.webp" alt="Parkování" loading="lazy" decoding="async">
           </div>
           <h3 class="room-feature-card-title">Parkování</h3>
-          <p class="room-feature-card-desc">Zdarma na vlastním parkovišti pod kamerami.</p>
+          <p class="room-feature-card-desc">
+            <span class="desktop-sub-text">Zdarma na vlastním parkovišti pod kamerami.</span>
+            <span class="mobile-sub-text">Zdarma na vlastním oploceném parkovišti se závorou pod kamerami.</span>
+          </p>
         </div>
       </div>
     </div>
