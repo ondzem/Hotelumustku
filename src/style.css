@@ -5529,6 +5529,10 @@ h3 {
   overflow: visible;
 }
 
+.room-view-hero {
+  background-image: url('/vyhled.webp') !important;
+}
+
 .room-detail-hero-center {
   position: absolute;
   top: calc(47% + 120px);
@@ -5574,19 +5578,20 @@ h3 {
   font-size: 17px;
   font-weight: 500;
   border-radius: 1px;
-  background-color: #697947;
-  color: #ffffff;
+  background-color: #ffffff;
+  color: #111111;
   border: none;
   cursor: pointer;
   white-space: nowrap;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
 }
 
 .room-detail-hero-btn:hover {
-  background-color: #58673a;
+  background-color: #e5e0da !important;
+  color: #111111 !important;
 }
 
 /* 2. Sekce Detaily Pokojů (Specs Grid) - 1:1 Pixel Perfect Desktop */
@@ -5808,6 +5813,16 @@ h3 {
   line-height: 1.55;
   letter-spacing: -0.015em;
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
+}
+
+.img-desna-41 {
+  filter: saturate(0.68) brightness(0.90) contrast(1.05) !important;
+}
+
+.room-view-banner {
+  background-image: url('/vyhled_z_balkonu.webp') !important;
+  background-size: cover !important;
+  background-position: center !important;
 }
 
 /* 4. Rozdělení Pokojů (Breakdown & Accordions 1:1 Desktop) */
@@ -6367,6 +6382,14 @@ h3 {
     overflow: hidden !important;
   }
 
+  .room-view-hero {
+    background-image: url('/mobile_vyhled.webp') !important;
+  }
+
+  .room-view-banner {
+    background-image: url('/mobile_fotka_z_okna.webp') !important;
+  }
+
   .desktop-sub-text,
   .desktop-btn-text {
     display: none !important;
@@ -6422,7 +6445,7 @@ h3 {
     font-size: 14.5px !important;
     font-weight: 500 !important;
     border-radius: 1px !important;
-    background-color: #E5E0DA !important;
+    background-color: #ffffff !important;
     color: #111111 !important;
     border: none !important;
     white-space: nowrap !important;
@@ -6510,6 +6533,11 @@ h3 {
     background-image: url('/mobile_fotka_pokoje.webp') !important;
     background-size: cover !important;
     background-position: center 68% !important;
+  }
+
+  .room-banner-section.room-view-banner {
+    background-image: url('/mobile_fotka_z_okna.webp') !important;
+    background-position: center !important;
   }
 
   .room-banner-overlay {
@@ -6643,7 +6671,7 @@ h3 {
     font-weight: 600 !important;
     color: #000000 !important;
     text-align: left !important;
-    margin-bottom: 32px !important;
+    margin-bottom: 44px !important;
   }
 
   .room-detail-dining-section .services-cards-wrap {
@@ -6661,7 +6689,7 @@ h3 {
     height: clamp(235px, 62vw, 360px) !important;
     border-radius: 1px !important;
     overflow: hidden !important;
-    margin-bottom: 20px !important;
+    margin-bottom: 12px !important;
   }
 
   .room-detail-dining-section .service-card-img-wrap img {
@@ -6674,7 +6702,7 @@ h3 {
     font-size: 24px !important;
     font-weight: 600 !important;
     color: #000000 !important;
-    margin-bottom: 12px !important;
+    margin-bottom: 6px !important;
   }
 
   .service-card-left .service-card-title,
@@ -6685,6 +6713,9 @@ h3 {
   .service-card-right .service-card-title,
   .service-card-right .service-card-desc {
     text-align: right !important;
+    width: 100% !important;
+    margin-left: auto !important;
+    box-sizing: border-box !important;
   }
 
   .room-detail-dining-section .service-card-desc {
@@ -6692,7 +6723,7 @@ h3 {
     font-weight: 400 !important;
     line-height: 1.45 !important;
     color: #111111 !important;
-    margin-bottom: 20px !important;
+    margin-bottom: 16px !important;
   }
 
   .btn-dining-more {
@@ -7093,6 +7124,11 @@ h3 {
     display: flex !important;
     flex-direction: column !important;
     gap: 40px !important;
+  }
+
+  .storno-table-container {
+    width: 100% !important;
+    max-width: 100% !important;
   }
 
   .room-terms-right-side {

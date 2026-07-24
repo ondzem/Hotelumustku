@@ -609,8 +609,8 @@ const getRoomsPageHTML = () => `
           <h2 class="room-card-title">Pokoje s výhledem</h2>
           <p class="room-card-desc">Prostor a soukromí s vlastní prostornou terasou a výhledem na celé údolí. Tyto pokoje se nacházejí v patře hotelu a disponují vlastní koupelnou, balónem a nádherným výhledem.</p>
           <div class="room-card-buttons">
+            <button class="btn btn-booking btn-room-primary" id="btn-goto-vyhled">Zjistit více</button>
             <button class="btn btn-rooms btn-room-secondary">Rezervovat</button>
-            <button class="btn btn-booking btn-room-primary">Zjistit více</button>
           </div>
         </div>
         <div class="room-card-image-wrap">
@@ -644,16 +644,7 @@ const getRoomGroundFloorHTML = () => `
           <span class="desktop-sub-text">Útulně a moderně zařízené pokoje v přízemí hotelu s výhledem do zeleně a přímým přístupem na venkovní terasu a parkoviště.</span>
           <span class="mobile-sub-text">Objevte zázemí se 100% bezbariérovým přístupem</span>
         </p>
-        <button class="btn btn-booking room-detail-hero-btn" id="btn-specs-rooms">
-          <span class="desktop-btn-text">Rezervovat pobyt</span>
-          <span class="mobile-btn-text">Prohlédnout nabídku</span>
-        </button>
-      </div>
-
-      <div class="scroll-down-btn" id="scroll-btn-detail">
-        <svg width="12" height="14" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M7.29 17.1C7.68 17.49 8.32 17.49 8.71 17.1L15.07 10.74C15.46 10.35 15.46 9.71 15.07 9.32C14.68 8.93 14.05 8.93 13.66 9.32L8 14.98L2.34 9.32C1.95 8.93 1.32 8.93 0.93 9.32C0.54 9.71 0.54 10.35 0.93 10.74L7.29 17.1ZM8 0H7V16.39H8H9V0H8Z" fill="white"/>
-        </svg>
+        <button class="btn btn-booking room-detail-hero-btn" id="btn-specs-rooms">Zjistit více</button>
       </div>
     </div>
   </section>
@@ -734,7 +725,7 @@ const getRoomGroundFloorHTML = () => `
                 <img src="/Icons/Ikony/television.png" alt="" class="spec-icon-img">
               </div>
               <div class="spec-text-wrap">
-                <span class="spec-label"><strong>TV</strong> zapůjčíme</span>
+                <span class="spec-label"><strong>TV</strong> na pokoji</span>
               </div>
             </li>
 
@@ -1279,6 +1270,93 @@ const getRoomGroundFloorHTML = () => `
   ${getFooterHTML()}
 `;
 
+// Render Funkce Pro Stránku "Pokoje s výhledem" (Detail pokoje s výhledem - 1:1 Kopie)
+const getRoomViewFloorHTML = () => {
+  let html = getRoomGroundFloorHTML();
+
+  // 1. Změna Hero sekce (ID a třída pro fotky na pozadí)
+  html = html.replace('id="uvod-prizemi"', 'id="uvod-vyhled"');
+  html = html.replace(
+    'class="hero-section rooms-hero-section room-detail-hero"',
+    'class="hero-section rooms-hero-section room-detail-hero room-view-hero"'
+  );
+
+  // 2. Změna H1 nadpisu v Hero sekci
+  html = html.replace(
+    '<h1 class="hero-title room-detail-hero-title">Pokoje v přízemí</h1>',
+    '<h1 class="hero-title room-detail-hero-title">Pokoje s výhledem</h1>'
+  );
+
+  // 3. Náhrada položky 3 v hlavním seznamu parametrů (Vytápění je ústřední -> 1. patro s výhledem + ikona balcony.png)
+  const oldHeatingItem = `<!-- 3. Vytápění je ústřední -->
+            <li class="room-spec-item">
+              <div class="spec-icon-wrap">
+                <img src="/Icons/Ikony/air.png" alt="" class="spec-icon-img">
+              </div>
+              <div class="spec-text-wrap">
+                <span class="spec-label"><strong>Vytápění</strong> je ústřední</span>
+              </div>
+            </li>`;
+
+  const newViewFloorItem = `<!-- 3. 1. patro s výhledem -->
+            <li class="room-spec-item">
+              <div class="spec-icon-wrap">
+                <img src="/Icons/Ikony/balcony.png" alt="" class="spec-icon-img">
+              </div>
+              <div class="spec-text-wrap">
+                <span class="spec-label"><strong>1. patro</strong> s výhledem</span>
+              </div>
+            </li>`;
+
+  html = html.replace(oldHeatingItem, newViewFloorItem);
+
+  // 4. Přidání Vytápění je ústřední do rozbalovací nabídky (Přečíst více) hned pod Máte mazlíčka?
+  const petItem = `<!-- 6. Máte mazlíčka? -->
+            <li class="room-spec-item">
+              <div class="spec-icon-wrap">
+                <img src="/Icons/Ikony/pawprint.png" alt="" class="spec-icon-img">
+              </div>
+              <div class="spec-text-wrap">
+                <span class="spec-label"><strong>Máte mazlíčka?</strong> <a href="#vyhody-ubytovani" class="spec-link" id="link-pet-more">Zjistit více <svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 1L5 5L9 1"/></svg></a></span>
+              </div>
+            </li>`;
+
+  const petItemWithHeating = `${petItem}
+
+            <!-- Vytápění je ústřední (Přesunuto do rozbalovací nabídky) -->
+            <li class="room-spec-item spec-extra-item">
+              <div class="spec-icon-wrap">
+                <img src="/Icons/Ikony/air.png" alt="" class="spec-icon-img">
+              </div>
+              <div class="spec-text-wrap">
+                <span class="spec-label"><strong>Vytápění</strong> je ústřední</span>
+              </div>
+            </li>`;
+
+  html = html.replace(petItem, petItemWithHeating);
+
+  // 5. Výhody / Detaily pokojů fotka (desna_41.webp)
+  html = html.replace('/hezky pokoj 1.webp', '/desna_41.webp');
+  html = html.replace('alt="Detaily Pokojů v Přízemí"', 'alt="Detaily Pokojů s Výhledem" class="img-desna-41"');
+
+  // 6. Panoramatický banner fotka na pozadí a text
+  const oldBannerText = `Pokoje Standard v přízemí hotelu jsou navrženy pro maximální pohodlí bez překážek.<br>Díky přístupu zcela bez schodů jsou ideální volbou pro rodiny s kočárky i seniory.`;
+  const newBannerText = `Nově zrekonstruovaný pokoj v prvním patře s dřevěným alpským balkónem.<br>Užijte si jedinečný výhled na můstky a uklidňující šumění splavu Bílé Desné přímo pod okny.`;
+
+  html = html.replace(oldBannerText, newBannerText);
+  html = html.replace('class="room-banner-section"', 'class="room-banner-section room-view-banner"');
+
+  // 7. Rozdělení pokojů – Názvy pokojů pro Pokoje s výhledem
+  html = html.replace('Pokoj Turistický P1', 'Pokoj Standard P7');
+  html = html.replace('Pokoj Turistický P2', 'Pokoj Nadstandard A1');
+  html = html.replace('Pokoj Turistický P3', 'Pokoj Nadstandard Zen');
+  html = html.replace('Pokoj Turistický P4', 'Pokoj Standard P10');
+  html = html.replace('Pokoj Turistický P5', 'Pokoj Standard P11');
+  html = html.replace('Pokoj Turistický P6', 'Pokoj Standard P12');
+
+  return html;
+};
+
 // Inicializace událostí a interaktivity po vykreslení
 const initInteractivity = () => {
   // Mobile Hamburger Drawer
@@ -1591,6 +1669,14 @@ const initInteractivity = () => {
     });
   }
 
+  const btnGotoVyhled = document.getElementById('btn-goto-vyhled');
+  if (btnGotoVyhled) {
+    btnGotoVyhled.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.hash = '#pokoj-vyhled';
+    });
+  }
+
   // Akordeon rozbalování & Carousel pro Rozdělení pokojů
   const roomBreakdownItems = document.querySelectorAll('.room-breakdown-item');
   roomBreakdownItems.forEach(item => {
@@ -1703,8 +1789,14 @@ const initInteractivity = () => {
 
   const btnSpecsRooms = document.getElementById('btn-specs-rooms');
   if (btnSpecsRooms) {
-    btnSpecsRooms.addEventListener('click', () => {
-      window.location.hash = '#pokoje';
+    btnSpecsRooms.addEventListener('click', (e) => {
+      e.preventDefault();
+      const targetSec = document.getElementById('detaily-pokoju');
+      if (targetSec) {
+        targetSec.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        window.location.hash = '#detaily-pokoju';
+      }
     });
   }
 
@@ -1794,7 +1886,7 @@ const initInteractivity = () => {
   const bookingBtns = document.querySelectorAll('.btn-booking, .btn-promo, .btn-cta');
   bookingBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
-      if (btn.id === 'btn-goto-prizemi' || btn.id === 'btn-specs-rooms') return;
+      if (btn.id === 'btn-goto-prizemi' || btn.id === 'btn-goto-vyhled' || btn.id === 'btn-specs-rooms') return;
       alert('Rezervační systém se načítá...');
     });
   });
@@ -1808,6 +1900,8 @@ const route = (isInitial = false) => {
   const hash = window.location.hash;
   const pageKey = (hash === '#pokoj-prizemi' || hash === '#pokoje-prizemi' || hash === '#pokoj-v-prizemi')
     ? 'ground'
+    : (hash === '#pokoj-vyhled' || hash === '#pokoje-vyhled' || hash === '#pokoj-s-vyhledem')
+    ? 'view'
     : (hash === '#pokoje' || hash === '#nabidka-pokoju') ? 'rooms' : 'home';
 
   const isNewPage = currentViewKey !== pageKey;
@@ -1815,6 +1909,8 @@ const route = (isInitial = false) => {
 
   if (pageKey === 'ground') {
     app.innerHTML = getRoomGroundFloorHTML();
+  } else if (pageKey === 'view') {
+    app.innerHTML = getRoomViewFloorHTML();
   } else if (pageKey === 'rooms') {
     app.innerHTML = getRoomsPageHTML();
   } else {
