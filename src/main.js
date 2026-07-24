@@ -386,7 +386,7 @@ const getFooterHTML = () => `
         <div class="footer-col footer-col-links">
           <h3 class="footer-col-heading">Rychlé odkazy</h3>
           <ul class="footer-links-list">
-            <li><a href="#pokoje">Ubytování</a></li>
+            <li><a href="#pokoje">Nabídka pokojů</a></li>
             <li><a href="#sluzby">Stravování</a></li>
             <li><a href="#sluzby">Akce</a></li>
             <li><a href="#aktivity">Okolí</a></li>
@@ -407,13 +407,35 @@ const getFooterHTML = () => `
       <!-- Spodní lišta -->
       <div class="footer-bottom-row">
         <div class="footer-copyright">© 2026 All Rights Reserved.</div>
-        <div class="footer-logo-wrap">
+        <div class="footer-logo-wrap btn-scroll-top" title="Zpět nahoru">
           <img src="/Logo/white logo.webp" alt="Hotel U Můstku" loading="lazy" decoding="async">
         </div>
         <div class="footer-author">Vytvořil <a href="https://ozeman.cz" target="_blank" rel="noopener">ozeman.cz</a></div>
       </div>
     </div>
   </footer>
+
+  <!-- LIGHTBOX MODAL PRO ZVĚTŠENÍ FOTEK POKOJŮ (PRO SENIORY) -->
+  <div class="lightbox-modal" id="lightbox-modal" aria-hidden="true" role="dialog">
+    <div class="lightbox-overlay" id="lightbox-overlay"></div>
+    <div class="lightbox-content">
+      <button class="lightbox-close-btn" id="lightbox-close" aria-label="Zavřít zobrazení fotky" title="Zavřít fotku (Esc)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+
+      <button class="lightbox-nav-btn lightbox-prev-btn" id="lightbox-prev" aria-label="Předchozí fotka">
+        <svg width="12" height="20" viewBox="0 0 12 20" fill="none"><path d="M10 2L2 10L10 18" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/></svg>
+      </button>
+
+      <div class="lightbox-image-container">
+        <img src="" alt="Zvětšený náhled pokoje" id="lightbox-img" class="lightbox-img">
+      </div>
+
+      <button class="lightbox-nav-btn lightbox-next-btn" id="lightbox-next" aria-label="Další fotka">
+        <svg width="12" height="20" viewBox="0 0 12 20" fill="none"><path d="M2 2L10 10L2 18" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </div>
 `;
 
 // Render Funkce Pro Domovskou Stránku
@@ -569,13 +591,13 @@ const getRoomsPageHTML = () => `
       <!-- Card 1: Pokoje přízemí -->
       <div class="room-card">
         <div class="room-card-image-wrap">
-          <img src="/balkony 1.webp" alt="Pokoje přízemí" loading="lazy" decoding="async">
+          <img src="/balkony 1 copy.webp" alt="Pokoje přízemí" loading="lazy" decoding="async">
         </div>
         <div class="room-card-content">
           <h2 class="room-card-title">Pokoje přízemí</h2>
           <p class="room-card-desc">Útulně a moderně zařízené pokoje s výhledem do zeleně. Tyto pokoje se nacházejí v přízemí hotelu, a nabízejí tak přímý a snadný přístup na venkovní terasu a k hlavnímu parkovišti.</p>
           <div class="room-card-buttons">
-            <button class="btn btn-booking btn-room-primary">Zjistit více</button>
+            <button class="btn btn-booking btn-room-primary" id="btn-goto-prizemi">Zjistit více</button>
             <button class="btn btn-rooms btn-room-secondary">Rezervovat</button>
           </div>
         </div>
@@ -605,6 +627,637 @@ const getRoomsPageHTML = () => `
   ${getFeaturesHTML()}
   ${getSurroundingsHTML()}
   ${getCtaHTML()}
+  ${getFooterHTML()}
+`;
+
+// Render Funkce Pro Stránku "Pokoje přízemí" (Detail pokoje)
+const getRoomGroundFloorHTML = () => `
+  <!-- 1. HERO SEKCE DETAILU POKOJE -->
+  <section class="hero-section rooms-hero-section room-detail-hero" id="uvod-prizemi">
+    <div class="hero-overlay"></div>
+    <div class="hero-inner">
+      ${getHeaderHTML()}
+
+      <div class="room-detail-hero-center">
+        <h1 class="hero-title room-detail-hero-title">Pokoje v přízemí</h1>
+        <p class="room-detail-hero-subtitle">
+          <span class="desktop-sub-text">Útulně a moderně zařízené pokoje v přízemí hotelu s výhledem do zeleně a přímým přístupem na venkovní terasu a parkoviště.</span>
+          <span class="mobile-sub-text">Objevte zázemí se 100% bezbariérovým přístupem</span>
+        </p>
+        <button class="btn btn-booking room-detail-hero-btn" id="btn-specs-rooms">
+          <span class="desktop-btn-text">Rezervovat pobyt</span>
+          <span class="mobile-btn-text">Prohlédnout nabídku</span>
+        </button>
+      </div>
+
+      <div class="scroll-down-btn" id="scroll-btn-detail">
+        <svg width="12" height="14" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7.29 17.1C7.68 17.49 8.32 17.49 8.71 17.1L15.07 10.74C15.46 10.35 15.46 9.71 15.07 9.32C14.68 8.93 14.05 8.93 13.66 9.32L8 14.98L2.34 9.32C1.95 8.93 1.32 8.93 0.93 9.32C0.54 9.71 0.54 10.35 0.93 10.74L7.29 17.1ZM8 0H7V16.39H8H9V0H8Z" fill="white"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. DETAILY POKOJŮ (SPECS SEKCE) -->
+  <section class="room-specs-section" id="detaily-pokoju">
+    <div class="room-specs-inner">
+      <h2 class="room-specs-main-title">Detaily Pokojů</h2>
+
+      <div class="room-specs-grid">
+        <!-- Levý sloupec: Seznam parametrů -->
+        <div class="room-specs-content">
+          <ul class="room-specs-list">
+            <!-- 1. Max. počet osob -->
+            <li class="room-spec-item">
+              <div class="spec-icon-wrap">
+                <img src="/Icons/Ikony/group.png" alt="" class="spec-icon-img">
+              </div>
+              <div class="spec-text-wrap">
+                <span class="spec-label"><strong>Max. počet osob:</strong> 4 dospělé osoby</span>
+              </div>
+            </li>
+
+            <!-- 2. 2 postele -->
+            <li class="room-spec-item spec-item-with-subtext">
+              <div class="spec-icon-wrap">
+                <img src="/Icons/Ikony/double-bed.png" alt="" class="spec-icon-img">
+              </div>
+              <div class="spec-text-wrap">
+                <span class="spec-label"><strong>2 postele</strong> v každém pokoji</span>
+                <p class="spec-subtext">s možností až dvou přistýlek<br>a dětskou postýlkou na vyžádání</p>
+              </div>
+            </li>
+
+            <!-- 3. Vytápění je ústřední -->
+            <li class="room-spec-item">
+              <div class="spec-icon-wrap">
+                <img src="/Icons/Ikony/air.png" alt="" class="spec-icon-img">
+              </div>
+              <div class="spec-text-wrap">
+                <span class="spec-label"><strong>Vytápění</strong> je ústřední</span>
+              </div>
+            </li>
+
+            <!-- 4. Vlastní koupelna -->
+            <li class="room-spec-item">
+              <div class="spec-icon-wrap">
+                <img src="/Icons/Ikony/bathroom.png" alt="" class="spec-icon-img">
+              </div>
+              <div class="spec-text-wrap">
+                <span class="spec-label"><strong>Vlastní koupelna:</strong> WC a sprchový kout</span>
+              </div>
+            </li>
+
+            <!-- 5. Wi-Fi zdarma -->
+            <li class="room-spec-item">
+              <div class="spec-icon-wrap">
+                <img src="/Icons/Ikony/wifi.png" alt="" class="spec-icon-img">
+              </div>
+              <div class="spec-text-wrap">
+                <span class="spec-label"><strong>Wi-Fi</strong> zdarma</span>
+              </div>
+            </li>
+
+            <!-- 6. Máte mazlíčka? -->
+            <li class="room-spec-item">
+              <div class="spec-icon-wrap">
+                <img src="/Icons/Ikony/pawprint.png" alt="" class="spec-icon-img">
+              </div>
+              <div class="spec-text-wrap">
+                <span class="spec-label"><strong>Máte mazlíčka?</strong> <a href="#vyhody-ubytovani" class="spec-link" id="link-pet-more">Zjistit více <svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 1L5 5L9 1"/></svg></a></span>
+              </div>
+            </li>
+
+            <!-- EXTENZE DETAILŮ (Zobrazí se plynule po kliknutí na Přečíst více) -->
+            <li class="room-spec-item spec-extra-item">
+              <div class="spec-icon-wrap">
+                <img src="/Icons/Ikony/television.png" alt="" class="spec-icon-img">
+              </div>
+              <div class="spec-text-wrap">
+                <span class="spec-label"><strong>TV</strong> zapůjčíme</span>
+              </div>
+            </li>
+
+            <li class="room-spec-item spec-extra-item">
+              <div class="spec-icon-wrap">
+                <img src="/Icons/Ikony/no-smoking.png" alt="" class="spec-icon-img">
+              </div>
+              <div class="spec-text-wrap">
+                <span class="spec-label"><strong>Nekuřácké</strong> prostředí</span>
+              </div>
+            </li>
+
+            <li class="room-spec-item spec-extra-item">
+              <div class="spec-icon-wrap">
+                <img src="/Icons/Ikony/folding.png" alt="" class="spec-icon-img">
+              </div>
+              <div class="spec-text-wrap">
+                <span class="spec-label"><strong>Zakázkové</strong> povlečení</span>
+              </div>
+            </li>
+
+            <li class="room-spec-item spec-extra-item">
+              <div class="spec-icon-wrap">
+                <img src="/Icons/Ikony/towel.png" alt="" class="spec-icon-img">
+              </div>
+              <div class="spec-text-wrap">
+                <span class="spec-label"><strong>Ručníky</strong></span>
+              </div>
+            </li>
+
+            <li class="room-spec-item spec-extra-item">
+              <div class="spec-icon-wrap">
+                <img src="/Icons/Ikony/mini.png" alt="" class="spec-icon-img">
+              </div>
+              <div class="spec-text-wrap">
+                <span class="spec-label"><strong>Minibar:</strong> chladnička</span>
+              </div>
+            </li>
+
+            <li class="room-spec-item spec-extra-item">
+              <div class="spec-icon-wrap">
+                <img src="/Icons/Ikony/wardrobe.png" alt="" class="spec-icon-img">
+              </div>
+              <div class="spec-text-wrap">
+                <span class="spec-label"><strong>Šatní skříň</strong> v předsíni</span>
+              </div>
+            </li>
+
+            <li class="room-spec-item spec-extra-item">
+              <div class="spec-icon-wrap">
+                <img src="/Icons/Ikony/hair-dryer.png" alt="" class="spec-icon-img">
+              </div>
+              <div class="spec-text-wrap">
+                <span class="spec-label"><strong>Fén</strong> na vyžádání</span>
+              </div>
+            </li>
+          </ul>
+
+          <div class="room-specs-buttons">
+            <button class="btn btn-booking btn-specs-primary" id="btn-specs-rooms">Nabídka pokojů</button>
+            <button class="btn btn-specs-secondary" id="btn-specs-more">Přečíst více</button>
+          </div>
+        </div>
+
+        <!-- Pravý sloupec: Fotka pokoje -->
+        <div class="room-specs-image-wrap">
+          <img src="/hezky pokoj 1.webp" alt="Detaily Pokojů v Přízemí" loading="lazy" decoding="async">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. PANORAMATICKÝ BANNER POKOJE (1:1 REPLIKA DLE PŘEDLOHY) -->
+  <section class="room-banner-section">
+    <div class="room-banner-overlay"></div>
+    <div class="room-banner-inner">
+      <p class="room-banner-text">Pokoje Standard v přízemí hotelu jsou navrženy pro maximální pohodlí bez překážek.<br>Díky přístupu zcela bez schodů jsou ideální volbou pro rodiny s kočárky i seniory.</p>
+    </div>
+  </section>
+
+  <!-- 4. ROZDĚLENÍ POKOJŮ (1:1 REPLIKA DLE SVG PŘEDLOHY S AKORDEONEM) -->
+  <section class="room-breakdown-section" id="rozdeleni-pokoju">
+    <div class="room-breakdown-inner">
+      <div class="room-breakdown-header">
+        <h2 class="room-breakdown-title">Rozdělení pokojů</h2>
+        <button class="btn btn-booking btn-breakdown-cta">Rezervovat pobyt</button>
+      </div>
+
+      <div class="room-breakdown-list">
+        <!-- Pokoj 1: Turistický P1 -->
+        <div class="room-breakdown-item" data-room="p1">
+          <div class="room-breakdown-row">
+            <span class="room-breakdown-name"><strong>Pokoj Turistický P1</strong> <span class="room-meal">(se snídaní)</span></span>
+            <button class="btn-toggle-details" aria-expanded="false">
+              <span class="toggle-text">Zobrazit podrobnosti</span>
+              <svg class="toggle-arrow" width="12" height="7" viewBox="0 0 12 7" fill="none"><path d="M1 1L6 6L11 1" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+
+          <div class="room-breakdown-drawer">
+            <div class="drawer-inner">
+              <div class="room-carousel-viewport">
+                <div class="room-carousel-track">
+                  <div class="room-carousel-slide">
+                    <img src="/balkony 1 copy.webp" alt="Pokoj Turistický P1 - Náhled 1" loading="lazy" decoding="async">
+                  </div>
+                  <div class="room-carousel-slide">
+                    <img src="/hezky pokoj 1.webp" alt="Pokoj Turistický P1 - Náhled 2" loading="lazy" decoding="async">
+                  </div>
+                  <div class="room-carousel-slide">
+                    <img src="/Uvodni stranka/Vyhled z balkonu na skokanky.webp" alt="Pokoj Turistický P1 - Náhled 3" loading="lazy" decoding="async">
+                  </div>
+                </div>
+              </div>
+
+              <div class="drawer-footer-controls">
+                <div class="drawer-arrows-wrap">
+                  <button class="btn-drawer-arrow btn-drawer-prev" aria-label="Předchozí fotka">
+                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M7 1L2 6L7 11" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
+                  </button>
+                  <button class="btn-drawer-arrow btn-drawer-next" aria-label="Další fotka">
+                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M1 1L6 6L1 11" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
+                  </button>
+                </div>
+
+                <div class="drawer-action-btns">
+                  <button class="btn btn-specs-secondary btn-room-reserve">Rezervovat pokoj</button>
+                  <button class="btn btn-specs-primary btn-room-pricing">Chci zjistit cenu</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pokoj 2: Turistický P2 -->
+        <div class="room-breakdown-item" data-room="p2">
+          <div class="room-breakdown-row">
+            <span class="room-breakdown-name"><strong>Pokoj Turistický P2</strong> <span class="room-meal">(se snídaní)</span></span>
+            <button class="btn-toggle-details" aria-expanded="false">
+              <span class="toggle-text">Zobrazit podrobnosti</span>
+              <svg class="toggle-arrow" width="12" height="7" viewBox="0 0 12 7" fill="none"><path d="M1 1L6 6L11 1" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+
+          <div class="room-breakdown-drawer">
+            <div class="drawer-inner">
+              <div class="room-carousel-viewport">
+                <div class="room-carousel-track">
+                  <div class="room-carousel-slide">
+                    <img src="/hezky pokoj 1.webp" alt="Pokoj Turistický P2 - Náhled 1" loading="lazy" decoding="async">
+                  </div>
+                  <div class="room-carousel-slide">
+                    <img src="/balkony 1 copy.webp" alt="Pokoj Turistický P2 - Náhled 2" loading="lazy" decoding="async">
+                  </div>
+                  <div class="room-carousel-slide">
+                    <img src="/mobil hezky pokoj.webp" alt="Pokoj Turistický P2 - Náhled 3" loading="lazy" decoding="async">
+                  </div>
+                </div>
+              </div>
+
+              <div class="drawer-footer-controls">
+                <div class="drawer-arrows-wrap">
+                  <button class="btn-drawer-arrow btn-drawer-prev" aria-label="Předchozí fotka">
+                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M7 1L2 6L7 11" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
+                  </button>
+                  <button class="btn-drawer-arrow btn-drawer-next" aria-label="Další fotka">
+                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M1 1L6 6L1 11" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
+                  </button>
+                </div>
+
+                <div class="drawer-action-btns">
+                  <button class="btn btn-specs-secondary btn-room-reserve">Rezervovat pokoj</button>
+                  <button class="btn btn-specs-primary btn-room-pricing">Chci zjistit cenu</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pokoj 3: Turistický P3 -->
+        <div class="room-breakdown-item" data-room="p3">
+          <div class="room-breakdown-row">
+            <span class="room-breakdown-name"><strong>Pokoj Turistický P3</strong> <span class="room-meal">(se snídaní)</span></span>
+            <button class="btn-toggle-details" aria-expanded="false">
+              <span class="toggle-text">Zobrazit podrobnosti</span>
+              <svg class="toggle-arrow" width="12" height="7" viewBox="0 0 12 7" fill="none"><path d="M1 1L6 6L11 1" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+
+          <div class="room-breakdown-drawer">
+            <div class="drawer-inner">
+              <div class="room-carousel-viewport">
+                <div class="room-carousel-track">
+                  <div class="room-carousel-slide">
+                    <img src="/balkony 1 copy.webp" alt="Pokoj Turistický P3 - Náhled 1" loading="lazy" decoding="async">
+                  </div>
+                  <div class="room-carousel-slide">
+                    <img src="/Uvodni stranka/Vyhled z balkonu na skokanky.webp" alt="Pokoj Turistický P3 - Náhled 2" loading="lazy" decoding="async">
+                  </div>
+                  <div class="room-carousel-slide">
+                    <img src="/hezky pokoj 1.webp" alt="Pokoj Turistický P3 - Náhled 3" loading="lazy" decoding="async">
+                  </div>
+                </div>
+              </div>
+
+              <div class="drawer-footer-controls">
+                <div class="drawer-arrows-wrap">
+                  <button class="btn-drawer-arrow btn-drawer-prev" aria-label="Předchozí fotka">
+                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M7 1L2 6L7 11" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
+                  </button>
+                  <button class="btn-drawer-arrow btn-drawer-next" aria-label="Další fotka">
+                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M1 1L6 6L1 11" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
+                  </button>
+                </div>
+
+                <div class="drawer-action-btns">
+                  <button class="btn btn-specs-secondary btn-room-reserve">Rezervovat pokoj</button>
+                  <button class="btn btn-specs-primary btn-room-pricing">Chci zjistit cenu</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pokoj 4: Nadstandard A -->
+        <div class="room-breakdown-item" data-room="pa">
+          <div class="room-breakdown-row">
+            <span class="room-breakdown-name"><strong>Pokoj Nadstandard A</strong> <span class="room-meal">(se snídaní)</span></span>
+            <button class="btn-toggle-details" aria-expanded="false">
+              <span class="toggle-text">Zobrazit podrobnosti</span>
+              <svg class="toggle-arrow" width="12" height="7" viewBox="0 0 12 7" fill="none"><path d="M1 1L6 6L11 1" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+
+          <div class="room-breakdown-drawer">
+            <div class="drawer-inner">
+              <div class="room-carousel-viewport">
+                <div class="room-carousel-track">
+                  <div class="room-carousel-slide">
+                    <img src="/hezky pokoj 1.webp" alt="Pokoj Nadstandard A - Náhled 1" loading="lazy" decoding="async">
+                  </div>
+                  <div class="room-carousel-slide">
+                    <img src="/balkony 1 copy.webp" alt="Pokoj Nadstandard A - Náhled 2" loading="lazy" decoding="async">
+                  </div>
+                  <div class="room-carousel-slide">
+                    <img src="/Uvodni stranka/Vyhled z balkonu na skokanky.webp" alt="Pokoj Nadstandard A - Náhled 3" loading="lazy" decoding="async">
+                  </div>
+                </div>
+              </div>
+
+              <div class="drawer-footer-controls">
+                <div class="drawer-arrows-wrap">
+                  <button class="btn-drawer-arrow btn-drawer-prev" aria-label="Předchozí fotka">
+                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M7 1L2 6L7 11" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
+                  </button>
+                  <button class="btn-drawer-arrow btn-drawer-next" aria-label="Další fotka">
+                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M1 1L6 6L1 11" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
+                  </button>
+                </div>
+
+                <div class="drawer-action-btns">
+                  <button class="btn btn-specs-secondary btn-room-reserve">Rezervovat pokoj</button>
+                  <button class="btn btn-specs-primary btn-room-pricing">Chci zjistit cenu</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pokoj 5: Standard P5 -->
+        <div class="room-breakdown-item" data-room="p5">
+          <div class="room-breakdown-row">
+            <span class="room-breakdown-name"><strong>Pokoj Standard P5</strong> <span class="room-meal">(se snídaní)</span></span>
+            <button class="btn-toggle-details" aria-expanded="false">
+              <span class="toggle-text">Zobrazit podrobnosti</span>
+              <svg class="toggle-arrow" width="12" height="7" viewBox="0 0 12 7" fill="none"><path d="M1 1L6 6L11 1" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+
+          <div class="room-breakdown-drawer">
+            <div class="drawer-inner">
+              <div class="room-carousel-viewport">
+                <div class="room-carousel-track">
+                  <div class="room-carousel-slide">
+                    <img src="/balkony 1 copy.webp" alt="Pokoj Standard P5 - Náhled 1" loading="lazy" decoding="async">
+                  </div>
+                  <div class="room-carousel-slide">
+                    <img src="/hezky pokoj 1.webp" alt="Pokoj Standard P5 - Náhled 2" loading="lazy" decoding="async">
+                  </div>
+                  <div class="room-carousel-slide">
+                    <img src="/mobil hezky pokoj.webp" alt="Pokoj Standard P5 - Náhled 3" loading="lazy" decoding="async">
+                  </div>
+                </div>
+              </div>
+
+              <div class="drawer-footer-controls">
+                <div class="drawer-arrows-wrap">
+                  <button class="btn-drawer-arrow btn-drawer-prev" aria-label="Předchozí fotka">
+                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M7 1L2 6L7 11" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
+                  </button>
+                  <button class="btn-drawer-arrow btn-drawer-next" aria-label="Další fotka">
+                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M1 1L6 6L1 11" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
+                  </button>
+                </div>
+
+                <div class="drawer-action-btns">
+                  <button class="btn btn-specs-secondary btn-room-reserve">Rezervovat pokoj</button>
+                  <button class="btn btn-specs-primary btn-room-pricing">Chci zjistit cenu</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pokoj 6: Standard P6 -->
+        <div class="room-breakdown-item" data-room="p6">
+          <div class="room-breakdown-row">
+            <span class="room-breakdown-name"><strong>Pokoj Standard P6</strong> <span class="room-meal">(se snídaní)</span></span>
+            <button class="btn-toggle-details" aria-expanded="false">
+              <span class="toggle-text">Zobrazit podrobnosti</span>
+              <svg class="toggle-arrow" width="12" height="7" viewBox="0 0 12 7" fill="none"><path d="M1 1L6 6L11 1" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+
+          <div class="room-breakdown-drawer">
+            <div class="drawer-inner">
+              <div class="room-carousel-viewport">
+                <div class="room-carousel-track">
+                  <div class="room-carousel-slide">
+                    <img src="/hezky pokoj 1.webp" alt="Pokoj Standard P6 - Náhled 1" loading="lazy" decoding="async">
+                  </div>
+                  <div class="room-carousel-slide">
+                    <img src="/balkony 1 copy.webp" alt="Pokoj Standard P6 - Náhled 2" loading="lazy" decoding="async">
+                  </div>
+                  <div class="room-carousel-slide">
+                    <img src="/Uvodni stranka/Vyhled z balkonu na skokanky.webp" alt="Pokoj Standard P6 - Náhled 3" loading="lazy" decoding="async">
+                  </div>
+                </div>
+              </div>
+
+              <div class="drawer-footer-controls">
+                <div class="drawer-arrows-wrap">
+                  <button class="btn-drawer-arrow btn-drawer-prev" aria-label="Předchozí fotka">
+                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M7 1L2 6L7 11" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
+                  </button>
+                  <button class="btn-drawer-arrow btn-drawer-next" aria-label="Další fotka">
+                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M1 1L6 6L1 11" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
+                  </button>
+                </div>
+
+                <div class="drawer-action-btns">
+                  <button class="btn btn-specs-secondary btn-room-reserve">Rezervovat pokoj</button>
+                  <button class="btn btn-specs-primary btn-room-pricing">Chci zjistit cenu</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="room-breakdown-footer-note">Pobyt na 1 noc: Příplatek +200 Kč / osoba / noc k základní ceně.</p>
+    </div>
+  </section>
+
+  <!-- 5. RECENZE HOSTŮ -->
+  ${getReviewsHTML()}
+
+  <!-- 6. STRAVOVÁNÍ V HOTELU -->
+  <section class="room-detail-dining-section">
+    <div class="room-detail-dining-inner">
+      <div class="services-cards-wrap">
+        <!-- Karta 1: Snídaně -->
+        <div class="service-card service-card-left">
+          <div class="service-card-img-wrap">
+            <img src="/Uvodni stranka/stravovani.webp" alt="Snídaně v Hotelu u Můstku" loading="lazy" decoding="async">
+          </div>
+          <div class="service-card-body">
+            <h3 class="service-card-title">Snídaně</h3>
+            <div class="service-card-desc-wrap">
+              <p class="service-card-desc">Snídaně se podávají formou bohatého švédského stolu v naší útulné jídelně. Těšit se můžete na čerstvé pečivo, sýry, uzeniny, cereálie i teplé pokrmy.</p>
+              <button class="btn btn-booking btn-dining-more">Zjistit více o stravování</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Karta 2: Polopenze (Večeře) -->
+        <div class="service-card service-card-right">
+          <div class="service-card-img-wrap">
+            <img src="/Uvodni stranka/skupinove_akce_zelena_profesionalni_uprava.webp" alt="Polopenze v Hotelu u Můstku" loading="lazy" decoding="async">
+          </div>
+          <div class="service-card-body">
+            <h3 class="service-card-title">Polopenze (Večeře)</h3>
+            <div class="service-card-desc-wrap">
+              <p class="service-card-desc">Domácí dvouchodové večeře (polévka a hlavní chod) připravované z poctivých surovin podle tradičních receptů české i mezinárodní kuchyně.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. VÝHODY UBYTOVÁNÍ U NÁS (1:1 REPLIKA DLE PŘEDLOHY) -->
+  <section class="room-detail-features-section" id="vyhody-ubytovani">
+    <div class="room-detail-features-inner">
+      <h2 class="room-detail-features-title">Výhody ubytování u nás</h2>
+
+      <div class="room-features-cards-grid">
+        <!-- Karta 1: Máte Mazlíčka? -->
+        <div class="room-feature-card">
+          <div class="room-feature-img-wrap">
+            <img src="/IMG_1458 1.webp" alt="Máte Mazlíčka?" loading="lazy" decoding="async">
+          </div>
+          <h3 class="room-feature-card-title">Máte Mazlíčka?</h3>
+          <p class="room-feature-card-desc">150 Kč / den hotel je i pro mazlíčky, nutné vodítko v areálu.</p>
+        </div>
+
+        <!-- Karta 2: Nabíjení Elektrokola -->
+        <div class="room-feature-card">
+          <div class="room-feature-img-wrap">
+            <img src="/IMG_1437 1.webp" alt="Nabíjení Elektrokola" loading="lazy" decoding="async">
+          </div>
+          <h3 class="room-feature-card-title">Nabíjení Elektrokola</h3>
+          <p class="room-feature-card-desc">15 Kč / den - bezpečné dobíjení v uzamykatelné kolárně.</p>
+        </div>
+
+        <!-- Karta 3: Parkování -->
+        <div class="room-feature-card">
+          <div class="room-feature-img-wrap">
+            <img src="/IMG_1443 1.webp" alt="Parkování" loading="lazy" decoding="async">
+          </div>
+          <h3 class="room-feature-card-title">Parkování</h3>
+          <p class="room-feature-card-desc">Zdarma na vlastním parkovišti pod kamerami.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. PODMÍNKY UBYTOVÁNÍ (1:1 REPLIKA DLE SVG PŘEDLOHY) -->
+  <section class="room-terms-section" id="podminky-ubytovani">
+    <div class="room-terms-inner">
+      <h2 class="room-terms-main-title">Podmínky ubytování</h2>
+
+      <div class="room-terms-content-wrap">
+        <!-- Levý blok: Storno podmínky (Tabulka) -->
+        <div class="storno-table-container">
+          <!-- Řádek 1 -->
+          <div class="storno-table-row">
+            <div class="storno-label-group">
+              <span class="storno-time-label">Více než 21 dní před příjezdem:</span>
+            </div>
+            <div class="storno-fee-group">
+              <span class="storno-fee-val">Zdarma</span>
+              <span class="storno-fee-sub">bez storno poplatku</span>
+            </div>
+          </div>
+
+          <!-- Řádek 2 -->
+          <div class="storno-table-row">
+            <div class="storno-label-group">
+              <span class="storno-time-label">21 – 14 dní před příjezdem:</span>
+            </div>
+            <div class="storno-fee-group">
+              <span class="storno-fee-val">40 %</span>
+              <span class="storno-fee-sub">z celkové ceny pobytu</span>
+            </div>
+          </div>
+
+          <!-- Řádek 3 -->
+          <div class="storno-table-row">
+            <div class="storno-label-group">
+              <span class="storno-time-label">14 – 7 dní před příjezdem:</span>
+            </div>
+            <div class="storno-fee-group">
+              <span class="storno-fee-val">60%</span>
+              <span class="storno-fee-sub">z celkové ceny pobytu</span>
+            </div>
+          </div>
+
+          <!-- Řádek 4 -->
+          <div class="storno-table-row">
+            <div class="storno-label-group">
+              <span class="storno-time-label">Méně než 7 dní před příjezdem:</span>
+              <span class="storno-time-sub">(nebo nedojezd)</span>
+            </div>
+            <div class="storno-fee-group">
+              <span class="storno-fee-val">100%</span>
+              <span class="storno-fee-sub">z celkové ceny pobytu</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pravý blok: Tlačítko & Check-in / Check-out -->
+        <div class="room-terms-right-side">
+          <button class="btn btn-booking btn-terms-cta">Rezervovat pobyt</button>
+
+          <div class="check-times-container">
+            <!-- Check-in -->
+            <div class="check-time-item">
+              <div class="check-icon-wrap">
+                <img src="/Icons/Ikony/arrival.png" alt="Příjezd (Check-in)" width="28" height="28">
+              </div>
+              <span class="check-text-label"><strong>Příjezd (Check-in):</strong> od 15:00 hod.</span>
+            </div>
+
+            <!-- Check-out -->
+            <div class="check-time-item">
+              <div class="check-icon-wrap">
+                <img src="/Icons/Ikony/tourist.png" alt="Odjezd (Check-out)" width="28" height="28">
+              </div>
+              <span class="check-text-label"><strong>Odjezd (Check-out):</strong> do 10:00 hod.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="room-terms-footer-note">V případě nečekaných událostí se s námi spojte – po dohodě vám rádi flexibilně přesuneme termín pobytu na jindy.</p>
+    </div>
+  </section>
+
+  <!-- 9. CTA SEKCE -->
+  ${getCtaHTML()}
+
+  <!-- 10. FOOTER -->
   ${getFooterHTML()}
 `;
 
@@ -641,7 +1294,7 @@ const initInteractivity = () => {
 
   if (heroVideo) {
     heroVideo.playbackRate = 0.85;
-    heroVideo.play().catch(() => {});
+    heroVideo.play().catch(() => { });
 
     let isHeroInView = true;
 
@@ -651,7 +1304,7 @@ const initInteractivity = () => {
           isHeroInView = entry.isIntersecting;
           if (isHeroInView && !document.hidden) {
             heroVideo.playbackRate = 0.85;
-            heroVideo.play().catch(() => {});
+            heroVideo.play().catch(() => { });
           } else {
             heroVideo.pause();
           }
@@ -666,7 +1319,7 @@ const initInteractivity = () => {
         heroVideo.pause();
       } else if (isHeroInView) {
         heroVideo.playbackRate = 0.85;
-        heroVideo.play().catch(() => {});
+        heroVideo.play().catch(() => { });
       }
     });
   }
@@ -912,9 +1565,218 @@ const initInteractivity = () => {
     });
   }
 
+  const btnGotoPrizemi = document.getElementById('btn-goto-prizemi');
+  if (btnGotoPrizemi) {
+    btnGotoPrizemi.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.hash = '#pokoj-prizemi';
+    });
+  }
+
+  // Akordeon rozbalování & Carousel pro Rozdělení pokojů
+  const roomBreakdownItems = document.querySelectorAll('.room-breakdown-item');
+  roomBreakdownItems.forEach(item => {
+    const rowHeader = item.querySelector('.room-breakdown-row');
+    const toggleBtn = item.querySelector('.btn-toggle-details');
+    const toggleText = item.querySelector('.toggle-text');
+    const viewport = item.querySelector('.room-carousel-viewport');
+    const prevBtn = item.querySelector('.btn-drawer-prev');
+    const nextBtn = item.querySelector('.btn-drawer-next');
+
+    const handleToggle = (e) => {
+      e.preventDefault();
+      const isOpen = item.classList.contains('is-open');
+
+      // Zavřít ostatní akordeony (pouze 1 otevřený najednou)
+      roomBreakdownItems.forEach(otherItem => {
+        if (otherItem !== item && otherItem.classList.contains('is-open')) {
+          otherItem.classList.remove('is-open');
+          const otherBtn = otherItem.querySelector('.btn-toggle-details');
+          const otherText = otherItem.querySelector('.toggle-text');
+          if (otherBtn) otherBtn.setAttribute('aria-expanded', 'false');
+          if (otherText) otherText.textContent = 'Zobrazit podrobnosti';
+        }
+      });
+
+      // Přepnout současný
+      if (isOpen) {
+        item.classList.remove('is-open');
+        if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false');
+        if (toggleText) toggleText.textContent = 'Zobrazit podrobnosti';
+      } else {
+        item.classList.add('is-open');
+        if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'true');
+        if (toggleText) toggleText.textContent = 'Skrýt podrobnosti';
+
+        // Plynulé vycentrování otevřeného pokoje do středu obrazovky
+        setTimeout(() => {
+          item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 120);
+      }
+    };
+
+    if (rowHeader) {
+      rowHeader.addEventListener('click', handleToggle);
+    }
+
+    // Carousel navigace
+    if (viewport) {
+      if (nextBtn) {
+        nextBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          viewport.scrollBy({ left: 564, behavior: 'smooth' });
+        });
+      }
+      if (prevBtn) {
+        prevBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          viewport.scrollBy({ left: -564, behavior: 'smooth' });
+        });
+      }
+
+      let isDown = false;
+      let startX;
+      let scrollLeft;
+
+      viewport.addEventListener('mousedown', (e) => {
+        isDown = true;
+        startX = e.pageX - viewport.offsetLeft;
+        scrollLeft = viewport.scrollLeft;
+      });
+      viewport.addEventListener('mouseleave', () => { isDown = false; });
+      viewport.addEventListener('mouseup', () => { isDown = false; });
+      viewport.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - viewport.offsetLeft;
+        const walk = (x - startX) * 1.8;
+        viewport.scrollLeft = scrollLeft - walk;
+      });
+    }
+  });
+
+  const btnSpecsMore = document.getElementById('btn-specs-more');
+  const specsContent = document.querySelector('.room-specs-content');
+
+  if (btnSpecsMore && specsContent) {
+    btnSpecsMore.addEventListener('click', (e) => {
+      e.preventDefault();
+      const isExpanded = specsContent.classList.contains('is-expanded');
+      if (isExpanded) {
+        specsContent.classList.remove('is-expanded');
+        btnSpecsMore.textContent = 'Přečíst více';
+      } else {
+        specsContent.classList.add('is-expanded');
+        btnSpecsMore.textContent = 'Skrýt detaily';
+      }
+    });
+  }
+
+  const linkPetMore = document.getElementById('link-pet-more');
+  if (linkPetMore) {
+    linkPetMore.addEventListener('click', (e) => {
+      e.preventDefault();
+      const targetSec = document.getElementById('vyhody-ubytovani');
+      if (targetSec) {
+        targetSec.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  }
+
+  const btnSpecsRooms = document.getElementById('btn-specs-rooms');
+  if (btnSpecsRooms) {
+    btnSpecsRooms.addEventListener('click', () => {
+      window.location.hash = '#pokoje';
+    });
+  }
+
+  // Kliknutí na logo ve futru přesune na vrchol stránky
+  const scrollTopBtns = document.querySelectorAll('.btn-scroll-top, .footer-logo-wrap, .footer-mobile-logo');
+  scrollTopBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+
+  // Lightbox Modal pro zvětšení fotek (Senior-friendly)
+  const lightboxModal = document.getElementById('lightbox-modal');
+  const lightboxImg = document.getElementById('lightbox-img');
+  const lightboxClose = document.getElementById('lightbox-close');
+  const lightboxOverlay = document.getElementById('lightbox-overlay');
+  const lightboxPrev = document.getElementById('lightbox-prev');
+  const lightboxNext = document.getElementById('lightbox-next');
+
+  let currentPhotosList = [];
+  let currentPhotoIndex = 0;
+
+  const openLightbox = (photos, startIndex) => {
+    currentPhotosList = photos;
+    currentPhotoIndex = startIndex;
+    if (lightboxImg && currentPhotosList.length > 0) {
+      lightboxImg.src = currentPhotosList[currentPhotoIndex];
+      lightboxModal.classList.add('is-active');
+      lightboxModal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+  };
+
+  const closeLightbox = () => {
+    if (lightboxModal) {
+      lightboxModal.classList.remove('is-active');
+      lightboxModal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+  };
+
+  if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
+  if (lightboxOverlay) lightboxOverlay.addEventListener('click', closeLightbox);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && lightboxModal && lightboxModal.classList.contains('is-active')) {
+      closeLightbox();
+    }
+  });
+
+  if (lightboxNext) {
+    lightboxNext.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (currentPhotosList.length === 0) return;
+      currentPhotoIndex = (currentPhotoIndex + 1) % currentPhotosList.length;
+      if (lightboxImg) lightboxImg.src = currentPhotosList[currentPhotoIndex];
+    });
+  }
+
+  if (lightboxPrev) {
+    lightboxPrev.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (currentPhotosList.length === 0) return;
+      currentPhotoIndex = (currentPhotoIndex - 1 + currentPhotosList.length) % currentPhotosList.length;
+      if (lightboxImg) lightboxImg.src = currentPhotosList[currentPhotoIndex];
+    });
+  }
+
+  // Kliknutí na jakoukoliv fotku pokoje otevře Lightbox
+  const roomSlideImgs = document.querySelectorAll('.room-carousel-slide img, .room-specs-image-wrap img');
+  roomSlideImgs.forEach((img) => {
+    img.style.cursor = 'zoom-in';
+    img.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const track = img.closest('.room-carousel-track');
+      if (track) {
+        const allImgsInTrack = Array.from(track.querySelectorAll('img')).map(i => i.src);
+        const clickedIdx = allImgsInTrack.indexOf(img.src);
+        openLightbox(allImgsInTrack, clickedIdx !== -1 ? clickedIdx : 0);
+      } else {
+        openLightbox([img.src], 0);
+      }
+    });
+  });
+
   const bookingBtns = document.querySelectorAll('.btn-booking, .btn-promo, .btn-cta');
   bookingBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+      if (btn.id === 'btn-goto-prizemi' || btn.id === 'btn-specs-rooms') return;
       alert('Rezervační systém se načítá...');
     });
   });
@@ -922,20 +1784,35 @@ const initInteractivity = () => {
 
 // Router
 const app = document.querySelector('#app');
+let currentViewKey = null;
 
-const route = () => {
+const route = (isInitial = false) => {
   const hash = window.location.hash;
-  if (hash === '#pokoje' || hash === '#nabidka-pokoju') {
+  const pageKey = (hash === '#pokoj-prizemi' || hash === '#pokoje-prizemi' || hash === '#pokoj-v-prizemi')
+    ? 'ground'
+    : (hash === '#pokoje' || hash === '#nabidka-pokoju') ? 'rooms' : 'home';
+
+  const isNewPage = currentViewKey !== pageKey;
+  currentViewKey = pageKey;
+
+  if (pageKey === 'ground') {
+    app.innerHTML = getRoomGroundFloorHTML();
+  } else if (pageKey === 'rooms') {
     app.innerHTML = getRoomsPageHTML();
   } else {
     app.innerHTML = getHomePageHTML();
   }
-  window.scrollTo(0, 0);
+
+  // Přesun na vrchol pouze při navigaci na NOVOU stránku (při refreshi zůstane stejná pozice)
+  if (!isInitial && isNewPage) {
+    window.scrollTo(0, 0);
+  }
+
   initInteractivity();
 };
 
-window.addEventListener('hashchange', route);
-window.addEventListener('DOMContentLoaded', route);
+window.addEventListener('hashchange', () => route(false));
+window.addEventListener('DOMContentLoaded', () => route(true));
 
 // Initial trigger
-route();
+route(true);
