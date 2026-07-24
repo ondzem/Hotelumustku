@@ -5496,12 +5496,12 @@ h3 {
 
 @media (min-width: 1029px) and (max-width: 1500px) {
   .cta-section {
-    background-position: center 75% !important;
+    background-position: center 45% !important;
   }
 }
 
 @media (min-width: 1501px) {
   .cta-section {
-    background-position: center 75% !important;
+    background-position: center 45% !important;
   }
 }
