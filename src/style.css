@@ -2103,7 +2103,7 @@ h3 {
   position: relative;
   width: 100%;
   height: 400px;
-  background: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.35)), url('/Uvodni stranka/CTA sekce.webp') center 10%/cover no-repeat;
+  background: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.35)), url('/Uvodni stranka/CTA sekce.webp') center 75%/cover no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -5478,5 +5478,30 @@ h3 {
     width: 100% !important;
     margin-left: auto !important;
     margin-right: 0 !important;
+  }
+}
+
+/* Úprava pozice fotky v CTA sekci pro různé velikosti obrazovek */
+@media (max-width: 768px) {
+  .cta-section {
+    background-position: 75% 65% !important;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1028px) {
+  .cta-section {
+    background-position: center 75% !important;
+  }
+}
+
+@media (min-width: 1029px) and (max-width: 1500px) {
+  .cta-section {
+    background-position: center 75% !important;
+  }
+}
+
+@media (min-width: 1501px) {
+  .cta-section {
+    background-position: center 75% !important;
   }
 }
