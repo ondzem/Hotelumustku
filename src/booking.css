@@ -1265,36 +1265,95 @@
 }
 
 .terms-modal-body {
-  padding: 28px 32px;
+  padding: 32px 36px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 36px;
 }
 
+/* Rychlý kontakt bar */
+.terms-contact-bar {
+  background-color: #f9faf7;
+  border: 1px solid #e0e4d7;
+  border-radius: 1px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.contact-bar-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.contact-bar-items {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.terms-contact-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #697947;
+  text-decoration: none;
+  padding: 6px 14px;
+  background-color: #ffffff;
+  border: 1px solid #c8d2b7;
+  border-radius: 1px;
+  transition: all 0.2s ease;
+}
+
+.terms-contact-btn:hover {
+  background-color: #697947;
+  color: #ffffff;
+  border-color: #697947;
+}
+
+.terms-contact-btn svg {
+  flex-shrink: 0;
+}
+
+/* Sekce v modálu s dělící linkou */
 .terms-row-item {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.terms-row-item:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
 }
 
 .terms-row-title {
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 600;
   color: #000000;
+  letter-spacing: -0.01em;
 }
 
 .terms-row-desc p {
-  margin: 0 0 4px 0;
-  font-size: 14.5px;
+  margin: 0 0 6px 0;
+  font-size: 15px;
   color: #333333;
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 .terms-sub-note {
-  font-size: 13.5px;
+  font-size: 14px;
   color: #555555;
-  margin: 4px 0 0 0;
+  margin: 6px 0 0 0;
+  font-style: italic;
 }
 
 /* Storno Table (1:1 Vzor z Section 8) */
@@ -1302,20 +1361,20 @@
   display: flex;
   flex-direction: column;
   border-top: 1px solid #C8C8C8;
-  margin-top: 8px;
+  margin-top: 10px;
 }
 
 .clean-storno-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 0;
+  padding: 18px 0;
   border-bottom: 1px solid #C8C8C8;
   gap: 16px;
 }
 
 .clean-storno-row .storno-time-label {
-  font-size: 15.5px;
+  font-size: 16px;
   font-weight: 600;
   color: #000000;
 }
@@ -1329,27 +1388,27 @@
 }
 
 .clean-storno-row .storno-fee-val {
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 600;
   color: #000000;
 }
 
 .clean-storno-row .storno-fee-sub {
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 400;
   color: #555555;
 }
 
 .terms-modal-footer {
-  padding: 18px 32px;
+  padding: 18px 36px;
   border-top: 1px solid #E5E5E5;
   background-color: #fafafa;
   text-align: right;
 }
 
 .btn-terms-close-footer {
-  height: 40px;
-  padding: 0 24px;
+  height: 42px;
+  padding: 0 28px;
   font-family: 'Outfit', sans-serif;
   font-size: 14.5px;
   font-weight: 500;
@@ -1366,9 +1425,10 @@
   color: #ffffff;
 }
 
+/* Mobilní responzivita a přehlednost */
 @media (max-width: 767px) {
   .terms-modal-card {
-    max-height: 90vh;
+    max-height: 92vh;
   }
 
   .terms-modal-header {
@@ -1380,19 +1440,64 @@
   }
 
   .terms-modal-body {
-    padding: 20px;
-    gap: 20px;
+    padding: 22px 18px;
+    gap: 28px;
+  }
+
+  .terms-contact-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .contact-bar-items {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .terms-contact-btn {
+    width: 100%;
+    justify-content: center;
+    height: 38px;
+    font-size: 14.5px;
+  }
+
+  .terms-row-title {
+    font-size: 16.5px;
+  }
+
+  .terms-row-desc p {
+    font-size: 14px;
+    line-height: 1.5;
   }
 
   .clean-storno-row {
     flex-direction: column;
     align-items: flex-start;
     gap: 4px;
-    padding: 12px 0;
+    padding: 14px 0;
+  }
+
+  .clean-storno-row .storno-time-label {
+    font-size: 14.5px;
   }
 
   .clean-storno-row .storno-fee-group {
     align-items: flex-start;
     text-align: left;
+  }
+
+  .clean-storno-row .storno-fee-val {
+    font-size: 16px;
+  }
+
+  .terms-modal-footer {
+    padding: 14px 18px;
+  }
+
+  .btn-terms-close-footer {
+    width: 100%;
+    height: 38px;
   }
 }
