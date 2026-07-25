@@ -639,7 +639,10 @@ const getRoomGroundFloorHTML = () => `
       ${getHeaderHTML()}
 
       <div class="room-detail-hero-center">
-        <h1 class="hero-title room-detail-hero-title">Pokoje v přízemí</h1>
+        <h1 class="hero-title room-detail-hero-title">
+          <span class="desktop-title-text">Pokoje v přízemí</span>
+          <span class="mobile-tablet-title-text">Vyberte si svůj pokoj v přízemí</span>
+        </h1>
         <p class="room-detail-hero-subtitle">
           <span class="desktop-sub-text">Útulně a moderně zařízené pokoje v přízemí hotelu s výhledem do zeleně a přímým přístupem na venkovní terasu a parkoviště.</span>
           <span class="mobile-sub-text">Objevte zázemí se 100% bezbariérovým přístupem</span>
@@ -792,7 +795,7 @@ const getRoomGroundFloorHTML = () => `
 
         <!-- Pravý sloupec: Fotka pokoje -->
         <div class="room-specs-image-wrap">
-          <img src="/hezky pokoj 1.webp" alt="Detaily Pokojů v Přízemí" loading="lazy" decoding="async">
+          <img src="/hezky pokoj 1.webp" alt="Detaily Pokojů v Přízemí" loading="eager" fetchpriority="high" decoding="async">
         </div>
       </div>
     </div>
@@ -852,7 +855,7 @@ const getRoomGroundFloorHTML = () => `
                 </div>
 
                 <div class="drawer-action-btns">
-                  <button class="btn btn-specs-secondary btn-room-reserve">Rezervovat pokoj</button>
+                  <button class="btn btn-specs-secondary btn-room-reserve">Vybrat pokoj</button>
                   <button class="btn btn-specs-primary btn-room-pricing">Chci zjistit cenu</button>
                 </div>
               </div>
@@ -897,7 +900,7 @@ const getRoomGroundFloorHTML = () => `
                 </div>
 
                 <div class="drawer-action-btns">
-                  <button class="btn btn-specs-secondary btn-room-reserve">Rezervovat pokoj</button>
+                  <button class="btn btn-specs-secondary btn-room-reserve">Vybrat pokoj</button>
                   <button class="btn btn-specs-primary btn-room-pricing">Chci zjistit cenu</button>
                 </div>
               </div>
@@ -942,7 +945,7 @@ const getRoomGroundFloorHTML = () => `
                 </div>
 
                 <div class="drawer-action-btns">
-                  <button class="btn btn-specs-secondary btn-room-reserve">Rezervovat pokoj</button>
+                  <button class="btn btn-specs-secondary btn-room-reserve">Vybrat pokoj</button>
                   <button class="btn btn-specs-primary btn-room-pricing">Chci zjistit cenu</button>
                 </div>
               </div>
@@ -987,7 +990,7 @@ const getRoomGroundFloorHTML = () => `
                 </div>
 
                 <div class="drawer-action-btns">
-                  <button class="btn btn-specs-secondary btn-room-reserve">Rezervovat pokoj</button>
+                  <button class="btn btn-specs-secondary btn-room-reserve">Vybrat pokoj</button>
                   <button class="btn btn-specs-primary btn-room-pricing">Chci zjistit cenu</button>
                 </div>
               </div>
@@ -1032,7 +1035,7 @@ const getRoomGroundFloorHTML = () => `
                 </div>
 
                 <div class="drawer-action-btns">
-                  <button class="btn btn-specs-secondary btn-room-reserve">Rezervovat pokoj</button>
+                  <button class="btn btn-specs-secondary btn-room-reserve">Vybrat pokoj</button>
                   <button class="btn btn-specs-primary btn-room-pricing">Chci zjistit cenu</button>
                 </div>
               </div>
@@ -1077,7 +1080,7 @@ const getRoomGroundFloorHTML = () => `
                 </div>
 
                 <div class="drawer-action-btns">
-                  <button class="btn btn-specs-secondary btn-room-reserve">Rezervovat pokoj</button>
+                  <button class="btn btn-specs-secondary btn-room-reserve">Vybrat pokoj</button>
                   <button class="btn btn-specs-primary btn-room-pricing">Chci zjistit cenu</button>
                 </div>
               </div>
@@ -1283,8 +1286,12 @@ const getRoomViewFloorHTML = () => {
 
   // 2. Změna H1 nadpisu v Hero sekci
   html = html.replace(
-    '<h1 class="hero-title room-detail-hero-title">Pokoje v přízemí</h1>',
-    '<h1 class="hero-title room-detail-hero-title">Pokoje s výhledem</h1>'
+    '<span class="desktop-title-text">Pokoje v přízemí</span>',
+    '<span class="desktop-title-text">Pokoje s výhledem</span>'
+  );
+  html = html.replace(
+    '<span class="mobile-tablet-title-text">Vyberte si svůj pokoj v přízemí</span>',
+    '<span class="mobile-tablet-title-text">Vyberte si svůj pokoj s výhledem</span>'
   );
 
   // 3. Náhrada položky 3 v hlavním seznamu parametrů (Vytápění je ústřední -> 1. patro s výhledem + ikona balcony.png)
@@ -1890,6 +1897,36 @@ const initInteractivity = () => {
       alert('Rezervační systém se načítá...');
     });
   });
+
+  // Progresivní Lazy Loading obrázků s předešitím o 300px
+  const lazyImages = document.querySelectorAll('img[loading="lazy"]');
+  if ('IntersectionObserver' in window) {
+    const imgObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          img.classList.add('img-loaded');
+          observer.unobserve(img);
+        }
+      });
+    }, { rootMargin: '300px 0px' });
+
+    lazyImages.forEach(img => imgObserver.observe(img));
+  }
+};
+
+// Preload Funkce Pro Hero Obrázky (Zrychlení prvního vykreslení)
+const preloadHeroImages = (pageKey) => {
+  const isMobile = window.innerWidth <= 768;
+  if (pageKey === 'ground') {
+    const src = isMobile ? '/mobile_hero_prizemi.webp' : '/balkony 1 copy.webp';
+    const img = new Image();
+    img.src = src;
+  } else if (pageKey === 'view') {
+    const src = isMobile ? '/mobile_vyhled.webp' : '/vyhled.webp';
+    const img = new Image();
+    img.src = src;
+  }
 };
 
 // Router
@@ -1906,6 +1943,10 @@ const route = (isInitial = false) => {
 
   const isNewPage = currentViewKey !== pageKey;
   currentViewKey = pageKey;
+
+  if (pageKey === 'ground' || pageKey === 'view') {
+    preloadHeroImages(pageKey);
+  }
 
   if (pageKey === 'ground') {
     app.innerHTML = getRoomGroundFloorHTML();

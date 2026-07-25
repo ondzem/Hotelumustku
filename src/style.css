@@ -1516,7 +1516,7 @@ h3 {
 .rooms-section {
   position: relative;
   width: 100%;
-  padding: 140px 0 160px 0;
+  padding: 45px 0 160px 0;
   background-color: #ffffff;
 }
 
@@ -1623,7 +1623,7 @@ h3 {
 .services-section {
   position: relative;
   width: 100%;
-  padding: 100px 0 60px 0;
+  padding: 60px 0 60px 0;
   background-color: #f2f2f2;
 }
 
@@ -1736,7 +1736,7 @@ h3 {
 .reviews-section {
   position: relative;
   width: 100%;
-  padding: 40px 0 110px 0;
+  padding: 25px 0 110px 0;
   background-color: #f2f2f2;
 }
 
@@ -1888,7 +1888,7 @@ h3 {
 .features-section {
   position: relative;
   width: 100%;
-  padding: 90px 0 110px 0;
+  padding: 50px 0 110px 0;
   background-color: #ffffff;
 }
 
@@ -2604,7 +2604,7 @@ h3 {
      ---------------------------------------------------- */
   .about-section {
     height: auto;
-    padding: 85px 0 85px 0;
+    padding: 45px 0 85px 0;
     position: relative;
     overflow: hidden;
     background-color: #ffffff;
@@ -2840,7 +2840,7 @@ h3 {
   .rooms-section {
     position: relative;
     width: 100%;
-    padding: clamp(75px, 8vw, 95px) 0 clamp(85px, 10vw, 115px) 0;
+    padding: clamp(30px, 4vw, 45px) 0 clamp(85px, 10vw, 115px) 0;
     background-color: #ffffff;
   }
 
@@ -2946,7 +2946,7 @@ h3 {
   .services-section {
     position: relative;
     width: 100%;
-    padding: clamp(75px, 8vw, 95px) 0 clamp(85px, 10vw, 115px) 0;
+    padding: clamp(45px, 6vw, 60px) 0 clamp(85px, 10vw, 115px) 0;
     background-color: #f2f2f2;
   }
 
@@ -3072,7 +3072,7 @@ h3 {
   .reviews-section {
     position: relative;
     width: 100%;
-    padding: clamp(30px, 4vw, 45px) 0 clamp(85px, 10vw, 115px) 0;
+    padding: clamp(25px, 3vw, 35px) 0 clamp(85px, 10vw, 115px) 0;
     background-color: #f2f2f2;
   }
 
@@ -3199,7 +3199,7 @@ h3 {
   .features-section {
     position: relative;
     width: 100%;
-    padding: clamp(75px, 8vw, 95px) 0 clamp(85px, 10vw, 115px) 0;
+    padding: clamp(45px, 6vw, 60px) 0 clamp(85px, 10vw, 115px) 0;
     background-color: #ffffff;
   }
 
@@ -3786,7 +3786,7 @@ h3 {
      ---------------------------------------------------- */
   .about-section {
     height: auto;
-    padding: clamp(110px, 9vw, 140px) 0;
+    padding: clamp(45px, 5vw, 65px) 0;
     position: relative;
     overflow: hidden;
     background-color: #ffffff;
@@ -5597,7 +5597,7 @@ h3 {
 /* 2. Sekce Detaily Pokojů (Specs Grid) - 1:1 Pixel Perfect Desktop */
 .room-specs-section {
   width: 100%;
-  padding: 140px 0 150px 0;
+  padding: 85px 0 150px 0;
   background-color: #ffffff;
 }
 
@@ -5828,7 +5828,7 @@ h3 {
 /* 4. Rozdělení Pokojů (Breakdown & Accordions 1:1 Desktop) */
 .room-breakdown-section {
   width: 100%;
-  padding: 100px 0 110px 0;
+  padding: 65px 0 110px 0;
   background-color: #f2f2f2;
 }
 
@@ -6064,7 +6064,7 @@ h3 {
 /* 5. Stravování Sekce v Detailu */
 .room-detail-dining-section {
   width: 100%;
-  padding: 115px 0 75px 0;
+  padding: 75px 0 75px 0;
   background-color: #ffffff;
 }
 
@@ -6132,7 +6132,7 @@ h3 {
 /* 6. Výhody Ubytování Sekce */
 .room-detail-features-section {
   width: 100%;
-  padding: 75px 0 115px 0;
+  padding: 50px 0 115px 0;
   background-color: #ffffff;
 }
 
@@ -6202,7 +6202,7 @@ h3 {
 /* 7. Podmínky Ubytování Sekce (1:1 Desktop) */
 .room-terms-section {
   width: 100%;
-  padding: 100px 0 110px 0;
+  padding: 65px 0 110px 0;
   background-color: #f2f2f2;
 }
 
@@ -6358,6 +6358,14 @@ h3 {
   margin-top: 75px;
 }
 
+.desktop-title-text {
+  display: inline;
+}
+
+.mobile-tablet-title-text {
+  display: none;
+}
+
 .mobile-sub-text,
 .mobile-btn-text {
   display: none;
@@ -6415,7 +6423,7 @@ h3 {
 
   .room-detail-hero-title {
     position: absolute !important;
-    top: calc(54% + 24px) !important;
+    top: calc(54% - 3px) !important;
     left: 50% !important;
     transform: translate(-50%, -50%) !important;
     width: 90% !important;
@@ -6471,7 +6479,7 @@ h3 {
   }
 
   .room-specs-section {
-    padding: 80px 0 100px 0 !important;
+    padding: 50px 0 100px 0 !important;
   }
 
   .room-specs-inner {
@@ -6552,7 +6560,7 @@ h3 {
   }
 
   .room-breakdown-section {
-    padding: 80px 0 115px 0 !important;
+    padding: 48px 0 115px 0 !important;
     background-color: #f2f2f2 !important;
   }
 
@@ -6658,7 +6666,7 @@ h3 {
   }
 
   .room-detail-dining-section {
-    padding: 80px 0 80px 0 !important;
+    padding: 48px 0 80px 0 !important;
     background-color: #ffffff !important;
   }
 
@@ -6749,7 +6757,7 @@ h3 {
   }
 
   .room-detail-features-section {
-    padding: 70px 0 80px 0 !important;
+    padding: 45px 0 80px 0 !important;
     background-color: #ffffff !important;
   }
 
@@ -6804,7 +6812,7 @@ h3 {
   }
 
   .room-terms-section {
-    padding: 70px 0 115px 0 !important;
+    padding: 48px 0 115px 0 !important;
     background-color: #f2f2f2 !important;
   }
 
@@ -6942,19 +6950,29 @@ h3 {
   }
 }
 
+@media (max-width: 1028px) {
+  .desktop-title-text {
+    display: none !important;
+  }
+
+  .mobile-tablet-title-text {
+    display: inline !important;
+  }
+}
+
 @media (min-width: 769px) and (max-width: 1028px) {
   .room-detail-hero-center {
-    top: calc(47% + 60px) !important;
-    max-width: 600px !important;
+    top: calc(48% + 75px) !important;
+    max-width: 650px !important;
   }
 
   .room-detail-hero-title {
     font-size: 31px !important;
+    margin-bottom: 24px !important;
   }
 
   .room-detail-hero-subtitle {
-    font-size: 15.5px !important;
-    max-width: 480px !important;
+    display: none !important;
   }
 
   .room-detail-hero-btn {
@@ -6967,7 +6985,7 @@ h3 {
   }
 
   .room-specs-section {
-    padding: 80px 0 90px 0 !important;
+    padding: 50px 0 90px 0 !important;
   }
 
   .room-specs-inner {
@@ -7007,7 +7025,7 @@ h3 {
   }
 
   .room-breakdown-section {
-    padding: 80px 0 90px 0 !important;
+    padding: 50px 0 90px 0 !important;
     background-color: #f2f2f2 !important;
   }
 
@@ -7060,7 +7078,7 @@ h3 {
   }
 
   .room-detail-dining-section {
-    padding: 90px 0 90px 0 !important;
+    padding: 55px 0 90px 0 !important;
   }
 
   .room-detail-dining-inner {
@@ -7081,7 +7099,7 @@ h3 {
   }
 
   .room-detail-features-section {
-    padding: 80px 0 90px 0 !important;
+    padding: 50px 0 90px 0 !important;
   }
 
   .room-detail-features-inner {
@@ -7106,7 +7124,7 @@ h3 {
   }
 
   .room-terms-section {
-    padding: 80px 0 90px 0 !important;
+    padding: 50px 0 90px 0 !important;
     background-color: #f2f2f2 !important;
   }
 
@@ -7503,4 +7521,14 @@ h3 {
 .lightbox-nav-btn:hover {
   background-color: rgba(255, 255, 255, 0.25);
   transform: translateY(-50%) scale(1.08);
+}
+
+/* Progresivní plynulé načítání fotek */
+img[loading="lazy"] {
+  opacity: 0.95;
+  transition: opacity 0.3s ease-out;
+}
+
+img[loading="lazy"].img-loaded {
+  opacity: 1;
 }
