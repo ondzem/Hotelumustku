@@ -12,42 +12,59 @@ html, body {
   box-sizing: border-box !important;
 }
 
-/* Ultimate WebKit / iOS Date Input Overflow Fix */
+/* Ultimate WebKit / iOS Date Input Fix (Left Aligned + Custom SVG Calendar Icon) */
 input[type="date"],
 input[type="date"].form-input {
   -webkit-appearance: none !important;
   -moz-appearance: none !important;
   appearance: none !important;
+  position: relative !important;
   display: block !important;
   width: 100% !important;
   max-width: 100% !important;
   min-width: 0 !important;
   box-sizing: border-box !important;
   margin: 0 !important;
-  padding: 0 12px !important;
+  padding: 0 42px 0 14px !important;
   height: 44px !important;
   font-size: 16px !important;
   font-family: inherit !important;
+  font-weight: 500 !important;
+  color: #1a1a1a !important;
+  text-align: left !important;
   background-color: #ffffff !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23697947' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 14px center !important;
+  background-size: 18px 18px !important;
   border: 1px solid #cccccc !important;
   border-radius: 1px !important;
-  overflow: hidden !important;
 }
 
 input[type="date"]::-webkit-date-and-time-value {
-  text-align: center !important;
+  text-align: left !important;
   margin: 0 !important;
   padding: 0 !important;
   min-height: 1.2em !important;
   width: 100% !important;
-  max-width: 100% !important;
   box-sizing: border-box !important;
 }
 
-input[type="date"]::-webkit-inner-spin-button,
+input[type="date"]::-webkit-inner-spin-button {
+  display: none !important;
+  -webkit-appearance: none !important;
+}
+
 input[type="date"]::-webkit-calendar-picker-indicator {
-  margin-right: 0 !important;
-  padding: 0 !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  opacity: 0 !important;
+  cursor: pointer !important;
 }
 
 /* 🏨 HERO SEKCE REZERVAČNÍ STRÁNKY (60vh výška, pozadí public/desna_hero_bg.webp) */
