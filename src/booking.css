@@ -12,6 +12,44 @@ html, body {
   box-sizing: border-box !important;
 }
 
+/* Ultimate WebKit / iOS Date Input Overflow Fix */
+input[type="date"],
+input[type="date"].form-input {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  padding: 0 12px !important;
+  height: 44px !important;
+  font-size: 16px !important;
+  font-family: inherit !important;
+  background-color: #ffffff !important;
+  border: 1px solid #cccccc !important;
+  border-radius: 1px !important;
+  overflow: hidden !important;
+}
+
+input[type="date"]::-webkit-date-and-time-value {
+  text-align: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 1.2em !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+input[type="date"]::-webkit-inner-spin-button,
+input[type="date"]::-webkit-calendar-picker-indicator {
+  margin-right: 0 !important;
+  padding: 0 !important;
+}
+
 /* 🏨 HERO SEKCE REZERVAČNÍ STRÁNKY (60vh výška, pozadí public/desna_hero_bg.webp) */
 .booking-hero-section {
   position: relative;
@@ -51,10 +89,18 @@ html, body {
 }
 
 .booking-hero-center {
-  position: relative;
-  z-index: 2;
+  position: absolute;
+  top: calc(47% + 120px);
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  margin-bottom: 70px;
+  width: 90%;
+  max-width: 780px;
+  z-index: 10;
 }
 
 .booking-hero-center-group {
@@ -928,8 +974,13 @@ html, body {
   }
 
   .booking-hero-center {
-    margin-bottom: 60px;
-    padding: 0 16px;
+    position: absolute !important;
+    top: 55% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 92% !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   .booking-hero-main-title {
