@@ -4978,7 +4978,7 @@ h3 {
   position: relative;
   width: 100%;
   background-color: #ffffff;
-  padding: 170px 0 130px 0;
+  padding: 95px 0 130px 0;
 }
 
 .rooms-list-inner {
@@ -5191,7 +5191,7 @@ h3 {
   }
 
   .rooms-list-section {
-    padding: clamp(105px, 11vw, 125px) 0 clamp(115px, 13vw, 145px) 0 !important;
+    padding: clamp(55px, 6vw, 75px) 0 clamp(115px, 13vw, 145px) 0 !important;
   }
 
   .rooms-list-inner {
