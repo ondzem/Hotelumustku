@@ -1,4 +1,7 @@
 import './style.css';
+import './booking.css';
+import { BookingSystem } from './components/BookingSystem.js';
+import { AdminDashboard } from './components/AdminDashboard.js';
 
 const getHeaderHTML = () => `
   <!-- Hlavička (Navigace a logo) -->
@@ -498,7 +501,7 @@ const getHomePageHTML = () => `
           <p>Náš hotel najdete ukrytý v tichém lesním údolí, stranou ruchu měst. Čeká vás komfortní ubytování, poctivá domácí kuchyně a osobní přístup, díky kterému se tu budete cítit jako doma.</p>
           <p>Ať už přijedete za odpočinkem, nebo za výlety po okolních horách, o pohodlný pobyt se postaráme za vás.</p>
         </div>
-        <button class="btn btn-about" id="about-more-btn">Přečíst náš příběh</button>
+        <button class="btn btn-about" id="about-more-btn">Nabídka pokojů</button>
       </div>
       
       <div class="about-img-top">
@@ -627,6 +630,46 @@ const getRoomsPageHTML = () => `
   ${getFeaturesHTML()}
   ${getSurroundingsHTML()}
   ${getCtaHTML()}
+  ${getFooterHTML()}
+`;
+
+// Render Funkce Pro Stránku "Rezervace"
+const getBookingPageHTML = () => `
+  <section class="hero-section booking-hero-section" id="uvod-rezervace">
+    <div class="hero-overlay"></div>
+    <div class="hero-inner">
+      ${getHeaderHTML()}
+
+      <div class="booking-hero-center">
+        <h1 class="booking-hero-main-title">Rezervace ubytování</h1>
+        <p class="booking-hero-subtitle">Hotel u Můstku — Desná v Jizerských horách</p>
+      </div>
+    </div>
+  </section>
+
+  <main class="booking-page-main">
+    <div id="booking-container" class="booking-section-wrapper"></div>
+  </main>
+  ${getFooterHTML()}
+`;
+
+// Render Funkce Pro Recepční Admin Panel
+const getAdminPageHTML = () => `
+  <section class="hero-section booking-hero-section admin-hero-section" id="uvod-admin">
+    <div class="hero-overlay"></div>
+    <div class="hero-inner">
+      ${getHeaderHTML()}
+
+      <div class="booking-hero-center">
+        <h1 class="booking-hero-main-title">Recepční systém</h1>
+        <p class="booking-hero-subtitle">Správa a přehled rezervací Hotelu u Můstku</p>
+      </div>
+    </div>
+  </section>
+
+  <main class="admin-page-main">
+    <div id="admin-container"></div>
+  </main>
   ${getFooterHTML()}
 `;
 
@@ -855,8 +898,16 @@ const getRoomGroundFloorHTML = () => `
                 </div>
 
                 <div class="drawer-action-btns">
-                  <button class="btn btn-specs-secondary btn-room-reserve">Vybrat pokoj</button>
-                  <button class="btn btn-specs-primary btn-room-pricing">Chci zjistit cenu</button>
+                  <div class="room-drawer-price-wrap" data-price="standard">
+                    <div class="price-main-block">
+                      <span class="price-amount">830 Kč</span>
+                      <span class="price-suffix">/ noc</span>
+                    </div>
+                    <div class="price-sub-block">
+                      <span class="price-detail">za osobu • včetně snídaně</span>
+                    </div>
+                  </div>
+                  <button class="btn btn-booking btn-room-reserve">Zvolit pokoj</button>
                 </div>
               </div>
             </div>
@@ -900,8 +951,16 @@ const getRoomGroundFloorHTML = () => `
                 </div>
 
                 <div class="drawer-action-btns">
-                  <button class="btn btn-specs-secondary btn-room-reserve">Vybrat pokoj</button>
-                  <button class="btn btn-specs-primary btn-room-pricing">Chci zjistit cenu</button>
+                  <div class="room-drawer-price-wrap" data-price="standard">
+                    <div class="price-main-block">
+                      <span class="price-amount">830 Kč</span>
+                      <span class="price-suffix">/ noc</span>
+                    </div>
+                    <div class="price-sub-block">
+                      <span class="price-detail">za osobu • včetně snídaně</span>
+                    </div>
+                  </div>
+                  <button class="btn btn-booking btn-room-reserve">Zvolit pokoj</button>
                 </div>
               </div>
             </div>
@@ -945,8 +1004,16 @@ const getRoomGroundFloorHTML = () => `
                 </div>
 
                 <div class="drawer-action-btns">
-                  <button class="btn btn-specs-secondary btn-room-reserve">Vybrat pokoj</button>
-                  <button class="btn btn-specs-primary btn-room-pricing">Chci zjistit cenu</button>
+                  <div class="room-drawer-price-wrap" data-price="standard">
+                    <div class="price-main-block">
+                      <span class="price-amount">830 Kč</span>
+                      <span class="price-suffix">/ noc</span>
+                    </div>
+                    <div class="price-sub-block">
+                      <span class="price-detail">za osobu • včetně snídaně</span>
+                    </div>
+                  </div>
+                  <button class="btn btn-booking btn-room-reserve">Zvolit pokoj</button>
                 </div>
               </div>
             </div>
@@ -990,8 +1057,16 @@ const getRoomGroundFloorHTML = () => `
                 </div>
 
                 <div class="drawer-action-btns">
-                  <button class="btn btn-specs-secondary btn-room-reserve">Vybrat pokoj</button>
-                  <button class="btn btn-specs-primary btn-room-pricing">Chci zjistit cenu</button>
+                  <div class="room-drawer-price-wrap" data-price="nadstandard">
+                    <div class="price-main-block">
+                      <span class="price-amount">890 Kč</span>
+                      <span class="price-suffix">/ noc</span>
+                    </div>
+                    <div class="price-sub-block">
+                      <span class="price-detail">za osobu • včetně snídaně</span>
+                    </div>
+                  </div>
+                  <button class="btn btn-booking btn-room-reserve">Zvolit pokoj</button>
                 </div>
               </div>
             </div>
@@ -1035,8 +1110,16 @@ const getRoomGroundFloorHTML = () => `
                 </div>
 
                 <div class="drawer-action-btns">
-                  <button class="btn btn-specs-secondary btn-room-reserve">Vybrat pokoj</button>
-                  <button class="btn btn-specs-primary btn-room-pricing">Chci zjistit cenu</button>
+                  <div class="room-drawer-price-wrap" data-price="standard">
+                    <div class="price-main-block">
+                      <span class="price-amount">830 Kč</span>
+                      <span class="price-suffix">/ noc</span>
+                    </div>
+                    <div class="price-sub-block">
+                      <span class="price-detail">za osobu • včetně snídaně</span>
+                    </div>
+                  </div>
+                  <button class="btn btn-booking btn-room-reserve">Zvolit pokoj</button>
                 </div>
               </div>
             </div>
@@ -1080,8 +1163,16 @@ const getRoomGroundFloorHTML = () => `
                 </div>
 
                 <div class="drawer-action-btns">
-                  <button class="btn btn-specs-secondary btn-room-reserve">Vybrat pokoj</button>
-                  <button class="btn btn-specs-primary btn-room-pricing">Chci zjistit cenu</button>
+                  <div class="room-drawer-price-wrap" data-price="standard">
+                    <div class="price-main-block">
+                      <span class="price-amount">830 Kč</span>
+                      <span class="price-suffix">/ noc</span>
+                    </div>
+                    <div class="price-sub-block">
+                      <span class="price-detail">za osobu • včetně snídaně</span>
+                    </div>
+                  </div>
+                  <button class="btn btn-booking btn-room-reserve">Zvolit pokoj</button>
                 </div>
               </div>
             </div>
@@ -1353,13 +1444,46 @@ const getRoomViewFloorHTML = () => {
   html = html.replace(oldBannerText, newBannerText);
   html = html.replace('class="room-banner-section"', 'class="room-banner-section room-view-banner"');
 
-  // 7. Rozdělení pokojů – Názvy pokojů pro Pokoje s výhledem
-  html = html.replace('Pokoj Turistický P1', 'Pokoj Standard P7');
-  html = html.replace('Pokoj Turistický P2', 'Pokoj Nadstandard A1');
-  html = html.replace('Pokoj Turistický P3', 'Pokoj Nadstandard Zen');
-  html = html.replace('Pokoj Turistický P4', 'Pokoj Standard P10');
-  html = html.replace('Pokoj Turistický P5', 'Pokoj Standard P11');
-  html = html.replace('Pokoj Turistický P6', 'Pokoj Standard P12');
+  // 7. Rozdělení pokojů – Názvy a ceny pokojů pro Pokoje s výhledem (Přesná replika bez kolizí)
+  html = html.replace('data-room="p1"', 'data-room="p7"');
+  html = html.replace('data-room="p2"', 'data-room="a1"');
+  html = html.replace('data-room="p3"', 'data-room="zen"');
+  html = html.replace('data-room="pa"', 'data-room="p10"');
+  html = html.replace('data-room="p5"', 'data-room="p11"');
+  html = html.replace('data-room="p6"', 'data-room="p12"');
+
+  html = html.replace('Pokoj Turistický P1', '__ROOM_1__');
+  html = html.replace('Pokoj Turistický P2', '__ROOM_2__');
+  html = html.replace('Pokoj Turistický P3', '__ROOM_3__');
+  html = html.replace('Pokoj Nadstandard A', '__ROOM_4__');
+  html = html.replace('Pokoj Standard P5', '__ROOM_5__');
+  html = html.replace('Pokoj Standard P6', '__ROOM_6__');
+
+  html = html.replace('__ROOM_1__', 'Pokoj Standard P7');
+  html = html.replace('__ROOM_2__', 'Pokoj Nadstandard A1');
+  html = html.replace('__ROOM_3__', 'Pokoj Nadstandard Zen');
+  html = html.replace('__ROOM_4__', 'Pokoj Standard P10');
+  html = html.replace('__ROOM_5__', 'Pokoj Standard P11');
+  html = html.replace('__ROOM_6__', 'Pokoj Standard P12');
+
+  // Přesný přepis cen pro pokoje A1 (890 Kč), Zen (890 Kč) a P10 (830 Kč)
+  const roomA1Start = html.indexOf('data-room="a1"');
+  const roomZenStart = html.indexOf('data-room="zen"');
+  const roomP10Start = html.indexOf('data-room="p10"');
+  const roomP11Start = html.indexOf('data-room="p11"');
+
+  if (roomA1Start !== -1 && roomZenStart !== -1 && roomP10Start !== -1 && roomP11Start !== -1) {
+    let a1Chunk = html.substring(roomA1Start, roomZenStart);
+    a1Chunk = a1Chunk.replace('data-price="standard"', 'data-price="nadstandard"').replace('830 Kč', '890 Kč');
+
+    let zenChunk = html.substring(roomZenStart, roomP10Start);
+    zenChunk = zenChunk.replace('data-price="standard"', 'data-price="nadstandard"').replace('830 Kč', '890 Kč');
+
+    let p10Chunk = html.substring(roomP10Start, roomP11Start);
+    p10Chunk = p10Chunk.replace('data-price="nadstandard"', 'data-price="standard"').replace('890 Kč', '830 Kč');
+
+    html = html.substring(0, roomA1Start) + a1Chunk + zenChunk + p10Chunk + html.substring(roomP11Start);
+  }
 
   return html;
 };
@@ -1766,6 +1890,27 @@ const initInteractivity = () => {
     }
   });
 
+  // Automatické rozbalení pokoje při přechodu z rezervačního formuláře ("Zobrazit pokoj")
+  if (window.pendingAutoOpenRoom) {
+    const targetRoomId = window.pendingAutoOpenRoom;
+    window.pendingAutoOpenRoom = null;
+    requestAnimationFrame(() => {
+      const targetItem = document.querySelector(`.room-breakdown-item[data-room="${targetRoomId}"]`);
+      if (targetItem) {
+        const toggleBtn = targetItem.querySelector('.btn-toggle-details');
+        const toggleText = targetItem.querySelector('.toggle-text');
+        
+        targetItem.classList.add('is-open');
+        if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'true');
+        if (toggleText) toggleText.textContent = 'Skrýt podrobnosti';
+
+        const yOffset = -90;
+        const y = targetItem.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+      }
+    });
+  }
+
   const btnSpecsMore = document.getElementById('btn-specs-more');
   const specsContent = document.querySelector('.room-specs-content');
 
@@ -1804,6 +1949,14 @@ const initInteractivity = () => {
       } else {
         window.location.hash = '#detaily-pokoju';
       }
+    });
+  }
+
+  const aboutMoreBtn = document.getElementById('about-more-btn');
+  if (aboutMoreBtn) {
+    aboutMoreBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.hash = '#nabidka-pokoju';
     });
   }
 
@@ -1890,11 +2043,14 @@ const initInteractivity = () => {
     });
   });
 
-  const bookingBtns = document.querySelectorAll('.btn-booking, .btn-promo, .btn-cta');
+  const bookingBtns = document.querySelectorAll('.btn-booking, .btn-promo, .btn-cta, .btn-room-reserve');
   bookingBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
       if (btn.id === 'btn-goto-prizemi' || btn.id === 'btn-goto-vyhled' || btn.id === 'btn-specs-rooms') return;
-      alert('Rezervační systém se načítá...');
+      e.preventDefault();
+      const roomItem = btn.closest('.room-breakdown-item');
+      const roomId = roomItem ? roomItem.dataset.room : '';
+      window.location.hash = roomId ? `#rezervace?room=${roomId}` : '#rezervace';
     });
   });
 
@@ -1935,7 +2091,14 @@ let currentViewKey = null;
 
 const route = (isInitial = false) => {
   const hash = window.location.hash;
-  const pageKey = (hash === '#pokoj-prizemi' || hash === '#pokoje-prizemi' || hash === '#pokoj-v-prizemi')
+  const isBooking = hash.startsWith('#rezervace');
+  const isAdmin = hash.startsWith('#admin');
+
+  const pageKey = isBooking
+    ? 'booking'
+    : isAdmin
+    ? 'admin'
+    : (hash === '#pokoj-prizemi' || hash === '#pokoje-prizemi' || hash === '#pokoj-v-prizemi')
     ? 'ground'
     : (hash === '#pokoj-vyhled' || hash === '#pokoje-vyhled' || hash === '#pokoj-s-vyhledem')
     ? 'view'
@@ -1948,7 +2111,15 @@ const route = (isInitial = false) => {
     preloadHeroImages(pageKey);
   }
 
-  if (pageKey === 'ground') {
+  if (pageKey === 'booking') {
+    app.innerHTML = getBookingPageHTML();
+    const urlParams = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
+    const roomId = urlParams.get('room') || 'p5';
+    new BookingSystem('booking-container').init(roomId);
+  } else if (pageKey === 'admin') {
+    app.innerHTML = getAdminPageHTML();
+    new AdminDashboard('admin-container').init();
+  } else if (pageKey === 'ground') {
     app.innerHTML = getRoomGroundFloorHTML();
   } else if (pageKey === 'view') {
     app.innerHTML = getRoomViewFloorHTML();
@@ -1958,8 +2129,8 @@ const route = (isInitial = false) => {
     app.innerHTML = getHomePageHTML();
   }
 
-  // Přesun na vrchol pouze při navigaci na NOVOU stránku (při refreshi zůstane stejná pozice)
-  if (!isInitial && isNewPage) {
+  // Přesun na vrchol pouze při běžné navigaci na NOVOU stránku (vynechá se při automatickém zobrazení pokoje)
+  if (!isInitial && isNewPage && !window.pendingAutoOpenRoom) {
     window.scrollTo(0, 0);
   }
 

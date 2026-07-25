@@ -1,0 +1,816 @@
+/* 🏨 HERO SEKCE REZERVAČNÍ STRÁNKY (60vh výška, pozadí public/desna_hero_bg.webp) */
+.booking-hero-section {
+  position: relative;
+  width: 100%;
+  height: 60vh;
+  min-height: 400px;
+  max-height: 520px;
+  background: url('/desna_hero_bg.webp') center 85%/cover no-repeat;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.booking-hero-section .hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.65) 0%, rgba(0, 0, 0, 0.45) 50%, rgba(0, 0, 0, 0.75) 100%);
+  z-index: 1;
+}
+
+.booking-hero-section .hero-inner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 32px;
+  box-sizing: border-box;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.booking-hero-center {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  margin-top: auto;
+  margin-bottom: 128px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.booking-hero-main-title {
+  position: static !important;
+  transform: none !important;
+  bottom: auto !important;
+  left: auto !important;
+  right: auto !important;
+  font-family: 'Outfit', sans-serif !important;
+  font-size: clamp(28px, 3.2vw, 36px) !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
+  margin: 0 0 2px 0 !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.015em !important;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5) !important;
+}
+
+.booking-hero-subtitle {
+  position: static !important;
+  transform: none !important;
+  font-family: 'Outfit', sans-serif !important;
+  font-size: clamp(15px, 1.6vw, 18px) !important;
+  color: #ffffff !important;
+  margin: 0 !important;
+  font-weight: 400 !important;
+  line-height: 1.4 !important;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Kontejner rezervačního průvodce */
+.booking-section-wrapper {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 48px 32px 80px 32px;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.booking-header-bar {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.booking-main-title {
+  font-size: 34px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.015em;
+}
+
+.booking-main-subtitle {
+  font-size: 17px;
+  color: #555555;
+  margin: 0;
+}
+
+/* Stepper (Kroky 1-2-3) */
+.booking-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0.55;
+  transition: opacity 0.2s ease;
+}
+
+.step-item.active,
+.step-item.completed {
+  opacity: 1;
+}
+
+.step-number {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  color: #1a1a1a;
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-item.active .step-number {
+  background-color: #697947;
+  color: #ffffff;
+}
+
+.step-item.completed .step-number {
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+.step-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.step-divider {
+  width: 48px;
+  height: 2px;
+  background-color: #dddddd;
+}
+
+/* Chybná hláška */
+.booking-error-alert {
+  background-color: #fdeded;
+  border-left: 4px solid #d32f2f;
+  color: #c62828;
+  padding: 16px 20px;
+  font-size: 15.5px;
+  font-weight: 500;
+  border-radius: 1px;
+  margin-bottom: 28px;
+}
+
+/* Mřížka 2 sloupců */
+.booking-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 32px;
+  align-items: start;
+}
+
+.booking-left-col {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Karty sekcí */
+.booking-card {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 1px;
+  padding: 28px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.card-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 20px 0;
+}
+
+.card-intro {
+  font-size: 15px;
+  color: #555;
+  margin: -10px 0 20px 0;
+}
+
+/* Formulářové prvky Senior-friendly */
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.form-label {
+  font-size: 15.5px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.form-label .required {
+  color: #d32f2f;
+}
+
+.form-select,
+.form-input,
+.form-textarea {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  font-size: 16px;
+  font-family: inherit;
+  color: #1a1a1a;
+  border: 1px solid #cccccc;
+  border-radius: 1px;
+  background-color: #fafafa;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.form-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 48px !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23333333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 22px center;
+  background-size: 16px 16px;
+  cursor: pointer;
+}
+
+.form-textarea {
+  height: auto;
+  padding: 12px 16px;
+}
+
+.form-select:focus,
+.form-input:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: #697947;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(105, 121, 71, 0.15);
+}
+
+.field-hint {
+  font-size: 13.5px;
+  color: #666666;
+}
+
+/* Mini preview pokoje */
+.room-mini-preview {
+  margin-top: 18px;
+  padding: 16px;
+  background-color: #f7f8f5;
+  border: 1px solid #e2e5dc;
+  border-left: 4px solid #697947;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.preview-room-thumb {
+  width: 110px;
+  height: 75px;
+  object-fit: cover;
+  border-radius: 1px;
+  flex-shrink: 0;
+  border: 1px solid #d0d0d0;
+}
+
+.preview-info-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.preview-room-title {
+  font-size: 16.5px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.preview-badge {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #697947;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.preview-desc {
+  font-size: 13.5px;
+  color: #555555;
+  margin: 0;
+}
+
+.btn-view-room-details {
+  margin-left: auto;
+  flex-shrink: 0;
+  height: 38px;
+  padding: 0 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #697947;
+  background-color: #ffffff;
+  border: 1px solid #697947;
+  border-radius: 1px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.btn-view-room-details .btn-arrow-icon {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.2s ease;
+}
+
+.btn-view-room-details:hover {
+  background-color: #697947;
+  color: #ffffff;
+}
+
+.btn-view-room-details:hover .btn-arrow-icon {
+  transform: translate(2px, -2px);
+}
+
+/* Datumový grid */
+.dates-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.nights-counter {
+  font-size: 16px;
+  color: #1a1a1a;
+  margin: 12px 0 0 0;
+}
+
+/* Počítadlo osob */
+.guests-picker-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.guest-counter-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background-color: #f9f9f9;
+  border: 1px solid #eeeeee;
+}
+
+.counter-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.counter-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-counter {
+  width: 38px;
+  height: 38px;
+  border-radius: 1px;
+  border: 1px solid #cccccc;
+  background-color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-counter:hover {
+  background-color: #eeeeee;
+}
+
+.counter-value {
+  font-size: 18px;
+  font-weight: 700;
+  min-width: 24px;
+  text-align: center;
+}
+
+/* Checkboxy doplňků */
+.checkbox-addons-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.checkbox-addon-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px;
+  border: 1px solid #eeeeee;
+  border-radius: 1px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.checkbox-addon-item:hover {
+  background-color: #f7f8f5;
+}
+
+.checkbox-addon-item input[type="checkbox"] {
+  width: 22px;
+  height: 22px;
+  accent-color: #697947;
+  cursor: pointer;
+  margin-top: 2px;
+}
+
+.addon-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 15.5px;
+}
+
+.addon-text small {
+  color: #666666;
+  font-size: 13.5px;
+}
+
+/* Pravý sloupec — Sticky cenová karta */
+.summary-sticky-card {
+  position: sticky;
+  top: 100px;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 1px;
+  padding: 28px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+}
+
+.summary-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 20px 0;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.summary-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.summary-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  font-size: 14.5px;
+  color: #444;
+}
+
+.summary-row.surcharge {
+  color: #b71c1c;
+}
+
+.summary-total-divider {
+  height: 1px;
+  background-color: #e0e0e0;
+  margin: 20px 0;
+}
+
+.summary-total-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.total-price-amount {
+  font-size: 28px;
+  font-weight: 700;
+  color: #697947;
+}
+
+.summary-perks {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13.5px;
+  color: #2e7d32;
+  margin: 20px 0 24px 0;
+  font-weight: 500;
+}
+
+/* Tlačítka postupu */
+.btn-booking-submit {
+  width: 100%;
+  height: 48px;
+  padding: 0 28px;
+  font-size: 17px;
+  font-weight: 500;
+  border-radius: 1px;
+  background-color: #697947;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  transition: background-color 0.2s ease;
+}
+
+.btn-booking-submit:hover {
+  background-color: #566438;
+}
+
+.step-nav-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 28px;
+}
+
+/* KROK 3: Úspěch & QR kód */
+.success-card {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  padding: 40px;
+  text-align: center;
+  border-radius: 1px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.success-icon-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  font-size: 32px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px auto;
+}
+
+.success-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 12px 0;
+}
+
+.success-code-badge {
+  font-size: 18px;
+  color: #697947;
+  margin: 0 0 20px 0;
+}
+
+.payment-instructions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin: 32px 0;
+  text-align: left;
+}
+
+.payment-info-box,
+.payment-qr-box {
+  background-color: #f7f8f5;
+  border: 1px solid #e0e0e0;
+  padding: 24px;
+  border-radius: 1px;
+}
+
+.box-subtitle {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 16px 0;
+}
+
+.payment-details-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 15px;
+}
+
+.payment-details-list li {
+  display: flex;
+  justify-content: space-between;
+}
+
+.qr-code-img {
+  width: 200px;
+  height: 200px;
+  display: block;
+  margin: 0 auto 8px auto;
+}
+
+.qr-hint {
+  display: block;
+  text-align: center;
+  color: #666;
+  font-size: 13px;
+}
+
+.hotel-contacts-card {
+  text-align: left;
+  background-color: #fafafa;
+  padding: 20px;
+  border-left: 4px solid #697947;
+  margin-bottom: 32px;
+}
+
+.hotel-contacts-card h4 {
+  margin: 0 0 10px 0;
+}
+
+.hotel-contacts-card p {
+  margin: 4px 0;
+  font-size: 14.5px;
+}
+
+.success-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+/* 🏢 ADMIN DASHBOARD STYLES */
+.admin-login-wrapper {
+  max-width: 480px;
+  margin: 80px auto;
+  padding: 0 20px;
+}
+
+.admin-login-card {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  padding: 36px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.admin-dashboard-wrapper {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+.admin-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.admin-page-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+}
+
+.admin-top-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.admin-filters-card {
+  display: flex;
+  gap: 24px;
+  background-color: #ffffff;
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  margin-bottom: 24px;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-table-card {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 14.5px;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.admin-table th {
+  background-color: #f7f8f5;
+  font-weight: 700;
+}
+
+.badge-status {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.badge-pending { background-color: #fff8e1; color: #f57f17; }
+.badge-confirmed { background-color: #e8f5e9; color: #2e7d32; }
+.badge-paid { background-color: #e0f2f1; color: #00695c; }
+.badge-cancelled { background-color: #ffebee; color: #c62828; }
+
+.table-actions-td {
+  display: flex;
+  gap: 6px;
+}
+
+.btn-action {
+  padding: 4px 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  border-radius: 1px;
+  border: 1px solid #ccc;
+  background: #fff;
+  cursor: pointer;
+}
+
+.btn-act-confirm { border-color: #2e7d32; color: #2e7d32; }
+.btn-act-pay { border-color: #00695c; color: #00695c; }
+.btn-act-cancel { border-color: #c62828; color: #c62828; }
+
+/* Responzivita pro mobil a tablet */
+@media (max-width: 992px) {
+  .booking-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .payment-instructions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dates-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-stepper {
+    flex-wrap: wrap;
+  }
+
+  .step-divider {
+    display: none;
+  }
+}

@@ -205,20 +205,21 @@ a {
   left: 0;
   width: 100%;
   color: #ffffff;
-  font-size: 44px;
-  font-weight: 500;
+  font-family: 'Outfit', sans-serif !important;
+  font-size: clamp(28px, 3.2vw, 36px) !important;
+  font-weight: 600 !important;
   text-align: center;
   margin: 0;
-  line-height: 1.1;
-  letter-spacing: -0.015em;
+  line-height: 1.2 !important;
+  letter-spacing: -0.015em !important;
   z-index: 10;
   white-space: nowrap;
 }
 
-/* Tlačítka (Jemně zvětšený odstup pod nadpisem - top: 496px) */
+/* Tlačítka (Přiblížená pod nadpisem pro desktop) */
 .hero-buttons {
   position: absolute;
-  top: 496px;
+  top: 468px;
   left: 50%;
   transform: translateX(-50%);
   width: 414px;
@@ -346,11 +347,14 @@ a {
 
   .hero-title {
     top: 435px;
-    font-size: 50px;
+    font-family: 'Outfit', sans-serif !important;
+    font-size: clamp(28px, 3.2vw, 36px) !important;
+    font-weight: 600 !important;
+    line-height: 1.2 !important;
   }
 
   .hero-buttons {
-    top: 520px;
+    top: 496px;
     width: 444px;
   }
 
@@ -793,11 +797,14 @@ a {
 
   .hero-title {
     top: 450px;
-    font-size: 58px;
+    font-family: 'Outfit', sans-serif !important;
+    font-size: clamp(28px, 3.2vw, 36px) !important;
+    font-weight: 600 !important;
+    line-height: 1.2 !important;
   }
 
   .hero-buttons {
-    top: 538px;
+    top: 512px;
     width: 484px;
   }
 
@@ -1641,7 +1648,7 @@ h3 {
   line-height: 1.25;
   letter-spacing: -0.015em;
   text-align: left;
-  margin: 0 0 64px 0;
+  margin: 0 0 40px 0;
   padding-left: 0;
 }
 
@@ -3666,13 +3673,16 @@ h3 {
     transform: translate(-50%, -50%);
     width: 90%;
     max-width: 650px;
-    font-size: 31px;
+    font-family: 'Outfit', sans-serif !important;
+    font-size: clamp(28px, 3.2vw, 36px) !important;
+    font-weight: 600 !important;
+    line-height: 1.2 !important;
     white-space: normal;
   }
 
-  /* Tlačítka přiblížená těsně pod hlavním nadpisem (jemně zmenšená pro tablety) */
+  /* Tlačítka přiblížená těsně pod hlavním nadpisem (pro tablety) */
   .hero-buttons {
-    top: calc(54% + 68px);
+    top: calc(54% + 46px);
     bottom: auto;
     left: 50%;
     transform: translateX(-50%);
@@ -3728,20 +3738,25 @@ h3 {
     transform: translate(-50%, -50%);
     width: 90%;
     max-width: 500px;
-    font-size: 30px;
-    font-weight: 600;
-    line-height: 1.25;
+    font-family: 'Outfit', sans-serif !important;
+    font-size: clamp(28px, 3.2vw, 36px) !important;
+    font-weight: 600 !important;
+    line-height: 1.2 !important;
+    letter-spacing: -0.015em !important;
     text-align: center;
+    margin: 0 0 2px 0 !important;
   }
 
   .rooms-hero-subtitle {
-    top: calc(44% + 40px);
+    top: calc(44% + 23.6px);
     left: 50%;
     transform: translateX(-50%);
     width: 90%;
     max-width: 320px;
-    font-size: 14.5px;
-    line-height: 1.4;
+    font-family: 'Outfit', sans-serif !important;
+    font-size: clamp(15px, 1.6vw, 18px) !important;
+    font-weight: 400 !important;
+    line-height: 1.4 !important;
     text-align: center;
   }
 
@@ -4373,18 +4388,23 @@ h3 {
     top: 44%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 34px;
-    font-weight: 600;
+    font-family: 'Outfit', sans-serif !important;
+    font-size: clamp(28px, 3.2vw, 36px) !important;
+    font-weight: 600 !important;
+    line-height: 1.2 !important;
+    letter-spacing: -0.015em !important;
   }
 
   .rooms-hero-subtitle {
-    top: calc(44% + 44px);
+    top: calc(44% + 23.6px);
     left: 50%;
     transform: translateX(-50%);
     width: 86%;
     max-width: 360px;
-    font-size: 15.5px;
-    line-height: 1.4;
+    font-family: 'Outfit', sans-serif !important;
+    font-size: clamp(15px, 1.6vw, 18px) !important;
+    font-weight: 400 !important;
+    line-height: 1.4 !important;
   }
 
   .rooms-date-picker-bar {
@@ -4881,19 +4901,29 @@ h3 {
   overflow: visible;
 }
 
+.rooms-hero-title {
+  font-family: 'Outfit', sans-serif !important;
+  font-size: clamp(28px, 3.2vw, 36px) !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.015em !important;
+  margin: 0 0 2px 0 !important;
+}
+
 .rooms-hero-subtitle {
   position: absolute;
-  top: 468px;
+  top: 450px;
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
   max-width: 780px;
-  font-size: 18px;
-  font-weight: 400;
+  font-family: 'Outfit', sans-serif !important;
+  font-size: clamp(15px, 1.6vw, 18px) !important;
+  font-weight: 400 !important;
   color: #ffffff;
   text-align: center;
   margin: 0;
-  line-height: 1.5;
+  line-height: 1.4 !important;
   z-index: 10;
 }
 
@@ -4978,7 +5008,7 @@ h3 {
   position: relative;
   width: 100%;
   background-color: #ffffff;
-  padding: 95px 0 130px 0;
+  padding: 120px 0 115px 0;
 }
 
 .rooms-list-inner {
@@ -5191,7 +5221,7 @@ h3 {
   }
 
   .rooms-list-section {
-    padding: clamp(55px, 6vw, 75px) 0 clamp(115px, 13vw, 145px) 0 !important;
+    padding: clamp(75px, 8vw, 90px) 0 clamp(100px, 11vw, 130px) 0 !important;
   }
 
   .rooms-list-inner {
@@ -5336,21 +5366,25 @@ h3 {
     transform: translate(-50%, -50%) !important;
     width: 90% !important;
     max-width: 480px !important;
-    font-size: 31px !important;
+    font-family: 'Outfit', sans-serif !important;
+    font-size: clamp(28px, 3.2vw, 36px) !important;
     font-weight: 600 !important;
-    line-height: 1.25 !important;
+    line-height: 1.2 !important;
+    letter-spacing: -0.015em !important;
     text-align: center !important;
-    margin: 0 !important;
+    margin: 0 0 2px 0 !important;
   }
 
   .rooms-hero-subtitle {
     position: absolute !important;
-    top: calc(48% + 58px) !important;
+    top: calc(48% + 43.6px) !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
     width: 85% !important;
     max-width: 330px !important;
-    font-size: 14.5px !important;
+    font-family: 'Outfit', sans-serif !important;
+    font-size: clamp(15px, 1.6vw, 18px) !important;
+    font-weight: 400 !important;
     line-height: 1.4 !important;
     text-align: center !important;
     margin: 0 !important;
@@ -5409,18 +5443,23 @@ h3 {
     top: calc(46% + 20px) !important;
     left: 50% !important;
     transform: translate(-50%, -50%) !important;
-    font-size: 36px !important;
+    font-family: 'Outfit', sans-serif !important;
+    font-size: clamp(28px, 3.2vw, 36px) !important;
     font-weight: 600 !important;
+    line-height: 1.2 !important;
+    letter-spacing: -0.015em !important;
   }
 
   .rooms-hero-subtitle {
     position: absolute !important;
-    top: calc(46% + 64px) !important;
+    top: calc(46% + 43.6px) !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
     width: 86% !important;
     max-width: 380px !important;
-    font-size: 15.5px !important;
+    font-family: 'Outfit', sans-serif !important;
+    font-size: clamp(15px, 1.6vw, 18px) !important;
+    font-weight: 400 !important;
     line-height: 1.4 !important;
   }
 
@@ -5551,25 +5590,27 @@ h3 {
 .room-detail-hero-title {
   position: static !important;
   transform: none !important;
-  font-size: 36px !important;
+  font-family: 'Outfit', sans-serif !important;
+  font-size: clamp(28px, 3.2vw, 36px) !important;
   font-weight: 600 !important;
   color: #ffffff !important;
   text-align: center !important;
-  margin: 0 0 16px 0 !important;
-  line-height: 1.25 !important;
+  margin: 0 0 2px 0 !important;
+  line-height: 1.2 !important;
   letter-spacing: -0.015em !important;
 }
 
 .room-detail-hero-subtitle {
   position: static !important;
   transform: none !important;
-  font-size: 15.5px !important;
+  font-family: 'Outfit', sans-serif !important;
+  font-size: clamp(15px, 1.6vw, 18px) !important;
   font-weight: 400 !important;
   color: #ffffff !important;
   text-align: center !important;
   max-width: 580px !important;
-  margin: 0 0 28px 0 !important;
-  line-height: 1.5 !important;
+  margin: 0 0 24px 0 !important;
+  line-height: 1.4 !important;
 }
 
 .room-detail-hero-btn {
@@ -5845,7 +5886,7 @@ h3 {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-bottom: 60px;
+  margin-bottom: 55px;
 }
 
 .room-breakdown-title {
@@ -5854,7 +5895,7 @@ h3 {
   color: #000000;
   text-align: center;
   letter-spacing: -0.015em;
-  margin: 0 0 44px 0;
+  margin: 0 0 36px 0;
 }
 
 .btn-breakdown-cta {
@@ -6050,7 +6091,77 @@ h3 {
 .drawer-action-btns {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 28px;
+}
+
+.room-drawer-price-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0px;
+  font-family: inherit;
+}
+
+.room-drawer-price-wrap .price-main-block {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  line-height: 1.0;
+}
+
+.room-drawer-price-wrap .price-amount {
+  font-size: 24px;
+  font-weight: 700;
+  color: #697947;
+  letter-spacing: -0.02em;
+  line-height: 1.0;
+  white-space: nowrap;
+}
+
+.room-drawer-price-wrap .price-suffix {
+  font-size: 15px;
+  font-weight: 500;
+  color: #1a1a1a;
+  white-space: nowrap;
+  line-height: 1.0;
+}
+
+.room-drawer-price-wrap .price-sub-block {
+  display: flex;
+  align-items: center;
+  margin-top: 1px;
+}
+
+.room-drawer-price-wrap .price-detail {
+  font-size: 13px;
+  font-weight: 500;
+  color: #666666;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.btn-room-reserve,
+.drawer-action-btns .btn-room-reserve {
+  height: 45px !important;
+  padding: 0 28px !important;
+  font-size: 17px !important;
+  font-weight: 500 !important;
+  border-radius: 1px !important;
+  background-color: #697947 !important;
+  color: #ffffff !important;
+  border: none !important;
+  cursor: pointer;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  white-space: nowrap !important;
+  transition: background-color 0.2s ease;
+}
+
+.btn-room-reserve:hover,
+.drawer-action-btns .btn-room-reserve:hover {
+  background-color: #566438 !important;
 }
 
 .room-breakdown-footer-note {
@@ -6074,6 +6185,17 @@ h3 {
   margin: 0 auto;
   padding: 0 40px;
   box-sizing: border-box;
+}
+
+.room-detail-dining-title {
+  font-size: 34px;
+  font-weight: 600;
+  color: #000000;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  text-align: left;
+  margin: 0 0 40px 0;
+  padding-left: 0;
 }
 
 .room-detail-dining-section .services-cards-wrap {
@@ -6147,10 +6269,11 @@ h3 {
 .room-detail-features-title {
   font-size: 34px;
   font-weight: 600;
-  color: #1a1a1a;
-  margin-bottom: 48px;
-  text-align: left;
+  color: #000000;
+  line-height: 1.25;
   letter-spacing: -0.015em;
+  text-align: left;
+  margin: 0 0 40px 0;
 }
 
 .room-features-cards-grid {
@@ -6571,10 +6694,11 @@ h3 {
   }
 
   .room-breakdown-header {
-    display: block !important;
-    margin-bottom: 28px !important;
+    display: flex !important;
+    flex-direction: column !important;
     align-items: flex-start !important;
-    order: 1 !important;
+    margin-bottom: 38px !important;
+    order: initial !important;
   }
 
   .room-breakdown-title {
@@ -6582,17 +6706,17 @@ h3 {
     font-weight: 600 !important;
     color: #000000 !important;
     text-align: left !important;
-    margin: 0 !important;
+    margin: 0 0 32px 0 !important;
   }
 
   .room-breakdown-list {
-    order: 2 !important;
+    order: initial !important;
     border-top: 1px solid #C8C8C8 !important;
   }
 
   .btn-breakdown-cta {
-    order: 3 !important;
-    margin-top: 36px !important;
+    order: initial !important;
+    margin-top: 0 !important;
     align-self: flex-start !important;
     height: 36px !important;
     padding: 0 20px !important;
@@ -6643,22 +6767,62 @@ h3 {
   .drawer-action-btns {
     width: 100% !important;
     display: flex !important;
-    gap: 10px !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
   }
 
-  .btn-room-reserve {
-    background-color: transparent !important;
+  .room-drawer-price-wrap {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0px !important;
+  }
+
+  .room-drawer-price-wrap .price-main-block {
+    line-height: 1.0 !important;
+  }
+
+  .room-drawer-price-wrap .price-amount {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    color: #697947 !important;
+    letter-spacing: -0.015em !important;
+    line-height: 1.0 !important;
+  }
+
+  .room-drawer-price-wrap .price-suffix {
+    font-size: 13.5px !important;
+    font-weight: 500 !important;
     color: #1a1a1a !important;
-    border: 1px solid #1a1a1a !important;
-    height: 36px !important;
-    padding: 0 14px !important;
-    font-size: 13.5px !important;
+    line-height: 1.0 !important;
   }
 
-  .btn-room-pricing {
+  .room-drawer-price-wrap .price-sub-block {
+    margin-top: 1px !important;
+  }
+
+  .room-drawer-price-wrap .price-detail {
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    color: #666666 !important;
+    line-height: 1.2 !important;
+  }
+
+  .btn-room-reserve,
+  .drawer-action-btns .btn-room-reserve {
+    background-color: #697947 !important;
+    color: #ffffff !important;
+    border: none !important;
     height: 36px !important;
-    padding: 0 14px !important;
-    font-size: 13.5px !important;
+    padding: 0 20px !important;
+    font-size: 14.5px !important;
+    font-weight: 500 !important;
+    border-radius: 1px !important;
+    white-space: nowrap !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
 
   .room-breakdown-footer-note {
@@ -6967,8 +7131,10 @@ h3 {
   }
 
   .room-detail-hero-title {
-    font-size: 31px !important;
-    margin-bottom: 24px !important;
+    font-family: 'Outfit', sans-serif !important;
+    font-size: clamp(28px, 3.2vw, 36px) !important;
+    margin-bottom: 2px !important;
+    line-height: 1.2 !important;
   }
 
   .room-detail-hero-subtitle {
@@ -7039,14 +7205,14 @@ h3 {
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
-    margin-bottom: 44px !important;
+    margin-bottom: 48px !important;
     order: initial !important;
   }
 
   .room-breakdown-title {
     font-size: 32px !important;
     font-weight: 600 !important;
-    margin-bottom: 24px !important;
+    margin-bottom: 28px !important;
     text-align: center !important;
   }
 
@@ -7057,6 +7223,16 @@ h3 {
     height: 40px !important;
     padding: 0 24px !important;
     font-size: 15.5px !important;
+  }
+
+  .btn-room-reserve,
+  .drawer-action-btns .btn-room-reserve {
+    height: 40px !important;
+    padding: 0 24px !important;
+    font-size: 15.5px !important;
+    background-color: #697947 !important;
+    color: #ffffff !important;
+    border: none !important;
   }
 
   .room-breakdown-name {
@@ -7247,14 +7423,18 @@ h3 {
   }
 
   .room-detail-hero-title {
-    font-size: 42px !important;
-    margin-bottom: 20px !important;
+    font-family: 'Outfit', sans-serif !important;
+    font-size: clamp(28px, 3.2vw, 36px) !important;
+    margin-bottom: 2px !important;
+    line-height: 1.2 !important;
   }
 
   .room-detail-hero-subtitle {
-    font-size: 18px !important;
+    font-family: 'Outfit', sans-serif !important;
+    font-size: clamp(15px, 1.6vw, 18px) !important;
     max-width: 680px !important;
-    margin-bottom: 32px !important;
+    margin-bottom: 24px !important;
+    line-height: 1.4 !important;
   }
 
   .room-detail-hero-btn,
@@ -7262,7 +7442,8 @@ h3 {
   .btn-breakdown-cta,
   .btn-specs-primary,
   .btn-specs-secondary,
-  .btn-terms-cta {
+  .btn-terms-cta,
+  .btn-room-reserve {
     height: 48px !important;
     padding: 0 32px !important;
     font-size: 18px !important;
@@ -7334,14 +7515,18 @@ h3 {
   }
 
   .room-detail-hero-title {
-    font-size: 48px !important;
-    margin-bottom: 24px !important;
+    font-family: 'Outfit', sans-serif !important;
+    font-size: clamp(28px, 3.2vw, 36px) !important;
+    margin-bottom: 2px !important;
+    line-height: 1.2 !important;
   }
 
   .room-detail-hero-subtitle {
-    font-size: 20px !important;
+    font-family: 'Outfit', sans-serif !important;
+    font-size: clamp(15px, 1.6vw, 18px) !important;
     max-width: 780px !important;
-    margin-bottom: 36px !important;
+    margin-bottom: 24px !important;
+    line-height: 1.4 !important;
   }
 
   .room-detail-hero-btn,
@@ -7349,7 +7534,8 @@ h3 {
   .btn-breakdown-cta,
   .btn-specs-primary,
   .btn-specs-secondary,
-  .btn-terms-cta {
+  .btn-terms-cta,
+  .btn-room-reserve {
     height: 52px !important;
     padding: 0 36px !important;
     font-size: 19.5px !important;
