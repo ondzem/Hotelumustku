@@ -1,7 +1,21 @@
 // 🏨 Senior-Friendly Booking System Component for Hotel u Můstku
 import { MOCK_ROOMS, isSupabaseConfigured, supabase, getStoredReservations, saveStoredReservation } from '../lib/supabaseClient.js';
 import { calculateReservationPrice, generateReservationCode, generateManageToken } from '../utils/pricing.js';
-import { generateQrCodeDataUrl, BANK_ACCOUNT } from '../utils/qrPayment.js';
+function getTodayDateString() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const da = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${da}`;
+}
+
+function formatCzechDateStr(isoStr) {
+  if (!isoStr) return '';
+  const parts = isoStr.split('-');
+  if (parts.length !== 3) return isoStr;
+  const [year, month, day] = parts;
+  return `${parseInt(day, 10)}. ${parseInt(month, 10)}. ${year}`;
+}
 
 export class BookingSystem {
   constructor(containerId) {
