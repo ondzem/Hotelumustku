@@ -256,53 +256,70 @@ export class BookingSystem {
       <div class="terms-modal-overlay" id="terms-modal-overlay" aria-hidden="true">
         <div class="terms-modal-card">
           <div class="terms-modal-header">
-            <h3 class="terms-modal-title">📋 Podmínky ubytování & Stornopodmínky</h3>
+            <h3 class="terms-modal-title">Podmínky ubytování & stornopodmínky</h3>
             <button type="button" class="terms-modal-close" id="btn-close-terms-modal" aria-label="Zavřít">&times;</button>
           </div>
 
           <div class="terms-modal-body">
-            <div class="terms-info-box flex-info-box">
-              <div class="terms-info-icon">🕒</div>
-              <div class="terms-info-content">
-                <strong>Časy příjezdu a odjezdu:</strong>
-                <p>Standardní <strong>Check-in</strong> je od <strong>15:00 hod.</strong> a <strong>Check-out</strong> do <strong>10:00 hod.</strong></p>
-                <small class="terms-highlight-sub">💡 Po předchozí dohodě s recepcí vám časy příjezdu či odjezdu rádi individuálně přizpůsobíme.</small>
+            <!-- 1. Časy příjezdu a odjezdu -->
+            <div class="terms-row-item">
+              <span class="terms-row-title">Příjezd a odjezd (Check-in & Check-out)</span>
+              <div class="terms-row-desc">
+                <p>Standardní čas <strong>Check-in je od 15:00 hod.</strong> a čas <strong>Check-out do 10:00 hod.</strong></p>
+                <p class="terms-sub-note">Po předchozí dohodě s recepcí lze časy příjezdu či odjezdu individuálně přizpůsobit.</p>
               </div>
             </div>
 
-            <div class="terms-info-box reschedule-info-box">
-              <div class="terms-info-icon">🤝</div>
-              <div class="terms-info-content">
-                <strong>Flexibilní změna termínu:</strong>
-                <p>V případě jakýchkoliv nečekaných událostí či nemoci se s námi neváhejte okamžitě spojit. Rádi s vámi po dohodě <strong>přesuneme termín pobytu</strong> na jiný vyhovující termín zdarma a s osobním přístupem.</p>
+            <!-- 2. Flexibilita změny termínu -->
+            <div class="terms-row-item">
+              <span class="terms-row-title">Flexibilní přesun termínu</span>
+              <div class="terms-row-desc">
+                <p>V případě jakýchkoliv nečekaných událostí se s námi neváhejte spojit. Po vzájemné dohodě vám rádi flexibilně přesuneme termín pobytu na jiný vyhovující termín.</p>
               </div>
             </div>
 
-            <div class="terms-storno-wrap">
-              <h4 class="storno-title">Stornopodmínky při zrušení pobytu</h4>
-              <div class="terms-storno-table">
-                <div class="storno-row">
-                  <span class="storno-label">Více než 21 dní před příjezdem:</span>
-                  <span class="storno-val green">ZDARMA <small>(bez poplatku)</small></span>
+            <!-- 3. Stornopodmínky -->
+            <div class="terms-row-item storno-section-item">
+              <span class="terms-row-title">Stornopodmínky při zrušení rezervace</span>
+              
+              <div class="clean-storno-table">
+                <div class="clean-storno-row">
+                  <span class="storno-time-label">Více než 21 dní před příjezdem:</span>
+                  <div class="storno-fee-group">
+                    <span class="storno-fee-val">Zdarma</span>
+                    <span class="storno-fee-sub">bez storno poplatku</span>
+                  </div>
                 </div>
-                <div class="storno-row">
-                  <span class="storno-label">21 – 14 dní před příjezdem:</span>
-                  <span class="storno-val">40 % <small>z ceny pobytu</small></span>
+
+                <div class="clean-storno-row">
+                  <span class="storno-time-label">21 – 14 dní před příjezdem:</span>
+                  <div class="storno-fee-group">
+                    <span class="storno-fee-val">40 %</span>
+                    <span class="storno-fee-sub">z celkové ceny pobytu</span>
+                  </div>
                 </div>
-                <div class="storno-row">
-                  <span class="storno-label">14 – 7 dní před příjezdem:</span>
-                  <span class="storno-val">60 % <small>z ceny pobytu</small></span>
+
+                <div class="clean-storno-row">
+                  <span class="storno-time-label">14 – 7 dní před příjezdem:</span>
+                  <div class="storno-fee-group">
+                    <span class="storno-fee-val">60 %</span>
+                    <span class="storno-fee-sub">z celkové ceny pobytu</span>
+                  </div>
                 </div>
-                <div class="storno-row">
-                  <span class="storno-label">Méně než 7 dní / Nedojezd:</span>
-                  <span class="storno-val red">100 % <small>z ceny pobytu</small></span>
+
+                <div class="clean-storno-row">
+                  <span class="storno-time-label">Méně než 7 dní před příjezdem:</span>
+                  <div class="storno-fee-group">
+                    <span class="storno-fee-val">100 %</span>
+                    <span class="storno-fee-sub">z celkové ceny pobytu nebo nedojezd</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
           <div class="terms-modal-footer">
-            <button type="button" class="btn btn-secondary btn-close-modal-footer" id="btn-close-modal-footer">Rozumím, zavřít</button>
+            <button type="button" class="btn-terms-close-footer" id="btn-close-modal-footer">Zavřít okno</button>
           </div>
         </div>
       </div>
@@ -360,13 +377,9 @@ export class BookingSystem {
               
               <div class="terms-card-bottom-row">
                 <p class="nights-counter">Délka pobytu: <strong>${nights} ${nights === 1 ? 'noc' : (nights < 5 ? 'noci' : 'nocí')}</strong></p>
-                <button type="button" class="btn-terms-modal-trigger" id="btn-open-terms-modal">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="16" x2="12" y2="12"></line>
-                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                  </svg>
-                  <span>Podmínky ubytování & stornopodmínky</span>
+                <button type="button" class="btn-terms-link" id="btn-open-terms-modal">
+                  <span>Podmínky ubytování a storno</span>
+                  <span class="link-arrow">&rarr;</span>
                 </button>
               </div>
             </div>
