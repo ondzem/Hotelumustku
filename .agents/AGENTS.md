@@ -53,5 +53,10 @@ Všechny vnitřní kontejnery sekcí (`.hero-inner`, `.about-inner`, `.promo-inn
    - Pravý kraj překrývajících se prvků/fotek musí přísně lícovat k pravému okrajovému paddingu kontejneru (`right: 32px; left: auto !important;`).
    - Výška sekcí a pozicování prvků musí využívat `clamp()` / `%`, aby při zvětšování tabletu směrem k 1028px nevnikaly neestetické mezery ani přetékání.
 
+## 🚫 Pravidlo pro prohlížeč a vizuální kontrolu
+
+* **STRIKTNÍ ZÁKAZ BROWSER_SUBAGENT**: NIKDY nepoužívat automatizovaný nástroj `browser_subagent` k otevírání prohlížeče. Je nefunkční a uživatelem zakázaný.
+
 ## 💬 Pravidlo pro komunikaci
 Odpovídat vždy stručně, věcně a přímo k věci. Bez zbytečných omáček, rekapitulací a zdlouhavých popisů kroků. Uvádět pouze podstatné informace.
+

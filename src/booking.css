@@ -8,7 +8,6 @@ html, body {
 .booking-wizard-wrapper,
 .booking-grid,
 .booking-card {
-  max-width: 100% !important;
   box-sizing: border-box !important;
 }
 
@@ -72,8 +71,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   position: relative;
   width: 100%;
   height: 60vh;
-  min-height: 400px;
-  max-height: 520px;
+  min-height: 480px;
+  max-height: 600px;
   background: url('/desna_hero_bg.webp') center 85%/cover no-repeat;
   display: flex;
   flex-direction: column;
@@ -97,7 +96,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   width: 100%;
   max-width: 1440px;
   margin: 0 auto;
-  padding: 0 32px;
+  padding: 0 33px;
   box-sizing: border-box;
   height: 100%;
   display: flex;
@@ -107,16 +106,16 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .booking-hero-center {
   position: absolute;
-  top: calc(47% + 120px);
+  top: 300px;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
   width: 90%;
-  max-width: 780px;
+  max-width: 800px;
   z-index: 10;
 }
 
@@ -155,14 +154,21 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.4) !important;
 }
 
-/* Kontejner rezervačního průvodce */
+/* Kontejner rezervačního průvodce (1:1 Shoda s úvodní stránkou - max-width 1440px, 33px padding) */
 .booking-section-wrapper {
   width: 100%;
   max-width: 1440px;
   margin: 0 auto;
-  padding: 48px 32px 80px 32px;
+  padding: 48px 33px 80px 33px;
   box-sizing: border-box;
   font-family: inherit;
+}
+
+.booking-wizard-wrapper {
+  width: 100%;
+  max-width: 1374px;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .booking-header-bar {
@@ -264,9 +270,13 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 /* Mřížka 2 sloupců */
 .booking-grid {
   display: grid;
-  grid-template-columns: 1fr 380px;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  width: 100%;
+  max-width: 1374px;
+  margin: 0 auto;
   gap: 32px;
   align-items: start;
+  box-sizing: border-box;
 }
 
 .booking-left-col {
@@ -955,10 +965,37 @@ input[type="date"]::-webkit-calendar-picker-indicator {
    RESPONZIVITA REZERVAČNÍHO SYSTÉMU PRO MOBILY A TABLETY
    ==================================================== */
 
+/* Desktopy (1750px+) */
+@media (min-width: 1750px) {
+  .booking-hero-section {
+    min-height: 520px;
+    max-height: 640px;
+  }
+
+  .booking-hero-center {
+    top: 320px;
+  }
+
+  .booking-section-wrapper {
+    max-width: 1620px;
+    padding: 60px 48px 100px 48px;
+  }
+
+  .booking-wizard-wrapper,
+  .booking-grid {
+    max-width: 1524px;
+    gap: 40px;
+  }
+}
+
 /* Tablet (768px - 992px) */
 @media (max-width: 992px) {
+  .booking-hero-center {
+    top: 260px !important;
+  }
+
   .booking-section-wrapper {
-    padding: 32px 24px 60px 24px;
+    padding: 32px 32px 60px 32px;
   }
 
   .booking-grid {
@@ -985,16 +1022,16 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 @media (max-width: 767px) {
   /* 1. Hero Sekce na mobilu */
   .booking-hero-section {
-    height: 48vh;
-    min-height: 340px;
-    max-height: 440px;
+    height: 52vh;
+    min-height: 420px;
+    max-height: 500px;
   }
 
   .booking-hero-center {
     position: absolute !important;
-    top: 55% !important;
+    top: 230px !important;
     left: 50% !important;
-    transform: translate(-50%, -50%) !important;
+    transform: translateX(-50%) !important;
     width: 92% !important;
     margin: 0 !important;
     padding: 0 !important;
@@ -1011,9 +1048,9 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     line-height: 1.4 !important;
   }
 
-  /* 2. Odsazení a blízkost karet na mobilu */
+  /* 2. Odsazení a blízkost karet na mobilu (Sjednoceno na 20px padding dle úvodní stránky) */
   .booking-section-wrapper {
-    padding: 16px 12px 36px 12px;
+    padding: 24px 20px 48px 20px;
   }
 
   .booking-left-col {
