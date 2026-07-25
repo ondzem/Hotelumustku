@@ -1,6 +1,5 @@
 // Pricing Calculation Engine for Hotel u Můstku
 export const CITY_TAX_PER_ADULT_NIGHT = 20; // 20 Kč / dospělý / noc
-export const SINGLE_NIGHT_SURCHARGE = 200; // 200 Kč / osoba při pobytu na 1 noc
 export const HALF_BOARD_PER_PERSON_NIGHT = 195; // 195 Kč / osoba / noc
 export const DOG_PER_DAY = 150; // 150 Kč / den
 export const EBIKE_PER_DAY = 15; // 15 Kč / den
@@ -27,15 +26,33 @@ export function calculateReservationPrice({
   // 1. Base accommodation (includes breakfast)
   let accommodationPrice = baseRatePerPersonNight * totalGuests * safeNights;
 
-  // 2. Single night surcharge (+200 Kč / person)
+  // 2. Single night & Single occupancy surcharge calculation:
+  // - Nadstandard (A, A1, Zen): +300 Kč / osoba / noc
+  // - Standard i Turistické pokoje: +200 Kč / osoba / noc
+  let singleNightRatePerPerson = (roomType === 'nadstandard' || roomType === 'kat_a') ? 300 : 200;
+
   let singleNightSurchargeTotal = 0;
-  if (safeNights === 1) {
-    singleNightSurchargeTotal = SINGLE_NIGHT_SURCHARGE * totalGuests;
-    accommodationPrice += singleNightSurchargeTotal;
+  let surchargeReason = ''; // 'single_night' | 'single_occupancy' | 'both' | 'none'
+
+  if (singleNightRatePerPerson > 0) {
+    if (safeNights === 1 && totalGuests === 1) {
+      singleNightSurchargeTotal = singleNightRatePerPerson * 1;
+      surchargeReason = 'both';
+    } else if (safeNights === 1) {
+      singleNightSurchargeTotal = singleNightRatePerPerson * totalGuests;
+      surchargeReason = 'single_night';
+    } else if (totalGuests === 1) {
+      singleNightSurchargeTotal = singleNightRatePerPerson * safeNights;
+      surchargeReason = 'single_occupancy';
+    }
+
+    if (singleNightSurchargeTotal > 0) {
+      accommodationPrice += singleNightSurchargeTotal;
+    }
   }
 
-  // 3. City Tax (20 Kč / person / night)
-  const cityTax = CITY_TAX_PER_ADULT_NIGHT * totalGuests * safeNights;
+  // 3. City Tax (Včetně v základní ceně ubytování)
+  const cityTax = 0;
 
   // 4. Granular Addons Calculation
   const safeHalfBoardCount = hasHalfBoard
@@ -63,7 +80,9 @@ export function calculateReservationPrice({
     persons: totalGuests,
     totalGuests,
     accommodationPrice,
+    singleNightRatePerPerson,
     singleNightSurchargeTotal,
+    surchargeReason,
     cityTax,
     hasHalfBoard,
     halfBoardCount: safeHalfBoardCount,

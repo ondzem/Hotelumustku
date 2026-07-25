@@ -395,6 +395,19 @@ export class BookingSystem {
               </div>
             </div>
 
+            <!-- 3. Příplatek za 1 noc a neobsazené lůžko -->
+            <div class="terms-row-item">
+              <span class="terms-row-title">Příplatek za 1 noc a samostatné obsazení pokoje</span>
+              <div class="terms-row-desc">
+                <p>Při pobytu na <strong>pouze 1 noc</strong> nebo při <strong>samostatném obsazení pokoje jedním hostem</strong> se k ceně připočítává přiměřený příplatek:</p>
+                <ul class="terms-surcharge-list" style="margin: 8px 0 8px 18px; padding: 0; list-style-type: disc; font-size: 14.5px; color: #333333; line-height: 1.6;">
+                  <li><strong>Standardní a Turistické pokoje:</strong> +200 Kč / osoba / noc</li>
+                  <li><strong>Nadstandardní pokoje (A, A1, Zen):</strong> +300 Kč / osoba / noc</li>
+                </ul>
+                <p class="terms-sub-note">Tento příplatek kompenzuje zvýšené režijní náklady spojené s kompletní přípravou pokoje, úklidem a výměnou ložního prádla pro krátkodobý pobyt či neobsazené lůžko.</p>
+              </div>
+            </div>
+
             <!-- 3. Stornopodmínky -->
             <div class="terms-row-item storno-section-item">
               <span class="terms-row-title">Stornopodmínky při zrušení rezervace</span>
@@ -602,8 +615,12 @@ export class BookingSystem {
                 ${pricing.singleNightSurchargeTotal > 0 ? `
                   <div class="summary-row surcharge">
                     <div class="row-info">
-                      <span class="row-label">Příplatek za 1 noc</span>
-                      <span class="row-details">(+200 Kč / os)</span>
+                      <span class="row-label">
+                        ${pricing.surchargeReason === 'single_occupancy'
+                          ? 'Příplatek za neobsazené lůžko'
+                          : (pricing.surchargeReason === 'both' ? 'Příplatek za 1 noc & 1 osobu' : 'Příplatek za 1 noc')}
+                      </span>
+                      <span class="row-details">(+${pricing.singleNightRatePerPerson} Kč / ${pricing.surchargeReason === 'single_occupancy' ? 'noc' : 'osoba'})</span>
                     </div>
                     <span class="row-price">+${pricing.singleNightSurchargeTotal} Kč</span>
                   </div>
@@ -639,13 +656,15 @@ export class BookingSystem {
                   </div>
                 ` : ''}
 
-                <div class="summary-row">
-                  <div class="row-info">
-                    <span class="row-label">Místní poplatek z pobytu</span>
-                    <span class="row-details">(20 Kč / osoba / noc • ${pricing.totalGuests}x os, ${nights}x noc)</span>
+                ${pricing.cityTax > 0 ? `
+                  <div class="summary-row">
+                    <div class="row-info">
+                      <span class="row-label">Místní poplatek z pobytu</span>
+                      <span class="row-details">(20 Kč / osoba / noc • ${pricing.totalGuests}x os, ${nights}x noc)</span>
+                    </div>
+                    <span class="row-price">${pricing.cityTax} Kč</span>
                   </div>
-                  <span class="row-price">${pricing.cityTax} Kč</span>
-                </div>
+                ` : ''}
               </div>
 
               <div class="summary-total-divider"></div>
