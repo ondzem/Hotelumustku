@@ -260,7 +260,7 @@ export class BookingSystem {
               </div>
 
               <div class="room-mini-preview">
-                <img src="${room.image || '/hezky pokoj 1.webp'}" alt="${room.name}" class="preview-room-thumb">
+                <img src="${room.image || '/hezky pokoj 1.webp'}" alt="${room.name}" class="preview-room-thumb" loading="lazy" decoding="async">
                 <div class="preview-info-wrap">
                   <span class="preview-badge">${room.floor === 'prizemi' ? 'Přízemí' : '1. Patro (Výhled na můstky)'}</span>
                   <h4 class="preview-room-title">${room.name}</h4>

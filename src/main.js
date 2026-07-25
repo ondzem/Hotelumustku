@@ -12,7 +12,7 @@ const getHeaderHTML = () => `
     </div>
     
     <a href="#domu" class="header-logo">
-      <img src="/Logo/white logo.webp" alt="Hotel u Můstku Logo">
+      <img src="/Logo/white logo.webp" alt="Hotel u Můstku Logo" loading="eager" fetchpriority="high">
     </a>
     
     <div class="nav-right">
