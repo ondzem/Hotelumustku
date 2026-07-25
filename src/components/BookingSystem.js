@@ -435,7 +435,7 @@ export class BookingSystem {
         <div class="booking-grid">
           <!-- Levý sloupec: Výběr pokoje a parametrů -->
           <div class="booking-left-col">
-            <div class="booking-card">
+            <div class="booking-card card-step-1">
               <h3 class="card-title">1. Výběr pokoje <span class="required-badge">* Povinné</span></h3>
               <div class="room-selector-group">
                 <label for="room-select" class="form-label">Vybraný pokoj:</label>
