@@ -255,9 +255,85 @@ export class BookingSystem {
       </div>
 
       ${this.renderTermsModal()}
+      ${this.renderCustomCalendarModal()}
     `;
 
     this.attachEventListeners();
+  }
+
+  renderCustomCalendarModal() {
+    if (!this.state.showCalendarModal) return '';
+
+    const targetField = this.state.activeDateField || 'dateFrom';
+    const currentDateStr = this.state[targetField] || getTodayDateString();
+
+    if (!this.state.calYearMonth) {
+      const [y, m] = currentDateStr.split('-').map(Number);
+      this.state.calYearMonth = { year: y, month: m };
+    }
+
+    const { year, month } = this.state.calYearMonth;
+
+    const monthNames = [
+      'Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen',
+      'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec'
+    ];
+
+    const firstDayIndex = (new Date(year, month - 1, 1).getDay() + 6) % 7; // Mon = 0
+    const daysInMonth = new Date(year, month, 0).getDate();
+    const todayStr = getTodayDateString();
+
+    let daysHtml = '';
+    for (let i = 0; i < firstDayIndex; i++) {
+      daysHtml += `<div class="cal-day cal-day-empty"></div>`;
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dayStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const isPast = dayStr < todayStr;
+      const isSelected = dayStr === this.state[targetField];
+      const isFrom = dayStr === this.state.dateFrom;
+      const isTo = dayStr === this.state.dateTo;
+      const isInRange = dayStr > this.state.dateFrom && dayStr < this.state.dateTo;
+
+      let dayClass = 'cal-day';
+      if (isPast) dayClass += ' is-disabled';
+      if (isSelected) dayClass += ' is-selected';
+      if (isFrom) dayClass += ' is-from';
+      if (isTo) dayClass += ' is-to';
+      if (isInRange) dayClass += ' in-range';
+
+      daysHtml += `
+        <button type="button" class="${dayClass}" data-date="${dayStr}" ${isPast ? 'disabled' : ''}>
+          ${day}
+        </button>
+      `;
+    }
+
+    return `
+      <div class="cal-modal-overlay" id="cal-modal-overlay">
+        <div class="cal-modal-card">
+          <div class="cal-modal-header">
+            <button type="button" class="cal-nav-btn" id="cal-prev-month" aria-label="Předchozí měsíc">&lsaquo;</button>
+            <h4 class="cal-month-title">${monthNames[month - 1]} ${year}</h4>
+            <button type="button" class="cal-nav-btn" id="cal-next-month" aria-label="Následující měsíc">&rsaquo;</button>
+            <button type="button" class="cal-close-btn" id="cal-close-btn" aria-label="Zavřít">&times;</button>
+          </div>
+
+          <div class="cal-week-days">
+            <span>Po</span><span>Út</span><span>St</span><span>Čt</span><span>Pá</span><span>So</span><span>Ne</span>
+          </div>
+
+          <div class="cal-grid">
+            ${daysHtml}
+          </div>
+
+          <div class="cal-modal-footer">
+            <span class="cal-hint-text">Vyberte ${targetField === 'dateFrom' ? 'datum příjezdu (Check-in)' : 'datum odjezdu (Check-out)'}</span>
+          </div>
+        </div>
+      </div>
+    `;
   }
 
   renderTermsModal() {
@@ -389,16 +465,32 @@ export class BookingSystem {
               </div>
             </div>
 
-            <div class="booking-card">
+            <div class="booking-card card-step-2">
               <h3 class="card-title">2. Termín pobytu <span class="required-badge">* Povinné</span></h3>
               <div class="dates-grid">
                 <div class="form-field">
-                  <label for="date-from" class="form-label">Datum příjezdu (Check-in od 15:00):</label>
-                  <input type="date" id="date-from" class="form-input" value="${this.state.dateFrom}">
+                  <label for="date-from-btn" class="form-label">Datum příjezdu (Check-in od 15:00):</label>
+                  <button type="button" id="date-from-btn" class="custom-date-btn" data-field="dateFrom">
+                    <span class="custom-date-text">${formatCzechDateStr(this.state.dateFrom)}</span>
+                    <svg class="custom-date-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#697947" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                      <line x1="16" y1="2" x2="16" y2="6"></line>
+                      <line x1="8" y1="2" x2="8" y2="6"></line>
+                      <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                  </button>
                 </div>
                 <div class="form-field">
-                  <label for="date-to" class="form-label">Datum odjezdu (Check-out do 10:00):</label>
-                  <input type="date" id="date-to" class="form-input" value="${this.state.dateTo}">
+                  <label for="date-to-btn" class="form-label">Datum odjezdu (Check-out do 10:00):</label>
+                  <button type="button" id="date-to-btn" class="custom-date-btn" data-field="dateTo">
+                    <span class="custom-date-text">${formatCzechDateStr(this.state.dateTo)}</span>
+                    <svg class="custom-date-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#697947" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                      <line x1="16" y1="2" x2="16" y2="6"></line>
+                      <line x1="8" y1="2" x2="8" y2="6"></line>
+                      <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                  </button>
                 </div>
               </div>
               
@@ -702,17 +794,25 @@ export class BookingSystem {
         });
       }
 
-      const dateFrom = document.getElementById('date-from');
-      const dateTo = document.getElementById('date-to');
-      if (dateFrom) {
-        dateFrom.addEventListener('change', (e) => {
-          this.state.dateFrom = e.target.value;
+      const btnDateFrom = document.getElementById('date-from-btn');
+      const btnDateTo = document.getElementById('date-to-btn');
+      if (btnDateFrom) {
+        btnDateFrom.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.state.activeDateField = 'dateFrom';
+          this.state.showCalendarModal = true;
+          const [y, m] = (this.state.dateFrom || getTodayDateString()).split('-').map(Number);
+          this.state.calYearMonth = { year: y, month: m };
           this.render();
         });
       }
-      if (dateTo) {
-        dateTo.addEventListener('change', (e) => {
-          this.state.dateTo = e.target.value;
+      if (btnDateTo) {
+        btnDateTo.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.state.activeDateField = 'dateTo';
+          this.state.showCalendarModal = true;
+          const [y, m] = (this.state.dateTo || getTodayDateString()).split('-').map(Number);
+          this.state.calYearMonth = { year: y, month: m };
           this.render();
         });
       }
@@ -868,10 +968,86 @@ export class BookingSystem {
     }
 
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && modalOverlay && modalOverlay.classList.contains('is-open')) {
-        closeModal();
+      if (e.key === 'Escape') {
+        if (modalOverlay && modalOverlay.classList.contains('is-open')) closeModal();
+        if (this.state.showCalendarModal) {
+          this.state.showCalendarModal = false;
+          this.render();
+        }
       }
     };
     document.addEventListener('keydown', handleKeyDown);
+
+    // Custom Hotel Calendar Modal listeners
+    const calOverlay = this.container.querySelector('#cal-modal-overlay');
+    if (calOverlay) {
+      const btnPrev = calOverlay.querySelector('#cal-prev-month');
+      const btnNext = calOverlay.querySelector('#cal-next-month');
+      const btnClose = calOverlay.querySelector('#cal-close-btn');
+
+      if (btnPrev) {
+        btnPrev.addEventListener('click', (e) => {
+          e.preventDefault();
+          let { year, month } = this.state.calYearMonth;
+          month--;
+          if (month < 1) { month = 12; year--; }
+          this.state.calYearMonth = { year, month };
+          this.render();
+        });
+      }
+
+      if (btnNext) {
+        btnNext.addEventListener('click', (e) => {
+          e.preventDefault();
+          let { year, month } = this.state.calYearMonth;
+          month++;
+          if (month > 12) { month = 1; year++; }
+          this.state.calYearMonth = { year, month };
+          this.render();
+        });
+      }
+
+      if (btnClose) {
+        btnClose.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.state.showCalendarModal = false;
+          this.render();
+        });
+      }
+
+      calOverlay.addEventListener('click', (e) => {
+        if (e.target === calOverlay) {
+          this.state.showCalendarModal = false;
+          this.render();
+        }
+      });
+
+      calOverlay.querySelectorAll('.cal-day:not(.is-disabled)').forEach(dayBtn => {
+        dayBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const selectedDate = dayBtn.dataset.date;
+          const targetField = this.state.activeDateField || 'dateFrom';
+          
+          if (targetField === 'dateFrom') {
+            this.state.dateFrom = selectedDate;
+            if (this.state.dateTo <= this.state.dateFrom) {
+              const d = new Date(selectedDate);
+              d.setDate(d.getDate() + 2);
+              const y = d.getFullYear();
+              const m = String(d.getMonth() + 1).padStart(2, '0');
+              const da = String(d.getDate()).padStart(2, '0');
+              this.state.dateTo = `${y}-${m}-${da}`;
+            }
+          } else {
+            if (selectedDate > this.state.dateFrom) {
+              this.state.dateTo = selectedDate;
+            }
+          }
+          
+          this.state.showCalendarModal = false;
+          this.render();
+        });
+      });
+    }
   }
 }
