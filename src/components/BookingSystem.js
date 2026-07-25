@@ -226,17 +226,26 @@ export class BookingSystem {
         <div class="booking-stepper">
           <div class="step-item ${this.currentStep === 1 ? 'active' : ''} ${this.currentStep > 1 ? 'completed' : ''}">
             <span class="step-number">1</span>
-            <span class="step-label">Termín & Doplňky</span>
+            <span class="step-label">
+              <span class="label-full">Termín & Doplňky</span>
+              <span class="label-short">Termín</span>
+            </span>
           </div>
           <div class="step-divider"></div>
           <div class="step-item ${this.currentStep === 2 ? 'active' : ''} ${this.currentStep > 2 ? 'completed' : ''}">
             <span class="step-number">2</span>
-            <span class="step-label">Údaje hosta</span>
+            <span class="step-label">
+              <span class="label-full">Údaje hosta</span>
+              <span class="label-short">Údaje</span>
+            </span>
           </div>
           <div class="step-divider"></div>
           <div class="step-item ${this.currentStep === 3 ? 'active' : ''}">
             <span class="step-number">3</span>
-            <span class="step-label">Potvrzení & Platba</span>
+            <span class="step-label">
+              <span class="label-full">Potvrzení & Platba</span>
+              <span class="label-short">Platba</span>
+            </span>
           </div>
         </div>
 
