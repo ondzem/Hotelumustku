@@ -328,9 +328,17 @@ export class BookingSystem {
       <div class="cal-modal-overlay" id="cal-modal-overlay">
         <div class="cal-modal-card">
           <div class="cal-modal-header">
-            <button type="button" class="cal-nav-btn" id="cal-prev-month" aria-label="Předchozí měsíc">&lsaquo;</button>
+            <button type="button" class="cal-nav-btn" id="cal-prev-month" aria-label="Předchozí měsíc">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
             <h4 class="cal-month-title">${monthNames[month - 1]} ${year}</h4>
-            <button type="button" class="cal-nav-btn" id="cal-next-month" aria-label="Následující měsíc">&rsaquo;</button>
+            <button type="button" class="cal-nav-btn" id="cal-next-month" aria-label="Následující měsíc">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
             <button type="button" class="cal-close-btn" id="cal-close-btn" aria-label="Zavřít">&times;</button>
           </div>
 
