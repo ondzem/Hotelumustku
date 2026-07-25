@@ -17,6 +17,8 @@ export function calculateReservationPrice({
   hasDog = false,
   hasEbike = false,
   hasHalfBoard = false,
+  halfBoardCount = null,
+  ebikeCount = 1,
 }) {
   const baseRatePerPersonNight = (roomType === 'nadstandard' || roomType === 'kat_a') ? 890 : 830;
   const safeNights = Math.max(1, parseInt(nights) || 1);
@@ -35,17 +37,20 @@ export function calculateReservationPrice({
   // 3. City Tax (20 Kč / person / night)
   const cityTax = CITY_TAX_PER_ADULT_NIGHT * totalGuests * safeNights;
 
-  // 4. Addons
-  let addonsPrice = 0;
-  if (hasHalfBoard) {
-    addonsPrice += HALF_BOARD_PER_PERSON_NIGHT * totalGuests * safeNights;
-  }
-  if (hasDog) {
-    addonsPrice += DOG_PER_DAY * safeNights;
-  }
-  if (hasEbike) {
-    addonsPrice += EBIKE_PER_DAY * safeNights;
-  }
+  // 4. Granular Addons Calculation
+  const safeHalfBoardCount = hasHalfBoard
+    ? Math.min(totalGuests, Math.max(1, parseInt(halfBoardCount ?? totalGuests)))
+    : 0;
+  const halfBoardPriceTotal = safeHalfBoardCount * HALF_BOARD_PER_PERSON_NIGHT * safeNights;
+
+  // Dog fee: 150 Kč / day for the ENTIRE ROOM (regardless of person count)
+  const dogPriceTotal = hasDog ? DOG_PER_DAY * safeNights : 0;
+
+  // E-bike fee: 15 Kč / day per e-bike
+  const safeEbikeCount = hasEbike ? Math.max(1, parseInt(ebikeCount || 1)) : 0;
+  const ebikePriceTotal = safeEbikeCount * EBIKE_PER_DAY * safeNights;
+
+  const addonsPrice = halfBoardPriceTotal + dogPriceTotal + ebikePriceTotal;
 
   // 5. Total
   const totalPrice = accommodationPrice + cityTax + addonsPrice;
@@ -60,6 +65,14 @@ export function calculateReservationPrice({
     accommodationPrice,
     singleNightSurchargeTotal,
     cityTax,
+    hasHalfBoard,
+    halfBoardCount: safeHalfBoardCount,
+    halfBoardPriceTotal,
+    hasDog,
+    dogPriceTotal,
+    hasEbike,
+    ebikeCount: safeEbikeCount,
+    ebikePriceTotal,
     addonsPrice,
     totalPrice,
   };

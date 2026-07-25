@@ -23,7 +23,9 @@ export class BookingSystem {
       children: 0,
       hasDog: false,
       hasEbike: false,
+      ebikeCount: 1,
       hasHalfBoard: false,
+      halfBoardCount: 2,
       guestName: '',
       guestEmail: '',
       guestPhone: '',
@@ -72,11 +74,14 @@ export class BookingSystem {
     return calculateReservationPrice({
       roomType: room.type,
       nights,
+      persons: this.state.adults,
       adults: this.state.adults,
       children: this.state.children,
       hasDog: this.state.hasDog,
       hasEbike: this.state.hasEbike,
+      ebikeCount: this.state.ebikeCount,
       hasHalfBoard: this.state.hasHalfBoard,
+      halfBoardCount: this.state.halfBoardCount,
     });
   }
 
@@ -126,7 +131,9 @@ export class BookingSystem {
       children_count: this.state.children,
       has_dog: this.state.hasDog,
       has_ebike: this.state.hasEbike,
+      ebike_count: pricing.ebikeCount,
       has_half_board: this.state.hasHalfBoard,
+      half_board_count: pricing.halfBoardCount,
       total_price: pricing.totalPrice,
       accommodation_price: pricing.accommodationPrice,
       city_tax: pricing.cityTax,
@@ -153,7 +160,9 @@ export class BookingSystem {
           children_count: reservationData.children_count,
           has_dog: reservationData.has_dog,
           has_ebike: reservationData.has_ebike,
+          ebike_count: reservationData.ebike_count,
           has_half_board: reservationData.has_half_board,
+          half_board_count: reservationData.half_board_count,
           total_price: reservationData.total_price,
           accommodation_price: reservationData.accommodation_price,
           city_tax: reservationData.city_tax,
@@ -247,7 +256,7 @@ export class BookingSystem {
           <!-- Levý sloupec: Výběr pokoje a parametrů -->
           <div class="booking-left-col">
             <div class="booking-card">
-              <h3 class="card-title">1. Výběr pokoje</h3>
+              <h3 class="card-title">1. Výběr pokoje <span class="required-badge">* Povinné</span></h3>
               <div class="room-selector-group">
                 <label for="room-select" class="form-label">Vybraný pokoj:</label>
                 <select id="room-select" class="form-select">
@@ -277,7 +286,7 @@ export class BookingSystem {
             </div>
 
             <div class="booking-card">
-              <h3 class="card-title">2. Termín pobytu</h3>
+              <h3 class="card-title">2. Termín pobytu <span class="required-badge">* Povinné</span></h3>
               <div class="dates-grid">
                 <div class="form-field">
                   <label for="date-from" class="form-label">Datum příjezdu (Check-in od 14:00):</label>
@@ -292,7 +301,7 @@ export class BookingSystem {
             </div>
 
             <div class="booking-card">
-              <h3 class="card-title">3. Počet osob</h3>
+              <h3 class="card-title">3. Počet osob <span class="required-badge">* Povinné</span></h3>
               <div class="guests-picker-grid">
                 <div class="guest-counter-item">
                   <span class="counter-label">Osoby (ubytovaní hosté):</span>
@@ -306,31 +315,55 @@ export class BookingSystem {
             </div>
 
             <div class="booking-card">
-              <h3 class="card-title">4. Doplňkové služby</h3>
+              <h3 class="card-title">4. Doplňkové služby <span class="optional-badge">Volitelné</span></h3>
               <div class="checkbox-addons-list">
-                <label class="checkbox-addon-item">
-                  <input type="checkbox" id="addon-halfboard" ${this.state.hasHalfBoard ? 'checked' : ''}>
-                  <span class="addon-text">
-                    <strong>Dokoupit polopenzi</strong> (+195 Kč / osoba / noc)
-                    <small>Poctivá teplá večeře podávaná v hotelové restauraci.</small>
-                  </span>
-                </label>
+                <div class="checkbox-addon-group">
+                  <label class="checkbox-addon-item">
+                    <input type="checkbox" id="addon-halfboard" ${this.state.hasHalfBoard ? 'checked' : ''}>
+                    <span class="addon-text">
+                      <strong>Dokoupit polopenzi</strong> (+195 Kč / osoba / noc)
+                      <small>Poctivá teplá večeře podávaná v hotelové restauraci.</small>
+                    </span>
+                  </label>
+                  ${this.state.hasHalfBoard ? `
+                    <div class="addon-subcontrols">
+                      <span class="subcontrol-label">Počet osob s polopenzí:</span>
+                      <div class="counter-controls">
+                        <button class="btn-counter btn-counter-minus" data-target="halfBoardCount">-</button>
+                        <span class="counter-value">${pricing.halfBoardCount}</span>
+                        <button class="btn-counter btn-counter-plus" data-target="halfBoardCount">+</button>
+                      </div>
+                    </div>
+                  ` : ''}
+                </div>
 
                 <label class="checkbox-addon-item">
                   <input type="checkbox" id="addon-dog" ${this.state.hasDog ? 'checked' : ''}>
                   <span class="addon-text">
-                    <strong>Pobyt s pejskem</strong> (+150 Kč / den)
-                    <small>Váš čtyřnohý mazlíček je u nás vítán.</small>
+                    <strong>Pobyt s pejskem</strong> (+150 Kč / noc pro celý pokoj)
+                    <small>Váš čtyřnohý mazlíček je u nás vítán (poplatek za celý pokoj).</small>
                   </span>
                 </label>
 
-                <label class="checkbox-addon-item">
-                  <input type="checkbox" id="addon-ebike" ${this.state.hasEbike ? 'checked' : ''}>
-                  <span class="addon-text">
-                    <strong>Nabíjení elektrokola</strong> (+15 Kč / den)
-                    <small>Bezpečná úschovna a dobíjecí stanice v areálu.</small>
-                  </span>
-                </label>
+                <div class="checkbox-addon-group">
+                  <label class="checkbox-addon-item">
+                    <input type="checkbox" id="addon-ebike" ${this.state.hasEbike ? 'checked' : ''}>
+                    <span class="addon-text">
+                      <strong>Nabíjení elektrokola</strong> (+15 Kč / den / ks)
+                      <small>Bezpečná úschovna a dobíjecí stanice v areálu.</small>
+                    </span>
+                  </label>
+                  ${this.state.hasEbike ? `
+                    <div class="addon-subcontrols">
+                      <span class="subcontrol-label">Počet elektrokol:</span>
+                      <div class="counter-controls">
+                        <button class="btn-counter btn-counter-minus" data-target="ebikeCount">-</button>
+                        <span class="counter-value">${pricing.ebikeCount}</span>
+                        <button class="btn-counter btn-counter-plus" data-target="ebikeCount">+</button>
+                      </div>
+                    </div>
+                  ` : ''}
+                </div>
               </div>
             </div>
           </div>
@@ -342,27 +375,59 @@ export class BookingSystem {
               
               <div class="summary-rows">
                 <div class="summary-row">
-                  <span>Ubytování se snídaní (${nights}x noc, ${pricing.totalGuests}x osoba):</span>
-                  <strong>${pricing.accommodationPrice} Kč</strong>
+                  <div class="row-info">
+                    <span class="row-label">Ubytování se snídaní</span>
+                    <span class="row-details">(${nights}x noc, ${pricing.totalGuests}x osoba)</span>
+                  </div>
+                  <span class="row-price">${pricing.accommodationPrice} Kč</span>
                 </div>
 
                 ${pricing.singleNightSurchargeTotal > 0 ? `
                   <div class="summary-row surcharge">
-                    <span>Příplatek za 1 noc (+200 Kč/os):</span>
-                    <strong>+${pricing.singleNightSurchargeTotal} Kč</strong>
+                    <div class="row-info">
+                      <span class="row-label">Příplatek za 1 noc</span>
+                      <span class="row-details">(+200 Kč / os)</span>
+                    </div>
+                    <span class="row-price">+${pricing.singleNightSurchargeTotal} Kč</span>
                   </div>
                 ` : ''}
 
-                ${pricing.addonsPrice > 0 ? `
+                ${pricing.hasHalfBoard ? `
                   <div class="summary-row">
-                    <span>Doplňkové služby:</span>
-                    <strong>+${pricing.addonsPrice} Kč</strong>
+                    <div class="row-info">
+                      <span class="row-label">Dokoupená polopenze</span>
+                      <span class="row-details">(+195 Kč/os/noc • ${pricing.halfBoardCount}x os, ${nights}x noc)</span>
+                    </div>
+                    <span class="row-price">+${pricing.halfBoardPriceTotal} Kč</span>
+                  </div>
+                ` : ''}
+
+                ${pricing.hasDog ? `
+                  <div class="summary-row">
+                    <div class="row-info">
+                      <span class="row-label">Pobyt s pejskem</span>
+                      <span class="row-details">(+150 Kč/noc za pokoj • ${nights}x noc)</span>
+                    </div>
+                    <span class="row-price">+${pricing.dogPriceTotal} Kč</span>
+                  </div>
+                ` : ''}
+
+                ${pricing.hasEbike ? `
+                  <div class="summary-row">
+                    <div class="row-info">
+                      <span class="row-label">Nabíjení elektrokola</span>
+                      <span class="row-details">(+15 Kč/den • ${pricing.ebikeCount}x ks, ${nights}x noc)</span>
+                    </div>
+                    <span class="row-price">+${pricing.ebikePriceTotal} Kč</span>
                   </div>
                 ` : ''}
 
                 <div class="summary-row">
-                  <span>Místní poplatek z pobytu (20 Kč/dospělá osoba/noc):</span>
-                  <strong>${pricing.cityTax} Kč</strong>
+                  <div class="row-info">
+                    <span class="row-label">Místní poplatek z pobytu</span>
+                    <span class="row-details">(20 Kč / osoba / noc • ${pricing.totalGuests}x os, ${nights}x noc)</span>
+                  </div>
+                  <span class="row-price">${pricing.cityTax} Kč</span>
                 </div>
               </div>
 
@@ -559,6 +624,16 @@ export class BookingSystem {
           const isPlus = btn.classList.contains('btn-counter-plus');
           if (target === 'persons' || target === 'adults') {
             this.state.adults = isPlus ? Math.min(4, this.state.adults + 1) : Math.max(1, this.state.adults - 1);
+            if (this.state.halfBoardCount > this.state.adults) {
+              this.state.halfBoardCount = this.state.adults;
+            }
+          } else if (target === 'halfBoardCount') {
+            const maxHB = this.state.adults || 2;
+            const currentHB = this.state.halfBoardCount ?? maxHB;
+            this.state.halfBoardCount = isPlus ? Math.min(maxHB, currentHB + 1) : Math.max(1, currentHB - 1);
+          } else if (target === 'ebikeCount') {
+            const currentE = this.state.ebikeCount || 1;
+            this.state.ebikeCount = isPlus ? Math.min(4, currentE + 1) : Math.max(1, currentE - 1);
           }
           this.render();
         });
@@ -571,6 +646,9 @@ export class BookingSystem {
       if (addonHalfBoard) {
         addonHalfBoard.addEventListener('change', (e) => {
           this.state.hasHalfBoard = e.target.checked;
+          if (this.state.hasHalfBoard && !this.state.halfBoardCount) {
+            this.state.halfBoardCount = this.state.adults;
+          }
           this.render();
         });
       }
@@ -583,13 +661,25 @@ export class BookingSystem {
       if (addonEbike) {
         addonEbike.addEventListener('change', (e) => {
           this.state.hasEbike = e.target.checked;
+          if (this.state.hasEbike && !this.state.ebikeCount) {
+            this.state.ebikeCount = 1;
+          }
           this.render();
         });
       }
 
       const btnNext = this.container.querySelector('.btn-next-step-1');
       if (btnNext) {
-        btnNext.addEventListener('click', () => this.setStep(2));
+        btnNext.addEventListener('click', () => {
+          const start = new Date(this.state.dateFrom);
+          const end = new Date(this.state.dateTo);
+          if (isNaN(start.getTime()) || isNaN(end.getTime()) || end <= start) {
+            this.state.errorMessage = 'Prosíme, vyberte platný termín pobytu (Datum odjezdu musí být po datu příjezdu).';
+            this.render();
+            return;
+          }
+          this.setStep(2);
+        });
       }
     } else if (this.currentStep === 2) {
       const form = document.getElementById('booking-form-step2');

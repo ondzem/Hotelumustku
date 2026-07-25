@@ -162,7 +162,12 @@ export class AdminDashboard {
                   <td>
                     <strong>${r.date_from} → ${r.date_to}</strong>
                   </td>
-                  <td>${r.adults_count || 1} dospělí ${r.children_count ? `, ${r.children_count} dětí` : ''}</td>
+                  <td>
+                    <strong>${r.adults_count || 1} osob</strong>
+                    ${r.has_half_board ? `<br><small>🍽 Polopenze: ${r.half_board_count || r.adults_count || 1} os</small>` : ''}
+                    ${r.has_dog ? `<br><small>🐶 Pes: 1x pokoj</small>` : ''}
+                    ${r.has_ebike ? `<br><small>🚲 Elektrokolo: ${r.ebike_count || 1}x</small>` : ''}
+                  </td>
                   <td><strong class="price-green">${r.total_price} Kč</strong></td>
                   <td>
                     <span class="badge-status badge-${r.status}">
