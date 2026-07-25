@@ -792,10 +792,24 @@
 .btn-act-pay { border-color: #00695c; color: #00695c; }
 .btn-act-cancel { border-color: #c62828; color: #c62828; }
 
-/* Responzivita pro mobil a tablet */
+/* ====================================================
+   RESPONZIVITA REZERVAČNÍHO SYSTÉMU PRO MOBILY A TABLETY
+   ==================================================== */
+
+/* Tablet (768px - 992px) */
 @media (max-width: 992px) {
+  .booking-section-wrapper {
+    padding: 32px 24px 60px 24px;
+  }
+
   .booking-grid {
     grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .summary-sticky-card {
+    position: static;
+    margin-top: 10px;
   }
 
   .payment-instructions-grid {
@@ -804,13 +818,253 @@
 
   .dates-grid {
     grid-template-columns: 1fr;
+    gap: 14px;
+  }
+}
+
+/* Mobilní zařízení (<768px) */
+@media (max-width: 767px) {
+  /* 1. Hero Sekce na mobilu */
+  .booking-hero-section {
+    height: 48vh;
+    min-height: 340px;
+    max-height: 440px;
   }
 
+  .booking-hero-center {
+    margin-bottom: 60px;
+    padding: 0 16px;
+  }
+
+  .booking-hero-main-title {
+    font-size: clamp(24px, 6vw, 28px) !important;
+    font-weight: 600 !important;
+    line-height: 1.25 !important;
+  }
+
+  .booking-hero-subtitle {
+    font-size: 14.5px !important;
+    line-height: 1.4 !important;
+  }
+
+  /* 2. Odsazení a kontejnery sekce */
+  .booking-section-wrapper {
+    padding: 20px 16px 48px 16px;
+  }
+
+  .booking-card {
+    padding: 20px 16px;
+    margin-bottom: 20px;
+  }
+
+  .card-title {
+    font-size: 17.5px;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+
+  /* 3. Krokovače / Stepper */
   .booking-stepper {
-    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 28px;
+    padding: 0 4px;
+  }
+
+  .step-item {
+    gap: 6px;
+    font-size: 13.5px;
+  }
+
+  .step-number {
+    width: 26px;
+    height: 26px;
+    font-size: 13px;
+  }
+
+  .step-label {
+    font-size: 13px;
+    white-space: nowrap;
   }
 
   .step-divider {
     display: none;
+  }
+
+  /* 4. Náhled vybraného pokoje v kroku 1 */
+  .room-mini-preview {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .preview-room-thumb {
+    width: 100%;
+    height: 140px;
+  }
+
+  .preview-info-wrap {
+    width: 100%;
+  }
+
+  .preview-room-title {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .preview-desc {
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  /* Tlačítko Zobrazit pokoj dle mobilního Button Design System */
+  .btn-view-room-details {
+    width: 100%;
+    margin-left: 0;
+    justify-content: center;
+    height: 36px;
+    padding: 0 20px;
+    font-size: 14.5px;
+    font-weight: 500;
+    border-radius: 1px;
+    margin-top: 4px;
+  }
+
+  /* 5. Vstupy a Formuláře (16px font brání iOS auto-zoomu) */
+  .form-select,
+  .form-input,
+  .form-textarea {
+    height: 44px;
+    font-size: 16px;
+    padding: 0 14px;
+  }
+
+  .form-select {
+    padding-right: 42px !important;
+    background-position: right 16px center;
+  }
+
+  .form-textarea {
+    height: auto;
+    padding: 12px 14px;
+  }
+
+  /* 6. Počet osob & Doplňky */
+  .guest-counter-item {
+    padding: 12px;
+  }
+
+  .counter-label {
+    font-size: 14.5px;
+  }
+
+  .btn-counter {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+
+  .checkbox-addon-item {
+    padding: 12px 14px;
+    gap: 12px;
+  }
+
+  .addon-text strong {
+    font-size: 14.5px;
+  }
+
+  .addon-text small {
+    font-size: 12.5px;
+  }
+
+  /* 7. Přehled ceny na mobilu */
+  .summary-sticky-card {
+    padding: 20px 16px;
+  }
+
+  .summary-title {
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .summary-row {
+    font-size: 13.5px;
+  }
+
+  .total-price-amount {
+    font-size: 24px;
+  }
+
+  /* Tlačítka na mobilu (dle Button Design System - height 36px, font-size 14.5px, weight 500) */
+  .btn-booking-submit {
+    height: 36px;
+    padding: 0 20px;
+    font-size: 14.5px;
+    font-weight: 500;
+    border-radius: 1px;
+  }
+
+  .step-nav-buttons {
+    flex-direction: column-reverse;
+    gap: 12px;
+  }
+
+  .step-nav-buttons .btn {
+    width: 100%;
+    justify-content: center;
+    height: 36px;
+    padding: 0 20px;
+    font-size: 14.5px;
+    font-weight: 500;
+  }
+
+  /* 8. Krok 3: Potvrzení a QR Kód */
+  .success-card {
+    padding: 24px 16px;
+  }
+
+  .success-title {
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  .success-code-badge {
+    font-size: 16px;
+  }
+
+  .payment-info-box,
+  .payment-qr-box {
+    padding: 18px 14px;
+  }
+
+  .box-subtitle {
+    font-size: 15.5px;
+    font-weight: 600;
+  }
+
+  .payment-details-list {
+    font-size: 13.5px;
+  }
+
+  .qr-code-img {
+    width: 160px;
+    height: 160px;
+  }
+
+  .success-actions {
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .success-actions .btn {
+    width: 100%;
+    height: 36px;
+    padding: 0 20px;
+    font-size: 14.5px;
+    font-weight: 500;
   }
 }
