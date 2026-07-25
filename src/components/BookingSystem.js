@@ -244,9 +244,69 @@ export class BookingSystem {
 
         ${contentHtml}
       </div>
+
+      ${this.renderTermsModal()}
     `;
 
     this.attachEventListeners();
+  }
+
+  renderTermsModal() {
+    return `
+      <div class="terms-modal-overlay" id="terms-modal-overlay" aria-hidden="true">
+        <div class="terms-modal-card">
+          <div class="terms-modal-header">
+            <h3 class="terms-modal-title">📋 Podmínky ubytování & Stornopodmínky</h3>
+            <button type="button" class="terms-modal-close" id="btn-close-terms-modal" aria-label="Zavřít">&times;</button>
+          </div>
+
+          <div class="terms-modal-body">
+            <div class="terms-info-box flex-info-box">
+              <div class="terms-info-icon">🕒</div>
+              <div class="terms-info-content">
+                <strong>Časy příjezdu a odjezdu:</strong>
+                <p>Standardní <strong>Check-in</strong> je od <strong>15:00 hod.</strong> a <strong>Check-out</strong> do <strong>10:00 hod.</strong></p>
+                <small class="terms-highlight-sub">💡 Po předchozí dohodě s recepcí vám časy příjezdu či odjezdu rádi individuálně přizpůsobíme.</small>
+              </div>
+            </div>
+
+            <div class="terms-info-box reschedule-info-box">
+              <div class="terms-info-icon">🤝</div>
+              <div class="terms-info-content">
+                <strong>Flexibilní změna termínu:</strong>
+                <p>V případě jakýchkoliv nečekaných událostí či nemoci se s námi neváhejte okamžitě spojit. Rádi s vámi po dohodě <strong>přesuneme termín pobytu</strong> na jiný vyhovující termín zdarma a s osobním přístupem.</p>
+              </div>
+            </div>
+
+            <div class="terms-storno-wrap">
+              <h4 class="storno-title">Stornopodmínky při zrušení pobytu</h4>
+              <div class="terms-storno-table">
+                <div class="storno-row">
+                  <span class="storno-label">Více než 21 dní před příjezdem:</span>
+                  <span class="storno-val green">ZDARMA <small>(bez poplatku)</small></span>
+                </div>
+                <div class="storno-row">
+                  <span class="storno-label">21 – 14 dní před příjezdem:</span>
+                  <span class="storno-val">40 % <small>z ceny pobytu</small></span>
+                </div>
+                <div class="storno-row">
+                  <span class="storno-label">14 – 7 dní před příjezdem:</span>
+                  <span class="storno-val">60 % <small>z ceny pobytu</small></span>
+                </div>
+                <div class="storno-row">
+                  <span class="storno-label">Méně než 7 dní / Nedojezd:</span>
+                  <span class="storno-val red">100 % <small>z ceny pobytu</small></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="terms-modal-footer">
+            <button type="button" class="btn btn-secondary btn-close-modal-footer" id="btn-close-modal-footer">Rozumím, zavřít</button>
+          </div>
+        </div>
+      </div>
+    `;
   }
 
   renderStep1(room, pricing, nights) {
@@ -289,7 +349,7 @@ export class BookingSystem {
               <h3 class="card-title">2. Termín pobytu <span class="required-badge">* Povinné</span></h3>
               <div class="dates-grid">
                 <div class="form-field">
-                  <label for="date-from" class="form-label">Datum příjezdu (Check-in od 14:00):</label>
+                  <label for="date-from" class="form-label">Datum příjezdu (Check-in od 15:00):</label>
                   <input type="date" id="date-from" class="form-input" value="${this.state.dateFrom}">
                 </div>
                 <div class="form-field">
@@ -297,7 +357,18 @@ export class BookingSystem {
                   <input type="date" id="date-to" class="form-input" value="${this.state.dateTo}">
                 </div>
               </div>
-              <p class="nights-counter">Délka pobytu: <strong>${nights} ${nights === 1 ? 'noc' : (nights < 5 ? 'noci' : 'nocí')}</strong></p>
+              
+              <div class="terms-card-bottom-row">
+                <p class="nights-counter">Délka pobytu: <strong>${nights} ${nights === 1 ? 'noc' : (nights < 5 ? 'noci' : 'nocí')}</strong></p>
+                <button type="button" class="btn-terms-modal-trigger" id="btn-open-terms-modal">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                  </svg>
+                  <span>Podmínky ubytování & stornopodmínky</span>
+                </button>
+              </div>
             </div>
 
             <div class="booking-card">
@@ -707,6 +778,13 @@ export class BookingSystem {
       }
     } else if (this.currentStep === 3) {
       const btnNew = this.container.querySelector('.btn-new-booking');
+      const btnBackStep1 = this.container.querySelector('.btn-prev-step-1');
+      if (btnBackStep1) {
+        btnBackStep1.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.setStep(1);
+        });
+      }
       const btnHome = this.container.querySelector('.btn-go-home');
 
       if (btnNew) {
@@ -715,11 +793,45 @@ export class BookingSystem {
           this.setStep(1);
         });
       }
-      if (btnHome) {
-        btnHome.addEventListener('click', () => {
-          window.location.hash = '';
-        });
-      }
     }
+
+    // Modal Podmínky Ubytování listeners
+    const modalOverlay = this.container.querySelector('#terms-modal-overlay');
+    const btnOpenModal = this.container.querySelector('#btn-open-terms-modal');
+    const btnCloseModalX = this.container.querySelector('#btn-close-terms-modal');
+    const btnCloseModalFooter = this.container.querySelector('#btn-close-modal-footer');
+
+    const openModal = () => {
+      if (modalOverlay) {
+        modalOverlay.classList.add('is-open');
+        modalOverlay.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      }
+    };
+
+    const closeModal = () => {
+      if (modalOverlay) {
+        modalOverlay.classList.remove('is-open');
+        modalOverlay.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+      }
+    };
+
+    if (btnOpenModal) btnOpenModal.addEventListener('click', (e) => { e.preventDefault(); openModal(); });
+    if (btnCloseModalX) btnCloseModalX.addEventListener('click', (e) => { e.preventDefault(); closeModal(); });
+    if (btnCloseModalFooter) btnCloseModalFooter.addEventListener('click', (e) => { e.preventDefault(); closeModal(); });
+
+    if (modalOverlay) {
+      modalOverlay.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) closeModal();
+      });
+    }
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && modalOverlay && modalOverlay.classList.contains('is-open')) {
+        closeModal();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
   }
 }
