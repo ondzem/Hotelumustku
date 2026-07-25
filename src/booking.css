@@ -1272,53 +1272,42 @@
   gap: 36px;
 }
 
-/* Rychlý kontakt bar */
-.terms-contact-bar {
-  background-color: #f9faf7;
-  border: 1px solid #e0e4d7;
-  border-radius: 1px;
-  padding: 16px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.contact-bar-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #1a1a1a;
-}
-
-.contact-bar-items {
+/* Kontaktní týmové odkazové řádky (bez zbytečných rámečků a popisků) */
+.terms-top-contacts {
   display: flex;
   align-items: center;
   gap: 16px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eeeeee;
+  flex-wrap: wrap;
 }
 
-.terms-contact-btn {
+.terms-contact-link {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   color: #697947;
   text-decoration: none;
-  padding: 6px 14px;
-  background-color: #ffffff;
-  border: 1px solid #c8d2b7;
-  border-radius: 1px;
-  transition: all 0.2s ease;
+  white-space: nowrap !important;
+  transition: color 0.2s ease;
 }
 
-.terms-contact-btn:hover {
-  background-color: #697947;
-  color: #ffffff;
-  border-color: #697947;
+.terms-contact-link:hover {
+  color: #3b4624;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
-.terms-contact-btn svg {
+.terms-contact-link svg {
   flex-shrink: 0;
+  color: #697947;
+}
+
+.terms-contact-sep {
+  color: #cccccc;
+  font-size: 14px;
 }
 
 /* Sekce v modálu s dělící linkou */
@@ -1391,12 +1380,14 @@
   font-size: 18px;
   font-weight: 600;
   color: #000000;
+  white-space: nowrap !important;
 }
 
 .clean-storno-row .storno-fee-sub {
   font-size: 13.5px;
   font-weight: 400;
   color: #555555;
+  white-space: nowrap !important;
 }
 
 .terms-modal-footer {
@@ -1444,23 +1435,19 @@
     gap: 28px;
   }
 
-  .terms-contact-bar {
+  .terms-top-contacts {
     flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-    padding: 14px;
+    align-items: flex-start;
+    gap: 8px;
+    padding-bottom: 16px;
   }
 
-  .contact-bar-items {
-    flex-direction: column;
-    gap: 10px;
+  .terms-contact-sep {
+    display: none;
   }
 
-  .terms-contact-btn {
-    width: 100%;
-    justify-content: center;
-    height: 38px;
-    font-size: 14.5px;
+  .terms-contact-link {
+    font-size: 15px;
   }
 
   .terms-row-title {
