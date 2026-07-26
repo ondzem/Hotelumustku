@@ -1,6 +1,6 @@
-// 🏨 Senior-Friendly Booking System Component for Hotel u Můstku
 import { MOCK_ROOMS, isSupabaseConfigured, supabase, getStoredReservations, saveStoredReservation } from '../lib/supabaseClient.js';
-import { calculateReservationPrice, generateReservationCode, generateManageToken } from '../utils/pricing.js';
+import { calculateReservationPrice, generateReservationCode, generateManageToken, BANK_ACCOUNT, BANK_NAME, formatCzechPrice } from '../utils/pricing.js';
+import { sendEmail, generateEmail1RequestReceived, generateEmail1ReceptionNotification } from '../utils/emailService.js';
 function getTodayDateString() {
   const d = new Date();
   const y = d.getFullYear();
@@ -15,6 +15,47 @@ function formatCzechDateStr(isoStr) {
   if (parts.length !== 3) return isoStr;
   const [year, month, day] = parts;
   return `${parseInt(day, 10)}. ${parseInt(month, 10)}. ${year}`;
+}
+
+function isValidEmail(email) {
+  if (!email || typeof email !== 'string') return false;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  return emailRegex.test(email.trim());
+}
+
+function isValidPhone(phone) {
+  if (!phone || typeof phone !== 'string') return false;
+  const cleaned = phone.trim().replace(/[\s\-\(\)\.]/g, '');
+  const phoneRegex = /^\+?[0-9]{8,15}$/;
+  return phoneRegex.test(cleaned);
+}
+
+function isDummyIdNumber(str) {
+  if (!str) return false;
+  const clean = String(str).replace(/[\s\-\/]/g, '').toLowerCase();
+  if (clean.length === 0) return false;
+  if (clean.length < 5) return true;
+  const dummyPatterns = [
+    '12345', '123456', '1234567', '12345678', '123456789', '1234567890',
+    '987654321', '98765432', '987654',
+    '00000', '000000', '0000000', '00000000', '000000000',
+    '11111', '111111', '1111111', '11111111', '111111111',
+    '22222', '33333', '44444', '55555', '66666', '77777', '88888', '99999',
+    '12341234', '123123', 'asdfgh', 'asdfghjkl', 'testtest', 'abcdef', 'qwerty'
+  ];
+  if (dummyPatterns.some(pat => clean.includes(pat))) return true;
+  if (/^(\w)\1+$/.test(clean)) return true;
+  return false;
+}
+
+function isDummyName(str) {
+  if (!str) return false;
+  const clean = String(str).trim().toLowerCase();
+  if (clean.length < 2) return true;
+  const dummyNames = ['test', 'asdf', 'xyz', 'qwer', 'aaa', 'bbb', 'ccc', '123', 'testik', 'admin', 'aaa bbb'];
+  if (dummyNames.includes(clean)) return true;
+  if (/[0-9]/.test(clean)) return true;
+  return false;
 }
 
 export class BookingSystem {
@@ -44,25 +85,279 @@ export class BookingSystem {
       guestEmail: '',
       guestPhone: '',
       guestNote: '',
-      agreedTerms: false,
+      guestStreet: '',
+      guestCity: '',
+      guestZip: '',
+      guestCountry: 'Česká republika',
+      guests: [],
+      agreedTerms: true,
       honeypot: '', // Spam protection
       isSubmitting: false,
       confirmedReservation: null,
       qrDataUrl: null,
       errorMessage: '',
+      fieldErrors: {},
     };
 
     this.roomsList = MOCK_ROOMS;
+    this.activeReservations = [];
   }
 
-  init(initialRoomId) {
+  syncGuestsArray() {
+    const totalCount = (parseInt(this.state.adults, 10) || 1) + (parseInt(this.state.children, 10) || 0);
+    if (!Array.isArray(this.state.guests)) {
+      this.state.guests = [];
+    }
+    while (this.state.guests.length < totalCount) {
+      this.state.guests.push({
+        name: '',
+        email: '',
+        phone: '',
+        birthDate: '',
+        idNumber: '',
+        street: '',
+        city: '',
+        zip: '',
+        country: 'Česká republika'
+      });
+    }
+    if (this.state.guests.length > totalCount) {
+      this.state.guests = this.state.guests.slice(0, totalCount);
+    }
+    if (this.state.guests.length > 0) {
+      if (this.state.guestName) this.state.guests[0].name = this.state.guestName;
+      if (this.state.guestEmail) this.state.guests[0].email = this.state.guestEmail;
+      if (this.state.guestPhone) this.state.guests[0].phone = this.state.guestPhone;
+      if (this.state.guestStreet) this.state.guests[0].street = this.state.guestStreet;
+      if (this.state.guestCity) this.state.guests[0].city = this.state.guestCity;
+      if (this.state.guestZip) this.state.guests[0].zip = this.state.guestZip;
+      if (this.state.guestCountry) this.state.guests[0].country = this.state.guestCountry;
+    }
+  }
+
+  async init(initialRoomId) {
     if (initialRoomId && this.roomsList.some(r => r.id === initialRoomId)) {
       this.state.selectedRoomId = initialRoomId;
     }
+    await this.fetchActiveReservations();
+    this.syncGuestsArray();
+
+    // Set initial history state for browser Back button support
+    if (!window.history.state || !window.history.state.bookingStep) {
+      window.history.replaceState({ bookingStep: 1 }, '', window.location.hash || '#rezervace');
+    }
+
+    // Listen to browser Back & Forward button navigation
+    window.addEventListener('popstate', (e) => {
+      const targetStep = (e.state && e.state.bookingStep) ? e.state.bookingStep : 1;
+      if (targetStep !== this.currentStep) {
+        this.setStep(targetStep, false);
+      }
+    });
+
     this.render();
   }
 
-  setStep(step) {
+  async fetchActiveReservations() {
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data, error } = await supabase.from('reservations').select('*').neq('status', 'cancelled');
+        if (!error && data) {
+          this.activeReservations = data;
+          return;
+        }
+      } catch (err) {
+        console.error('Failed to fetch active reservations from Supabase:', err);
+      }
+    }
+    const stored = getStoredReservations();
+    this.activeReservations = stored.filter(r => r.status !== 'cancelled' && r.status !== 'stornováno');
+  }
+
+  isDateOccupied(dateStr, roomId) {
+    if (!this.activeReservations || this.activeReservations.length === 0) return false;
+    return this.activeReservations.some(r => {
+      if (r.room_id !== roomId || r.status === 'cancelled' || r.status === 'stornováno') return false;
+      // Night is occupied if dateStr >= r.date_from AND dateStr < r.date_to
+      return dateStr >= r.date_from && dateStr < r.date_to;
+    });
+  }
+
+  checkReservationOverlap(roomId, dateFrom, dateTo) {
+    if (!this.activeReservations || this.activeReservations.length === 0) return null;
+    return this.activeReservations.find(r => {
+      if (r.room_id !== roomId || r.status === 'cancelled' || r.status === 'stornováno') return false;
+      // Overlap condition: r.date_from < dateTo AND r.date_to > dateFrom
+      return r.date_from < dateTo && r.date_to > dateFrom;
+    });
+  }
+
+  showFieldError(fieldId, errorMsg) {
+    this.state.fieldErrors = { [fieldId]: errorMsg };
+    this.render();
+
+    setTimeout(() => {
+      const match = fieldId.match(/^guest-(\d+)-/);
+      if (match) {
+        const guestIdx = match[1];
+        const accordionItem = document.getElementById(`guest-accordion-${guestIdx}`);
+        if (accordionItem) {
+          accordionItem.classList.add('is-open');
+          const body = accordionItem.querySelector('.guest-accordion-body');
+          if (body) body.style.display = 'block';
+          const chevron = accordionItem.querySelector('.guest-chevron');
+          if (chevron) chevron.textContent = '▲';
+        }
+      }
+      const el = document.getElementById(fieldId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.focus();
+      }
+    }, 60);
+  }
+
+  clearFieldError(fieldId) {
+    if (this.state.fieldErrors && this.state.fieldErrors[fieldId]) {
+      delete this.state.fieldErrors[fieldId];
+      this.render();
+    }
+  }
+
+  setupAddressAutocomplete() {
+    const streetInputs = this.container.querySelectorAll('input[data-field="street"]');
+    streetInputs.forEach(input => {
+      const idx = parseInt(input.dataset.idx, 10);
+      const parentField = input.closest('.form-field');
+      if (!parentField) return;
+
+      let wrap = parentField.querySelector('.address-autocomplete-wrap');
+      if (!wrap) {
+        wrap = document.createElement('div');
+        wrap.className = 'address-autocomplete-wrap';
+        input.parentNode.insertBefore(wrap, input);
+        wrap.appendChild(input);
+      }
+
+      let dropdown = wrap.querySelector('.address-autocomplete-dropdown');
+      if (!dropdown) {
+        dropdown = document.createElement('ul');
+        dropdown.className = 'address-autocomplete-dropdown';
+        dropdown.style.display = 'none';
+        wrap.appendChild(dropdown);
+      }
+
+      let debounceTimer = null;
+
+      const hideDropdown = () => {
+        dropdown.style.display = 'none';
+        dropdown.innerHTML = '';
+      };
+
+      input.addEventListener('input', (e) => {
+        const query = e.target.value.trim();
+        clearTimeout(debounceTimer);
+        if (query.length < 3) {
+          hideDropdown();
+          return;
+        }
+
+        debounceTimer = setTimeout(async () => {
+          try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&countrycodes=cz,sk&q=${encodeURIComponent(query)}&limit=5`, {
+              headers: { 'User-Agent': 'HotelUMustku/1.0' }
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            if (!data || data.length === 0) {
+              hideDropdown();
+              return;
+            }
+
+            dropdown.innerHTML = data.map(item => {
+              const addr = item.address || {};
+              const road = addr.road || addr.pedestrian || addr.suburb || query;
+              const houseNum = addr.house_number || addr.building || '';
+              const streetStr = (road + (houseNum ? ' ' + houseNum : '')).trim();
+              const cityStr = addr.city || addr.town || addr.village || addr.municipality || addr.county || '';
+              const postcodeStr = addr.postcode || '';
+              const countryStr = addr.country || 'Česká republika';
+              const displayTitle = streetStr + (cityStr ? `, ${cityStr}` : '');
+              const displaySub = (postcodeStr ? postcodeStr + ' ' : '') + cityStr;
+
+              return `
+                <li class="address-autocomplete-item" 
+                    data-street="${streetStr}" 
+                    data-city="${cityStr}" 
+                    data-zip="${postcodeStr}" 
+                    data-country="${countryStr}">
+                  <span class="address-main">${displayTitle}</span>
+                  <span class="address-sub">${displaySub}</span>
+                </li>
+              `;
+            }).join('');
+
+            dropdown.style.display = 'block';
+
+            dropdown.querySelectorAll('.address-autocomplete-item').forEach(itemEl => {
+              itemEl.addEventListener('click', (evt) => {
+                evt.preventDefault();
+                evt.stopPropagation();
+                const s = itemEl.dataset.street;
+                const c = itemEl.dataset.city;
+                const z = itemEl.dataset.zip;
+                const cnt = itemEl.dataset.country;
+
+                input.value = s;
+                if (this.state.guests[idx]) {
+                  this.state.guests[idx].street = s;
+                  if (c) this.state.guests[idx].city = c;
+                  if (z) this.state.guests[idx].zip = z;
+                  if (cnt) this.state.guests[idx].country = cnt;
+
+                  if (idx === 0) {
+                    this.state.guestStreet = s;
+                    if (c) this.state.guestCity = c;
+                    if (z) this.state.guestZip = z;
+                    if (cnt) this.state.guestCountry = cnt;
+                  }
+                }
+
+                const cityEl = this.container.querySelector(`#guest-${idx}-city`);
+                const zipEl = this.container.querySelector(`#guest-${idx}-zip`);
+                const countryEl = this.container.querySelector(`#guest-${idx}-country`);
+
+                if (cityEl && c) cityEl.value = c;
+                if (zipEl && z) zipEl.value = z;
+                if (countryEl && cnt) countryEl.value = cnt;
+
+                hideDropdown();
+              });
+            });
+
+          } catch (err) {
+            console.warn('Address autocomplete fetch failed:', err);
+            hideDropdown();
+          }
+        }, 280);
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!wrap.contains(e.target)) {
+          hideDropdown();
+        }
+      });
+    });
+  }
+
+  setStep(step, pushHistory = true) {
+    if (pushHistory && step !== this.currentStep) {
+      try {
+        window.history.pushState({ bookingStep: step }, '', '#rezervace');
+      } catch (err) {
+        console.warn('History pushState failed:', err);
+      }
+    }
     this.currentStep = step;
     this.state.errorMessage = '';
     this.render();
@@ -109,28 +404,81 @@ export class BookingSystem {
       return;
     }
 
-    if (!this.state.guestName || !this.state.guestEmail || !this.state.guestPhone) {
-      this.state.errorMessage = 'Prosíme, vyplňte všechna povinná pole (Jméno, E-mail a Telefon).';
-      this.render();
+    // Sync DOM inputs directly to state (handles browser autofill and un-focused fields)
+    const g0NameEl = this.container.querySelector('#guest-0-name');
+    const g0EmailEl = this.container.querySelector('#guest-0-email');
+    const g0PhoneEl = this.container.querySelector('#guest-0-phone');
+    if (g0NameEl && g0NameEl.value) this.state.guestName = g0NameEl.value.trim();
+    if (g0EmailEl && g0EmailEl.value) this.state.guestEmail = g0EmailEl.value.trim();
+    if (g0PhoneEl && g0PhoneEl.value) this.state.guestPhone = g0PhoneEl.value.trim();
+
+    this.syncGuestsArray();
+
+    // Validate Host 1
+    if (!this.state.guestName || !this.state.guestName.trim() || isDummyName(this.state.guestName)) {
+      this.showFieldError('guest-0-name', 'Prosíme, vyplňte vaše platné Jméno a Příjmení.');
       return;
     }
 
-    if (!this.state.agreedTerms) {
-      this.state.errorMessage = 'Pro dokončení rezervace je nutné souhlasit s obchodními podmínkami.';
-      this.render();
+    if (!isValidEmail(this.state.guestEmail)) {
+      this.showFieldError('guest-0-email', 'Prosíme, zadejte platnou e-mailovou adresu hlavního rezervujícího.');
       return;
     }
 
-    this.state.isSubmitting = true;
-    this.state.errorMessage = '';
-    this.render();
+    if (!isValidPhone(this.state.guestPhone)) {
+      this.showFieldError('guest-0-phone', 'Prosíme, zadejte platné telefonní číslo vč. předvolby hlavního rezervujícího.');
+      return;
+    }
+
+    const g0IdNum = this.container.querySelector('#guest-0-idnumber')?.value || this.state.guests[0]?.idNumber;
+    if (g0IdNum && isDummyIdNumber(g0IdNum)) {
+      this.showFieldError('guest-0-idnumber', 'Prosíme, zadejte platné číslo OP nebo pasu (ne sekvenční číslo).');
+      return;
+    }
+
+    // Validate additional guests (Host 2, Host 3...)
+    for (let i = 1; i < this.state.guests.length; i++) {
+      const nameEl = this.container.querySelector(`#guest-${i}-name`);
+      if (nameEl && nameEl.value) this.state.guests[i].name = nameEl.value.trim();
+      const g = this.state.guests[i];
+      if (!g || !g.name || !g.name.trim() || isDummyName(g.name)) {
+        this.showFieldError(`guest-${i}-name`, `Prosíme, vyplňte platné Jméno a Příjmení u Host ${i + 1}.`);
+        return;
+      }
+      const idNumEl = this.container.querySelector(`#guest-${i}-idnumber`);
+      const idVal = idNumEl?.value || g.idNumber;
+      if (idVal && isDummyIdNumber(idVal)) {
+        this.showFieldError(`guest-${i}-idnumber`, `Prosíme, zadejte platné číslo OP nebo pasu u Host ${i + 1}.`);
+        return;
+      }
+    }
 
     const room = this.getSelectedRoom();
+
+    // Re-verify availability to prevent double-booking
+    await this.fetchActiveReservations();
+    const overlap = this.checkReservationOverlap(room.id, this.state.dateFrom, this.state.dateTo);
+    if (overlap) {
+      this.state.errorMessage = 'Tento pokoj je ve vybraném termínu již zarezervovaný. Prosíme vyberte jiný termín nebo pokoj.';
+      this.state.isSubmitting = false;
+      this.render();
+
+      setTimeout(() => {
+        const errorAlert = this.container.querySelector('.booking-alert-error') || this.container.querySelector('.card-step-2');
+        if (errorAlert) {
+          errorAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 60);
+      return;
+    }
+
     const pricing = this.getPricingBreakdown();
     const code = generateReservationCode();
     const manageToken = generateManageToken();
+    const resId = 'res-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
 
     const reservationData = {
+      id: resId,
       code,
       manage_token: manageToken,
       room_id: room.id,
@@ -141,6 +489,23 @@ export class BookingSystem {
       guest_email: this.state.guestEmail,
       guest_phone: this.state.guestPhone,
       guest_note: this.state.guestNote,
+      guest_street: this.state.guests[0]?.street || this.state.guestStreet || '',
+      guest_city: this.state.guests[0]?.city || this.state.guestCity || '',
+      guest_zip: this.state.guests[0]?.zip || this.state.guestZip || '',
+      guest_country: this.state.guests[0]?.country || this.state.guestCountry || 'Česká republika',
+      guests: this.state.guests.map((g, idx) => ({
+        is_main: idx === 0,
+        role: idx === 0 ? 'Hlavní rezervující' : `Ubytovaný host ${idx + 1}`,
+        name: idx === 0 ? this.state.guestName : g.name,
+        email: idx === 0 ? this.state.guestEmail : (g.email || ''),
+        phone: idx === 0 ? this.state.guestPhone : (g.phone || ''),
+        birth_date: g.birthDate || '',
+        id_number: g.idNumber || '',
+        street: g.street || (idx === 0 ? this.state.guestStreet : ''),
+        city: g.city || (idx === 0 ? this.state.guestCity : ''),
+        zip: g.zip || (idx === 0 ? this.state.guestZip : ''),
+        country: g.country || 'Česká republika'
+      })),
       adults_count: this.state.adults,
       children_count: this.state.children,
       has_dog: this.state.hasDog,
@@ -149,71 +514,49 @@ export class BookingSystem {
       has_half_board: this.state.hasHalfBoard,
       half_board_count: pricing.halfBoardCount,
       total_price: pricing.totalPrice,
+      deposit_price: pricing.depositPriceTotal,
+      remaining_price: pricing.remainingPriceTotal,
       accommodation_price: pricing.accommodationPrice,
       city_tax: pricing.cityTax,
       addons_price: pricing.addonsPrice,
-      status: 'pending',
+      status: 'pending_approval', // 1. FÁZE: Čeká na schválení recepcí
       created_at: new Date().toISOString(),
     };
 
-    let savedResult = null;
-
     if (isSupabaseConfigured && supabase) {
       try {
-        const { data, error } = await supabase.from('reservations').insert([{
-          code: reservationData.code,
-          manage_token: reservationData.manage_token,
-          room_id: reservationData.room_id,
-          date_from: reservationData.date_from,
-          date_to: reservationData.date_to,
-          guest_name: reservationData.guest_name,
-          guest_email: reservationData.guest_email,
-          guest_phone: reservationData.guest_phone,
-          guest_note: reservationData.guest_note,
-          adults_count: reservationData.adults_count,
-          children_count: reservationData.children_count,
-          has_dog: reservationData.has_dog,
-          has_ebike: reservationData.has_ebike,
-          ebike_count: reservationData.ebike_count,
-          has_half_board: reservationData.has_half_board,
-          half_board_count: reservationData.half_board_count,
-          total_price: reservationData.total_price,
-          accommodation_price: reservationData.accommodation_price,
-          city_tax: reservationData.city_tax,
-          addons_price: reservationData.addons_price,
-          status: 'pending',
-          source: 'web',
-        }]).select();
-
-        if (error) {
-          if (error.code === '23P01' || error.message.includes('overlapping')) {
-            throw new Error('Tento pokoj je v vybraném termínu již zarezervovaný. Prosíme vyberte jiný termín nebo pokoj.');
-          }
-          throw error;
-        }
-        savedResult = data ? data[0] : reservationData;
+        await supabase.from('reservations').insert([reservationData]);
       } catch (err) {
-        console.error('Supabase DB booking failed, falling back to local store:', err);
-        this.state.errorMessage = err.message || 'Nepodařilo se uložit rezervaci do databáze.';
-        this.state.isSubmitting = false;
-        this.render();
-        return;
+        console.error('Failed to insert reservation into Supabase:', err);
       }
     }
 
-    if (!savedResult) {
-      savedResult = saveStoredReservation(reservationData);
+    saveStoredReservation(reservationData);
+
+    // Send Phase 1 emails (Guest & Reception)
+    try {
+      const email1Guest = generateEmail1RequestReceived({ reservation: reservationData, room, pricing });
+      await sendEmail({
+        to: reservationData.guest_email,
+        subject: email1Guest.subject,
+        html: email1Guest.html,
+        type: 'email_1_request_received',
+        reservationCode: code
+      });
+
+      const email1Reception = generateEmail1ReceptionNotification({ reservation: reservationData, room, pricing });
+      await sendEmail({
+        to: 'ondra.zeman05@gmail.com',
+        subject: email1Reception.subject,
+        html: email1Reception.html,
+        type: 'email_1_reception_notification',
+        reservationCode: code
+      });
+    } catch (emailErr) {
+      console.error('Failed to dispatch Phase 1 emails:', emailErr);
     }
 
-    // Generate Payment QR code
-    const qrUrl = await generateQrCodeDataUrl({
-      amount: pricing.totalPrice,
-      variableSymbol: code.replace(/[^0-9]/g, ''),
-      message: `Hotel u Mustku - ${code}`,
-    });
-
-    this.state.confirmedReservation = savedResult;
-    this.state.qrDataUrl = qrUrl;
+    this.state.confirmedReservation = reservationData;
     this.state.isSubmitting = false;
     this.setStep(3);
   }
@@ -278,6 +621,7 @@ export class BookingSystem {
   renderCustomCalendarModal() {
     if (!this.state.showCalendarModal) return '';
 
+    const room = this.getSelectedRoom();
     const targetField = this.state.activeDateField || 'dateFrom';
     const currentDateStr = this.state[targetField] || getTodayDateString();
 
@@ -305,6 +649,7 @@ export class BookingSystem {
     for (let day = 1; day <= daysInMonth; day++) {
       const dayStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       const isPast = dayStr < todayStr;
+      const isOccupied = this.isDateOccupied(dayStr, room.id);
       const isSelected = dayStr === this.state[targetField];
       const isFrom = dayStr === this.state.dateFrom;
       const isTo = dayStr === this.state.dateTo;
@@ -312,13 +657,16 @@ export class BookingSystem {
 
       let dayClass = 'cal-day';
       if (isPast) dayClass += ' is-disabled';
+      if (isOccupied) dayClass += ' is-occupied';
       if (isSelected) dayClass += ' is-selected';
       if (isFrom) dayClass += ' is-from';
       if (isTo) dayClass += ' is-to';
       if (isInRange) dayClass += ' in-range';
 
+      const isDisabled = isPast || (targetField === 'dateFrom' && isOccupied);
+
       daysHtml += `
-        <button type="button" class="${dayClass}" data-date="${dayStr}" ${isPast ? 'disabled' : ''}>
+        <button type="button" class="${dayClass}" data-date="${dayStr}" ${isDisabled ? 'disabled' : ''} title="${isOccupied ? 'Tento termín je již zarezervovaný' : ''}">
           ${day}
         </button>
       `;
@@ -422,7 +770,7 @@ export class BookingSystem {
               
               <div class="clean-storno-table">
                 <div class="clean-storno-row">
-                  <span class="storno-time-label">Více než 21 dní před příjezdem:</span>
+                  <span class="storno-time-label">Více než 3 dny před příjezdem:</span>
                   <div class="storno-fee-group">
                     <span class="storno-fee-val">Zdarma</span>
                     <span class="storno-fee-sub">bez storno poplatku</span>
@@ -430,26 +778,10 @@ export class BookingSystem {
                 </div>
 
                 <div class="clean-storno-row">
-                  <span class="storno-time-label">21 – 14 dní před příjezdem:</span>
-                  <div class="storno-fee-group">
-                    <span class="storno-fee-val">40 %</span>
-                    <span class="storno-fee-sub">z celkové ceny pobytu</span>
-                  </div>
-                </div>
-
-                <div class="clean-storno-row">
-                  <span class="storno-time-label">14 – 7 dní před příjezdem:</span>
-                  <div class="storno-fee-group">
-                    <span class="storno-fee-val">60 %</span>
-                    <span class="storno-fee-sub">z celkové ceny pobytu</span>
-                  </div>
-                </div>
-
-                <div class="clean-storno-row">
-                  <span class="storno-time-label">Méně než 7 dní před příjezdem:</span>
+                  <span class="storno-time-label">Méně než 3 dny před příjezdem:</span>
                   <div class="storno-fee-group">
                     <span class="storno-fee-val">100 %</span>
-                    <span class="storno-fee-sub">z celkové ceny pobytu nebo nedojezd</span>
+                    <span class="storno-fee-sub">z celkové ceny pobytu (nebo nedojezd)</span>
                   </div>
                 </div>
               </div>
@@ -611,75 +943,107 @@ export class BookingSystem {
             <div class="summary-sticky-card">
               <h3 class="summary-title">Přehled ceny pobytu</h3>
               
-              <div class="summary-rows">
-                <div class="summary-row">
-                  <div class="row-info">
-                    <span class="row-label">Ubytování se snídaní</span>
-                    <span class="row-details">(${nights}x noc, ${pricing.totalGuests}x osoba)</span>
-                  </div>
-                  <span class="row-price">${pricing.accommodationPrice} Kč</span>
+              <div class="recap-clean-list">
+                <div class="recap-clean-item">
+                  <span class="recap-clean-label">Vybraný pokoj:</span>
+                  <span class="recap-clean-val"><strong>${room.name}</strong></span>
                 </div>
 
-                ${pricing.singleNightSurchargeTotal > 0 ? `
-                  <div class="summary-row surcharge">
-                    <div class="row-info">
-                      <span class="row-label">
-                        ${pricing.surchargeReason === 'single_occupancy'
-                          ? 'Příplatek za neobsazené lůžko'
-                          : (pricing.surchargeReason === 'both' ? 'Příplatek za 1 noc & 1 osobu' : 'Příplatek za 1 noc')}
-                      </span>
-                      <span class="row-details">(+${pricing.singleNightRatePerPerson} Kč / ${pricing.surchargeReason === 'single_occupancy' ? 'noc' : 'osoba'})</span>
-                    </div>
-                    <span class="row-price">+${pricing.singleNightSurchargeTotal} Kč</span>
+                <div class="recap-clean-item">
+                  <span class="recap-clean-label">Termín pobytu:</span>
+                  <div class="recap-clean-val-group">
+                    <span class="recap-clean-val"><strong>${formatCzechDateStr(this.state.dateFrom)} – ${formatCzechDateStr(this.state.dateTo)}</strong></span>
+                    <span class="recap-sub-val">(${nights} ${nights === 1 ? 'noc' : (nights >= 2 && nights <= 4 ? 'noci' : 'nocí')})</span>
                   </div>
-                ` : ''}
+                </div>
 
-                ${pricing.hasHalfBoard ? `
-                  <div class="summary-row">
-                    <div class="row-info">
-                      <span class="row-label">Dokoupená polopenze</span>
-                      <span class="row-details">(+195 Kč/os/noc • ${pricing.halfBoardCount}x os, ${nights}x noc)</span>
-                    </div>
-                    <span class="row-price">+${pricing.halfBoardPriceTotal} Kč</span>
-                  </div>
-                ` : ''}
-
-                ${pricing.hasDog ? `
-                  <div class="summary-row">
-                    <div class="row-info">
-                      <span class="row-label">Pobyt s pejskem</span>
-                      <span class="row-details">(+150 Kč/noc za pokoj • ${nights}x noc)</span>
-                    </div>
-                    <span class="row-price">+${pricing.dogPriceTotal} Kč</span>
-                  </div>
-                ` : ''}
-
-                ${pricing.hasEbike ? `
-                  <div class="summary-row">
-                    <div class="row-info">
-                      <span class="row-label">Nabíjení elektrokola</span>
-                      <span class="row-details">(+15 Kč/den • ${pricing.ebikeCount}x ks, ${nights}x noc)</span>
-                    </div>
-                    <span class="row-price">+${pricing.ebikePriceTotal} Kč</span>
-                  </div>
-                ` : ''}
-
-                ${pricing.cityTax > 0 ? `
-                  <div class="summary-row">
-                    <div class="row-info">
-                      <span class="row-label">Místní poplatek z pobytu</span>
-                      <span class="row-details">(20 Kč / osoba / noc • ${pricing.totalGuests}x os, ${nights}x noc)</span>
-                    </div>
-                    <span class="row-price">${pricing.cityTax} Kč</span>
-                  </div>
-                ` : ''}
+                <div class="recap-clean-item">
+                  <span class="recap-clean-label">Počet hostů:</span>
+                  <span class="recap-clean-val"><strong>${this.state.adults} dospělí ${this.state.children > 0 ? `, ${this.state.children} dětí` : ''}</strong></span>
+                </div>
               </div>
+
+              ${(pricing.singleNightSurchargeTotal > 0 || pricing.hasHalfBoard || pricing.hasDog || pricing.hasEbike || pricing.cityTax > 0) ? `
+                <div class="summary-total-divider"></div>
+                <div class="summary-rows">
+                  ${pricing.singleNightSurchargeTotal > 0 ? `
+                    <div class="summary-row surcharge">
+                      <div class="row-info">
+                        <span class="row-label">
+                          ${pricing.surchargeReason === 'single_occupancy'
+                            ? 'Příplatek za neobsazené lůžko'
+                            : (pricing.surchargeReason === 'both' ? 'Příplatek za 1 noc & 1 osobu' : 'Příplatek za 1 noc')}
+                        </span>
+                        <span class="row-details">(+${pricing.singleNightRatePerPerson} Kč / ${pricing.surchargeReason === 'single_occupancy' ? 'noc' : 'osoba'})</span>
+                      </div>
+                      <span class="row-price">+${pricing.singleNightSurchargeTotal} Kč</span>
+                    </div>
+                  ` : ''}
+
+                  ${pricing.hasHalfBoard ? `
+                    <div class="summary-row">
+                      <div class="row-info">
+                        <span class="row-label">Dokoupená polopenze</span>
+                        <span class="row-details">(+195 Kč/os/noc • ${pricing.halfBoardCount}x os, ${nights}x noc)</span>
+                      </div>
+                      <span class="row-price">+${pricing.halfBoardPriceTotal} Kč</span>
+                    </div>
+                  ` : ''}
+
+                  ${pricing.hasDog ? `
+                    <div class="summary-row">
+                      <div class="row-info">
+                        <span class="row-label">Pobyt s pejskem</span>
+                        <span class="row-details">(+150 Kč/noc za pokoj • ${nights}x noc)</span>
+                      </div>
+                      <span class="row-price">+${pricing.dogPriceTotal} Kč</span>
+                    </div>
+                  ` : ''}
+
+                  ${pricing.hasEbike ? `
+                    <div class="summary-row">
+                      <div class="row-info">
+                        <span class="row-label">Nabíjení elektrokola</span>
+                        <span class="row-details">(+15 Kč/den • ${pricing.ebikeCount}x ks, ${nights}x noc)</span>
+                      </div>
+                      <span class="row-price">+${pricing.ebikePriceTotal} Kč</span>
+                    </div>
+                  ` : ''}
+                </div>
+              ` : ''}
 
               <div class="summary-total-divider"></div>
 
+              <!-- Senior & User-Friendly Payment Flow Breakdown -->
+              <div class="summary-clean-deposit">
+                <div class="deposit-clean-row zero-deposit">
+                  <div class="deposit-clean-info">
+                    <span class="deposit-clean-title">Dnes při odeslání neplatíte nic</span>
+                    <small class="deposit-clean-sub">(Podání žádosti o rezervaci je zdarma)</small>
+                  </div>
+                  <span class="deposit-clean-amount badge-zero-pay">0 Kč</span>
+                </div>
+
+                <div class="deposit-clean-row main-deposit">
+                  <div class="deposit-clean-info">
+                    <span class="deposit-clean-title">1. Záloha po schválení recepcí</span>
+                    <small class="deposit-clean-sub">(30 % záloha z celkové ceny pobytu)</small>
+                  </div>
+                  <span class="deposit-clean-amount">${formatCzechPrice(pricing.depositPriceTotal)}</span>
+                </div>
+
+                <div class="deposit-clean-row remaining-deposit">
+                  <div class="deposit-clean-info">
+                    <span class="deposit-clean-title">2. Doplatek při příjezdu</span>
+                    <small class="deposit-clean-sub">(70 % doplatek na místě na recepci)</small>
+                  </div>
+                  <span class="deposit-clean-amount">${formatCzechPrice(pricing.remainingPriceTotal)}</span>
+                </div>
+              </div>
+
               <div class="summary-total-row">
-                <span>Celková cena s DPH:</span>
-                <span class="total-price-amount">${pricing.totalPrice} Kč</span>
+                <span>Celková cena pobytu s DPH:</span>
+                <span class="total-price-amount">${formatCzechPrice(pricing.totalPrice)}</span>
               </div>
 
               <div class="summary-perks">
@@ -699,127 +1063,517 @@ export class BookingSystem {
   }
 
   renderStep2(room, pricing, nights) {
+    this.syncGuestsArray();
+    const formattedFrom = formatCzechDateStr(this.state.dateFrom);
+    const formattedTo = formatCzechDateStr(this.state.dateTo);
+    const totalGuests = this.state.guests.length;
+
+    const renderHost1Fields = (g) => `
+      <div class="form-field ${this.state.fieldErrors['guest-0-name'] ? 'has-error' : ''}">
+        <label for="guest-0-name" class="form-label">Jméno a Příjmení <span class="required">*</span></label>
+        <input type="text" id="guest-0-name" class="form-input guest-input" data-idx="0" data-field="name" placeholder="např. Jan Novák" value="${g?.name || this.state.guestName}">
+        ${this.state.fieldErrors['guest-0-name'] ? `
+          <div class="field-error-popover">
+            <span class="popover-arrow"></span>
+            <span class="popover-icon">⚠️</span>
+            <span>${this.state.fieldErrors['guest-0-name']}</span>
+          </div>
+        ` : ''}
+      </div>
+
+      <div class="form-grid-2col">
+        <div class="form-field ${this.state.fieldErrors['guest-0-email'] ? 'has-error' : ''}">
+          <label for="guest-0-email" class="form-label">E-mailová adresa <span class="required">*</span></label>
+          <input type="email" id="guest-0-email" class="form-input guest-input" data-idx="0" data-field="email" placeholder="např. jan.novak@seznam.cz" value="${g?.email || this.state.guestEmail}">
+          ${this.state.fieldErrors['guest-0-email'] ? `
+            <div class="field-error-popover">
+              <span class="popover-arrow"></span>
+              <span class="popover-icon">⚠️</span>
+              <span>${this.state.fieldErrors['guest-0-email']}</span>
+            </div>
+          ` : ''}
+        </div>
+
+        <div class="form-field ${this.state.fieldErrors['guest-0-phone'] ? 'has-error' : ''}">
+          <label for="guest-0-phone" class="form-label">Telefonní číslo <span class="required">*</span></label>
+          <input type="tel" id="guest-0-phone" class="form-input guest-input" data-idx="0" data-field="phone" placeholder="např. +420 777 123 456" value="${g?.phone || this.state.guestPhone}">
+          ${this.state.fieldErrors['guest-0-phone'] ? `
+            <div class="field-error-popover">
+              <span class="popover-arrow"></span>
+              <span class="popover-icon">⚠️</span>
+              <span>${this.state.fieldErrors['guest-0-phone']}</span>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+
+      <div class="form-optional-section">
+        <div class="optional-section-header">
+          <h4 class="optional-section-title">Údaje pro Ubytovací knihu & Rychlý check-in <span class="optional-tag">(Volitelné)</span></h4>
+        </div>
+
+        <div class="form-grid-2col">
+          <div class="form-field ${this.state.fieldErrors['guest-0-birthdate'] ? 'has-error' : ''}">
+            <label for="guest-0-birthdate" class="form-label">Datum narození:</label>
+            <input type="text" id="guest-0-birthdate" class="form-input guest-input" data-idx="0" data-field="birthDate" placeholder="např. 15. 05. 1988 (DD.MM.YYYY)" value="${g?.birthDate || ''}">
+            <small class="form-hint" style="font-size: 12px; color: #777770; margin-top: 4px; display: block;">Zadejte např. 15. 05. 1988 nebo RRRR-MM-DD</small>
+            ${this.state.fieldErrors['guest-0-birthdate'] ? `
+              <div class="field-error-popover">
+                <span class="popover-arrow"></span>
+                <span class="popover-icon">⚠️</span>
+                <span>${this.state.fieldErrors['guest-0-birthdate']}</span>
+              </div>
+            ` : ''}
+          </div>
+          <div class="form-field ${this.state.fieldErrors['guest-0-idnumber'] ? 'has-error' : ''}">
+            <label for="guest-0-idnumber" class="form-label">Číslo OP / Pasu:</label>
+            <input type="text" id="guest-0-idnumber" class="form-input guest-input" data-idx="0" data-field="idNumber" placeholder="např. 209847162" value="${g?.idNumber || ''}">
+            ${this.state.fieldErrors['guest-0-idnumber'] ? `
+              <div class="field-error-popover">
+                <span class="popover-arrow"></span>
+                <span class="popover-icon">⚠️</span>
+                <span>${this.state.fieldErrors['guest-0-idnumber']}</span>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+
+        <div class="form-grid-2col" style="margin-top: 10px;">
+          <div class="form-field">
+            <label for="guest-0-street" class="form-label">Ulice a číslo popisné:</label>
+            <input type="text" id="guest-0-street" class="form-input guest-input" data-idx="0" data-field="street" placeholder="např. Nádražní 14" value="${g?.street || this.state.guestStreet}">
+          </div>
+          <div class="form-field">
+            <label for="guest-0-city" class="form-label">Město / Obec:</label>
+            <input type="text" id="guest-0-city" class="form-input guest-input" data-idx="0" data-field="city" placeholder="např. Liberec" value="${g?.city || this.state.guestCity}">
+          </div>
+        </div>
+
+        <div class="form-grid-2col" style="margin-top: 10px;">
+          <div class="form-field">
+            <label for="guest-0-zip" class="form-label">PSČ:</label>
+            <input type="text" id="guest-0-zip" class="form-input guest-input" data-idx="0" data-field="zip" placeholder="např. 460 01" value="${g?.zip || this.state.guestZip}">
+          </div>
+          <div class="form-field">
+            <label for="guest-0-country" class="form-label">Stát:</label>
+            <input type="text" id="guest-0-country" class="form-input guest-input" data-idx="0" data-field="country" placeholder="Česká republika" value="${g?.country || this.state.guestCountry}">
+          </div>
+        </div>
+
+        <!-- Vysvětlení rychlého check-inu umístěné POD políčky přímo na čistém bílém podkladu (Bez barevných boxů) -->
+        <p class="quick-checkin-notice" style="font-size: 13.5px; color: #55554E; margin: 16px 0 0 0; line-height: 1.5;">
+          💡 <strong>Proč vyplnit tyto údaje online?</strong> Vyplněním ušetříte čas při příjezdu na recepci — nemusíte po cestě nic zdlouhavě vypisovat a klíče od pokoje vám předáme ihned.
+        </p>
+      </div>
+    `;
+
     return `
       <div class="booking-step-content">
-        <div class="booking-grid">
-          <div class="booking-left-col">
-            <div class="booking-card">
-              <h3 class="card-title">Kontaktní údaje rezervujícího</h3>
-              <p class="card-intro">Vyplňte prosím vaše nacionále pro vystavení potvrzení rezervace.</p>
+        <form id="booking-form-step2" class="booking-form" novalidate>
+          <div class="booking-grid">
+            <div class="booking-left-col">
+              <div class="booking-card card-step-2">
+                <div class="booking-back-inside">
+                  <button type="button" class="btn-back-link btn-back-step-1">
+                    ← Zpět k výběru termínu
+                  </button>
+                </div>
 
-              <form id="booking-form-step2" class="booking-form">
+                <div class="step-card-header" style="margin-bottom: 24px;">
+                  <h3 class="card-title" style="margin:0 0 6px 0;">${totalGuests === 1 ? 'Kontaktní údaje rezervujícího' : 'Údaje ubytovaných hostů'}</h3>
+                  <p style="margin:0; font-size:14px; color:#666666;">
+                    ${totalGuests === 1
+                      ? 'Vyplňte prosím vaše kontaktní informace pro potvrzení rezervace.'
+                      : `Vyplňte prosím informace o všech ubytovaných hostech (${totalGuests} ${totalGuests >= 2 && totalGuests <= 4 ? 'osoby' : 'osob'}).`}
+                  </p>
+                </div>
+
+                ${this.state.errorMessage ? `
+                  <div class="booking-alert-error" style="margin-bottom: 22px;">
+                    <span class="alert-icon">⚠️</span>
+                    <span>${this.state.errorMessage}</span>
+                  </div>
+                ` : ''}
+
                 <!-- Honeypot anti-spam field (hidden) -->
                 <div style="display:none;" aria-hidden="true">
                   <input type="text" id="hp-field" tabindex="-1" autocomplete="off" value="${this.state.honeypot}">
                 </div>
 
-                <div class="form-field">
-                  <label for="guest-name" class="form-label">Jméno a Příjmení <span class="required">*</span></label>
-                  <input type="text" id="guest-name" class="form-input" placeholder="např. Jan Novák" value="${this.state.guestName}" required>
-                </div>
+                ${totalGuests === 1 ? `
+                  <!-- FORMULÁŘ PRO 1 HOSTA (ROVNOU BEZ AKORDEONU) -->
+                  <div class="single-guest-form">
+                    ${renderHost1Fields(this.state.guests[0])}
+                  </div>
+                ` : `
+                  <!-- AKORDEON PRO 2 A VÍCE HOSTŮ -->
+                  <div class="guests-accordion-list">
+                    ${this.state.guests.map((g, idx) => {
+                      const isMain = idx === 0;
+                      const isOpen = idx === 0;
+                      const hasError = isMain
+                        ? Boolean(this.state.fieldErrors['guest-0-name'] || this.state.fieldErrors['guest-0-email'] || this.state.fieldErrors['guest-0-phone'])
+                        : Boolean(this.state.fieldErrors[`guest-${idx}-name`]);
+                      const isFilled = isMain
+                        ? Boolean((g.name || this.state.guestName) && (g.email || this.state.guestEmail) && (g.phone || this.state.guestPhone))
+                        : Boolean(g.name && g.name.trim());
 
-                <div class="form-field">
-                  <label for="guest-email" class="form-label">E-mailová adresa <span class="required">*</span></label>
-                  <input type="email" id="guest-email" class="form-input" placeholder="např. jan.novak@seznam.cz" value="${this.state.guestEmail}" required>
-                  <small class="field-hint">Na tento e-mail zašleme potvrzení rezervace a platební údaje.</small>
-                </div>
+                      return `
+                        <div class="guest-accordion-item ${isOpen ? 'is-open' : ''} ${hasError ? 'has-error' : ''}" id="guest-accordion-${idx}">
+                          <button type="button" class="guest-accordion-header" data-idx="${idx}">
+                            <div class="guest-header-left">
+                              <span class="guest-num-badge">${idx + 1}</span>
+                              <div class="guest-header-titles">
+                                <span class="guest-header-role">${isMain ? '1. Hlavní host (Rezervující)' : `${idx + 1}. Ubytovaný host`}</span>
+                                <span class="guest-header-name">${g.name ? g.name : (isMain ? 'Hlavní kontakt pro rozpis platby' : 'Klikněte pro rozbalení a vyplnění')}</span>
+                              </div>
+                            </div>
 
-                <div class="form-field">
-                  <label for="guest-phone" class="form-label">Telefonní číslo <span class="required">*</span></label>
-                  <input type="tel" id="guest-phone" class="form-input" placeholder="např. +420 777 123 456" value="${this.state.guestPhone}" required>
-                </div>
+                            <div class="guest-header-right">
+                              ${isFilled ? `
+                                <span class="guest-status-pill status-ok">✓ Vyplněno</span>
+                              ` : `
+                                <span class="guest-status-pill status-pending">Vyžadováno *</span>
+                              `}
+                              <span class="guest-chevron">${isOpen ? '▲' : '▼'}</span>
+                            </div>
+                          </button>
 
+                          <div class="guest-accordion-body" style="${isOpen ? 'display: block;' : 'display: none;'}">
+                            <div class="guest-body-inner">
+                              ${isMain ? renderHost1Fields(g) : `
+                                <!-- DALŠÍ HOSTÉ (HOST 2, 3...) -->
+                                <div class="form-field ${this.state.fieldErrors[`guest-${idx}-name`] ? 'has-error' : ''}">
+                                  <label for="guest-${idx}-name" class="form-label">Jméno a Příjmení <span class="required">*</span></label>
+                                  <input type="text" id="guest-${idx}-name" class="form-input guest-input" data-idx="${idx}" data-field="name" placeholder="např. Petra Nováková" value="${g.name || ''}">
+                                  ${this.state.fieldErrors[`guest-${idx}-name`] ? `
+                                    <div class="field-error-popover">
+                                      <span class="popover-arrow"></span>
+                                      <span class="popover-icon">⚠️</span>
+                                      <span>${this.state.fieldErrors[`guest-${idx}-name`]}</span>
+                                    </div>
+                                  ` : ''}
+                                </div>
+
+                                <div class="form-optional-section">
+                                  <div class="optional-section-header">
+                                    <h4 class="optional-section-title">Údaje pro Ubytovací knihu & Rychlý check-in <span class="optional-tag">(Volitelné)</span></h4>
+                                  </div>
+                                  <div class="form-grid-2col">
+                                    <div class="form-field ${this.state.fieldErrors[`guest-${idx}-birthdate`] ? 'has-error' : ''}">
+                                      <label for="guest-${idx}-birthdate" class="form-label">Datum narození:</label>
+                                      <input type="text" id="guest-${idx}-birthdate" class="form-input guest-input" data-idx="${idx}" data-field="birthDate" placeholder="např. 20. 08. 1995 (DD.MM.YYYY)" value="${g.birthDate || ''}">
+                                      <small class="form-hint" style="font-size: 12px; color: #777770; margin-top: 4px; display: block;">Zadejte např. 20. 08. 1995 nebo RRRR-MM-DD</small>
+                                    </div>
+                                    <div class="form-field ${this.state.fieldErrors[`guest-${idx}-idnumber`] ? 'has-error' : ''}">
+                                      <label for="guest-${idx}-idnumber" class="form-label">Číslo OP / Pasu:</label>
+                                      <input type="text" id="guest-${idx}-idnumber" class="form-input guest-input" data-idx="${idx}" data-field="idNumber" placeholder="např. 102938475" value="${g.idNumber || ''}">
+                                      ${this.state.fieldErrors[`guest-${idx}-idnumber`] ? `
+                                        <div class="field-error-popover">
+                                          <span class="popover-arrow"></span>
+                                          <span class="popover-icon">⚠️</span>
+                                          <span>${this.state.fieldErrors[`guest-${idx}-idnumber`]}</span>
+                                        </div>
+                                      ` : ''}
+                                    </div>
+                                  </div>
+                                  <p class="quick-checkin-notice" style="font-size: 13.5px; color: #55554E; margin: 16px 0 0 0; line-height: 1.5;">
+                                    💡 <strong>Proč vyplnit tyto údaje online?</strong> Vyplněním ušetříte čas při příjezdu na recepci — nemusíte po cestě nic zdlouhavě vypisovat a klíče od pokoje vám předáme ihned.
+                                  </p>
+                                </div>
+                              `}
+                            </div>
+                          </div>
+                        </div>
+                      `;
+                    }).join('')}
+                  </div>
+                `}
+
+                <!-- Oddělovač před poznámkou -->
+                <div class="form-section-divider" style="margin: 24px 0;"></div>
+
+                <!-- Poznámka / Speciální přání -->
                 <div class="form-field">
-                  <label for="guest-note" class="form-label">Poznámka / Speciální přání (Volitelné):</label>
+                  <label for="guest-note" class="form-label">Poznámka / Speciální přání pro celý pobyt <span class="optional-tag">(Volitelné / Nepovinné)</span></label>
                   <textarea id="guest-note" class="form-textarea" rows="3" placeholder="Předpokládaný čas příjezdu, dieta či jiná přání...">${this.state.guestNote}</textarea>
                 </div>
-
-                <div class="form-field checkbox-field">
-                  <label class="checkbox-terms">
-                    <input type="checkbox" id="agree-terms" ${this.state.agreedTerms ? 'checked' : ''} required>
-                    <span>Souhlasím s obchodními a storno podmínkami Hotelu u Můstku a se zpracováním osobních údajů (GDPR). <span class="required">*</span></span>
-                  </label>
-                </div>
-
-                <div class="step-nav-buttons">
-                  <button type="button" class="btn btn-specs-secondary btn-back-step-1">← Zpět k výběru termínu</button>
-                  <button type="submit" class="btn btn-booking-submit btn-confirm-booking" ${this.state.isSubmitting ? 'disabled' : ''}>
-                    ${this.state.isSubmitting ? 'Odesílám rezervaci...' : 'Závazně rezervovat pobyt'}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-
-          <div class="booking-right-col">
-            <div class="summary-sticky-card">
-              <h3 class="summary-title">Rekapitulace rezervace</h3>
-              <div class="recap-info-block">
-                <p><strong>Pokoj:</strong> ${room.name}</p>
-                <p><strong>Termín:</strong> ${this.state.dateFrom} až ${this.state.dateTo} (${nights} nocí)</p>
-                <p><strong>Hosté:</strong> ${this.state.adults} dospělí ${this.state.children > 0 ? `, ${this.state.children} dětí` : ''}</p>
-              </div>
-
-              <div class="summary-total-divider"></div>
-              <div class="summary-total-row">
-                <span>Celkem k úhradě:</span>
-                <span class="total-price-amount">${pricing.totalPrice} Kč</span>
               </div>
             </div>
+
+            <div class="booking-right-col">
+              <div class="summary-sticky-card">
+                <h3 class="summary-title">Rekapitulace rezervace</h3>
+
+                <div class="recap-clean-list">
+                  <div class="recap-clean-item">
+                    <span class="recap-clean-label">Vybraný pokoj:</span>
+                    <span class="recap-clean-val"><strong>${room.name}</strong></span>
+                  </div>
+
+                  <div class="recap-clean-item">
+                    <span class="recap-clean-label">Termín pobytu:</span>
+                    <div class="recap-clean-val-group">
+                      <span class="recap-clean-val"><strong>${formattedFrom} – ${formattedTo}</strong></span>
+                      <span class="recap-sub-val">(${nights} ${nights === 1 ? 'noc' : (nights >= 2 && nights <= 4 ? 'noci' : 'nocí')})</span>
+                    </div>
+                  </div>
+
+                  <div class="recap-clean-item">
+                    <span class="recap-clean-label">Počet hostů:</span>
+                    <span class="recap-clean-val"><strong>${this.state.adults} dospělí ${this.state.children > 0 ? `, ${this.state.children} dětí` : ''}</strong></span>
+                  </div>
+                </div>
+
+                ${(pricing.singleNightSurchargeTotal > 0 || pricing.hasHalfBoard || pricing.hasDog || pricing.hasEbike || pricing.cityTax > 0) ? `
+                  <div class="summary-total-divider"></div>
+                  <div class="summary-rows">
+                    ${pricing.singleNightSurchargeTotal > 0 ? `
+                      <div class="summary-row surcharge">
+                        <div class="row-info">
+                          <span class="row-label">
+                            ${pricing.surchargeReason === 'single_occupancy'
+                              ? 'Příplatek za neobsazené lůžko'
+                              : (pricing.surchargeReason === 'both' ? 'Příplatek za 1 noc & 1 osobu' : 'Příplatek za 1 noc')}
+                          </span>
+                          <span class="row-details">(+${pricing.singleNightRatePerPerson} Kč / ${pricing.surchargeReason === 'single_occupancy' ? 'noc' : 'osoba'})</span>
+                        </div>
+                        <span class="row-price">+${pricing.singleNightSurchargeTotal} Kč</span>
+                      </div>
+                    ` : ''}
+
+                    ${pricing.hasHalfBoard ? `
+                      <div class="summary-row">
+                        <div class="row-info">
+                          <span class="row-label">Dokoupená polopenze</span>
+                          <span class="row-details">(+195 Kč/os/noc • ${pricing.halfBoardCount}x os, ${nights}x noc)</span>
+                        </div>
+                        <span class="row-price">+${pricing.halfBoardPriceTotal} Kč</span>
+                      </div>
+                    ` : ''}
+
+                    ${pricing.hasDog ? `
+                      <div class="summary-row">
+                        <div class="row-info">
+                          <span class="row-label">Pobyt s pejskem</span>
+                          <span class="row-details">(+150 Kč/noc za pokoj • ${nights}x noc)</span>
+                        </div>
+                        <span class="row-price">+${pricing.dogPriceTotal} Kč</span>
+                      </div>
+                    ` : ''}
+
+                    ${pricing.hasEbike ? `
+                      <div class="summary-row">
+                        <div class="row-info">
+                          <span class="row-label">Nabíjení elektrokola</span>
+                          <span class="row-details">(+15 Kč/den • ${pricing.ebikeCount}x ks, ${nights}x noc)</span>
+                        </div>
+                        <span class="row-price">+${pricing.ebikePriceTotal} Kč</span>
+                      </div>
+                    ` : ''}
+                  </div>
+                ` : ''}
+
+                <div class="summary-total-divider"></div>
+
+                <div class="summary-clean-deposit">
+                  <div class="deposit-clean-row zero-deposit">
+                    <div class="deposit-clean-info">
+                      <span class="deposit-clean-title">Dnes při odeslání neplatíte nic</span>
+                      <small class="deposit-clean-sub">(Podání žádosti o rezervaci je zdarma)</small>
+                    </div>
+                    <span class="deposit-clean-amount badge-zero-pay">0 Kč</span>
+                  </div>
+
+                  <div class="deposit-clean-row main-deposit">
+                    <div class="deposit-clean-info">
+                      <span class="deposit-clean-title">1. Záloha po schválení recepcí</span>
+                      <small class="deposit-clean-sub">(30 % záloha z celkové ceny pobytu)</small>
+                    </div>
+                    <span class="deposit-clean-amount">${formatCzechPrice(pricing.depositPriceTotal)}</span>
+                  </div>
+
+                  <div class="deposit-clean-row remaining-deposit">
+                    <div class="deposit-clean-info">
+                      <span class="deposit-clean-title">2. Doplatek při příjezdu</span>
+                      <small class="deposit-clean-sub">(70 % doplatek na místě na recepci)</small>
+                    </div>
+                    <span class="deposit-clean-amount">${formatCzechPrice(pricing.remainingPriceTotal)}</span>
+                  </div>
+                </div>
+
+                <div class="summary-total-row">
+                  <span>Celková cena pobytu s DPH:</span>
+                  <span class="total-price-amount">${formatCzechPrice(pricing.totalPrice)}</span>
+                </div>
+
+                <div class="summary-perks">
+                  <span>✓ Snídaně v ceně</span>
+                  <span>✓ Parkování ZDARMA</span>
+                  <span>✓ Wi-Fi ZDARMA</span>
+                </div>
+
+                <button type="submit" class="btn btn-booking-submit btn-confirm-booking" ${this.state.isSubmitting ? 'disabled' : ''}>
+                  ${this.state.isSubmitting ? 'Odesílám žádost...' : 'Odeslat žádost o rezervaci →'}
+                </button>
+
+                <p class="terms-inline-notice" style="margin-top: 14px; font-size: 13px; color: #666666; text-align: center; line-height: 1.5;">
+                  Odesláním žádosti o rezervaci souhlasíte s <button type="button" class="terms-modal-trigger-link" id="open-terms-modal-step2">obchodními a storno podmínkami</button> Hotelu u Můstku a se zpracováním osobních údajů (GDPR).
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
+        </form>
       </div>
     `;
   }
 
   renderStep3(room, pricing) {
     const res = this.state.confirmedReservation || {};
+    const formattedFrom = formatCzechDateStr(this.state.dateFrom);
+    const formattedTo = formatCzechDateStr(this.state.dateTo);
+    const nights = this.calculateNights();
+
     return `
-      <div class="booking-step-content success-step">
-        <div class="success-card">
-          <div class="success-icon-wrap">✓</div>
-          <h3 class="success-title">Děkujeme, vaše rezervace byla úspěšně přijata!</h3>
-          <p class="success-code-badge">Kód rezervace: <strong>${res.code || 'HM-2026-0000'}</strong></p>
+      <div class="booking-step-content success-step" style="width: 100%; max-width: 1440px; margin: 0 auto; box-sizing: border-box;">
+        <div class="standalone-confirmation-wrap" style="display: flex; flex-direction: column; gap: clamp(20px, 2.5vw, 32px); width: 100%;">
 
-          <p class="success-intro">
-            Potvrzení rezervace a platební údaje byly odeslány na váš e-mail <strong>${res.guest_email || this.state.guestEmail}</strong>.
-          </p>
-
-          <div class="payment-instructions-grid">
-            <!-- Levá část: Bankovní údaje -->
-            <div class="payment-info-box">
-              <h4 class="box-subtitle">Platební údaje pro bankovní převod</h4>
-              <ul class="payment-details-list">
-                <li><span>Číslo účtu:</span> <strong>${BANK_ACCOUNT}</strong></li>
-                <li><span>Banka:</span> <strong>Česká spořitelna</strong></li>
-                <li><span>Variabilní kód:</span> <strong>${(res.code || '').replace(/[^0-9]/g, '')}</strong></li>
-                <li><span>Částka k úhradě:</span> <strong>${pricing.totalPrice} Kč</strong></li>
-                <li><span>Splatnost:</span> <strong>Do 3 pracovních dnů</strong></li>
-              </ul>
+          <!-- HORNÍ KARTA: Hlavní potvrzení a kód žádosti -->
+          <div class="confirmation-hero-card" style="background: #FFFFFF; border: 1px solid #E7E5DC; border-radius: 20px; padding: clamp(28px, 5vw, 56px) clamp(20px, 4vw, 56px); text-align: center;">
+            <div class="confirmation-icon-circle" style="width: 84px; height: 84px; border-radius: 50%; background: #E1EDD6; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;">
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+                <path d="M9 21.5L16.5 29L31 12.5" stroke="#4A5A24" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
             </div>
-
-            <!-- Pravá část: Český QR Kód -->
-            <div class="payment-qr-box">
-              <h4 class="box-subtitle">Rychlá platba QR kódem</h4>
-              ${this.state.qrDataUrl ? `
-                <img src="${this.state.qrDataUrl}" alt="QR kód pro platbu z mobilního bankovnictví" class="qr-code-img">
-                <small class="qr-hint">Naskenujte v aplikaci vaší české banky</small>
-              ` : '<p>QR kód načítám...</p>'}
+            <h1 style="margin: 0 0 16px; font-size: clamp(26px, 4vw, 38px); line-height: 1.2; font-weight: 800; letter-spacing: -0.02em; color: #1C1C19;">
+              Žádost o rezervaci byla úspěšně odeslána!
+            </h1>
+            <p style="margin: 0 auto 28px; max-width: 48ch; font-size: clamp(16px, 1.6vw, 19px); color: #55554E; line-height: 1.5;">
+              Potvrzení o přijetí žádosti jsme odeslali na váš e-mail <strong style="color: #1C1C19; font-weight: 700; white-space: nowrap;">${res.guest_email || this.state.guestEmail}</strong>.
+            </p>
+            <div style="display: inline-flex; align-items: center; gap: 10px; background: #EDF2E4; color: #4A5A24; border-radius: 999px; padding: 12px 24px; font-size: clamp(15px, 1.4vw, 18px); font-weight: 700;">
+              <span style="font-weight: 500; color: #5D6B34;">Kód žádosti:</span> ${res.code || 'HM-2026-0000'}
             </div>
           </div>
 
-          <div class="hotel-contacts-card">
-            <h4>Důležité informace k příjezdu</h4>
-            <p>📍 <strong>Adresa hotelu:</strong> Desná v Jizerských horách 143, 468 61 Desná</p>
-            <p>⏰ <strong>Check-in (Příjezd):</strong> 14:00 – 19:00 hod.</p>
-            <p>⏰ <strong>Check-out (Odjezd):</strong> do 10:00 hod.</p>
-            <p>📞 <strong>Telefon na recepci:</strong> +420 777 123 456</p>
+          <!-- MŘÍŽKA S POKYNY A DETAILNÍ REKAPITULACÍ -->
+          <div class="confirmation-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr)); gap: clamp(20px, 2.5vw, 32px); align-items: start;">
+
+            <!-- LEVÝ SLOUPEC: Co bude následovat -->
+            <section style="background: #FFFFFF; border: 1px solid #E7E5DC; border-radius: 20px; padding: clamp(24px, 3.2vw, 40px);">
+              <h2 style="margin: 0 0 14px; font-size: clamp(21px, 2.2vw, 25px); font-weight: 700; letter-spacing: -0.01em; color: #1C1C19;">Co bude následovat nyní?</h2>
+              <p style="margin: 0 0 28px; color: #55554E; font-size: 15.5px; line-height: 1.6;">
+                Abychom předešli překrývání termínů s externími rezervačními systémy, vaši rezervaci nyní fyzicky ověřuje recepce hotelu.
+              </p>
+
+              <ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px;">
+                <li style="display: grid; grid-template-columns: 44px 1fr; gap: 18px; padding: 20px 0; border-top: 1px solid #EFEEE7;">
+                  <span style="width: 44px; height: 44px; border-radius: 50%; background: #697947; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 700; flex-shrink: 0;">1</span>
+                  <div>
+                    <h3 style="margin: 4px 0 6px; font-size: clamp(17px, 1.7vw, 20px); font-weight: 700; color: #1C1C19;">Ověření kapacity recepcí</h3>
+                    <p style="margin: 0; color: #55554E; font-size: 14.5px; line-height: 1.5;">
+                      Recepce zkontroluje dostupnost pokoje <strong style="color: #1C1C19;">${room.name}</strong>. Dnes při odeslání <strong style="color: #1C1C19;">neplatíte nic (0 Kč)</strong>.
+                    </p>
+                  </div>
+                </li>
+
+                <li style="display: grid; grid-template-columns: 44px 1fr; gap: 18px; padding: 20px 0; border-top: 1px solid #EFEEE7;">
+                  <span style="width: 44px; height: 44px; border-radius: 50%; background: #EDF2E4; color: #697947; display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 700; flex-shrink: 0;">2</span>
+                  <div>
+                    <h3 style="margin: 4px 0 6px; font-size: clamp(17px, 1.7vw, 20px); font-weight: 700; color: #1C1C19;">Výzva k úhradě 30% zálohy</h3>
+                    <p style="margin: 0; color: #55554E; font-size: 14.5px; line-height: 1.5;">
+                      Jakmile termín schválíme, zašleme vám e-mail s pokyny k úhradě 30% zálohy (<strong style="color: #1C1C19;">${formatCzechPrice(pricing.depositPriceTotal)}</strong>) s QR kódem.
+                    </p>
+                  </div>
+                </li>
+
+                <li style="display: grid; grid-template-columns: 44px 1fr; gap: 18px; padding: 20px 0; border-top: 1px solid #EFEEE7;">
+                  <span style="width: 44px; height: 44px; border-radius: 50%; background: #EDF2E4; color: #697947; display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 700; flex-shrink: 0;">3</span>
+                  <div>
+                    <h3 style="margin: 4px 0 6px; font-size: clamp(17px, 1.7vw, 20px); font-weight: 700; color: #1C1C19;">Závazné potvrzení pobytu</h3>
+                    <p style="margin: 0; color: #55554E; font-size: 14.5px; line-height: 1.5;">
+                      Po přijetí zálohy vám zašleme finální potvrzení. Doplatek 70 % (<strong style="color: #1C1C19;">${formatCzechPrice(pricing.remainingPriceTotal)}</strong>) zaplatíte na místě při příjezdu.
+                    </p>
+                  </div>
+                </li>
+              </ol>
+            </section>
+
+            <!-- PRAVÝ SLOUPEC: Rekapitulace & Kontakty -->
+            <div style="display: flex; flex-direction: column; gap: clamp(20px, 2.5vw, 32px);">
+
+              <!-- Karta 1: Rekapitulace -->
+              <section style="background: #FFFFFF; border: 1px solid #E7E5DC; border-radius: 20px; padding: clamp(24px, 3.2vw, 40px);">
+                <h2 style="margin: 0 0 24px; font-size: clamp(21px, 2.2vw, 25px); font-weight: 700; letter-spacing: -0.01em; color: #1C1C19;">Rekapitulace rezervace</h2>
+                <dl style="margin: 0; display: flex; flex-direction: column; gap: 0;">
+                  <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 20px; padding: 14px 0; border-top: 1px solid #EFEEE7;">
+                    <dt style="color: #55554E; font-size: 15px;">Pokoj</dt>
+                    <dd style="margin: 0; font-weight: 700; text-align: right; color: #1C1C19; font-size: 15px;">${room.name}</dd>
+                  </div>
+
+                  <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 20px; padding: 14px 0; border-top: 1px solid #EFEEE7;">
+                    <dt style="color: #55554E; font-size: 15px;">Termín</dt>
+                    <dd style="margin: 0; font-weight: 700; text-align: right; color: #1C1C19; font-size: 15px;">${formattedFrom} – ${formattedTo} (${nights} ${nights === 1 ? 'noc' : (nights >= 2 && nights <= 4 ? 'noci' : 'nocí')})</dd>
+                  </div>
+
+                  <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 20px; padding: 14px 0; border-top: 1px solid #EFEEE7;">
+                    <dt style="color: #55554E; font-size: 15px;">Počet osob</dt>
+                    <dd style="margin: 0; font-weight: 700; text-align: right; color: #1C1C19; font-size: 15px;">${this.state.adults} dospělí ${this.state.children > 0 ? `, ${this.state.children} dětí` : ''}</dd>
+                  </div>
+
+                  <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 20px; padding: 18px 0 14px; margin-top: 10px; border-top: 2px solid #E7E5DC;">
+                    <dt style="color: #55554E; font-size: 15px;">Celková cena</dt>
+                    <dd style="margin: 0; font-weight: 800; font-size: clamp(19px, 1.8vw, 22px); text-align: right; color: #1C1C19;">${formatCzechPrice(pricing.totalPrice)} s DPH</dd>
+                  </div>
+                </dl>
+
+                <div style="margin-top: 16px; background: #EDF2E4; border-radius: 14px; padding: 20px 24px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 20px;">
+                  <span style="color: #4A5A24; font-weight: 600; font-size: 15px;">Záloha k platbě po schválení</span>
+                  <strong style="color: #4A5A24; font-size: clamp(20px, 2vw, 24px); font-weight: 800;">${formatCzechPrice(pricing.depositPriceTotal)}</strong>
+                </div>
+              </section>
+
+              <!-- Karta 2: Kontaktní údaje -->
+              <section style="background: #FFFFFF; border: 1px solid #E7E5DC; border-radius: 20px; padding: clamp(24px, 3.2vw, 40px);">
+                <h2 style="margin: 0 0 24px; font-size: clamp(21px, 2.2vw, 25px); font-weight: 700; letter-spacing: -0.01em; color: #1C1C19;">Kontaktní údaje recepce hotelu</h2>
+                <div style="display: flex; flex-direction: column; gap: 0;">
+                  <div style="padding: 14px 0; border-top: 1px solid #EFEEE7;">
+                    <div style="color: #55554E; font-size: 14.5px; margin-bottom: 2px;">Adresa</div>
+                    <div style="font-weight: 600; color: #1C1C19; font-size: 15px;">Údolní 368, 468 61 Desná v Jizerských horách 1</div>
+                  </div>
+
+                  <div style="padding: 14px 0; border-top: 1px solid #EFEEE7; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr)); gap: 14px 24px;">
+                    <div>
+                      <div style="color: #55554E; font-size: 14.5px; margin-bottom: 2px;">Check-in (Příjezd)</div>
+                      <div style="font-weight: 600; color: #1C1C19; font-size: 15px;">od 15:00 hod.</div>
+                    </div>
+                    <div>
+                      <div style="color: #55554E; font-size: 14.5px; margin-bottom: 2px;">Check-out (Odjezd)</div>
+                      <div style="font-weight: 600; color: #1C1C19; font-size: 15px;">do 10:00 hod.</div>
+                    </div>
+                  </div>
+
+                  <div style="padding: 14px 0; border-top: 1px solid #EFEEE7;">
+                    <div style="color: #55554E; font-size: 14.5px; margin-bottom: 2px;">Telefon na recepci</div>
+                    <a href="tel:+420777666273" style="font-size: clamp(18px, 1.7vw, 21px); font-weight: 700; color: #697947; text-decoration: none;">+420 777 666 273</a>
+                  </div>
+
+                  <div style="padding: 14px 0; border-top: 1px solid #EFEEE7;">
+                    <div style="color: #55554E; font-size: 14.5px; margin-bottom: 2px;">E-mail</div>
+                    <a href="mailto:hotel@umustku.cz" style="font-size: clamp(17px, 1.6vw, 19px); font-weight: 700; color: #697947; text-decoration: none;">hotel@umustku.cz</a>
+                  </div>
+                </div>
+              </section>
+
+            </div>
           </div>
 
-          <div class="success-actions">
-            <button class="btn btn-specs-secondary btn-new-booking">Vytvořit další rezervaci</button>
-            <button class="btn btn-booking-submit btn-go-home">Zpět na hlavní stránku</button>
+          <!-- SPODNÍ ŘÁDEK S TLAČÍTKY DLE BUTTON DESIGN SYSTEMU -->
+          <div class="confirmation-actions-row">
+            <button type="button" class="btn btn-specs-secondary btn-new-booking">← Vytvořit další žádost</button>
+            <button type="button" class="btn btn-booking-submit btn-go-home">Zpět na hlavní stránku</button>
           </div>
+
         </div>
       </div>
     `;
@@ -939,23 +1693,93 @@ export class BookingSystem {
         form.addEventListener('submit', (e) => this.handleFinalBookingSubmit(e));
       }
 
-      const guestName = document.getElementById('guest-name');
-      const guestEmail = document.getElementById('guest-email');
-      const guestPhone = document.getElementById('guest-phone');
+      this.container.querySelectorAll('.guest-accordion-header').forEach(header => {
+        header.addEventListener('click', (e) => {
+          e.preventDefault();
+          const item = header.closest('.guest-accordion-item');
+          const body = item.querySelector('.guest-accordion-body');
+          const chevron = header.querySelector('.guest-chevron');
+          
+          const isCurrentlyOpen = item.classList.contains('is-open');
+          if (isCurrentlyOpen) {
+            item.classList.remove('is-open');
+            body.style.display = 'none';
+            if (chevron) chevron.textContent = '▼';
+          } else {
+            item.classList.add('is-open');
+            body.style.display = 'block';
+            if (chevron) chevron.textContent = '▲';
+            const firstInput = body.querySelector('input');
+            if (firstInput) firstInput.focus();
+          }
+        });
+      });
+
+      this.container.querySelectorAll('.guest-input').forEach(input => {
+        input.addEventListener('input', (e) => {
+          const idx = parseInt(e.target.dataset.idx, 10);
+          const field = e.target.dataset.field;
+          if (this.state.guests[idx]) {
+            this.state.guests[idx][field] = e.target.value;
+            if (idx === 0) {
+              if (field === 'name') this.state.guestName = e.target.value;
+              if (field === 'email') this.state.guestEmail = e.target.value;
+              if (field === 'phone') this.state.guestPhone = e.target.value;
+              if (field === 'street') this.state.guestStreet = e.target.value;
+              if (field === 'city') this.state.guestCity = e.target.value;
+              if (field === 'zip') this.state.guestZip = e.target.value;
+              if (field === 'country') this.state.guestCountry = e.target.value;
+            }
+            // Update name in header live!
+            const headerNameEl = this.container.querySelector(`#guest-accordion-${idx} .guest-header-name`);
+            if (headerNameEl && field === 'name') {
+              headerNameEl.textContent = e.target.value ? e.target.value : (idx === 0 ? 'Hlavní kontakt pro rozpis platby' : 'Klikněte pro rozbalení a vyplnění');
+            }
+            // Update status pill live!
+            const statusPill = this.container.querySelector(`#guest-accordion-${idx} .guest-status-pill`);
+            if (statusPill) {
+              const g = this.state.guests[idx];
+              const isFilled = idx === 0
+                ? Boolean((g.name || this.state.guestName) && (g.email || this.state.guestEmail) && (g.phone || this.state.guestPhone))
+                : Boolean(g.name && g.name.trim());
+              if (isFilled) {
+                statusPill.className = 'guest-status-pill status-ok';
+                statusPill.textContent = '✓ Vyplněno';
+              } else {
+                statusPill.className = 'guest-status-pill status-pending';
+                statusPill.textContent = 'Vyžadováno *';
+              }
+            }
+          }
+          if (this.state.fieldErrors[`guest-${idx}-${field}`]) {
+            this.clearFieldError(`guest-${idx}-${field}`);
+          }
+        });
+      });
+
       const guestNote = document.getElementById('guest-note');
-      const agreeTerms = document.getElementById('agree-terms');
       const hpField = document.getElementById('hp-field');
 
-      if (guestName) guestName.addEventListener('input', (e) => { this.state.guestName = e.target.value; });
-      if (guestEmail) guestEmail.addEventListener('input', (e) => { this.state.guestEmail = e.target.value; });
-      if (guestPhone) guestPhone.addEventListener('input', (e) => { this.state.guestPhone = e.target.value; });
       if (guestNote) guestNote.addEventListener('input', (e) => { this.state.guestNote = e.target.value; });
-      if (agreeTerms) agreeTerms.addEventListener('change', (e) => { this.state.agreedTerms = e.target.checked; });
       if (hpField) hpField.addEventListener('input', (e) => { this.state.honeypot = e.target.value; });
+
+      this.setupAddressAutocomplete();
 
       const btnBack = this.container.querySelector('.btn-back-step-1');
       if (btnBack) {
         btnBack.addEventListener('click', () => this.setStep(1));
+      }
+
+      const btnOpenTermsStep2 = document.getElementById('open-terms-modal-step2');
+      if (btnOpenTermsStep2) {
+        btnOpenTermsStep2.addEventListener('click', (e) => {
+          e.preventDefault();
+          const modalOverlay = this.container.querySelector('#terms-modal-overlay');
+          if (modalOverlay) {
+            modalOverlay.classList.add('active');
+            modalOverlay.setAttribute('aria-hidden', 'false');
+          }
+        });
       }
     } else if (this.currentStep === 3) {
       const btnNew = this.container.querySelector('.btn-new-booking');

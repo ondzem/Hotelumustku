@@ -409,7 +409,7 @@ const getFooterHTML = () => `
 
       <!-- Spodní lišta -->
       <div class="footer-bottom-row">
-        <div class="footer-copyright">© 2026 All Rights Reserved.</div>
+        <div class="footer-copyright secret-admin-trigger" title="Vstup pro recepci" style="cursor: pointer;">© 2026 All Rights Reserved.</div>
         <div class="footer-logo-wrap btn-scroll-top" title="Zpět nahoru">
           <img src="/Logo/white logo.webp" alt="Hotel U Můstku" loading="lazy" decoding="async">
         </div>
@@ -1286,7 +1286,7 @@ const getRoomGroundFloorHTML = () => `
           <!-- Řádek 1 -->
           <div class="storno-table-row">
             <div class="storno-label-group">
-              <span class="storno-time-label">Více než 21 dní před příjezdem:</span>
+              <span class="storno-time-label">Více než 3 dny před příjezdem:</span>
             </div>
             <div class="storno-fee-group">
               <span class="storno-fee-val">Zdarma</span>
@@ -1297,33 +1297,11 @@ const getRoomGroundFloorHTML = () => `
           <!-- Řádek 2 -->
           <div class="storno-table-row">
             <div class="storno-label-group">
-              <span class="storno-time-label">21 – 14 dní před příjezdem:</span>
-            </div>
-            <div class="storno-fee-group">
-              <span class="storno-fee-val">40 %</span>
-              <span class="storno-fee-sub">z celkové ceny pobytu</span>
-            </div>
-          </div>
-
-          <!-- Řádek 3 -->
-          <div class="storno-table-row">
-            <div class="storno-label-group">
-              <span class="storno-time-label">14 – 7 dní před příjezdem:</span>
-            </div>
-            <div class="storno-fee-group">
-              <span class="storno-fee-val">60%</span>
-              <span class="storno-fee-sub">z celkové ceny pobytu</span>
-            </div>
-          </div>
-
-          <!-- Řádek 4 -->
-          <div class="storno-table-row">
-            <div class="storno-label-group">
-              <span class="storno-time-label">Méně než 7 dní před příjezdem:</span>
+              <span class="storno-time-label">Méně než 3 dny před příjezdem:</span>
               <span class="storno-time-sub">(nebo nedojezd)</span>
             </div>
             <div class="storno-fee-group">
-              <span class="storno-fee-val">100%</span>
+              <span class="storno-fee-val">100 %</span>
               <span class="storno-fee-sub">z celkové ceny pobytu</span>
             </div>
           </div>
@@ -2051,6 +2029,15 @@ const initInteractivity = () => {
       const roomItem = btn.closest('.room-breakdown-item');
       const roomId = roomItem ? roomItem.dataset.room : '';
       window.location.hash = roomId ? `#rezervace?room=${roomId}` : '#rezervace';
+    });
+  });
+
+  // Tajné secret tlačítko pro rychlý přechod do recepčního adminu z paty webu
+  const secretAdminTriggers = document.querySelectorAll('.secret-admin-trigger, .footer-copyright');
+  secretAdminTriggers.forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.hash = '#admin';
     });
   });
 

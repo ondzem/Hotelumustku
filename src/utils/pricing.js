@@ -1,11 +1,15 @@
 // Pricing Calculation Engine for Hotel u Můstku
+export const BANK_ACCOUNT = '293470312/0300';
+export const BANK_NAME = 'ČSOB';
+export const DEPOSIT_PERCENTAGE = 30; // 30 % záloha předem
+
 export const CITY_TAX_PER_ADULT_NIGHT = 20; // 20 Kč / dospělý / noc
 export const HALF_BOARD_PER_PERSON_NIGHT = 195; // 195 Kč / osoba / noc
 export const DOG_PER_DAY = 150; // 150 Kč / den
 export const EBIKE_PER_DAY = 15; // 15 Kč / den
 
 /**
- * Calculates exact reservation pricing breakdown
+ * Calculates exact reservation pricing breakdown including 30% deposit
  */
 export function calculateReservationPrice({
   roomType = 'standard', // 'standard' | 'nadstandard' | 'turisticky'
@@ -69,8 +73,12 @@ export function calculateReservationPrice({
 
   const addonsPrice = halfBoardPriceTotal + dogPriceTotal + ebikePriceTotal;
 
-  // 5. Total
+  // 5. Total Price
   const totalPrice = accommodationPrice + cityTax + addonsPrice;
+
+  // 6. 30% Deposit & 70% Remaining
+  const depositPriceTotal = Math.round(totalPrice * (DEPOSIT_PERCENTAGE / 100));
+  const remainingPriceTotal = totalPrice - depositPriceTotal;
 
   return {
     baseRatePerPersonNight,
@@ -94,7 +102,53 @@ export function calculateReservationPrice({
     ebikePriceTotal,
     addonsPrice,
     totalPrice,
+    depositPercentage: DEPOSIT_PERCENTAGE,
+    depositPriceTotal,
+    remainingPriceTotal,
+    bankAccount: BANK_ACCOUNT,
+    bankName: BANK_NAME,
+    formattedTotalPrice: formatCzechPrice(totalPrice),
+    formattedDepositPriceTotal: formatCzechPrice(depositPriceTotal),
+    formattedRemainingPriceTotal: formatCzechPrice(remainingPriceTotal),
+    formattedAccommodationPrice: formatCzechPrice(accommodationPrice),
   };
+}
+
+/**
+ * Formats currency number strictly according to Czech standard ČSN 01 6910 (e.g. 9 900 Kč, 1 494 Kč, 0 Kč)
+ */
+export function formatCzechPrice(val) {
+  const num = Math.round(Number(val) || 0);
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' Kč';
+}
+
+/**
+ * Generates Czech SPAYD QR Code image URL (scannable by all Czech bank mobile apps)
+ */
+export function generateSpaydQrUrl({ bankAccount = BANK_ACCOUNT, amount = 0, vs = '', message = 'Hotel u Mustku' }) {
+  const parts = String(bankAccount || '293470312/0300').split('/');
+  const accountNumber = (parts[0] || '293470312').replace(/[^0-9]/g, '');
+  const bankCode = (parts[1] || '0300').replace(/[^0-9]/g, '').padStart(4, '0');
+  const cleanVs = String(vs).replace(/[^0-9]/g, '') || '2026001';
+  const safeAmount = Number(amount || 0).toFixed(2);
+  const cleanMsg = String(message || 'Zaloha ubytovani')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9 -]/g, '')
+    .substring(0, 60);
+
+  // Exact IBAN calculation for Czech bank accounts (ČSOB 0300)
+  const ibanPaddedNumber = accountNumber.padStart(10, '0');
+  const ibanPaddedPrefix = '000000';
+  const bban = bankCode + ibanPaddedPrefix + ibanPaddedNumber;
+  const checkNum = BigInt(bban + '123500') % 97n;
+  const checkDigits = String(98n - checkNum).padStart(2, '0');
+  const iban = `CZ${checkDigits}${bban}`;
+
+  // Standard Czech SPAYD string format (ČBA standard)
+  const spaydString = `SPD*1.0*ACC:${iban}*AM:${safeAmount}*CC:CZK*X-VS:${cleanVs}*MSG:${cleanMsg}`;
+
+  return `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(spaydString)}`;
 }
 
 /**

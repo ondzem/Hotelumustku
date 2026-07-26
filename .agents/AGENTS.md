@@ -60,3 +60,8 @@ Všechny vnitřní kontejnery sekcí (`.hero-inner`, `.about-inner`, `.promo-inn
 ## 💬 Pravidlo pro komunikaci
 Odpovídat vždy stručně, věcně a přímo k věci. Bez zbytečných omáček, rekapitulací a zdlouhavých popisů kroků. Uvádět pouze podstatné informace.
 
+## 🖼️ ZÁKAZ BAREVNÝCH RÁMEČKŮ A POZADÍ SEKCE (NO CONTAINER BOXES RULE)
+
+* **STRIKTNÍ ZÁKAZ BAREVNÝCH RÁMEČKŮ OSOBITÝCH SEKCÍ**: NIKDY nevkládat formulářové bloky, sekce adresy, upozornění ani doplňkové texty do barevných pozadí/boxů s rámečky (`background-color`, `border` rámečky okolo podsekcí).
+* Všechny sekce, podsekce a formulářová pole MUSÍ ležet přímo na čistém bílém podkladu karty bez zbytečných vnitřních obalovacích container boxů. Pro oddělení sekcí se používá výhradně jednoduchá jemná dělicí čára (`.form-section-divider`).
+
