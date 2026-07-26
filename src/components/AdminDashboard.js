@@ -355,7 +355,7 @@ export class AdminDashboard {
                   </div>
 
                   <!-- COL 3: POKOJ A TERMÍN -->
-                  <div>
+                  <div class="res-room-col">
                     <div class="res-room-title">${room.name || r.room_name || 'Pokoj'}</div>
                     <div class="res-stay-dates">
                       <strong>${r.date_from} → ${r.date_to}</strong>
