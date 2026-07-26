@@ -4013,19 +4013,53 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   position: relative;
 }
 
+/* Sticky Modal Header & Backdrop Overlay Scroll */
+.admin-modal-overlay-block {
+  overflow-y: auto !important;
+  align-items: flex-start !important;
+  padding: 24px 12px !important;
+}
+
 .admin-block-modal {
   max-width: 600px;
   width: 90vw;
   box-sizing: border-box;
+  max-height: 88vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.admin-modal-header-sticky {
+  position: sticky;
+  top: 0;
+  background: #ffffff;
+  z-index: 30;
+  padding-top: 20px;
+  padding-bottom: 14px;
+  margin-top: 0;
+  border-bottom: 1px solid #efeee7;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
 }
 
 @media (max-width: 768px) {
+  .admin-modal-overlay-block {
+    padding: 12px 8px !important;
+  }
+
   .admin-block-modal {
-    width: 95vw !important;
+    width: 100vw !important;
     max-width: 100% !important;
-    padding: 18px 16px !important;
-    max-height: 90vh;
-    overflow-y: auto;
+    padding: 0 14px 20px 14px !important;
+    max-height: 94vh !important;
+    border-radius: 12px !important;
+  }
+
+  .admin-modal-header-sticky {
+    padding-top: 16px !important;
+    padding-bottom: 12px !important;
   }
 
   .block-form-grid {
@@ -4034,15 +4068,28 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   }
 
   .admin-cal-card {
-    padding: 12px !important;
+    padding: 12px 6px !important;
+    margin-left: -2px !important;
+    margin-right: -2px !important;
+    width: calc(100% + 4px) !important;
+    box-sizing: border-box !important;
   }
 
   .admin-cal-grid {
+    grid-template-columns: repeat(7, 1fr) !important;
     gap: 4px !important;
   }
 
   .admin-cal-grid .cal-day {
-    min-height: 38px !important;
+    min-height: 44px !important;
+    height: 44px !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    border-radius: 6px !important;
+  }
+
+  .cal-week-days {
     font-size: 13px !important;
+    font-weight: 700 !important;
   }
 }

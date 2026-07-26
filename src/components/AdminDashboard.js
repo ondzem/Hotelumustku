@@ -701,13 +701,13 @@ export class AdminDashboard {
         </div>
 
         ${this.showBlockModal ? `
-          <div class="admin-modal-overlay">
-            <div class="admin-confirm-modal admin-block-modal" style="max-width: 600px; padding: 24px 28px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid #efeee7; padding-bottom: 12px;">
+          <div class="admin-modal-overlay admin-modal-overlay-block">
+            <div class="admin-confirm-modal admin-block-modal" style="max-width: 600px; padding: 0 28px 24px 28px;">
+              <div class="admin-modal-header-sticky">
                 <h3 class="admin-modal-title" style="margin: 0; font-size: 18.5px; font-weight: 800;">📅 Správa uzávěrek & Blokování termínů</h3>
-                <button type="button" class="btn-close-block-modal" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #777; line-height: 1;">&times;</button>
+                <button type="button" class="btn-close-block-modal" style="background: none; border: none; font-size: 26px; cursor: pointer; color: #777; line-height: 1; padding: 4px 8px;">&times;</button>
               </div>
-              <p class="admin-modal-desc" style="margin-bottom: 16px; font-size: 13.5px; color: #55554e;">
+              <p class="admin-modal-desc" style="margin-top: 14px; margin-bottom: 16px; font-size: 13.5px; color: #55554e;">
                 Zaklikněte v kalendáři dny, které chcete zablokovat. Zablokované termíny nebudou na rezervačním portálu dostupné ke zvolení.
               </p>
 
@@ -830,6 +830,17 @@ export class AdminDashboard {
         this.showBlockModal = false;
         this.blockConflicts = [];
         this.render();
+      });
+    }
+
+    const blockModalOverlay = this.container.querySelector('.admin-modal-overlay-block');
+    if (blockModalOverlay) {
+      blockModalOverlay.addEventListener('click', (e) => {
+        if (e.target === blockModalOverlay) {
+          this.showBlockModal = false;
+          this.blockConflicts = [];
+          this.render();
+        }
       });
     }
 
