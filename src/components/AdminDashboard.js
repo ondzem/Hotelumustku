@@ -579,7 +579,7 @@ export class AdminDashboard {
           Načítám...
         `;
         await this.fetchReservations();
-        this.showAdminToast('Data rezervací byla úspěšně aktualizována z databáze Supabase.');
+        this.showAdminToast('Data byla úspěšně aktualizována.');
         this.render();
       });
     }
