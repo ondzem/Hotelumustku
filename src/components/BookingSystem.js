@@ -597,13 +597,13 @@ export class BookingSystem {
             </span>
           </button>
           <div class="step-divider"></div>
-          <div class="step-item ${this.currentStep === 3 ? 'active' : ''}">
+          <button type="button" class="step-item ${this.currentStep === 3 ? 'active' : ''}" disabled>
             <span class="step-number">3</span>
             <span class="step-label">
               <span class="label-full">Potvrzení & Platba</span>
               <span class="label-short">Platba</span>
             </span>
-          </div>
+          </button>
         </div>
 
         ${this.state.errorMessage ? `<div class="booking-error-alert">${this.state.errorMessage}</div>` : ''}
