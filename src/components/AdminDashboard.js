@@ -2,7 +2,28 @@ import { MOCK_ROOMS, getStoredReservations, updateStoredReservationStatus, delet
 import { calculateReservationPrice, generateSpaydQrUrl, BANK_ACCOUNT, formatCzechPrice, getVariableSymbol } from '../utils/pricing.js';
 import { sendEmail, generateEmail2ApprovalAndPaymentRequest, generateEmail3FinalConfirmation, generateEmailCancellation, getEmailLogs, sendAllTestEmailsTo } from '../utils/emailService.js';
 
-const ADMIN_SESSION_KEY = 'hotel_mustku_admin_auth_v1';
+function groupContiguousDateRanges(dates) {
+  if (!dates || dates.length === 0) return [];
+  const sorted = [...dates].sort();
+  const ranges = [];
+  let currentStart = sorted[0];
+  let currentEnd = sorted[0];
+
+  for (let i = 1; i < sorted.length; i++) {
+    const prev = new Date(currentEnd);
+    prev.setDate(prev.getDate() + 1);
+    const nextStr = prev.toISOString().split('T')[0];
+    if (sorted[i] === nextStr) {
+      currentEnd = sorted[i];
+    } else {
+      ranges.push({ date_from: currentStart, date_to: currentEnd });
+      currentStart = sorted[i];
+      currentEnd = sorted[i];
+    }
+  }
+  ranges.push({ date_from: currentStart, date_to: currentEnd });
+  return ranges;
+}
 
 export class AdminDashboard {
   constructor(containerId) {
@@ -13,7 +34,9 @@ export class AdminDashboard {
     this.reservations = [];
     this.blockedDates = [];
     this.showBlockModal = false;
-    this.blockForm = { room_id: 'all', date_from: '', date_to: '', reason: '' };
+    this.blockForm = { room_id: 'all', reason: '' };
+    this.blockSelectedDates = [];
+    this.calYearMonth = null;
     this.blockConflicts = [];
     this.selectedRoomFilter = 'all';
     this.statusFilter = 'all';
@@ -63,7 +86,7 @@ export class AdminDashboard {
 
   async addBlockedDate(room_id, date_from, date_to, reason) {
     const newItem = {
-      id: 'blk-' + Date.now(),
+      id: 'blk-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
       room_id: room_id || 'all',
       date_from: date_from,
       date_to: date_to,
@@ -90,9 +113,6 @@ export class AdminDashboard {
     saveStoredBlockedDate(newItem);
     await this.fetchBlockedDates();
     this.showAdminToast('Termín byl úspěšně zablokován.');
-    this.blockForm = { room_id: 'all', date_from: '', date_to: '', reason: '' };
-    this.blockConflicts = [];
-    this.render();
   }
 
   async removeBlockedDate(id) {
@@ -110,18 +130,114 @@ export class AdminDashboard {
     this.render();
   }
 
-  checkBlockedDateConflicts(room_id, date_from, date_to) {
-    if (!date_from || !date_to) return [];
-    const df = new Date(date_from);
-    const dt = new Date(date_to);
-
+  checkBlockedDateConflictsForDates(selectedDates, roomId) {
+    if (!selectedDates || selectedDates.length === 0) return [];
     return this.reservations.filter(r => {
-      if (r.status === 'cancelled') return false;
-      if (room_id !== 'all' && r.room_id !== room_id) return false;
-      const rDf = new Date(r.date_from);
-      const rDt = new Date(r.date_to);
-      return (rDf <= dt && rDt >= df);
+      if (r.status === 'cancelled' || r.status === 'stornováno') return false;
+      if (roomId !== 'all' && r.room_id !== roomId) return false;
+      return selectedDates.some(d => d >= r.date_from && d <= r.date_to);
     });
+  }
+
+  renderAdminCalendarMarkup() {
+    const today = new Date();
+    if (!this.calYearMonth) {
+      this.calYearMonth = { year: today.getFullYear(), month: today.getMonth() + 1 };
+    }
+    const { year, month } = this.calYearMonth;
+
+    const monthNames = [
+      'Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen',
+      'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec'
+    ];
+
+    const firstDayIndex = (new Date(year, month - 1, 1).getDay() + 6) % 7; // Mon = 0
+    const daysInMonth = new Date(year, month, 0).getDate();
+    const todayStr = today.toISOString().split('T')[0];
+    const selectedRoomId = this.blockForm.room_id || 'all';
+
+    let daysHtml = '';
+    for (let i = 0; i < firstDayIndex; i++) {
+      daysHtml += `<div class="cal-day cal-day-empty"></div>`;
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dayStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const isPast = dayStr < todayStr;
+      
+      const guestBooking = this.reservations.find(r => {
+        if (r.status === 'cancelled' || r.status === 'stornováno') return false;
+        if (selectedRoomId !== 'all' && r.room_id !== selectedRoomId) return false;
+        return dayStr >= r.date_from && dayStr <= r.date_to;
+      });
+
+      const isAlreadyBlocked = this.blockedDates.some(b => {
+        if (b.room_id !== 'all' && selectedRoomId !== 'all' && b.room_id !== selectedRoomId) return false;
+        return dayStr >= b.date_from && dayStr <= b.date_to;
+      });
+
+      const isSelectedForBlock = this.blockSelectedDates.includes(dayStr);
+
+      let dayClass = 'cal-day';
+      if (isPast) dayClass += ' is-disabled';
+      if (guestBooking) dayClass += ' is-occupied';
+      if (isAlreadyBlocked) dayClass += ' is-already-blocked';
+      if (isSelectedForBlock) dayClass += ' is-block-selected';
+
+      let titleAttr = '';
+      if (guestBooking) titleAttr = `Rezervace: ${guestBooking.guest_name} (${guestBooking.code || ''})`;
+      else if (isAlreadyBlocked) titleAttr = `Již zablokováno recepcií`;
+
+      daysHtml += `
+        <button type="button" class="${dayClass}" data-date="${dayStr}" ${isPast ? 'disabled' : ''} title="${titleAttr}">
+          ${day}
+          ${isSelectedForBlock ? '<span style="position: absolute; top: 2px; right: 4px; font-size: 9px; font-weight: 800;">✓</span>' : ''}
+          ${guestBooking ? '<span style="position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); font-size: 8px; font-weight: 800;">👤</span>' : ''}
+        </button>
+      `;
+    }
+
+    return `
+      <div class="cal-modal-card admin-cal-card" style="box-shadow: none; border: 1px solid #e0dfd5; padding: 18px; margin-bottom: 20px; background: #ffffff; border-radius: 12px;">
+        <div class="cal-modal-header" style="margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center;">
+          <button type="button" class="cal-nav-btn btn-admin-cal-prev" aria-label="Předchozí měsíc">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+          <h4 class="cal-month-title" style="margin: 0; font-size: 16px; font-weight: 700;">${monthNames[month - 1]} ${year}</h4>
+          <button type="button" class="cal-nav-btn btn-admin-cal-next" aria-label="Následující měsíc">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+        </div>
+
+        <div class="cal-week-days" style="margin-bottom: 8px;">
+          <span>Po</span><span>Út</span><span>St</span><span>Čt</span><span>Pá</span><span>So</span><span>Ne</span>
+        </div>
+
+        <div class="cal-grid admin-cal-grid">
+          ${daysHtml}
+        </div>
+
+        <!-- LEGENDA KALENDÁŘE -->
+        <div style="display: flex; flex-wrap: wrap; gap: 14px; margin-top: 14px; padding-top: 12px; border-top: 1px solid #f0efe8; font-size: 12px; color: #555;">
+          <div style="display: flex; align-items: center; gap: 5px;">
+            <span style="width: 12px; height: 12px; background: #697947; border-radius: 3px; display: inline-block;"></span>
+            <span>Vybraný termín k zablokování</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 5px;">
+            <span style="width: 12px; height: 12px; background: #fef5e7; border: 1px solid #e67e22; border-radius: 3px; display: inline-block;"></span>
+            <span>Aktivní rezervace hosta</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 5px;">
+            <span style="width: 12px; height: 12px; background: #f2f4f4; border: 1px solid #95a5a6; border-radius: 3px; display: inline-block;"></span>
+            <span>Již zablokováno</span>
+          </div>
+        </div>
+      </div>
+    `;
   }
 
   async handleLogin(e) {
@@ -584,20 +700,18 @@ export class AdminDashboard {
 
         ${this.showBlockModal ? `
           <div class="admin-modal-overlay">
-            <div class="admin-confirm-modal admin-block-modal" style="max-width: 580px; padding: 24px 28px;">
+            <div class="admin-confirm-modal admin-block-modal" style="max-width: 600px; padding: 24px 28px;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid #efeee7; padding-bottom: 12px;">
                 <h3 class="admin-modal-title" style="margin: 0; font-size: 18.5px; font-weight: 800;">📅 Správa uzávěrek & Blokování termínů</h3>
                 <button type="button" class="btn-close-block-modal" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #777; line-height: 1;">&times;</button>
               </div>
-              <p class="admin-modal-desc" style="margin-bottom: 20px; font-size: 13.5px; color: #55554e;">
-                Zablokované termíny nebudou na rezervačním portálu pro hosty dostupné ke zvolení.
+              <p class="admin-modal-desc" style="margin-bottom: 16px; font-size: 13.5px; color: #55554e;">
+                Zaklikněte v kalendáři dny, které chcete zablokovat. Zablokované termíny nebudou na rezervačním portálu dostupné ke zvolení.
               </p>
 
-              <!-- FORMULÁŘ PRO NOVOU BLOKACI -->
-              <div style="background: #fafaf7; border: 1px solid #e8e7de; border-radius: 8px; padding: 18px; margin-bottom: 24px;">
-                <h4 style="margin: 0 0 14px 0; font-size: 15px; font-weight: 800; color: #1c1c19;">Vytvořit novou uzávěrku</h4>
-                
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;" class="block-form-grid">
+              <!-- PROSTŘEDÍ VÝBĚRU POKOJE A DŮVODU -->
+              <div style="background: #fafaf7; border: 1px solid #e8e7de; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;" class="block-form-grid">
                   <div>
                     <label style="font-size: 13px; font-weight: 600; color: #555; display: block; margin-bottom: 6px;">Pokoj</label>
                     <select id="block-room-select" class="form-select" style="height: 40px; font-size: 13.5px;">
@@ -610,32 +724,26 @@ export class AdminDashboard {
                     <input type="text" id="block-reason-input" class="form-input" placeholder="např. Dovolená správy..." style="height: 40px; font-size: 13.5px;" value="${this.blockForm.reason}">
                   </div>
                 </div>
+              </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;" class="block-form-grid">
-                  <div>
-                    <label style="font-size: 13px; font-weight: 600; color: #555; display: block; margin-bottom: 6px;">Termín OD</label>
-                    <input type="date" id="block-date-from" class="form-input" style="height: 40px; font-size: 13.5px;" value="${this.blockForm.date_from}">
-                  </div>
-                  <div>
-                    <label style="font-size: 13px; font-weight: 600; color: #555; display: block; margin-bottom: 6px;">Termín DO</label>
-                    <input type="date" id="block-date-to" class="form-input" style="height: 40px; font-size: 13.5px;" value="${this.blockForm.date_to}">
-                  </div>
+              <!-- INTERAKTIVNÍ MĚSÍČNÍ KALENDÁŘ -->
+              ${this.renderAdminCalendarMarkup()}
+
+              ${this.blockConflicts.length > 0 ? `
+                <div style="background: #fff8e1; border: 1px solid #ffe082; border-radius: 8px; padding: 14px; margin-bottom: 16px; font-size: 13.5px; color: #795548;">
+                  <strong>⚠️ Pozor: Na vybraný termín již existují rezervace (${this.blockConflicts.length}):</strong>
+                  <ul style="margin: 8px 0 0 0; padding-left: 18px; line-height: 1.5;">
+                    ${this.blockConflicts.map(c => `
+                      <li><strong>${c.guest_name}</strong> (${c.code || 'HM-2026'}) | ${c.room_name || 'Pokoj'} | ${c.date_from} → ${c.date_to}</li>
+                    `).join('')}
+                  </ul>
+                  <p style="margin: 8px 0 0 0; font-weight: 600; color: #c62828;">Pro zablokování bude nutné tyto rezervace kontaktovat nebo stornovat.</p>
                 </div>
+              ` : ''}
 
-                ${this.blockConflicts.length > 0 ? `
-                  <div style="background: #fff8e1; border: 1px solid #ffe082; border-radius: 8px; padding: 14px; margin-bottom: 16px; font-size: 13.5px; color: #795548;">
-                    <strong>⚠️ Pozor: Pro tento termín již existují rezervace (${this.blockConflicts.length}):</strong>
-                    <ul style="margin: 8px 0 0 0; padding-left: 18px; line-height: 1.5;">
-                      ${this.blockConflicts.map(c => `
-                        <li><strong>${c.guest_name}</strong> (${c.code || 'HM-2026'}) | ${c.room_name || 'Pokoj'} | ${c.date_from} → ${c.date_to}</li>
-                      `).join('')}
-                    </ul>
-                    <p style="margin: 8px 0 0 0; font-weight: 600; color: #c62828;">Pro zablokování bude nutné tyto rezervace kontaktovat nebo stornovat.</p>
-                  </div>
-                ` : ''}
-
-                <button type="button" class="btn btn-booking-submit btn-save-block-date" style="width: 100%; height: 40px; font-size: 14px; border-radius: 1px;">
-                  Zablokovat vybraný termín
+              <div style="margin-bottom: 24px;">
+                <button type="button" class="btn btn-booking-submit btn-save-block-date" style="width: 100%; height: 44px; font-size: 15px; border-radius: 1px;" ${this.blockSelectedDates.length === 0 ? 'disabled' : ''}>
+                  Zablokovat vybrané termíny ${this.blockSelectedDates.length > 0 ? `(${this.blockSelectedDates.length} dní)` : ''}
                 </button>
               </div>
 
@@ -723,42 +831,84 @@ export class AdminDashboard {
       });
     }
 
+    const btnCalPrev = this.container.querySelector('.btn-admin-cal-prev');
+    const btnCalNext = this.container.querySelector('.btn-admin-cal-next');
+
+    if (btnCalPrev) {
+      btnCalPrev.addEventListener('click', () => {
+        if (!this.calYearMonth) return;
+        this.calYearMonth.month--;
+        if (this.calYearMonth.month < 1) {
+          this.calYearMonth.year--;
+          this.calYearMonth.month = 12;
+        }
+        this.render();
+      });
+    }
+
+    if (btnCalNext) {
+      btnCalNext.addEventListener('click', () => {
+        if (!this.calYearMonth) return;
+        this.calYearMonth.month++;
+        if (this.calYearMonth.month > 12) {
+          this.calYearMonth.year++;
+          this.calYearMonth.month = 1;
+        }
+        this.render();
+      });
+    }
+
+    this.container.querySelectorAll('.admin-cal-grid .cal-day').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const dateStr = btn.dataset.date;
+        if (!dateStr || btn.disabled) return;
+        const idx = this.blockSelectedDates.indexOf(dateStr);
+        if (idx >= 0) {
+          this.blockSelectedDates.splice(idx, 1);
+        } else {
+          this.blockSelectedDates.push(dateStr);
+        }
+        this.blockConflicts = this.checkBlockedDateConflictsForDates(this.blockSelectedDates, this.blockForm.room_id);
+        this.render();
+      });
+    });
+
     const blockRoomSel = this.container.querySelector('#block-room-select');
-    const blockDateFrom = this.container.querySelector('#block-date-from');
-    const blockDateTo = this.container.querySelector('#block-date-to');
     const blockReasonInput = this.container.querySelector('#block-reason-input');
 
-    const updateBlockConflicts = () => {
-      const room_id = blockRoomSel ? blockRoomSel.value : 'all';
-      const date_from = blockDateFrom ? blockDateFrom.value : '';
-      const date_to = blockDateTo ? blockDateTo.value : '';
-      const reason = blockReasonInput ? blockReasonInput.value : '';
-      this.blockForm = { room_id, date_from, date_to, reason };
-      if (date_from && date_to) {
-        this.blockConflicts = this.checkBlockedDateConflicts(room_id, date_from, date_to);
-      } else {
-        this.blockConflicts = [];
-      }
-    };
+    if (blockRoomSel) {
+      blockRoomSel.addEventListener('change', (e) => {
+        this.blockForm.room_id = e.target.value;
+        this.blockConflicts = this.checkBlockedDateConflictsForDates(this.blockSelectedDates, this.blockForm.room_id);
+        this.render();
+      });
+    }
 
-    if (blockRoomSel) blockRoomSel.addEventListener('change', () => { updateBlockConflicts(); this.render(); });
-    if (blockDateFrom) blockDateFrom.addEventListener('change', () => { updateBlockConflicts(); this.render(); });
-    if (blockDateTo) blockDateTo.addEventListener('change', () => { updateBlockConflicts(); this.render(); });
-    if (blockReasonInput) blockReasonInput.addEventListener('input', (e) => { this.blockForm.reason = e.target.value; });
+    if (blockReasonInput) {
+      blockReasonInput.addEventListener('input', (e) => {
+        this.blockForm.reason = e.target.value;
+      });
+    }
 
     const btnSaveBlockDate = this.container.querySelector('.btn-save-block-date');
     if (btnSaveBlockDate) {
       btnSaveBlockDate.addEventListener('click', async () => {
-        const { room_id, date_from, date_to, reason } = this.blockForm;
-        if (!date_from || !date_to) {
-          alert('Prosím vyberte termín OD a DO.');
+        if (this.blockSelectedDates.length === 0) {
+          alert('Prosím zaklikněte v kalendáři alespoň jeden den pro zablokování.');
           return;
         }
-        if (new Date(date_from) > new Date(date_to)) {
-          alert('Termín OD nesmí být pozdější než termín DO.');
-          return;
+        const ranges = groupContiguousDateRanges(this.blockSelectedDates);
+        const room_id = this.blockForm.room_id || 'all';
+        const reason = this.blockForm.reason || 'Uzávěrka recepce';
+
+        for (const r of ranges) {
+          await this.addBlockedDate(room_id, r.date_from, r.date_to, reason);
         }
-        await this.addBlockedDate(room_id, date_from, date_to, reason);
+
+        this.blockSelectedDates = [];
+        this.blockConflicts = [];
+        this.showAdminToast('Vybrané dny byly úspěšně zablokovány.');
+        this.render();
       });
     }
 

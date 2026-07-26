@@ -3989,3 +3989,60 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     font-size: 14px;
   }
 }
+
+/* Blocked Dates Admin Calendar Styling */
+.cal-day.is-block-selected {
+  background-color: #697947 !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border-color: #4a5a24 !important;
+  position: relative;
+}
+
+.cal-day.is-already-blocked {
+  background-color: #f2f4f4 !important;
+  color: #7f8c8d !important;
+  border: 1px solid #d5dbdb !important;
+  position: relative;
+}
+
+.cal-day.is-occupied {
+  background-color: #fef5e7 !important;
+  color: #d35400 !important;
+  border: 1px solid #e67e22 !important;
+  position: relative;
+}
+
+.admin-block-modal {
+  max-width: 600px;
+  width: 90vw;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .admin-block-modal {
+    width: 95vw !important;
+    max-width: 100% !important;
+    padding: 18px 16px !important;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .block-form-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .admin-cal-card {
+    padding: 12px !important;
+  }
+
+  .admin-cal-grid {
+    gap: 4px !important;
+  }
+
+  .admin-cal-grid .cal-day {
+    min-height: 38px !important;
+    font-size: 13px !important;
+  }
+}
