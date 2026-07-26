@@ -581,21 +581,21 @@ export class BookingSystem {
     this.container.innerHTML = `
       <div class="booking-wizard-wrapper">
         <div class="booking-stepper">
-          <div class="step-item ${this.currentStep === 1 ? 'active' : ''} ${this.currentStep > 1 ? 'completed' : ''}">
+          <button type="button" class="step-item ${this.currentStep === 1 ? 'active' : ''} ${this.currentStep > 1 ? 'completed' : ''} btn-step-nav" data-target-step="1" title="Přejít na Krok 1: Termín & Doplňky">
             <span class="step-number">1</span>
             <span class="step-label">
               <span class="label-full">Termín & Doplňky</span>
               <span class="label-short">Termín</span>
             </span>
-          </div>
+          </button>
           <div class="step-divider"></div>
-          <div class="step-item ${this.currentStep === 2 ? 'active' : ''} ${this.currentStep > 2 ? 'completed' : ''}">
+          <button type="button" class="step-item ${this.currentStep === 2 ? 'active' : ''} ${this.currentStep > 2 ? 'completed' : ''} btn-step-nav" data-target-step="2" title="Přejít na Krok 2: Údaje hosta">
             <span class="step-number">2</span>
             <span class="step-label">
               <span class="label-full">Údaje hosta</span>
               <span class="label-short">Údaje</span>
             </span>
-          </div>
+          </button>
           <div class="step-divider"></div>
           <div class="step-item ${this.currentStep === 3 ? 'active' : ''}">
             <span class="step-number">3</span>
@@ -1799,6 +1799,17 @@ export class BookingSystem {
         });
       }
     }
+
+    // Stepper header navigation clicks (Krok 1 a Krok 2)
+    this.container.querySelectorAll('.btn-step-nav').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetStep = parseInt(btn.dataset.targetStep, 10);
+        if (targetStep && targetStep !== this.currentStep && targetStep < 3) {
+          this.setStep(targetStep);
+        }
+      });
+    });
 
     // Modal Podmínky Ubytování listeners
     const modalOverlay = this.container.querySelector('#terms-modal-overlay');
