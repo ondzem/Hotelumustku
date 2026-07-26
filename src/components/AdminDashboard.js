@@ -25,6 +25,8 @@ function groupContiguousDateRanges(dates) {
   return ranges;
 }
 
+const ADMIN_SESSION_KEY = 'hotel_mustku_admin_auth_v1';
+
 export class AdminDashboard {
   constructor(containerId) {
     this.container = document.getElementById(containerId);
