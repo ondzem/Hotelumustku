@@ -1439,19 +1439,19 @@ export class BookingSystem {
         <div class="standalone-confirmation-wrap" style="display: flex; flex-direction: column; gap: clamp(20px, 2.5vw, 32px); width: 100%;">
 
           <!-- HORNÍ KARTA: Hlavní potvrzení a kód žádosti -->
-          <div class="confirmation-hero-card" style="background: #FFFFFF; border: 1px solid #E7E5DC; border-radius: 20px; padding: clamp(28px, 5vw, 56px) clamp(20px, 4vw, 56px); text-align: center;">
-            <div class="confirmation-icon-circle" style="width: 84px; height: 84px; border-radius: 50%; background: #E1EDD6; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;">
-              <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+          <div class="confirmation-hero-card" style="background: #FFFFFF; border: 1px solid #E7E5DC; border-radius: 12px; padding: clamp(28px, 5vw, 48px) clamp(20px, 4vw, 48px); text-align: center;">
+            <div class="confirmation-icon-circle" style="width: 80px; height: 80px; border-radius: 50%; background: #E1EDD6; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+              <svg width="38" height="38" viewBox="0 0 40 40" fill="none" aria-hidden="true">
                 <path d="M9 21.5L16.5 29L31 12.5" stroke="#4A5A24" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </div>
-            <h1 style="margin: 0 0 16px; font-size: clamp(26px, 4vw, 38px); line-height: 1.2; font-weight: 800; letter-spacing: -0.02em; color: #1C1C19;">
+            <h1 style="margin: 0 0 14px; font-size: clamp(24px, 3.8vw, 36px); line-height: 1.2; font-weight: 800; letter-spacing: -0.02em; color: #1C1C19;">
               Žádost o rezervaci byla úspěšně odeslána!
             </h1>
-            <p style="margin: 0 auto 28px; max-width: 48ch; font-size: clamp(16px, 1.6vw, 19px); color: #55554E; line-height: 1.5;">
+            <p style="margin: 0 auto 24px; max-width: 48ch; font-size: clamp(15.5px, 1.5vw, 18px); color: #55554E; line-height: 1.5;">
               Potvrzení o přijetí žádosti jsme odeslali na váš e-mail <strong style="color: #1C1C19; font-weight: 700; white-space: nowrap;">${res.guest_email || this.state.guestEmail}</strong>.
             </p>
-            <div style="display: inline-flex; align-items: center; gap: 10px; background: #EDF2E4; color: #4A5A24; border-radius: 999px; padding: 12px 24px; font-size: clamp(15px, 1.4vw, 18px); font-weight: 700;">
+            <div style="display: inline-flex; align-items: center; gap: 10px; background: #EDF2E4; color: #4A5A24; border-radius: 8px; padding: 10px 20px; font-size: clamp(14.5px, 1.3vw, 17px); font-weight: 700;">
               <span style="font-weight: 500; color: #5D6B34;">Kód žádosti:</span> ${res.code || 'HM-2026-0000'}
             </div>
           </div>

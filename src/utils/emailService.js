@@ -426,7 +426,41 @@ export function generateEmail3FinalConfirmation({ reservation, room, pricing }) 
   return { subject: `Potvrzení zálohy & Závazná rezervace ${reservation.code} — Hotel u Můstku`, html };
 }
 
-// Generátor všech 3 testovacích e-mailů pro náhled
+// E-MAIL 4: Zákazníkovi po stornování / zamítnutí rezervace recepcí
+export function generateEmailCancellation({ reservation, room, reasonNote }) {
+  const html = `
+    ${getEmailHeader('Informace k vaší žádosti o rezervaci')}
+    <p style="color: #1a1a1a !important;">Vážený/á <strong>${reservation.guest_name}</strong>,</p>
+    <p style="color: #333333 !important;">děkujeme za váš zájem o ubytování v Hotelu u Můstku. Velice nás to mrzí, ale po fyzické kontrole kapacity v rezervačním systému musíme vaši žádost o rezervaci <strong>${reservation.code}</strong> v požadovaném termínu zamítnout.</p>
+
+    <div style="background-color: #fff8f8 !important; border: 1px solid #f5c6cb !important; border-radius: 12px !important; padding: 18px 22px !important; margin: 24px 0 !important; color: #721c24 !important;">
+      <strong style="color: #721c24 !important;">⚠️ Důvod zamítnutí požadovaného termínu:</strong><br>
+      <span style="font-size: 14.5px; color: #491217;">${reasonNote || 'Pokoj je v požadovaném termínu již plně obsazen nebo probíhá plánovaná údržba kapacity.'}</span>
+    </div>
+
+    <div style="background-color: #F9FAF7 !important; border: 1px solid #E7E5DC !important; border-radius: 12px !important; padding: 20px 24px !important; margin: 24px 0 !important;">
+      <h4 style="margin: 0 0 12px 0 !important; font-size: 16px !important; font-weight: 700 !important; color: #4A5A24 !important;">💡 Co dělat dál? Rádi pro vás najdeme jiný termín!</h4>
+      <p style="margin: 0 0 14px 0 !important; font-size: 14.5px !important; color: #333333 !important; line-height: 1.6 !important;">
+        Při odeslání žádosti jste <strong>neplatili žádné peníze (0 Kč)</strong>, takže se žádná platba nestornuje ani se nemusí vracet.
+      </p>
+      <ul style="margin: 0 !important; padding-left: 20px !important; font-size: 14.5px !important; color: #2C2C28 !important; line-height: 1.6 !important;">
+        <li style="margin-bottom: 8px !important;"><strong>Výběr jiného termínu:</strong> Rádi vám nabídneme volné návazné termíny. Stačí vytvořit novou žádost na našem webu <a href="https://umustku.cz/#rezervace" style="color: #697947 !important; font-weight: 700 !important;">umustku.cz</a>.</li>
+        <li style="margin-bottom: 8px !important;"><strong>Osobní domluva na recepci:</strong> Zavolejte nám na <strong>+420 777 666 273</strong> a společně vybereme ideální termín.</li>
+      </ul>
+    </div>
+
+    <table class="info-table" style="background-color: #ffffff !important;">
+      <tr><td style="color: #555555 !important;">Kód žádosti:</td><td style="color: #1a1a1a !important;"><strong>${reservation.code}</strong></td></tr>
+      <tr><td style="color: #555555 !important;">Požadovaný pokoj:</td><td style="color: #1a1a1a !important;">${room ? room.name : (reservation.room_name || 'Vybraný pokoj')}</td></tr>
+      <tr><td style="color: #555555 !important;">Požadovaný termín:</td><td style="color: #1a1a1a !important;">${reservation.date_from} až ${reservation.date_to}</td></tr>
+      <tr><td style="color: #555555 !important;">Stav žádosti:</td><td><strong style="color: #d9534f !important;">Stornováno / Zamítnuto</strong></td></tr>
+    </table>
+
+    <p style="font-size:13.5px; color:#666666 !important; text-align: center !important; margin-top: 24px !important;">Děkujeme za pochopení a těšíme se na vaši návštěvu v náhradním termínu.</p>
+    ${getEmailFooter()}
+  `;
+  return { subject: `Informace k vaší žádosti o rezervaci ${reservation.code} — Hotel u Můstku`, html };
+}
 export function sendAllTestEmailsTo(recipientEmail = 'ondra.zeman05@gmail.com') {
   const mockReservation = {
     id: 'res-test-1',

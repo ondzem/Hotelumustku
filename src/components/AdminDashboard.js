@@ -1,7 +1,7 @@
 // 🏨 Reception Admin Dashboard Component for Hotel u Můstku
 import { MOCK_ROOMS, getStoredReservations, updateStoredReservationStatus, isSupabaseConfigured, supabase } from '../lib/supabaseClient.js';
 import { calculateReservationPrice, generateSpaydQrUrl, BANK_ACCOUNT, formatCzechPrice } from '../utils/pricing.js';
-import { sendEmail, generateEmail2ApprovalAndPaymentRequest, generateEmail3FinalConfirmation, getEmailLogs, sendAllTestEmailsTo } from '../utils/emailService.js';
+import { sendEmail, generateEmail2ApprovalAndPaymentRequest, generateEmail3FinalConfirmation, generateEmailCancellation, getEmailLogs, sendAllTestEmailsTo } from '../utils/emailService.js';
 
 export class AdminDashboard {
   constructor(containerId) {
@@ -139,7 +139,7 @@ export class AdminDashboard {
       this.showAdminToast(`🎉 Záloha pro ${reservation.code} byla potvrzena. Závazné potvrzení pobytu bylo odesláno hostu.`);
 
     } else if (targetAction === 'cancel') {
-      // Cancel reservation
+      // Cancel reservation & send cancellation email
       const newStatus = 'cancelled';
       if (isSupabaseConfigured && supabase) {
         try { await supabase.from('reservations').update({ status: newStatus }).eq('id', id); } catch (e) {}
@@ -147,7 +147,25 @@ export class AdminDashboard {
       updateStoredReservationStatus(id, newStatus);
       reservation.status = newStatus;
 
-      this.showAdminToast(`❌ Rezervace ${reservation.code} byla zrušena / stornována.`);
+      // Dispatch Email 4 (Cancellation & Alternative dates offer)
+      try {
+        const emailCancel = generateEmailCancellation({
+          reservation,
+          room,
+          reasonNote: 'Pokoj je v požadovaném termínu již plně obsazen nebo probíhá údržba kapacity.'
+        });
+        sendEmail({
+          to: reservation.guest_email,
+          subject: emailCancel.subject,
+          html: emailCancel.html,
+          type: 'email_cancellation',
+          reservationCode: reservation.code
+        });
+      } catch (err) {
+        console.error('Failed to send Cancellation email:', err);
+      }
+
+      this.showAdminToast(`❌ Rezervace ${reservation.code} byla stornována. E-mail o zamítnutí s nabídkou náhradního termínu byl odeslán hostu.`);
     }
 
     await this.fetchReservations();
