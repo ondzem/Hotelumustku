@@ -1,4 +1,4 @@
-import { MOCK_ROOMS, isSupabaseConfigured, supabase, getStoredReservations, saveStoredReservation } from '../lib/supabaseClient.js';
+import { MOCK_ROOMS, isSupabaseConfigured, supabase, getStoredReservations, saveStoredReservation, getStoredBlockedDates } from '../lib/supabaseClient.js';
 import { calculateReservationPrice, generateReservationCode, generateManageToken, BANK_ACCOUNT, BANK_NAME, formatCzechPrice } from '../utils/pricing.js';
 import { sendEmail, generateEmail1RequestReceived, generateEmail1ReceptionNotification } from '../utils/emailService.js';
 function getTodayDateString() {
@@ -61,26 +61,26 @@ function isDummyName(str) {
 export class BookingSystem {
   constructor(containerId) {
     this.container = document.getElementById(containerId);
-    this.currentStep = 1;
+    this.roomsList = MOCK_ROOMS;
+    this.activeReservations = [];
+    this.blockedDates = [];
 
-    // Helper: default date range (Tomorrow -> 2 nights)
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const dayAfter = new Date(tomorrow);
-    dayAfter.setDate(dayAfter.getDate() + 2);
+    this.currentStep = 1;
+    this.isSubmitted = false;
+    this.createdReservation = null;
 
     this.state = {
-      selectedRoomId: 'p5',
-      dateFrom: tomorrow.toISOString().split('T')[0],
-      dateTo: dayAfter.toISOString().split('T')[0],
+      selectedRoomId: 'p1',
+      dateFrom: '',
+      dateTo: '',
       adults: 2,
       children: 0,
-      hasDog: false,
-      hasEbike: false,
-      ebikeCount: 1,
-      hasHalfBoard: false,
-      halfBoardCount: 2,
+      breakfast: false,
+      wellness: false,
+      parking: false,
+      dogCount: 0,
+      cotCount: 0,
+      extraBedCount: 0,
       guestName: '',
       guestEmail: '',
       guestPhone: '',
@@ -89,25 +89,25 @@ export class BookingSystem {
       guestCity: '',
       guestZip: '',
       guestCountry: 'Česká republika',
-      guests: [],
-      agreedTerms: true,
-      honeypot: '', // Spam protection
-      isSubmitting: false,
-      confirmedReservation: null,
-      qrDataUrl: null,
-      errorMessage: '',
-      fieldErrors: {},
+      guests: [
+        {
+          name: '',
+          email: '',
+          phone: '',
+          birthDate: '',
+          idNumber: '',
+          street: '',
+          city: '',
+          zip: '',
+          country: 'Česká republika'
+        }
+      ],
+      fieldErrors: {}
     };
-
-    this.roomsList = MOCK_ROOMS;
-    this.activeReservations = [];
   }
 
   syncGuestsArray() {
-    const totalCount = (parseInt(this.state.adults, 10) || 1) + (parseInt(this.state.children, 10) || 0);
-    if (!Array.isArray(this.state.guests)) {
-      this.state.guests = [];
-    }
+    const totalCount = this.state.adults + this.state.children;
     while (this.state.guests.length < totalCount) {
       this.state.guests.push({
         name: '',
@@ -121,17 +121,8 @@ export class BookingSystem {
         country: 'Česká republika'
       });
     }
-    if (this.state.guests.length > totalCount) {
-      this.state.guests = this.state.guests.slice(0, totalCount);
-    }
-    if (this.state.guests.length > 0) {
-      if (this.state.guestName) this.state.guests[0].name = this.state.guestName;
-      if (this.state.guestEmail) this.state.guests[0].email = this.state.guestEmail;
-      if (this.state.guestPhone) this.state.guests[0].phone = this.state.guestPhone;
-      if (this.state.guestStreet) this.state.guests[0].street = this.state.guestStreet;
-      if (this.state.guestCity) this.state.guests[0].city = this.state.guestCity;
-      if (this.state.guestZip) this.state.guests[0].zip = this.state.guestZip;
-      if (this.state.guestCountry) this.state.guests[0].country = this.state.guestCountry;
+    while (this.state.guests.length > totalCount && this.state.guests.length > 1) {
+      this.state.guests.pop();
     }
   }
 
@@ -140,6 +131,7 @@ export class BookingSystem {
       this.state.selectedRoomId = initialRoomId;
     }
     await this.fetchActiveReservations();
+    await this.fetchBlockedDates();
     this.syncGuestsArray();
 
     // Set initial history state for browser Back button support
@@ -174,20 +166,51 @@ export class BookingSystem {
     this.activeReservations = stored.filter(r => r.status !== 'cancelled' && r.status !== 'stornováno');
   }
 
+  async fetchBlockedDates() {
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data, error } = await supabase.from('blocked_dates').select('*');
+        if (!error && data) {
+          this.blockedDates = data;
+          return;
+        }
+      } catch (err) {
+        console.error('Failed to fetch blocked_dates from Supabase:', err);
+      }
+    }
+    this.blockedDates = getStoredBlockedDates();
+  }
+
   isDateOccupied(dateStr, roomId) {
+    if (this.blockedDates && this.blockedDates.length > 0) {
+      const isBlocked = this.blockedDates.some(b => {
+        if (b.room_id !== 'all' && b.room_id !== roomId) return false;
+        return dateStr >= b.date_from && dateStr <= b.date_to;
+      });
+      if (isBlocked) return true;
+    }
+
     if (!this.activeReservations || this.activeReservations.length === 0) return false;
     return this.activeReservations.some(r => {
       if (r.room_id !== roomId || r.status === 'cancelled' || r.status === 'stornováno') return false;
-      // Night is occupied if dateStr >= r.date_from AND dateStr < r.date_to
       return dateStr >= r.date_from && dateStr < r.date_to;
     });
   }
 
   checkReservationOverlap(roomId, dateFrom, dateTo) {
+    if (this.blockedDates && this.blockedDates.length > 0) {
+      const blockedConflict = this.blockedDates.find(b => {
+        if (b.room_id !== 'all' && b.room_id !== roomId) return false;
+        return b.date_from <= dateTo && b.date_to >= dateFrom;
+      });
+      if (blockedConflict) {
+        return { isBlocked: true, reason: blockedConflict.reason };
+      }
+    }
+
     if (!this.activeReservations || this.activeReservations.length === 0) return null;
     return this.activeReservations.find(r => {
       if (r.room_id !== roomId || r.status === 'cancelled' || r.status === 'stornováno') return false;
-      // Overlap condition: r.date_from < dateTo AND r.date_to > dateFrom
       return r.date_from < dateTo && r.date_to > dateFrom;
     });
   }

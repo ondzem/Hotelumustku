@@ -142,3 +142,37 @@ export const deleteStoredReservation = (targetIdOrCode) => {
   }
   return filtered;
 };
+
+// Local Storage Key for Blocked Dates
+const BLOCKED_DATES_STORAGE_KEY = 'hotel_umustku_blocked_dates_v1';
+
+export const getStoredBlockedDates = () => {
+  try {
+    const raw = localStorage.getItem(BLOCKED_DATES_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+};
+
+export const saveStoredBlockedDate = (blockedItem) => {
+  const current = getStoredBlockedDates();
+  current.unshift(blockedItem);
+  try {
+    localStorage.setItem(BLOCKED_DATES_STORAGE_KEY, JSON.stringify(current));
+  } catch (err) {
+    console.error('Failed to save blocked date locally:', err);
+  }
+  return blockedItem;
+};
+
+export const deleteStoredBlockedDate = (id) => {
+  const current = getStoredBlockedDates();
+  const filtered = current.filter(b => b.id !== id && String(b.id) !== String(id));
+  try {
+    localStorage.setItem(BLOCKED_DATES_STORAGE_KEY, JSON.stringify(filtered));
+  } catch (err) {
+    console.error('Failed to delete blocked date locally:', err);
+  }
+  return filtered;
+};
