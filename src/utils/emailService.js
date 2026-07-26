@@ -1,5 +1,5 @@
 // Transactional Email Service & Audit Log Store for Hotel u Můstku
-import { BANK_ACCOUNT, BANK_NAME, generateSpaydQrUrl, formatCzechPrice } from './pricing.js';
+import { BANK_ACCOUNT, BANK_NAME, generateSpaydQrUrl, formatCzechPrice, getVariableSymbol } from './pricing.js';
 
 const LOCAL_STORAGE_EMAIL_LOGS_KEY = 'hotel_umustku_email_logs_v1';
 
@@ -332,7 +332,7 @@ export function generateEmail1ReceptionNotification({ reservation, room, pricing
 
 // E-MAIL 2: Zákazníkovi po schválení recepcí — Pokyny k platbě 30% zálohy (Fáze 2)
 export function generateEmail2ApprovalAndPaymentRequest({ reservation, room, pricing }) {
-  const vsClean = (reservation.code || '').replace(/[^0-9]/g, '') || '2026001';
+  const vsClean = getVariableSymbol(reservation.code);
   const qrUrl = generateSpaydQrUrl({
     bankAccount: BANK_ACCOUNT,
     amount: pricing.depositPriceTotal,

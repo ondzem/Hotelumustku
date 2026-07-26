@@ -1,13 +1,16 @@
 // 🏨 Reception Admin Dashboard Component for Hotel u Můstku
-import { MOCK_ROOMS, getStoredReservations, updateStoredReservationStatus, isSupabaseConfigured, supabase } from '../lib/supabaseClient.js';
-import { calculateReservationPrice, generateSpaydQrUrl, BANK_ACCOUNT, formatCzechPrice } from '../utils/pricing.js';
+import { MOCK_ROOMS, getStoredReservations, updateStoredReservationStatus, deleteStoredReservation, isSupabaseConfigured, supabase } from '../lib/supabaseClient.js';
+import { calculateReservationPrice, generateSpaydQrUrl, BANK_ACCOUNT, formatCzechPrice, getVariableSymbol } from '../utils/pricing.js';
 import { sendEmail, generateEmail2ApprovalAndPaymentRequest, generateEmail3FinalConfirmation, generateEmailCancellation, getEmailLogs, sendAllTestEmailsTo } from '../utils/emailService.js';
+
+const ADMIN_SESSION_KEY = 'hotel_mustku_admin_auth_v1';
 
 export class AdminDashboard {
   constructor(containerId) {
     this.container = document.getElementById(containerId);
-    this.isAuthenticated = false;
+    this.isAuthenticated = (typeof localStorage !== 'undefined' && localStorage.getItem(ADMIN_SESSION_KEY) === 'true');
     this.passwordInput = '';
+    this.loginError = false;
     this.reservations = [];
     this.selectedRoomFilter = 'all';
     this.statusFilter = 'all';
@@ -15,6 +18,8 @@ export class AdminDashboard {
     this.activeEmailPreview = null;
     this.showEmailModal = false;
     this.adminToastMessage = '';
+    this.showDeleteModal = false;
+    this.pendingDeleteReservation = null;
   }
 
   async init() {
@@ -53,19 +58,36 @@ export class AdminDashboard {
 
     if (validHashes.includes(inputHash)) {
       this.isAuthenticated = true;
+      this.loginError = false;
+      try {
+        localStorage.setItem(ADMIN_SESSION_KEY, 'true');
+      } catch (err) {}
       this.render();
     } else {
-      alert('Nesprávné přístupové heslo k recepčnímu adminu.');
+      this.loginError = true;
+      this.render();
     }
   }
 
   showAdminToast(msg) {
     this.adminToastMessage = msg;
+    this.toastExiting = false;
     this.render();
-    setTimeout(() => {
+
+    if (this.toastTimer) clearTimeout(this.toastTimer);
+    if (this.toastExitTimer) clearTimeout(this.toastExitTimer);
+
+    this.toastExitTimer = setTimeout(() => {
+      this.toastExiting = true;
+      const widget = this.container ? this.container.querySelector('.admin-toast-bottom-widget') : null;
+      if (widget) widget.classList.add('is-exiting');
+    }, 4600);
+
+    this.toastTimer = setTimeout(() => {
       this.adminToastMessage = '';
+      this.toastExiting = false;
       this.render();
-    }, 4000);
+    }, 5000);
   }
 
   async advanceReservationPhase(id, targetAction) {
@@ -166,6 +188,31 @@ export class AdminDashboard {
       }
 
       this.showAdminToast(`❌ Rezervace ${reservation.code} byla stornována. E-mail o zamítnutí s nabídkou náhradního termínu byl odeslán hostu.`);
+
+    } else if (targetAction === 'delete') {
+      this.pendingDeleteReservation = reservation;
+      this.showDeleteModal = true;
+      this.render();
+      return;
+    } else if (targetAction === 'confirm_delete') {
+      const resId = reservation.id || id;
+      const resCode = reservation.code || id;
+      if (isSupabaseConfigured && supabase) {
+        try {
+          if (resCode) await supabase.from('reservations').delete().eq('code', resCode);
+          if (resId) await supabase.from('reservations').delete().eq('id', resId);
+        } catch (e) {
+          console.error('Supabase delete exception:', e);
+        }
+      }
+      if (resId) deleteStoredReservation(resId);
+      if (resCode) deleteStoredReservation(resCode);
+      if (id) deleteStoredReservation(id);
+
+      this.reservations = this.reservations.filter(r => r.id !== resId && r.code !== resCode && r.id !== id && r.code !== id);
+      this.showDeleteModal = false;
+      this.pendingDeleteReservation = null;
+      this.showAdminToast(`🗑️ Rezervace ${resCode || id} byla trvale vymazána z databáze.`);
     }
 
     await this.fetchReservations();
@@ -179,15 +226,23 @@ export class AdminDashboard {
       this.container.innerHTML = `
         <div class="admin-login-wrapper">
           <div class="admin-login-card">
-            <h2 class="admin-login-title">🔒 Recepční systém Hotel u Můstku</h2>
+            <div class="admin-login-brand">Hotel u Můstku</div>
+            <h2 class="admin-login-title">Recepční portál</h2>
             <p class="admin-login-desc">Zadejte přístupové heslo pro vstup do správy rezervací.</p>
 
-            <form id="admin-login-form" class="admin-login-form">
-              <div class="form-field">
-                <label for="admin-pass" class="form-label">Heslo recepce:</label>
-                <input type="password" id="admin-pass" class="form-input" placeholder="Zadejte heslo..." autofocus required>
+            ${this.loginError ? `
+              <div class="admin-login-error-banner">
+                <span style="font-size: 16px;">⚠️</span>
+                <span>Zadali jste nesprávné heslo. Zkuste to prosím znovu.</span>
               </div>
-              <button type="submit" class="btn btn-booking-submit btn-admin-login">Vstoupit do správy</button>
+            ` : ''}
+
+            <form id="admin-login-form" class="admin-login-form">
+              <div class="form-field ${this.loginError ? 'has-error' : ''}">
+                <label for="admin-pass" class="form-label">Heslo recepce</label>
+                <input type="password" id="admin-pass" class="form-input" placeholder="Vložte přístupové heslo..." autofocus required value="${this.passwordInput}">
+              </div>
+              <button type="submit" class="btn btn-booking-submit btn-admin-login">Vstoupit do správy →</button>
             </form>
           </div>
         </div>
@@ -195,7 +250,13 @@ export class AdminDashboard {
 
       const form = document.getElementById('admin-login-form');
       const pass = document.getElementById('admin-pass');
-      if (pass) pass.addEventListener('input', (e) => { this.passwordInput = e.target.value; });
+      if (pass) {
+        pass.focus();
+        pass.addEventListener('input', (e) => {
+          this.passwordInput = e.target.value;
+          if (this.loginError) this.loginError = false;
+        });
+      }
       if (form) form.addEventListener('submit', (e) => this.handleLogin(e));
       return;
     }
@@ -203,6 +264,7 @@ export class AdminDashboard {
     const pendingCount = this.reservations.filter(r => r.status === 'pending_approval').length;
     const awaitingDepositCount = this.reservations.filter(r => r.status === 'awaiting_deposit').length;
     const confirmedCount = this.reservations.filter(r => r.status === 'confirmed').length;
+    const cancelledCount = this.reservations.filter(r => r.status === 'cancelled').length;
 
     const filteredReservations = this.reservations.filter(r => {
       const matchRoom = this.selectedRoomFilter === 'all' || r.room_id === this.selectedRoomFilter;
@@ -210,249 +272,258 @@ export class AdminDashboard {
       return matchRoom && matchStatus;
     });
 
-    const emailLogs = getEmailLogs();
-
     this.container.innerHTML = `
       <div class="admin-dashboard-wrapper">
-        ${this.adminToastMessage ? `
-          <div class="admin-toast-banner">
-            <span>${this.adminToastMessage}</span>
-          </div>
-        ` : ''}
-
-        <div class="admin-top-bar">
-          <div>
-            <h2 class="admin-page-title">Recepční správa Hotel u Můstku</h2>
-            <p class="admin-page-sub">Jednoduchá obsluha schvalování 30% záloh pro zaměstnance i správce</p>
+        <!-- HORNÍ LIŠTA TITULKU A AKCÍ -->
+        <div class="admin-header-bar">
+          <div class="admin-title-group">
+            <h2>Recepční portál</h2>
+            <p>Správa rezervací a obsluha 30% záloh pro Hotel u Můstku</p>
           </div>
           <div class="admin-top-actions">
-            <button class="btn btn-specs-secondary btn-admin-emails">✉️ Log odeslaných e-mailů (${emailLogs.length})</button>
-            <button class="btn btn-specs-secondary btn-admin-refresh">🔄 Obnovit data</button>
-            <button class="btn btn-booking-submit btn-admin-logout">Odhlásit se</button>
+            <button type="button" class="btn btn-specs-secondary btn-admin-refresh">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; display: inline-block; vertical-align: middle;"><path d="M21.5 2v6h-6M2.5 22v-6h6"/><path d="M2 11.5a10 10 0 0 1 18.8-4.3L21.5 8M22 12.5a10 10 0 0 1-18.8 4.3L2.5 16"/></svg>
+              Obnovit data
+            </button>
+            <button type="button" class="btn btn-booking-submit btn-admin-logout">Odhlásit se</button>
           </div>
         </div>
 
-        <!-- Přehledové karty stavů (Senior & Admin Friendly) -->
-        <div class="admin-stats-grid">
-          <div class="stat-card ${pendingCount > 0 ? 'highlight-pending' : ''}">
-            <div class="stat-num">${pendingCount}</div>
-            <div class="stat-txt">1. Žádosti ke schválení</div>
-            <small class="stat-sub">Čekají na schválení volné kapacity recepcí</small>
+        <!-- JEDNOTNÁ LIŠTA FILTRŮ A VÝBĚRU POKOJŮ -->
+        <div class="admin-toolbar">
+          <div class="admin-status-tabs">
+            <button type="button" class="status-tab-btn ${this.statusFilter === 'all' ? 'active' : ''}" data-status="all">
+              <span>Všechny</span>
+              <span class="tab-count">${this.reservations.length}</span>
+            </button>
+            <button type="button" class="status-tab-btn tab-pending ${pendingCount > 0 ? 'has-pending' : ''} ${this.statusFilter === 'pending_approval' ? 'active' : ''}" data-status="pending_approval">
+              <span>1. Ke schválení</span>
+              <span class="tab-count">${pendingCount}</span>
+            </button>
+            <button type="button" class="status-tab-btn ${this.statusFilter === 'awaiting_deposit' ? 'active' : ''}" data-status="awaiting_deposit">
+              <span>2. Čeká na zálohu</span>
+              <span class="tab-count">${awaitingDepositCount}</span>
+            </button>
+            <button type="button" class="status-tab-btn ${this.statusFilter === 'confirmed' ? 'active' : ''}" data-status="confirmed">
+              <span>3. Závazně potvrzeno</span>
+              <span class="tab-count">${confirmedCount}</span>
+            </button>
+            <button type="button" class="status-tab-btn ${this.statusFilter === 'cancelled' ? 'active' : ''}" data-status="cancelled">
+              <span>Stornováno</span>
+              <span class="tab-count">${cancelledCount}</span>
+            </button>
           </div>
 
-          <div class="stat-card">
-            <div class="stat-num" style="color: #2980b9;">${awaitingDepositCount}</div>
-            <div class="stat-txt">2. Čeká na 30% zálohu</div>
-            <small class="stat-sub">Schváleno, poslany pokyny s QR kódem</small>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-num" style="color: #27ae60;">${confirmedCount}</div>
-            <div class="stat-txt">3. Závazně potvrzeno</div>
-            <small class="stat-sub">Záloha 30 % přijata, pokoj zablokován</small>
-          </div>
-        </div>
-
-        <!-- Filtry -->
-        <div class="admin-filters-card">
-          <div class="filter-group">
-            <label class="filter-label">Zobrazit stav:</label>
-            <div class="filter-tabs">
-              <button class="filter-tab ${this.statusFilter === 'all' ? 'active' : ''}" data-status="all">Všechny (${this.reservations.length})</button>
-              <button class="filter-tab ${this.statusFilter === 'pending_approval' ? 'active' : ''}" data-status="pending_approval">1. K vyřízení (${pendingCount})</button>
-              <button class="filter-tab ${this.statusFilter === 'awaiting_deposit' ? 'active' : ''}" data-status="awaiting_deposit">2. Čeká na zálohu (${awaitingDepositCount})</button>
-              <button class="filter-tab ${this.statusFilter === 'confirmed' ? 'active' : ''}" data-status="confirmed">3. Potvrzené (${confirmedCount})</button>
-            </div>
-          </div>
-
-          <div class="filter-group" style="margin-top: 14px;">
-            <label class="filter-label">Pokoj:</label>
-            <select id="filter-room" class="form-select select-sm">
+          <div class="admin-room-filter">
+            <label for="filter-room">Pokoj:</label>
+            <select id="filter-room" class="admin-room-select">
               <option value="all">Všechny pokoje</option>
               ${MOCK_ROOMS.map(r => `<option value="${r.id}" ${this.selectedRoomFilter === r.id ? 'selected' : ''}>${r.name}</option>`).join('')}
             </select>
           </div>
         </div>
 
-        <!-- Seznam Žádostí a Rezervací -->
-        <div class="admin-table-card">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>Kód & Datum</th>
-                <th>Vybraný pokoj</th>
-                <th>Host & Kontakt</th>
-                <th>Termín pobytu</th>
-                <th>Cena & Záloha (30 %)</th>
-                <th>Stav rezervace</th>
-                <th>Akce recepčního</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${filteredReservations.length === 0 ? `
-                <tr>
-                  <td colspan="7" class="empty-table-td">Žádné rezervace v tomto filtru.</td>
-                </tr>
-              ` : filteredReservations.map(r => {
-                const isExpanded = this.expandedReservationId === r.id;
-                const hasAddress = r.guest_street || r.guest_city;
-                return `
-                  <tr class="admin-row status-row-${r.status}">
-                    <td>
-                      <strong>${r.code || 'HM-2026-0000'}</strong><br>
-                      <small class="text-muted">${r.created_at ? new Date(r.created_at).toLocaleDateString('cs-CZ') + ' ' + new Date(r.created_at).toLocaleTimeString('cs-CZ', {hour:'2-digit', minute:'2-digit'}) : 'Není k dispozici'}</small>
-                    </td>
-                    <td><strong>${r.room_name || r.room_id || 'Pokoj'}</strong></td>
-                    <td>
-                      <strong>${r.guest_name}</strong><br>
-                      <small>📧 ${r.guest_email}</small><br>
-                      <small>📞 ${r.guest_phone}</small>
-                      ${r.guest_note ? `<br><small class="guest-note-pill">📝 ${r.guest_note}</small>` : ''}
-                    </td>
-                    <td>
+        <!-- SEZNAM KARET REZERVACÍ -->
+        <div class="admin-reservations-container">
+          ${filteredReservations.length === 0 ? `
+            <div class="admin-res-card" style="text-align: center; padding: 48px 24px; color: #666660;">
+              <p style="margin: 0; font-size: 16px; font-weight: 600;">Žádné rezervace neodpovídají vybraným filtrům.</p>
+            </div>
+          ` : filteredReservations.map(r => {
+            const isExpanded = this.expandedReservationId === r.id;
+            const room = MOCK_ROOMS.find(rm => rm.id === r.room_id) || { name: r.room_name || 'Pokoj' };
+            const formattedCreated = r.created_at ? new Date(r.created_at).toLocaleDateString('cs-CZ') + ' ' + new Date(r.created_at).toLocaleTimeString('cs-CZ', {hour:'2-digit', minute:'2-digit'}) : 'Není k dispozici';
+
+            return `
+              <div class="admin-res-card status-card-${r.status}" data-id="${r.id || r.code}">
+                <div class="res-card-grid">
+
+                  <!-- COL 1: KÓD A DATUM -->
+                  <div>
+                    <span class="res-code-badge">${r.code || 'HM-2026-0000'}</span>
+                    <div class="res-created-at">${formattedCreated}</div>
+                  </div>
+
+                  <!-- COL 2: HOST A KONTAKT -->
+                  <div>
+                    <div class="res-guest-name">${r.guest_name}</div>
+                    <div class="res-contact-info">
+                      <div>📞 <a href="tel:${r.guest_phone}" style="color: inherit; text-decoration: none; font-weight: 600;">${r.guest_phone}</a></div>
+                      <div>✉️ <a href="mailto:${r.guest_email}" style="color: #697947; text-decoration: none;">${r.guest_email}</a></div>
+                      ${r.guest_note ? `<div style="margin-top: 4px; color: #4a5a24; font-weight: 500;">📝 ${r.guest_note}</div>` : ''}
+                    </div>
+                  </div>
+
+                  <!-- COL 3: POKOJ A TERMÍN -->
+                  <div>
+                    <div class="res-room-title">${room.name || r.room_name || 'Pokoj'}</div>
+                    <div class="res-stay-dates">
                       <strong>${r.date_from} → ${r.date_to}</strong>
-                    </td>
-                    <td>
-                      <strong class="price-main">${formatCzechPrice(r.total_price)} celkem</strong><br>
-                      <small class="deposit-pill">Záloha 30 %: <strong>${formatCzechPrice(r.deposit_price || Math.round((r.total_price||0)*0.3))}</strong></small><br>
-                      <small class="remaining-pill">Doplatek na místě: ${formatCzechPrice(r.remaining_price || Math.round((r.total_price||0)*0.7))}</small>
-                    </td>
-                    <td>
+                    </div>
+                  </div>
+
+                  <!-- COL 4: FINANCE A STAV -->
+                  <div>
+                    <div class="res-price-total">${formatCzechPrice(r.total_price)}</div>
+                    <div class="res-deposit-sub">Záloha 30%: ${formatCzechPrice(r.deposit_price || Math.round((r.total_price||0)*0.3))}</div>
+                    <div style="margin-top: 6px;">
                       ${r.status === 'pending_approval' ? `
-                        <span class="badge-phase badge-pending">1. Čeká na schválení</span>
+                        <span style="display:inline-block; font-size:12.5px; font-weight:700; color:#d35400; background:#fef5e7; padding:3px 10px; border-radius:4px;">1. Ke schválení</span>
                       ` : (r.status === 'awaiting_deposit' ? `
-                        <span class="badge-phase badge-awaiting">2. Čeká na 30% zálohu</span>
+                        <span style="display:inline-block; font-size:12.5px; font-weight:700; color:#2980b9; background:#ebf5fb; padding:3px 10px; border-radius:4px;">2. Čeká na zálohu</span>
                       ` : (r.status === 'confirmed' ? `
-                        <span class="badge-phase badge-confirmed">3. Závazně potvrzeno</span>
-                      ` : `<span class="badge-phase badge-cancelled">Stornováno</span>`))}
-                    </td>
-                    <td class="table-actions-td">
-                      ${r.status === 'pending_approval' ? `
-                        <button class="btn-admin-action btn-approve" data-id="${r.id || r.code}" data-act="approve_and_request_deposit">
-                          ✅ Schválit & Poslat QR kód (30% záloha)
-                        </button>
-                      ` : ''}
+                        <span style="display:inline-block; font-size:12.5px; font-weight:700; color:#27ae60; background:#e8f8f5; padding:3px 10px; border-radius:4px;">3. Závazně potvrzeno</span>
+                      ` : `<span style="display:inline-block; font-size:12.5px; font-weight:700; color:#7f8c8d; background:#f2f4f4; padding:3px 10px; border-radius:4px;">Stornováno</span>`))}
+                    </div>
+                  </div>
 
-                      ${r.status === 'awaiting_deposit' ? `
-                        <button class="btn-admin-action btn-confirm-pay" data-id="${r.id || r.code}" data-act="confirm_deposit_paid">
-                          💳 Potvrdit přijetí zálohy
-                        </button>
-                      ` : ''}
+                  <!-- COL 5: RECEPČNÍ AKCE -->
+                  <div class="res-actions-cell">
+                    ${r.status === 'pending_approval' ? `
+                      <button type="button" class="res-btn-approve-primary btn-admin-action" data-id="${r.id || r.code}" data-act="approve_and_request_deposit">
+                        Schválit & poslat QR kód
+                      </button>
+                    ` : ''}
 
-                      <button class="btn-admin-action btn-details-toggle" data-id="${r.id || r.code}">
-                        🔍 ${isExpanded ? 'Skrýt podrobnosti' : 'Podrobnosti & Adresa'}
+                    ${r.status === 'awaiting_deposit' ? `
+                      <button type="button" class="res-btn-pay-primary btn-admin-action" data-id="${r.id || r.code}" data-act="confirm_deposit_paid">
+                        Potvrdit přijetí zálohy
+                      </button>
+                    ` : ''}
+
+                    <div class="res-secondary-btn-row">
+                      <button type="button" class="res-btn-secondary btn-details-toggle" data-id="${r.id || r.code}">
+                        ${isExpanded ? 'Skrýt podrobnosti' : 'Podrobnosti'}
                       </button>
 
                       ${r.status !== 'cancelled' ? `
-                        <button class="btn-admin-action btn-cancel-sm" data-id="${r.id || r.code}" data-act="cancel">
-                          ✕ Stornovat
+                        <button type="button" class="res-btn-cancel-soft btn-admin-action" data-id="${r.id || r.code}" data-act="cancel">
+                          Stornovat
                         </button>
                       ` : ''}
-                    </td>
-                  </tr>
+                    </div>
+                  </div>
 
-                  ${isExpanded ? `
-                    <tr class="admin-details-drawer-row">
-                      <td colspan="7">
-                        <div class="admin-details-drawer">
-                          <div class="details-drawer-grid">
-                            <div class="details-box" style="grid-column: 1 / -1;">
-                              <h4 class="details-box-title">👥 Ubytovaní hosté pro Ubytovací knihu (${r.guests ? r.guests.length : (r.adults_count || 1)})</h4>
-                              <div class="admin-guests-list" style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
-                                ${(r.guests && r.guests.length > 0) ? r.guests.map((g, gIdx) => `
-                                  <div class="admin-guest-card" style="background:#ffffff; border:1px solid #e0e4d6; border-radius:4px; padding:10px 14px;">
-                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                                      <strong style="color:#1a1a1a; font-size:14.5px;">${gIdx + 1}. ${g.name || 'Jméno neuvedeno'}</strong>
-                                      <span style="font-size:11.5px; font-weight:600; padding:2px 8px; border-radius:4px; ${g.is_main ? 'background:#e8f5e9; color:#2e7d32;' : 'background:#eee; color:#555;'}">
-                                        ${g.is_main ? '🟢 Hlavní rezervující' : `👤 Host ${gIdx + 1}`}
-                                      </span>
-                                    </div>
-                                    <div style="font-size:13px; color:#555; display:flex; flex-wrap:wrap; gap:14px; margin-top:4px;">
-                                      ${g.email ? `<span>📧 ${g.email}</span>` : ''}
-                                      ${g.phone ? `<span>📞 ${g.phone}</span>` : ''}
-                                      ${g.birth_date ? `<span>🎂 Nar.: <strong>${g.birth_date}</strong></span>` : '<span style="color:#999;">🎂 Nar.: Neuvedeno</span>'}
-                                      ${g.id_number ? `<span>🪪 OP/Pas: <strong>${g.id_number}</strong></span>` : '<span style="color:#999;">🪪 OP/Pas: Neuvedeno</span>'}
-                                      ${(g.city || g.street) ? `<span>🏠 Bydliště: <strong>${g.street ? g.street + ', ' : ''}${g.city || ''} (${g.country || 'ČR'})</strong></span>` : '<span style="color:#999;">🏠 Adresa: Neuvedeno online</span>'}
-                                    </div>
-                                  </div>
-                                `).join('') : `
-                                  <div class="admin-guest-card" style="background:#ffffff; border:1px solid #e0e4d6; border-radius:4px; padding:10px 14px;">
-                                    <strong style="color:#1a1a1a;">1. ${r.guest_name} (🟢 Hlavní rezervující)</strong>
-                                    <div style="font-size:13px; color:#555; margin-top:4px;">
-                                      📧 ${r.guest_email} | 📞 ${r.guest_phone}
-                                      ${hasAddress ? `<br>🏠 Bydliště: ${r.guest_street ? r.guest_street + ', ' : ''}${r.guest_city || ''}` : '<br><span style="color:#999;">⚠️ Adresa nebyla vyplněna online (bude zapsána na recepci při příjezdu).</span>'}
-                                    </div>
-                                  </div>
-                                `}
+                </div>
+
+                <!-- DRAWER PODROBNOSTÍ -->
+                ${isExpanded ? `
+                  <div class="admin-card-drawer">
+                    <div class="drawer-content-grid">
+                      <!-- KARTA 1: HOSTÉ PRO UBYTOVACÍ KNIHU -->
+                      <div>
+                        <h4 class="drawer-section-title">Hosté pro Ubytovací knihu (${r.guests && r.guests.length > 0 ? r.guests.length : (r.adults_count || 1)})</h4>
+                        <div class="drawer-guest-list">
+                          ${(r.guests && r.guests.length > 0) ? r.guests.map((g, gIdx) => `
+                            <div class="drawer-guest-entry">
+                              <div class="guest-entry-header">
+                                <div class="guest-entry-title">
+                                  ${gIdx + 1}. ${g.name || 'Jméno neuvedeno'}
+                                  <span class="guest-role-inline">(${g.is_main ? 'Hlavní ubytovaný' : `Host ${gIdx + 1}`})</span>
+                                </div>
+                                <div class="guest-toggle-trigger">
+                                  <span class="guest-toggle-label">Rozbalit</span>
+                                  <span class="guest-accordion-chevron">▾</span>
+                                </div>
+                              </div>
+                              <div class="guest-entry-body">
+                                <ul class="drawer-info-list" style="margin-top: 4px;">
+                                  ${g.phone ? `<li><span>Telefon:</span> <strong>${g.phone}</strong></li>` : ''}
+                                  ${g.email ? `<li><span>E-mail:</span> <strong>${g.email}</strong></li>` : ''}
+                                  <li><span>Datum narození:</span> <strong>${g.birth_date || 'Neuvedeno online'}</strong></li>
+                                  <li><span>Číslo OP / Pasu:</span> <strong>${g.id_number || 'Neuvedeno online'}</strong></li>
+                                  <li><span>Bydliště:</span> <strong>${g.street ? g.street + ', ' : ''}${g.city || 'Neuvedeno online'}</strong></li>
+                                </ul>
                               </div>
                             </div>
-
-                            <div class="details-box">
-                              <h4 class="details-box-title">💳 Rozpad platby & Doplňkové služby</h4>
-                              <ul class="details-list">
-                                <li><span>Celková cena pobytu:</span> <strong>${formatCzechPrice(r.total_price)} s DPH</strong></li>
-                                <li><span>Záloha 30 % (předem):</span> <strong style="color:#697947;">${formatCzechPrice(r.deposit_price || Math.round((r.total_price||0)*0.3))}</strong></li>
-                                <li><span>Doplatek 70 % (na místě):</span> <strong>${formatCzechPrice(r.remaining_price || Math.round((r.total_price||0)*0.7))}</strong></li>
-                                ${r.has_half_board ? `<li><span>Polopenze:</span> <strong>${r.half_board_count || r.adults_count || 1} osob</strong></li>` : ''}
-                                ${r.has_dog ? `<li><span>Pobyt s pejskem:</span> <strong>Ano (150 Kč/den)</strong></li>` : ''}
-                                ${r.has_ebike ? `<li><span>Elektrokolo:</span> <strong>${r.ebike_count || 1}x ks</strong></li>` : ''}
-                              </ul>
+                          `).join('') : `
+                            <div class="drawer-guest-entry">
+                              <div class="guest-entry-header">
+                                <div class="guest-entry-title">
+                                  1. ${r.guest_name}
+                                  <span class="guest-role-inline">(Hlavní ubytovaný)</span>
+                                </div>
+                                <div class="guest-toggle-trigger">
+                                  <span class="guest-toggle-label">Rozbalit</span>
+                                  <span class="guest-accordion-chevron">▾</span>
+                                </div>
+                              </div>
+                              <div class="guest-entry-body">
+                                <ul class="drawer-info-list" style="margin-top: 4px;">
+                                  <li><span>Telefon:</span> <strong>${r.guest_phone}</strong></li>
+                                  <li><span>E-mail:</span> <strong>${r.guest_email}</strong></li>
+                                  <li><span>Počet osob:</span> <strong>${r.adults_count || 1} dospělí ${r.children_count > 0 ? `, ${r.children_count} dětí` : ''}</strong></li>
+                                  <li><span>Bydliště:</span> <strong>${r.guest_street ? r.guest_street + ', ' : ''}${r.guest_city || 'Doplní se na recepci'}</strong></li>
+                                </ul>
+                              </div>
                             </div>
-
-                            <div class="details-box">
-                              <h4 class="details-box-title">📝 Poznámka & Identifikace</h4>
-                              <ul class="details-list">
-                                <li><span>Poznámka hosta:</span> <strong>${r.guest_note || 'Bez poznámky'}</strong></li>
-                                <li><span>Kód rezervace:</span> <strong>${r.code}</strong></li>
-                                <li><span>VS pro platbu:</span> <strong>${String(r.code || '').replace(/[^0-9]/g, '')}</strong></li>
-                                <li><span>Vytvořeno:</span> <strong>${r.created_at ? new Date(r.created_at).toLocaleString('cs-CZ') : '-'}</strong></li>
-                              </ul>
-                            </div>
-                          </div>
+                          `}
                         </div>
-                      </td>
-                    </tr>
-                  ` : ''}
-                `;
-              }).join('')}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Email Logs Modal -->
-      ${this.showEmailModal ? `
-        <div class="cal-modal-overlay">
-          <div class="cal-modal-card" style="max-width: 680px;">
-            <div class="cal-modal-header">
-              <h4 class="cal-month-title">✉️ Historie odeslaných e-mailů (${emailLogs.length})</h4>
-              <button type="button" class="cal-close-btn" id="close-email-modal">&times;</button>
-            </div>
-            <div style="padding: 20px; max-height: 70vh; overflow-y: auto;">
-              ${emailLogs.length === 0 ? '<p>Zatím nebyly odeslány žádné e-maily.</p>' : `
-                <div class="email-logs-list">
-                  ${emailLogs.map(m => `
-                    <div class="email-log-item">
-                      <div class="log-item-header">
-                        <strong>${m.subject}</strong>
-                        <small>${new Date(m.timestamp).toLocaleString('cs-CZ')}</small>
                       </div>
-                      <div class="log-item-sub">
-                        <span>Příjemce: <strong>${m.to}</strong></span> |
-                        <span>Kód: <strong>${m.reservation_code || '-'}</strong></span>
+
+                      <!-- KARTA 2: SLUŽBY -->
+                      <div>
+                        <h4 class="drawer-section-title">Doplňkové služby & Poznámka</h4>
+                        <ul class="drawer-info-list">
+                          <li><span>Polopenze:</span> <strong>${r.has_half_board ? `${r.half_board_count || r.adults_count || 1} osob` : 'Ne'}</strong></li>
+                          <li><span>Pobyt s pejskem:</span> <strong>${r.has_dog ? 'Ano (150 Kč/den)' : 'Ne'}</strong></li>
+                          <li><span>Elektrokolo:</span> <strong>${r.has_ebike ? `${r.ebike_count || 1}x ks` : 'Ne'}</strong></li>
+                          <li><span>Poznámka hosta:</span> <strong>${r.guest_note || 'Bez poznámky'}</strong></li>
+                        </ul>
+                      </div>
+
+                      <!-- KARTA 3: PLATBA -->
+                      <div>
+                        <h4 class="drawer-section-title">Rozpis platby & Identifikace</h4>
+                        <ul class="drawer-info-list">
+                          <li><span>Celková cena pobytu:</span> <strong>${formatCzechPrice(r.total_price)} s DPH</strong></li>
+                          <li><span>Záloha 30 % (předem):</span> <strong style="color: #4a5a24;">${formatCzechPrice(r.deposit_price || Math.round((r.total_price||0)*0.3))}</strong></li>
+                          <li><span>Doplatek 70 % (na místě):</span> <strong>${formatCzechPrice(r.remaining_price || Math.round((r.total_price||0)*0.7))}</strong></li>
+                          <li><span>Variabilní symbol:</span> <strong>${getVariableSymbol(r.code)}</strong></li>
+                        </ul>
                       </div>
                     </div>
-                  `).join('')}
-                </div>
-              `}
-            </div>
-            <div class="terms-modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
-              <button type="button" class="btn btn-booking btn-send-test-emails" id="btn-send-test-emails" style="font-size:13.5px; padding:0 16px;">🧪 Vygenerovat testovací e-maily</button>
-              <button type="button" class="btn-terms-close-footer" id="close-email-modal-ft">Zavřít logy</button>
+
+                    <!-- VYMAZÁNÍ REZERVAČNÍHO ZÁZNAMU -->
+                    <div class="drawer-delete-bar">
+                      <button type="button" class="btn-drawer-delete-clean btn-admin-action" data-id="${r.id || r.code}" data-act="delete">
+                        Vymazat rezervaci z databáze
+                      </button>
+                    </div>
+                  </div>
+                ` : ''}
+              </div>
+            `;
+          }).join('')}
+        </div>
+
+        ${this.showDeleteModal && this.pendingDeleteReservation ? `
+          <div class="admin-modal-overlay">
+            <div class="admin-confirm-modal">
+              <h3 class="admin-modal-title">Trvalé vymazání rezervace</h3>
+              <p class="admin-modal-desc">
+                Opravdu chcete trvale smazat rezervaci <strong>${this.pendingDeleteReservation.code}</strong> (${this.pendingDeleteReservation.guest_name})? Tato akce je nevratná a záznam bude vymazán z databáze.
+              </p>
+              <div class="admin-modal-actions">
+                <button type="button" class="btn-modal-cancel btn-cancel-delete-modal">Zrušit</button>
+                <button type="button" class="btn-modal-danger btn-admin-action" data-id="${this.pendingDeleteReservation.id || this.pendingDeleteReservation.code}" data-act="confirm_delete">Ano, trvale vymazat</button>
+              </div>
             </div>
           </div>
-        </div>
-      ` : ''}
+        ` : ''}
+
+        ${this.adminToastMessage ? `
+          <div class="admin-toast-bottom-widget ${this.toastExiting ? 'is-exiting' : ''}">
+            <div class="toast-inner-content">
+              <span class="toast-icon-badge">✓</span>
+              <span>${this.adminToastMessage}</span>
+            </div>
+            <div class="toast-progress-bar">
+              <div class="toast-progress-fill"></div>
+            </div>
+          </div>
+        ` : ''}
+      </div>
     `;
 
     this.attachAdminListeners();
@@ -463,6 +534,15 @@ export class AdminDashboard {
     const btnLogout = this.container.querySelector('.btn-admin-logout');
     const btnRefresh = this.container.querySelector('.btn-admin-refresh');
     const btnEmails = this.container.querySelector('.btn-admin-emails');
+    const btnCancelDelete = this.container.querySelector('.btn-cancel-delete-modal');
+
+    if (btnCancelDelete) {
+      btnCancelDelete.addEventListener('click', () => {
+        this.showDeleteModal = false;
+        this.pendingDeleteReservation = null;
+        this.render();
+      });
+    }
 
     if (filterRoom) {
       filterRoom.addEventListener('change', (e) => {
@@ -471,16 +551,22 @@ export class AdminDashboard {
       });
     }
 
-    this.container.querySelectorAll('.filter-tab').forEach(tab => {
+    this.container.querySelectorAll('.status-tab-btn').forEach(tab => {
       tab.addEventListener('click', (e) => {
-        this.statusFilter = tab.dataset.status;
-        this.render();
+        const status = tab.dataset.status || tab.closest('.status-tab-btn').dataset.status;
+        if (status) {
+          this.statusFilter = status;
+          this.render();
+        }
       });
     });
 
     if (btnLogout) {
       btnLogout.addEventListener('click', () => {
         this.isAuthenticated = false;
+        try {
+          localStorage.removeItem(ADMIN_SESSION_KEY);
+        } catch (err) {}
         this.render();
       });
     }
@@ -492,27 +578,6 @@ export class AdminDashboard {
       });
     }
 
-    if (btnEmails) {
-      btnEmails.addEventListener('click', () => {
-        this.showEmailModal = true;
-        this.render();
-      });
-    }
-
-    const btnTestEmails = document.getElementById('btn-send-test-emails');
-    if (btnTestEmails) {
-      btnTestEmails.addEventListener('click', () => {
-        sendAllTestEmailsTo('ondra.zeman05@gmail.com');
-        this.showAdminToast('📧 Všechny 3 testovací e-maily (Přijetí, Záloha s QR kódem, Potvrzení) byly úspěšně vygenerovány!');
-        this.render();
-      });
-    }
-
-    const btnCloseModal = document.getElementById('close-email-modal');
-    const btnCloseModalFt = document.getElementById('close-email-modal-ft');
-    if (btnCloseModal) btnCloseModal.addEventListener('click', () => { this.showEmailModal = false; this.render(); });
-    if (btnCloseModalFt) btnCloseModalFt.addEventListener('click', () => { this.showEmailModal = false; this.render(); });
-
     this.container.querySelectorAll('.btn-admin-action').forEach(btn => {
       btn.addEventListener('click', async (e) => {
         const id = btn.dataset.id;
@@ -523,11 +588,37 @@ export class AdminDashboard {
       });
     });
 
+    this.container.querySelectorAll('.admin-res-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('button, a, input, select, textarea, .drawer-guest-entry, .btn-drawer-delete-clean')) {
+          return;
+        }
+        const id = card.dataset.id;
+        if (id) {
+          this.expandedReservationId = (this.expandedReservationId === id) ? null : id;
+          this.render();
+        }
+      });
+    });
+
     this.container.querySelectorAll('.btn-details-toggle').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const id = btn.dataset.id;
         this.expandedReservationId = (this.expandedReservationId === id) ? null : id;
         this.render();
+      });
+    });
+
+    this.container.querySelectorAll('.guest-entry-header').forEach(hdr => {
+      hdr.addEventListener('click', (e) => {
+        const entry = hdr.closest('.drawer-guest-entry');
+        if (entry) {
+          const isOpen = entry.classList.toggle('is-open');
+          const label = entry.querySelector('.guest-toggle-label');
+          if (label) {
+            label.textContent = isOpen ? 'Sbalit' : 'Rozbalit';
+          }
+        }
       });
     });
   }

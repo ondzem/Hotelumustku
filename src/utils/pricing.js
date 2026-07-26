@@ -9,6 +9,14 @@ export const DOG_PER_DAY = 150; // 150 Kč / den
 export const EBIKE_PER_DAY = 15; // 15 Kč / den
 
 /**
+ * Single source of truth for Variable Symbol generation across Admin & QR codes
+ */
+export function getVariableSymbol(code) {
+  if (!code) return '20260000';
+  return String(code).replace(/[^0-9]/g, '');
+}
+
+/**
  * Calculates exact reservation pricing breakdown including 30% deposit
  */
 export function calculateReservationPrice({

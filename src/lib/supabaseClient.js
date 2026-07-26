@@ -2,7 +2,7 @@
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://jpvnvjcktpxyxrvsdukm.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_vsrtmhEKo6gGNAxYFB--YA_J9CVNWpc';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impwdm52amNrdHB4eXhydnNkdWttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2MjczMzAsImV4cCI6MjEwMDIwMzMzMH0.NV9mI29eo5vUuBqTM2N-vd9GepeoD2iIcOZq5ypIqtY';
 
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
 
@@ -124,4 +124,21 @@ export const updateStoredReservationStatus = (id, newStatus) => {
     console.error('Failed to update reservation status locally:', err);
   }
   return target || current[0];
+};
+
+export const deleteStoredReservation = (targetIdOrCode) => {
+  if (!targetIdOrCode) return getStoredReservations();
+  const current = getStoredReservations();
+  const targetStr = String(targetIdOrCode).trim();
+  const filtered = current.filter(r => {
+    const rId = r.id ? String(r.id).trim() : '';
+    const rCode = r.code ? String(r.code).trim() : '';
+    return rId !== targetStr && rCode !== targetStr;
+  });
+  try {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(filtered));
+  } catch (err) {
+    console.error('Failed to delete reservation locally:', err);
+  }
+  return filtered;
 };
