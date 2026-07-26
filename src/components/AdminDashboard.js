@@ -573,7 +573,13 @@ export class AdminDashboard {
 
     if (btnRefresh) {
       btnRefresh.addEventListener('click', async () => {
+        btnRefresh.disabled = true;
+        btnRefresh.innerHTML = `
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; display: inline-block; vertical-align: middle; animation: spin 0.8s linear infinite;"><path d="M21.5 2v6h-6M2.5 22v-6h6"/><path d="M2 11.5a10 10 0 0 1 18.8-4.3L21.5 8M22 12.5a10 10 0 0 1-18.8 4.3L2.5 16"/></svg>
+          Načítám...
+        `;
         await this.fetchReservations();
+        this.showAdminToast('Data rezervací byla úspěšně aktualizována z databáze Supabase.');
         this.render();
       });
     }

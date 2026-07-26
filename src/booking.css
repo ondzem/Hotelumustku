@@ -2302,6 +2302,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   animation: slideOutRightToast 0.3s cubic-bezier(0.7, 0, 0.84, 0) forwards;
 }
 
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 .toast-inner-content {
   display: flex;
   align-items: center;
