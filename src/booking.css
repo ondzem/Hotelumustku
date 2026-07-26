@@ -2472,10 +2472,10 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   }
 
   .booking-card {
-    padding: 16px 14px;
-    margin-bottom: 12px;
-    border: 1px solid #e0e0e0;
-    border-radius: 1px;
+    padding: 20px 16px;
+    margin-bottom: 16px;
+    border: 1px solid #e7e5dc;
+    border-radius: 12px !important;
   }
 
   .card-title {
@@ -3777,7 +3777,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   /* Reservation Card Layout on Mobile */
   .admin-res-card {
     padding: 22px 20px;
-    border-radius: 10px;
+    border-radius: 12px !important;
   }
 
   .res-card-grid {

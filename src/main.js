@@ -455,8 +455,8 @@ const getHomePageHTML = () => `
       fetchpriority="high"
       poster="/Uvodni stranka/Uvodní fotka - hero sekce.webp"
     >
+      <source src="/hero_master_v5.mp4" type="video/mp4">
       <source src="https://jpvnvjcktpxyxrvsdukm.supabase.co/storage/v1/object/public/hotel-videos/hero_master_v5.mp4" type="video/mp4">
-      <source src="/videos/hero_video.mp4" type="video/mp4">
     </video>
     <div class="hero-overlay"></div>
     <div class="hero-inner">
