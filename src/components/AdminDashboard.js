@@ -266,6 +266,12 @@ export class AdminDashboard {
     } else {
       this.loginError = true;
       this.render();
+      setTimeout(() => {
+        const pwdInput = document.getElementById('admin-password');
+        const loginErrAlert = this.container.querySelector('.login-error-alert') || pwdInput;
+        if (loginErrAlert) loginErrAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (pwdInput && typeof pwdInput.focus === 'function') pwdInput.focus({ preventScroll: true });
+      }, 60);
     }
   }
 

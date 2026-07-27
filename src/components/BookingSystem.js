@@ -215,6 +215,21 @@ export class BookingSystem {
     });
   }
 
+  scrollToErrorMessage() {
+    setTimeout(() => {
+      const errBanner = this.container.querySelector('.booking-error-alert') ||
+                        this.container.querySelector('.booking-alert-error') ||
+                        this.container.querySelector('.form-field.has-error') ||
+                        this.container.querySelector('#date-from-btn') ||
+                        this.container.querySelector('.booking-card');
+      if (errBanner) {
+        errBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        window.scrollTo({ top: this.container.offsetTop - 80, behavior: 'smooth' });
+      }
+    }, 60);
+  }
+
   showFieldError(fieldId, errorMsg) {
     this.state.fieldErrors = { [fieldId]: errorMsg };
     this.render();
@@ -232,10 +247,13 @@ export class BookingSystem {
           if (chevron) chevron.textContent = '▲';
         }
       }
-      const el = document.getElementById(fieldId);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        el.focus();
+      const el = document.getElementById(fieldId) || this.container.querySelector(`[data-field="${fieldId.replace(/^guest-\d+-/, '')}"]`);
+      const targetContainer = el ? (el.closest('.form-field') || el) : this.container.querySelector('.form-field.has-error');
+      if (targetContainer) {
+        targetContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (el && typeof el.focus === 'function') el.focus({ preventScroll: true });
+      } else {
+        this.scrollToErrorMessage();
       }
     }, 60);
   }
@@ -1705,6 +1723,7 @@ export class BookingSystem {
           if (isNaN(start.getTime()) || isNaN(end.getTime()) || end <= start) {
             this.state.errorMessage = 'Prosíme, vyberte platný termín pobytu (Datum odjezdu musí být po datu příjezdu).';
             this.render();
+            this.scrollToErrorMessage();
             return;
           }
           this.setStep(2);
