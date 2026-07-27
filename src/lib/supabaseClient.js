@@ -176,3 +176,76 @@ export const deleteStoredBlockedDate = (id) => {
   }
   return filtered;
 };
+
+// Local Storage Key for Discount Codes
+const DISCOUNT_CODES_STORAGE_KEY = 'hotel_umustku_discount_codes_v1';
+const INITIAL_MOCK_DISCOUNT_CODES = [
+  { id: 'dc-1', code: 'HOTEL5', discount_type: 'percent', discount_value: 5, is_active: true },
+  { id: 'dc-2', code: 'HOTEL10', discount_type: 'percent', discount_value: 10, is_active: true }
+];
+
+export const getStoredDiscountCodes = () => {
+  try {
+    const raw = localStorage.getItem(DISCOUNT_CODES_STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+    localStorage.setItem(DISCOUNT_CODES_STORAGE_KEY, JSON.stringify(INITIAL_MOCK_DISCOUNT_CODES));
+    return INITIAL_MOCK_DISCOUNT_CODES;
+  } catch {
+    return INITIAL_MOCK_DISCOUNT_CODES;
+  }
+};
+
+export const saveStoredDiscountCode = (codeItem) => {
+  const current = getStoredDiscountCodes();
+  const existingIdx = current.findIndex(c => c.code === codeItem.code || c.id === codeItem.id);
+  if (existingIdx >= 0) {
+    current[existingIdx] = codeItem;
+  } else {
+    current.unshift(codeItem);
+  }
+  try {
+    localStorage.setItem(DISCOUNT_CODES_STORAGE_KEY, JSON.stringify(current));
+  } catch (err) {
+    console.error('Failed to save discount code locally:', err);
+  }
+  return codeItem;
+};
+
+export const deleteStoredDiscountCode = (idOrCode) => {
+  const current = getStoredDiscountCodes();
+  const filtered = current.filter(c => c.id !== idOrCode && c.code !== idOrCode);
+  try {
+    localStorage.setItem(DISCOUNT_CODES_STORAGE_KEY, JSON.stringify(filtered));
+  } catch (err) {
+    console.error('Failed to delete discount code locally:', err);
+  }
+  return filtered;
+};
+
+// Local Storage Key for Room Prices
+const ROOM_PRICES_STORAGE_KEY = 'hotel_umustku_room_prices_v1';
+
+export const getStoredRoomPrices = () => {
+  try {
+    const raw = localStorage.getItem(ROOM_PRICES_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+};
+
+export const saveStoredRoomPrice = (priceItem) => {
+  const current = getStoredRoomPrices();
+  const existingIdx = current.findIndex(p => p.room_id === priceItem.room_id);
+  if (existingIdx >= 0) {
+    current[existingIdx] = priceItem;
+  } else {
+    current.push(priceItem);
+  }
+  try {
+    localStorage.setItem(ROOM_PRICES_STORAGE_KEY, JSON.stringify(current));
+  } catch (err) {
+    console.error('Failed to save room price locally:', err);
+  }
+  return priceItem;
+};

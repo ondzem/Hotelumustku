@@ -1,4 +1,4 @@
-import { MOCK_ROOMS, isSupabaseConfigured, supabase, getStoredReservations, saveStoredReservation, getStoredBlockedDates } from '../lib/supabaseClient.js';
+import { MOCK_ROOMS, isSupabaseConfigured, supabase, getStoredReservations, saveStoredReservation, getStoredBlockedDates, getStoredDiscountCodes, getStoredRoomPrices } from '../lib/supabaseClient.js';
 import { calculateReservationPrice, generateReservationCode, generateManageToken, BANK_ACCOUNT, BANK_NAME, formatCzechPrice } from '../utils/pricing.js';
 import { sendEmail, generateEmail1RequestReceived, generateEmail1ReceptionNotification } from '../utils/emailService.js';
 function getTodayDateString() {
@@ -25,37 +25,25 @@ function isValidEmail(email) {
 
 function isValidPhone(phone) {
   if (!phone || typeof phone !== 'string') return false;
-  const cleaned = phone.trim().replace(/[\s\-\(\)\.]/g, '');
-  const phoneRegex = /^\+?[0-9]{8,15}$/;
-  return phoneRegex.test(cleaned);
+  const digits = phone.replace(/[^0-9]/g, '');
+  return digits.length >= 9;
 }
 
-function isDummyIdNumber(str) {
-  if (!str) return false;
-  const clean = String(str).replace(/[\s\-\/]/g, '').toLowerCase();
-  if (clean.length === 0) return false;
-  if (clean.length < 5) return true;
-  const dummyPatterns = [
-    '12345', '123456', '1234567', '12345678', '123456789', '1234567890',
-    '987654321', '98765432', '987654',
-    '00000', '000000', '0000000', '00000000', '000000000',
-    '11111', '111111', '1111111', '11111111', '111111111',
-    '22222', '33333', '44444', '55555', '66666', '77777', '88888', '99999',
-    '12341234', '123123', 'asdfgh', 'asdfghjkl', 'testtest', 'abcdef', 'qwerty'
-  ];
-  if (dummyPatterns.some(pat => clean.includes(pat))) return true;
-  if (/^(\w)\1+$/.test(clean)) return true;
+function isDummyName(nameStr) {
+  if (!nameStr) return true;
+  const clean = nameStr.trim().toLowerCase();
+  const dummyWords = ['test', 'asdf', 'qwer', 'aaa', 'bbb', 'xxx', 'yyy', 'zzz', '123', 'admin'];
+  if (dummyWords.some(w => clean === w || clean.startsWith(w + ' '))) return true;
+  const parts = clean.split(/\s+/).filter(Boolean);
+  if (parts.length < 2) return true;
   return false;
 }
 
-function isDummyName(str) {
-  if (!str) return false;
-  const clean = String(str).trim().toLowerCase();
-  if (clean.length < 2) return true;
-  const dummyNames = ['test', 'asdf', 'xyz', 'qwer', 'aaa', 'bbb', 'ccc', '123', 'testik', 'admin', 'aaa bbb'];
-  if (dummyNames.includes(clean)) return true;
-  if (/[0-9]/.test(clean)) return true;
-  return false;
+function isDummyIdNumber(idStr) {
+  if (!idStr) return false;
+  const clean = idStr.trim();
+  const dummyPatterns = ['123456', '12345678', '000000', '111111', '999999', 'asdf', 'test'];
+  return dummyPatterns.some(p => clean.includes(p));
 }
 
 export class BookingSystem {
@@ -64,31 +52,35 @@ export class BookingSystem {
     this.roomsList = MOCK_ROOMS;
     this.activeReservations = [];
     this.blockedDates = [];
-
+    this.discountCodes = [];
+    this.roomPrices = [];
+    this.appliedDiscount = null;
+    this.discountError = '';
+    this.discountSuccessMsg = '';
+    this.discountCodeInput = '';
     this.currentStep = 1;
-    this.isSubmitted = false;
-    this.createdReservation = null;
-
     this.state = {
       selectedRoomId: 'p1',
       dateFrom: '',
       dateTo: '',
       adults: 2,
       children: 0,
-      breakfast: false,
-      wellness: false,
-      parking: false,
-      dogCount: 0,
-      cotCount: 0,
-      extraBedCount: 0,
+      hasDog: false,
+      hasEbike: false,
+      ebikeCount: 1,
+      hasHalfBoard: false,
+      halfBoardCount: null,
       guestName: '',
       guestEmail: '',
       guestPhone: '',
-      guestNote: '',
       guestStreet: '',
       guestCity: '',
       guestZip: '',
       guestCountry: 'Česká republika',
+      guestNote: '',
+      honeypot: '',
+      isSubmitting: false,
+      errorMessage: '',
       guests: [
         {
           name: '',
@@ -132,6 +124,8 @@ export class BookingSystem {
     }
     await this.fetchActiveReservations();
     await this.fetchBlockedDates();
+    await this.fetchDiscountCodes();
+    await this.fetchRoomPrices();
     this.syncGuestsArray();
 
     // Set initial history state for browser Back button support
@@ -147,6 +141,58 @@ export class BookingSystem {
       }
     });
 
+    this.render();
+  }
+
+  async fetchDiscountCodes() {
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data, error } = await supabase.from('discount_codes').select('*').eq('is_active', true);
+        if (!error && data) {
+          this.discountCodes = data;
+          return;
+        }
+      } catch (err) {
+        console.error('Fetch discount codes error:', err);
+      }
+    }
+    this.discountCodes = getStoredDiscountCodes().filter(c => c.is_active);
+  }
+
+  async fetchRoomPrices() {
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data, error } = await supabase.from('room_prices').select('*');
+        if (!error && data) {
+          this.roomPrices = data;
+          return;
+        }
+      } catch (err) {
+        console.error('Fetch room prices error:', err);
+      }
+    }
+    this.roomPrices = getStoredRoomPrices();
+  }
+
+  applyDiscountCode(inputCode) {
+    const clean = String(inputCode || '').trim().toUpperCase();
+    this.discountError = '';
+    if (!clean) {
+      this.appliedDiscount = null;
+      this.discountSuccessMsg = '';
+      this.render();
+      return;
+    }
+    const found = (this.discountCodes || []).find(c => c.code === clean && c.is_active);
+    if (found) {
+      this.appliedDiscount = found;
+      this.discountSuccessMsg = `Slevový kód ${found.code} (-${found.discount_value} %) byl uplatněn!`;
+      this.discountError = '';
+    } else {
+      this.appliedDiscount = null;
+      this.discountError = `Slevový kód "${clean}" je neplatný nebo vypršel.`;
+      this.discountSuccessMsg = '';
+    }
     this.render();
   }
 
@@ -421,6 +467,9 @@ export class BookingSystem {
   getPricingBreakdown() {
     const room = this.getSelectedRoom();
     const nights = this.calculateNights();
+    const customPriceObj = (this.roomPrices || []).find(p => p.room_id === room.id);
+    const customBaseRate = customPriceObj ? customPriceObj.base_price : room.basePrice;
+
     return calculateReservationPrice({
       roomType: room.type,
       nights,
@@ -432,6 +481,8 @@ export class BookingSystem {
       ebikeCount: this.state.ebikeCount,
       hasHalfBoard: this.state.hasHalfBoard,
       halfBoardCount: this.state.halfBoardCount,
+      customBaseRate,
+      discountObj: this.appliedDiscount,
     });
   }
 
@@ -1002,6 +1053,31 @@ export class BookingSystem {
                   <span class="recap-clean-label">Počet hostů:</span>
                   <span class="recap-clean-val"><strong>${this.state.adults} dospělí ${this.state.children > 0 ? `, ${this.state.children} dětí` : ''}</strong></span>
                 </div>
+              </div>
+
+              ${pricing.discountAmount > 0 ? `
+                <div class="summary-total-divider"></div>
+                <div class="summary-rows">
+                  <div class="summary-row" style="color: #2e7d32; font-weight: 700;">
+                    <div class="row-info">
+                      <span class="row-label">✓ ${pricing.discountLabel}</span>
+                    </div>
+                    <span class="row-price">-${pricing.formattedDiscountAmount}</span>
+                  </div>
+                </div>
+              ` : ''}
+
+              <!-- PROMO CODE INPUT BOX -->
+              <div class="promo-code-box" style="margin-top: 14px; padding-top: 14px; border-top: 1px dashed #e0dfd5;">
+                <label style="font-size: 13px; font-weight: 700; color: #4a5a24; display: block; margin-bottom: 6px;">Máte slevový kód?</label>
+                <div style="display: flex; gap: 8px;">
+                  <input type="text" id="promo-code-input" class="form-input" placeholder="Zadejte kód (např. HOTEL5)" style="height: 38px; font-size: 13.5px; text-transform: uppercase;" value="${this.appliedDiscount ? this.appliedDiscount.code : (this.discountCodeInput || '')}" ${this.appliedDiscount ? 'disabled' : ''}>
+                  <button type="button" class="btn btn-specs-secondary btn-apply-promo" style="height: 38px; padding: 0 16px; font-size: 13px; white-space: nowrap; border-radius: 1px;">
+                    ${this.appliedDiscount ? 'Odebrat' : 'Uplatnit'}
+                  </button>
+                </div>
+                ${this.discountError ? `<div style="color: #c62828; font-size: 12.5px; font-weight: 600; margin-top: 6px;">⚠️ ${this.discountError}</div>` : ''}
+                ${this.discountSuccessMsg ? `<div style="color: #2e7d32; font-size: 12.5px; font-weight: 700; margin-top: 6px;">✓ ${this.discountSuccessMsg}</div>` : ''}
               </div>
 
               ${(pricing.singleNightSurchargeTotal > 0 || pricing.hasHalfBoard || pricing.hasDog || pricing.hasEbike || pricing.cityTax > 0) ? `
@@ -1712,6 +1788,36 @@ export class BookingSystem {
             this.state.ebikeCount = 1;
           }
           this.render();
+        });
+      }
+
+      const btnApplyPromo = this.container.querySelector('.btn-apply-promo');
+      const promoInput = this.container.querySelector('#promo-code-input');
+
+      if (promoInput) {
+        promoInput.addEventListener('input', (e) => {
+          this.discountCodeInput = e.target.value;
+        });
+        promoInput.addEventListener('keyup', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            this.applyDiscountCode(promoInput.value);
+          }
+        });
+      }
+
+      if (btnApplyPromo) {
+        btnApplyPromo.addEventListener('click', () => {
+          if (this.appliedDiscount) {
+            this.appliedDiscount = null;
+            this.discountCodeInput = '';
+            this.discountSuccessMsg = '';
+            this.discountError = '';
+            this.render();
+          } else {
+            const val = promoInput ? promoInput.value : this.discountCodeInput;
+            this.applyDiscountCode(val);
+          }
         });
       }
 

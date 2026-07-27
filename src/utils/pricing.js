@@ -30,8 +30,12 @@ export function calculateReservationPrice({
   hasHalfBoard = false,
   halfBoardCount = null,
   ebikeCount = 1,
+  customBaseRate = null,
+  discountObj = null,
 }) {
-  const baseRatePerPersonNight = (roomType === 'nadstandard' || roomType === 'kat_a') ? 890 : 830;
+  const baseRatePerPersonNight = customBaseRate
+    ? Number(customBaseRate)
+    : ((roomType === 'nadstandard' || roomType === 'kat_a') ? 890 : 830);
   const safeNights = Math.max(1, parseInt(nights) || 1);
   const totalGuests = Math.max(1, parseInt(persons || adults || 1));
 
@@ -81,8 +85,23 @@ export function calculateReservationPrice({
 
   const addonsPrice = halfBoardPriceTotal + dogPriceTotal + ebikePriceTotal;
 
-  // 5. Total Price
-  const totalPrice = accommodationPrice + cityTax + addonsPrice;
+  // 5. Subtotal & Discount Code Calculation
+  const subtotalPrice = accommodationPrice + cityTax + addonsPrice;
+  let discountAmount = 0;
+  let discountLabel = '';
+
+  if (discountObj && discountObj.is_active) {
+    const val = Number(discountObj.discount_value) || 0;
+    if (discountObj.discount_type === 'percent' || val <= 100) {
+      discountAmount = Math.round(subtotalPrice * (val / 100));
+      discountLabel = `Sleva (${discountObj.code} -${val} %)`;
+    } else {
+      discountAmount = Math.min(subtotalPrice, val);
+      discountLabel = `Sleva (${discountObj.code})`;
+    }
+  }
+
+  const totalPrice = Math.max(0, subtotalPrice - discountAmount);
 
   // 6. 30% Deposit & 70% Remaining
   const depositPriceTotal = Math.round(totalPrice * (DEPOSIT_PERCENTAGE / 100));
@@ -109,6 +128,9 @@ export function calculateReservationPrice({
     ebikeCount: safeEbikeCount,
     ebikePriceTotal,
     addonsPrice,
+    subtotalPrice,
+    discountAmount,
+    discountLabel,
     totalPrice,
     depositPercentage: DEPOSIT_PERCENTAGE,
     depositPriceTotal,
@@ -119,6 +141,7 @@ export function calculateReservationPrice({
     formattedDepositPriceTotal: formatCzechPrice(depositPriceTotal),
     formattedRemainingPriceTotal: formatCzechPrice(remainingPriceTotal),
     formattedAccommodationPrice: formatCzechPrice(accommodationPrice),
+    formattedDiscountAmount: formatCzechPrice(discountAmount),
   };
 }
 
