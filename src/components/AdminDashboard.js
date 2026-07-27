@@ -623,10 +623,6 @@ export class AdminDashboard {
             <button type="button" class="btn btn-specs-secondary btn-admin-room-prices">
               💰 Ceník pokojů
             </button>
-            <button type="button" class="btn btn-specs-secondary btn-admin-refresh">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; display: inline-block; vertical-align: middle;"><path d="M21.5 2v6h-6M2.5 22v-6h6"/><path d="M2 11.5a10 10 0 0 1 18.8-4.3L21.5 8M22 12.5a10 10 0 0 1-18.8 4.3L2.5 16"/></svg>
-              Obnovit data
-            </button>
             <button type="button" class="btn btn-booking-submit btn-admin-logout">Odhlásit se</button>
           </div>
         </div>
