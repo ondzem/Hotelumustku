@@ -943,36 +943,20 @@ const getAdminPageHTML = () => `
   ${getFooterHTML()}
 `;
 
-// Render Funkce Pro 404 Error Stránku (Stránka nenalezena)
+// Render Funkce Pro 404 Error Stránku (Čistá samostatná obrazovka bez navbaru a footeru)
 const get404PageHTML = () => `
-  <section class="hero-section error-hero-section" id="uvod-error">
-    <div class="hero-overlay"></div>
-    <div class="hero-inner">
-      ${getHeaderHTML()}
-
-      <div class="booking-hero-center" style="text-align: center;">
-        <h1 class="booking-hero-main-title">404 — Stránka nenalezena</h1>
-        <p class="booking-hero-subtitle">Hotel u Můstku — Desná v Jizerských horách</p>
-      </div>
-    </div>
-  </section>
-
-  <main class="error-page-main">
+  <main class="error-standalone-wrapper">
     <div class="error-content-container">
       <div class="error-code-badge">404</div>
-      <h2 class="error-title">Požadovaná stránka neexistuje</h2>
+      <h1 class="error-title">Požadovaná stránka neexistuje</h1>
       <p class="error-desc">
-        Omlouváme se, ale adresa, kterou jste zadali, na našem webu neexistuje, byla přesunuta nebo změněna. 
-        Pokračujte prosím zpět na hlavní stránku nebo si prohlédněte naši nabídku ubytování.
+        Omlouváme se, ale adresa, kterou jste zadali, na našem webu neexistuje, byla přesunuta nebo změněna.
       </p>
-      <div class="form-section-divider" style="margin: 28px 0;"></div>
       <div class="error-actions-group">
         <a href="#domu" class="btn btn-booking-submit btn-go-home">Zpět na hlavní stránku</a>
-        <a href="#pokoje" class="btn btn-specs-secondary">Nabídka pokojů</a>
       </div>
     </div>
   </main>
-  ${getFooterHTML()}
 `;
 
 // Render Funkce Pro Stránku "Pokoje přízemí" (Detail pokoje)

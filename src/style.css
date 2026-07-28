@@ -7738,41 +7738,37 @@ img[loading="lazy"].img-loaded {
 }
 
 /* ----------------------------------------------------
-   404 ERROR STRÁNKA (Minimalistická & Čistá dle AGENTS.md)
+   404 ERROR STRÁNKA (Samostatná obrazovka dle AGENTS.md)
    ---------------------------------------------------- */
-.error-hero-section {
-  min-height: 380px !important;
-  height: 45vh !important;
-  background-image: url('/uvodni_hero_sekce.webp') !important;
-  background-size: cover !important;
-  background-position: center !important;
-}
-
-.error-page-main {
+.error-standalone-wrapper {
   width: 100%;
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: clamp(56px, 7vw, 96px) 24px;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-main);
+  padding: clamp(40px, 8vw, 100px) 24px;
   box-sizing: border-box;
   text-align: center;
 }
 
 .error-content-container {
-  max-width: 680px;
+  width: 100%;
+  max-width: 620px;
   margin: 0 auto;
 }
 
 .error-code-badge {
-  font-size: clamp(68px, 11vw, 115px);
+  font-size: clamp(72px, 12vw, 130px);
   font-weight: 800;
   color: #697947;
   line-height: 1;
-  letter-spacing: -0.03em;
-  margin-bottom: 14px;
+  letter-spacing: -0.04em;
+  margin-bottom: 16px;
 }
 
 .error-title {
-  font-size: clamp(22px, 3vw, 32px);
+  font-size: clamp(24px, 3.5vw, 36px);
   font-weight: 700;
   color: #1C1C19;
   margin: 0 0 16px 0;
@@ -7780,16 +7776,69 @@ img[loading="lazy"].img-loaded {
 }
 
 .error-desc {
-  font-size: clamp(15px, 1.8vw, 17px);
+  font-size: clamp(15px, 1.8vw, 17.5px);
   color: #55554E;
   line-height: 1.65;
-  margin: 0 0 24px 0;
+  margin: 0 0 36px 0;
 }
 
 .error-actions-group {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  flex-wrap: wrap;
+}
+
+.btn-booking-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  text-decoration: none;
+  background-color: #697947;
+  color: #ffffff;
+  border-radius: 1px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  height: 45px;
+  padding: 0 28px;
+  font-size: 17px;
+}
+
+.btn-booking-submit:hover {
+  background-color: #566439;
+  color: #ffffff;
+}
+
+@media (max-width: 767px) {
+  .btn-booking-submit {
+    height: 36px;
+    padding: 0 20px;
+    font-size: 14.5px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1028px) {
+  .btn-booking-submit {
+    height: 40px;
+    padding: 0 24px;
+    font-size: 15.5px;
+  }
+}
+
+@media (min-width: 1750px) {
+  .btn-booking-submit {
+    height: 48px;
+    padding: 0 32px;
+    font-size: 18px;
+  }
+}
+
+@media (min-width: 2200px) {
+  .btn-booking-submit {
+    height: 52px;
+    padding: 0 36px;
+    font-size: 19.5px;
+  }
 }
