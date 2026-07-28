@@ -2091,7 +2091,7 @@ const initInteractivity = () => {
       reviewsTrack.style.transform = `translateX(-${currentIndex * step}px)`;
     };
 
-    // Jednotná výška všech karet podle nejdelší recenze
+    // Jednotná výška všech karet podle nejdelší recenze + velkorysý odstup 28px pro vzdušnou eleganci
     const syncReviewCardsHeight = () => {
       allCards.forEach(c => c.style.height = 'auto');
       let maxHeight = 0;
@@ -2099,7 +2099,8 @@ const initInteractivity = () => {
         if (c.offsetHeight > maxHeight) maxHeight = c.offsetHeight;
       });
       if (maxHeight > 0) {
-        allCards.forEach(c => c.style.height = `${maxHeight}px`);
+        const finalHeight = maxHeight + 28;
+        allCards.forEach(c => c.style.height = `${finalHeight}px`);
       }
     };
 

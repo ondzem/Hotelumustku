@@ -3146,14 +3146,14 @@ h3 {
   }
 
   .review-quote {
-    font-size: 15px;
+    font-size: 14.5px;
     font-weight: 400;
     color: #111111;
-    line-height: 1.5;
-    margin: 0 0 24px 0;
+    line-height: 1.55;
+    margin: 0 0 28px 0;
     width: 100% !important;
     max-width: 100% !important;
-    padding-right: 32px;
+    padding-right: 36px;
     box-sizing: border-box;
     position: relative;
     z-index: 2;
@@ -3167,6 +3167,7 @@ h3 {
     position: relative;
     z-index: 2;
     margin-top: auto;
+    padding-top: 12px;
   }
 
   .review-author-name {
