@@ -84,6 +84,156 @@ export function syncDisabledRoomsToDOM() {
 }
 window.syncDisabledRoomsToDOM = syncDisabledRoomsToDOM;
 
+export const ROOM_GALLERIES = {
+  p1: ['/hezky pokoj 1.webp'],
+  p2: ['/hezky pokoj 1.webp'],
+  p3: ['/balkony 1 copy.webp'],
+  pa: [
+    '/pokoje/mahagon/1.webp',
+    '/pokoje/mahagon/2.webp',
+    '/pokoje/mahagon/3.webp',
+    '/pokoje/mahagon/4.webp',
+    '/pokoje/mahagon/5.webp',
+    '/pokoje/mahagon/6.webp',
+    '/pokoje/mahagon/7.webp',
+    '/pokoje/mahagon/8.webp'
+  ],
+  p5: [
+    '/pokoje/p5/1.webp',
+    '/pokoje/p5/2.webp',
+    '/pokoje/p5/3.webp',
+    '/pokoje/p5/4.webp',
+    '/pokoje/p5/5.webp',
+    '/pokoje/p5/6.webp',
+    '/pokoje/p5/7.webp',
+    '/pokoje/p5/8.webp'
+  ],
+  p6: [
+    '/hezky pokoj 1.webp'
+  ],
+  p7: [
+    '/pokoje/p7/1.webp',
+    '/pokoje/p7/2.webp',
+    '/pokoje/p7/3.webp',
+    '/pokoje/p7/4.webp',
+    '/pokoje/p7/5.png',
+    '/pokoje/p7/6.webp',
+    '/pokoje/p7/7.webp',
+    '/pokoje/p7/8.webp',
+    '/pokoje/p7/9.webp',
+    '/pokoje/p7/10.webp'
+  ],
+  a1: [
+    '/pokoje/motyl/1.webp',
+    '/pokoje/motyl/2.webp',
+    '/pokoje/motyl/3.webp',
+    '/pokoje/motyl/4.webp',
+    '/pokoje/motyl/5.webp',
+    '/pokoje/motyl/6.webp',
+    '/pokoje/motyl/7.webp'
+  ],
+  zen: [
+    '/pokoje/zen/1.webp',
+    '/pokoje/zen/2.webp',
+    '/pokoje/zen/3.webp',
+    '/pokoje/zen/4.webp',
+    '/pokoje/zen/5.webp',
+    '/pokoje/zen/6.webp',
+    '/pokoje/zen/7.webp'
+  ],
+  p10: [
+    '/pokoje/p10/1.webp',
+    '/pokoje/p10/2.webp',
+    '/pokoje/p10/3.webp',
+    '/pokoje/p10/4.webp',
+    '/pokoje/p10/5.webp',
+    '/pokoje/p10/6.webp',
+    '/pokoje/p10/7.webp',
+    '/pokoje/p10/8.webp',
+    '/pokoje/p10/9.webp'
+  ],
+  p11: [
+    '/pokoje/p11/1.webp',
+    '/pokoje/p11/2.webp',
+    '/pokoje/p11/3.webp',
+    '/pokoje/p11/4.webp',
+    '/pokoje/p11/5.webp',
+    '/pokoje/p11/6.webp',
+    '/pokoje/p11/7.webp',
+    '/pokoje/p11/8.webp',
+    '/pokoje/p11/9.webp',
+    '/pokoje/p11/10.webp'
+  ],
+  p12: [
+    '/pokoje/p12/1.webp',
+    '/pokoje/p12/2.webp',
+    '/pokoje/p12/3.webp',
+    '/pokoje/p12/4.webp',
+    '/pokoje/p12/5.webp',
+    '/pokoje/p12/6.webp',
+    '/pokoje/p12/7.webp',
+    '/pokoje/p12/8.webp',
+    '/pokoje/p12/9.webp',
+    '/pokoje/p12/10.webp',
+    '/pokoje/p12/11.webp'
+  ]
+};
+
+export const renderRoomBreakdownItem = (roomId, roomName, priceType, priceAmount) => {
+  const photos = ROOM_GALLERIES[roomId] || ['/hezky pokoj 1.webp'];
+  const slidesHtml = photos.map((src, idx) => `
+    <div class="room-carousel-slide">
+      <img src="${src}" alt="${roomName} - Náhled ${idx + 1}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='/hezky pokoj 1.webp';">
+    </div>
+  `).join('');
+
+  return `
+    <div class="room-breakdown-item" data-room="${roomId}">
+      <div class="room-breakdown-row">
+        <span class="room-breakdown-name"><strong>${roomName}</strong> <span class="room-meal">(se snídaní)</span></span>
+        <button class="btn-toggle-details" aria-expanded="false">
+          <span class="toggle-text">Zobrazit podrobnosti</span>
+          <svg class="toggle-arrow" width="12" height="7" viewBox="0 0 12 7" fill="none"><path d="M1 1L6 6L11 1" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+
+      <div class="room-breakdown-drawer">
+        <div class="drawer-inner">
+          <div class="room-carousel-viewport">
+            <div class="room-carousel-track">
+              ${slidesHtml}
+            </div>
+          </div>
+
+          <div class="drawer-footer-controls">
+            <div class="drawer-arrows-wrap">
+              <button class="btn-drawer-arrow btn-drawer-prev" aria-label="Předchozí fotka">
+                <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M7 1L2 6L7 11" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
+              </button>
+              <button class="btn-drawer-arrow btn-drawer-next" aria-label="Další fotka">
+                <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M1 1L6 6L1 11" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
+              </button>
+            </div>
+
+            <div class="drawer-action-btns">
+              <div class="room-drawer-price-wrap" data-price="${priceType}">
+                <div class="price-main-block">
+                  <span class="price-amount">${priceAmount} Kč</span>
+                  <span class="price-suffix">/ noc</span>
+                </div>
+                <div class="price-sub-block">
+                  <span class="price-detail">za osobu • včetně snídaně</span>
+                </div>
+              </div>
+              <button class="btn btn-booking btn-room-reserve">Zvolit pokoj</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+};
+
 const getHeaderHTML = () => `
   <!-- Hlavička (Navigace a logo) -->
   <header class="site-header">
@@ -1267,164 +1417,14 @@ const getRoomGroundFloorHTML = () => `
           </div>
         </div>
 
-        <!-- Pokoj 4: Nadstandard A -->
-        <div class="room-breakdown-item" data-room="pa">
-          <div class="room-breakdown-row">
-            <span class="room-breakdown-name"><strong>Pokoj Nadstandard A</strong> <span class="room-meal">(se snídaní)</span></span>
-            <button class="btn-toggle-details" aria-expanded="false">
-              <span class="toggle-text">Zobrazit podrobnosti</span>
-              <svg class="toggle-arrow" width="12" height="7" viewBox="0 0 12 7" fill="none"><path d="M1 1L6 6L11 1" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
-            </button>
-          </div>
-
-          <div class="room-breakdown-drawer">
-            <div class="drawer-inner">
-              <div class="room-carousel-viewport">
-                <div class="room-carousel-track">
-                  <div class="room-carousel-slide">
-                    <img src="/hezky pokoj 1.webp" alt="Pokoj Nadstandard A - Náhled 1" loading="lazy" decoding="async">
-                  </div>
-                  <div class="room-carousel-slide">
-                    <img src="/balkony 1 copy.webp" alt="Pokoj Nadstandard A - Náhled 2" loading="lazy" decoding="async">
-                  </div>
-                  <div class="room-carousel-slide">
-                    <img src="/Uvodni stranka/Vyhled z balkonu na skokanky.webp" alt="Pokoj Nadstandard A - Náhled 3" loading="lazy" decoding="async">
-                  </div>
-                </div>
-              </div>
-
-              <div class="drawer-footer-controls">
-                <div class="drawer-arrows-wrap">
-                  <button class="btn-drawer-arrow btn-drawer-prev" aria-label="Předchozí fotka">
-                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M7 1L2 6L7 11" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
-                  </button>
-                  <button class="btn-drawer-arrow btn-drawer-next" aria-label="Další fotka">
-                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M1 1L6 6L1 11" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
-                  </button>
-                </div>
-
-                <div class="drawer-action-btns">
-                  <div class="room-drawer-price-wrap" data-price="nadstandard">
-                    <div class="price-main-block">
-                      <span class="price-amount">890 Kč</span>
-                      <span class="price-suffix">/ noc</span>
-                    </div>
-                    <div class="price-sub-block">
-                      <span class="price-detail">za osobu • včetně snídaně</span>
-                    </div>
-                  </div>
-                  <button class="btn btn-booking btn-room-reserve">Zvolit pokoj</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <!-- Pokoj 4: Nadstandard Mahagon -->
+        ${renderRoomBreakdownItem('pa', 'Pokoj Nadstandard Mahagon', 'nadstandard', 890)}
 
         <!-- Pokoj 5: Standard P5 -->
-        <div class="room-breakdown-item" data-room="p5">
-          <div class="room-breakdown-row">
-            <span class="room-breakdown-name"><strong>Pokoj Standard P5</strong> <span class="room-meal">(se snídaní)</span></span>
-            <button class="btn-toggle-details" aria-expanded="false">
-              <span class="toggle-text">Zobrazit podrobnosti</span>
-              <svg class="toggle-arrow" width="12" height="7" viewBox="0 0 12 7" fill="none"><path d="M1 1L6 6L11 1" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
-            </button>
-          </div>
-
-          <div class="room-breakdown-drawer">
-            <div class="drawer-inner">
-              <div class="room-carousel-viewport">
-                <div class="room-carousel-track">
-                  <div class="room-carousel-slide">
-                    <img src="/balkony 1 copy.webp" alt="Pokoj Standard P5 - Náhled 1" loading="lazy" decoding="async">
-                  </div>
-                  <div class="room-carousel-slide">
-                    <img src="/hezky pokoj 1.webp" alt="Pokoj Standard P5 - Náhled 2" loading="lazy" decoding="async">
-                  </div>
-                  <div class="room-carousel-slide">
-                    <img src="/mobil hezky pokoj.webp" alt="Pokoj Standard P5 - Náhled 3" loading="lazy" decoding="async">
-                  </div>
-                </div>
-              </div>
-
-              <div class="drawer-footer-controls">
-                <div class="drawer-arrows-wrap">
-                  <button class="btn-drawer-arrow btn-drawer-prev" aria-label="Předchozí fotka">
-                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M7 1L2 6L7 11" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
-                  </button>
-                  <button class="btn-drawer-arrow btn-drawer-next" aria-label="Další fotka">
-                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M1 1L6 6L1 11" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
-                  </button>
-                </div>
-
-                <div class="drawer-action-btns">
-                  <div class="room-drawer-price-wrap" data-price="standard">
-                    <div class="price-main-block">
-                      <span class="price-amount">830 Kč</span>
-                      <span class="price-suffix">/ noc</span>
-                    </div>
-                    <div class="price-sub-block">
-                      <span class="price-detail">za osobu • včetně snídaně</span>
-                    </div>
-                  </div>
-                  <button class="btn btn-booking btn-room-reserve">Zvolit pokoj</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        ${renderRoomBreakdownItem('p5', 'Pokoj Standard P5', 'standard', 830)}
 
         <!-- Pokoj 6: Standard P6 -->
-        <div class="room-breakdown-item" data-room="p6">
-          <div class="room-breakdown-row">
-            <span class="room-breakdown-name"><strong>Pokoj Standard P6</strong> <span class="room-meal">(se snídaní)</span></span>
-            <button class="btn-toggle-details" aria-expanded="false">
-              <span class="toggle-text">Zobrazit podrobnosti</span>
-              <svg class="toggle-arrow" width="12" height="7" viewBox="0 0 12 7" fill="none"><path d="M1 1L6 6L11 1" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
-            </button>
-          </div>
-
-          <div class="room-breakdown-drawer">
-            <div class="drawer-inner">
-              <div class="room-carousel-viewport">
-                <div class="room-carousel-track">
-                  <div class="room-carousel-slide">
-                    <img src="/hezky pokoj 1.webp" alt="Pokoj Standard P6 - Náhled 1" loading="lazy" decoding="async">
-                  </div>
-                  <div class="room-carousel-slide">
-                    <img src="/balkony 1 copy.webp" alt="Pokoj Standard P6 - Náhled 2" loading="lazy" decoding="async">
-                  </div>
-                  <div class="room-carousel-slide">
-                    <img src="/Uvodni stranka/Vyhled z balkonu na skokanky.webp" alt="Pokoj Standard P6 - Náhled 3" loading="lazy" decoding="async">
-                  </div>
-                </div>
-              </div>
-
-              <div class="drawer-footer-controls">
-                <div class="drawer-arrows-wrap">
-                  <button class="btn-drawer-arrow btn-drawer-prev" aria-label="Předchozí fotka">
-                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M7 1L2 6L7 11" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
-                  </button>
-                  <button class="btn-drawer-arrow btn-drawer-next" aria-label="Další fotka">
-                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M1 1L6 6L1 11" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
-                  </button>
-                </div>
-
-                <div class="drawer-action-btns">
-                  <div class="room-drawer-price-wrap" data-price="standard">
-                    <div class="price-main-block">
-                      <span class="price-amount">830 Kč</span>
-                      <span class="price-suffix">/ noc</span>
-                    </div>
-                    <div class="price-sub-block">
-                      <span class="price-detail">za osobu • včetně snídaně</span>
-                    </div>
-                  </div>
-                  <button class="btn btn-booking btn-room-reserve">Zvolit pokoj</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        ${renderRoomBreakdownItem('p6', 'Pokoj Standard P6', 'standard', 830)}
       </div>
 
       <p class="room-breakdown-footer-note">Pobyt na 1 noc: Příplatek +200 Kč / osoba / noc k základní ceně.</p>
@@ -1669,45 +1669,22 @@ const getRoomViewFloorHTML = () => {
   html = html.replace(oldBannerText, newBannerText);
   html = html.replace('class="room-banner-section"', 'class="room-banner-section room-view-banner"');
 
-  // 7. Rozdělení pokojů – Názvy a ceny pokojů pro Pokoje s výhledem (Přesná replika bez kolizí)
-  html = html.replace('data-room="p1"', 'data-room="p7"');
-  html = html.replace('data-room="p2"', 'data-room="a1"');
-  html = html.replace('data-room="p3"', 'data-room="zen"');
-  html = html.replace('data-room="pa"', 'data-room="p10"');
-  html = html.replace('data-room="p5"', 'data-room="p11"');
-  html = html.replace('data-room="p6"', 'data-room="p12"');
+  // 7. Rozdělení pokojů – Názvy a ceny pokojů pro Pokoje s výhledem
+  const listStart = html.indexOf('<div class="room-breakdown-list">');
+  const listEnd = html.indexOf('<p class="room-breakdown-footer-note">');
 
-  html = html.replace('Pokoj Turistický P1', '__ROOM_1__');
-  html = html.replace('Pokoj Turistický P2', '__ROOM_2__');
-  html = html.replace('Pokoj Turistický P3', '__ROOM_3__');
-  html = html.replace('Pokoj Nadstandard A', '__ROOM_4__');
-  html = html.replace('Pokoj Standard P5', '__ROOM_5__');
-  html = html.replace('Pokoj Standard P6', '__ROOM_6__');
-
-  html = html.replace('__ROOM_1__', 'Pokoj Standard P7');
-  html = html.replace('__ROOM_2__', 'Pokoj Nadstandard A1');
-  html = html.replace('__ROOM_3__', 'Pokoj Nadstandard Zen');
-  html = html.replace('__ROOM_4__', 'Pokoj Standard P10');
-  html = html.replace('__ROOM_5__', 'Pokoj Standard P11');
-  html = html.replace('__ROOM_6__', 'Pokoj Standard P12');
-
-  // Přesný přepis cen pro pokoje A1 (890 Kč), Zen (890 Kč) a P10 (830 Kč)
-  const roomA1Start = html.indexOf('data-room="a1"');
-  const roomZenStart = html.indexOf('data-room="zen"');
-  const roomP10Start = html.indexOf('data-room="p10"');
-  const roomP11Start = html.indexOf('data-room="p11"');
-
-  if (roomA1Start !== -1 && roomZenStart !== -1 && roomP10Start !== -1 && roomP11Start !== -1) {
-    let a1Chunk = html.substring(roomA1Start, roomZenStart);
-    a1Chunk = a1Chunk.replace('data-price="standard"', 'data-price="nadstandard"').replace('830 Kč', '890 Kč');
-
-    let zenChunk = html.substring(roomZenStart, roomP10Start);
-    zenChunk = zenChunk.replace('data-price="standard"', 'data-price="nadstandard"').replace('830 Kč', '890 Kč');
-
-    let p10Chunk = html.substring(roomP10Start, roomP11Start);
-    p10Chunk = p10Chunk.replace('data-price="nadstandard"', 'data-price="standard"').replace('890 Kč', '830 Kč');
-
-    html = html.substring(0, roomA1Start) + a1Chunk + zenChunk + p10Chunk + html.substring(roomP11Start);
+  if (listStart !== -1 && listEnd !== -1) {
+    const viewRoomsHtml = `
+      <div class="room-breakdown-list">
+        ${renderRoomBreakdownItem('p7', 'Pokoj Standard P7', 'standard', 830)}
+        ${renderRoomBreakdownItem('a1', 'Pokoj Nadstandard Motýl', 'nadstandard', 890)}
+        ${renderRoomBreakdownItem('zen', 'Pokoj Nadstandard Zen', 'nadstandard', 890)}
+        ${renderRoomBreakdownItem('p10', 'Pokoj Standard P10', 'standard', 830)}
+        ${renderRoomBreakdownItem('p11', 'Pokoj Standard P11', 'standard', 830)}
+        ${renderRoomBreakdownItem('p12', 'Pokoj Standard P12', 'standard', 830)}
+      </div>
+    `;
+    html = html.substring(0, listStart) + viewRoomsHtml + html.substring(listEnd);
   }
 
   return html;
@@ -2420,18 +2397,36 @@ const initInteractivity = () => {
       rowHeader.addEventListener('click', handleToggle);
     }
 
-    // Carousel navigace
+    // Carousel navigace (Infinity loop)
     if (viewport) {
+      const getSlideStep = () => {
+        const slide = viewport.querySelector('.room-carousel-slide');
+        return slide ? (slide.offsetWidth + 24) : 564;
+      };
+
       if (nextBtn) {
         nextBtn.addEventListener('click', (e) => {
           e.preventDefault();
-          viewport.scrollBy({ left: 564, behavior: 'smooth' });
+          const step = getSlideStep();
+          const maxScroll = viewport.scrollWidth - viewport.clientWidth;
+          if (viewport.scrollLeft >= maxScroll - 15) {
+            viewport.scrollTo({ left: 0, behavior: 'smooth' });
+          } else {
+            viewport.scrollBy({ left: step, behavior: 'smooth' });
+          }
         });
       }
+
       if (prevBtn) {
         prevBtn.addEventListener('click', (e) => {
           e.preventDefault();
-          viewport.scrollBy({ left: -564, behavior: 'smooth' });
+          const step = getSlideStep();
+          const maxScroll = viewport.scrollWidth - viewport.clientWidth;
+          if (viewport.scrollLeft <= 15) {
+            viewport.scrollTo({ left: maxScroll, behavior: 'smooth' });
+          } else {
+            viewport.scrollBy({ left: -step, behavior: 'smooth' });
+          }
         });
       }
 
