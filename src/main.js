@@ -523,22 +523,45 @@ const getFooterHTML = () => `
 `;
 
 // Render Funkce Pro Domovskou Stránku
-const getHomePageHTML = () => `
+const getHomePageHTML = () => {
+  const isWinter = getInitialSeasonMode() === 'winter';
+
+  const heroMedia = isWinter
+    ? `<img class="hero-winter-img" src="/Zimni rezim/Zima - hotel.webp" alt="Hotel u Můstku v zimě" fetchpriority="high" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">`
+    : `<video 
+        class="hero-video" 
+        autoplay 
+        muted 
+        loop 
+        playsinline 
+        preload="auto" 
+        fetchpriority="high"
+        poster="/Uvodni stranka/Uvodní fotka - hero sekce.webp"
+      >
+        <source src="/hero_master_v5.mp4" type="video/mp4">
+        <source src="https://jpvnvjcktpxyxrvsdukm.supabase.co/storage/v1/object/public/hotel-videos/hero_master_v5.mp4" type="video/mp4">
+      </video>`;
+
+  const aboutTopSrc = isWinter
+    ? '/Zimni rezim/Zima - prijezdova fotka.webp'
+    : '/Uvodni stranka/Vyhled z balkonu na skokanky.webp';
+
+  const aboutBottomSrc = isWinter
+    ? '/Zimni rezim/Zime - pohled zezadu.webp'
+    : '/Uvodni stranka/Pohled na hotel ze z predni strany.webp';
+
+  const panoramicSrc = isWinter
+    ? '/Zimni rezim/Zima - zadni vchod.webp'
+    : '/Uvodni stranka/Fotka Zahrady a Terasy.webp';
+
+  const ctaStyle = isWinter
+    ? "background: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.45)), url('/Zimni rezim/tanvaldsky spicak.webp') center 20%/cover no-repeat;"
+    : '';
+
+  return `
   <!-- HERO SEKCE -->
   <section class="hero-section" id="uvod">
-    <video 
-      class="hero-video" 
-      autoplay 
-      muted 
-      loop 
-      playsinline 
-      preload="auto" 
-      fetchpriority="high"
-      poster="/Uvodni stranka/Uvodní fotka - hero sekce.webp"
-    >
-      <source src="/hero_master_v5.mp4" type="video/mp4">
-      <source src="https://jpvnvjcktpxyxrvsdukm.supabase.co/storage/v1/object/public/hotel-videos/hero_master_v5.mp4" type="video/mp4">
-    </video>
+    ${heroMedia}
     <div class="hero-overlay"></div>
     <div class="hero-inner">
       ${getHeaderHTML()}
@@ -554,11 +577,11 @@ const getHomePageHTML = () => `
 
       <!-- Spodní levé info (Léto / Zima) -->
       <div class="bottom-left-controls">
-        <div class="control-item">
+        <div class="control-item ${!isWinter ? 'is-active' : ''}">
           <img src="/Icons/sun_icon.png" alt="Slunce" class="control-icon">
           <span>Léto</span>
         </div>
-        <div class="control-item">
+        <div class="control-item ${isWinter ? 'is-active' : ''}">
           <img src="/Icons/snowflake_icon.png" alt="Vločka" class="control-icon">
           <span>Zima</span>
         </div>
@@ -586,11 +609,11 @@ const getHomePageHTML = () => `
       </div>
       
       <div class="about-img-top">
-        <img src="/Uvodni stranka/Vyhled z balkonu na skokanky.webp" alt="Vyhlídka ze skokanských můstků" loading="lazy" decoding="async">
+        <img src="${aboutTopSrc}" alt="Vyhlídka ze skokanských můstků" loading="eager" fetchpriority="high">
       </div>
 
       <div class="about-img-bottom">
-        <img src="/Uvodni stranka/Pohled na hotel ze z predni strany.webp" alt="Hotel u Můstku budova" loading="lazy" decoding="async">
+        <img src="${aboutBottomSrc}" alt="Hotel u Můstku budova" loading="lazy" decoding="async">
       </div>
 
       <div class="about-shadow-decor">
@@ -600,14 +623,23 @@ const getHomePageHTML = () => `
   </section>
 
   ${getPromoHTML()}
-  ${getPanoramicHTML()}
+  <section class="panoramic-section" id="galerie">
+    <img src="${panoramicSrc}" alt="Zahrada a terasa Hotelu u Můstku" class="panoramic-img" loading="lazy" decoding="async">
+  </section>
   ${getServicesHTML()}
   ${getReviewsHTML()}
   ${getFeaturesHTML()}
   ${getSurroundingsHTML()}
-  ${getCtaHTML()}
+  <section class="cta-section" ${ctaStyle ? `style="${ctaStyle}"` : ''}>
+    <div class="cta-overlay"></div>
+    <div class="cta-inner">
+      <h2 class="cta-title">Dopřejte si zasloužený<br>odpočinek v Jizerských horách</h2>
+      <button class="btn btn-cta" id="cta-booking-btn">Rezervovat pobyt</button>
+    </div>
+  </section>
   ${getFooterHTML()}
 `;
+};
 
 // Render Funkce Pro Stránku "Nabídka Pokojů" (Ubytování)
 const getRoomsPageHTML = () => `
@@ -1575,7 +1607,7 @@ export function openPromoCodeModal() {
 window.openPromoCodeModal = openPromoCodeModal;
 window.closePromoCodeModal = closePromoCodeModal;
 
-// Sezónní Režim (Léto / Zima)
+// Sezónní Režim (Léto / Zima) - Prioritní načítání aktivního režimu
 export function getInitialSeasonMode() {
   const savedMode = localStorage.getItem('hotel_season_mode');
   if (savedMode === 'summer' || savedMode === 'winter') {
@@ -1588,18 +1620,33 @@ export function getInitialSeasonMode() {
   return 'winter'; // Listopad až Březen
 }
 
-export function preloadWinterImages() {
-  const images = [
-    '/Zimni rezim/Zima - hotel.webp',
-    '/Zimni rezim/Zima - prijezdova fotka.webp',
-    '/Zimni rezim/Zime - pohled zezadu.webp',
-    '/Zimni rezim/Zima - zadni vchod.webp',
-    '/Zimni rezim/tanvaldsky spicak.webp'
-  ];
-  images.forEach(src => {
-    const img = new Image();
-    img.src = src;
-  });
+let deferredPreloadTimer = null;
+
+export function scheduleInactiveSeasonPreload(activeMode) {
+  if (deferredPreloadTimer) {
+    clearTimeout(deferredPreloadTimer);
+    deferredPreloadTimer = null;
+  }
+
+  // Odložený background preload neaktivního režimu až za 4 sekundy po načtení primární stránky
+  deferredPreloadTimer = setTimeout(() => {
+    const inactiveImages = activeMode === 'summer' ? [
+      '/Zimni rezim/Zima - hotel.webp',
+      '/Zimni rezim/Zima - prijezdova fotka.webp',
+      '/Zimni rezim/Zime - pohled zezadu.webp',
+      '/Zimni rezim/Zima - zadni vchod.webp',
+      '/Zimni rezim/tanvaldsky spicak.webp'
+    ] : [
+      '/Uvodni stranka/Vyhled z balkonu na skokanky.webp',
+      '/Uvodni stranka/Pohled na hotel ze z predni strany.webp',
+      '/Uvodni stranka/Fotka Zahrady a Terasy.webp'
+    ];
+
+    inactiveImages.forEach(src => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, 4000);
 }
 
 export function setSeasonMode(mode, savePreference = true) {
@@ -1609,27 +1656,56 @@ export function setSeasonMode(mode, savePreference = true) {
 
   window.currentSeasonMode = mode;
 
+  // Zrušení předchozího neaktivního načítání při manuálním přepnutí uživatele
+  if (deferredPreloadTimer) {
+    clearTimeout(deferredPreloadTimer);
+    deferredPreloadTimer = null;
+  }
+
   // 1. Změna Hero Sekce
-  const heroVideo = document.querySelector('.hero-video');
+  let heroVideo = document.querySelector('.hero-video');
   let heroWinterImg = document.querySelector('.hero-winter-img');
   const heroSection = document.querySelector('.hero-section');
 
   if (heroSection) {
-    if (!heroWinterImg) {
-      heroWinterImg = document.createElement('img');
-      heroWinterImg.className = 'hero-winter-img';
-      heroWinterImg.alt = 'Hotel u Můstku v zimě';
-      heroWinterImg.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;';
-      heroWinterImg.src = '/Zimni rezim/Zima - hotel.webp';
-      heroSection.insertBefore(heroWinterImg, heroSection.firstChild);
-    }
-
     if (mode === 'winter') {
-      if (heroVideo) heroVideo.style.display = 'none';
-      heroWinterImg.style.display = 'block';
+      if (heroVideo) {
+        heroVideo.pause();
+        heroVideo.style.display = 'none';
+      }
+      if (!heroWinterImg) {
+        heroWinterImg = document.createElement('img');
+        heroWinterImg.className = 'hero-winter-img';
+        heroWinterImg.alt = 'Hotel u Můstku v zimě';
+        heroWinterImg.setAttribute('fetchpriority', 'high');
+        heroWinterImg.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;';
+        heroWinterImg.src = '/Zimni rezim/Zima - hotel.webp';
+        heroSection.insertBefore(heroWinterImg, heroSection.firstChild);
+      } else {
+        heroWinterImg.style.display = 'block';
+      }
     } else {
-      if (heroVideo) heroVideo.style.display = 'block';
-      heroWinterImg.style.display = 'none';
+      if (heroWinterImg) {
+        heroWinterImg.style.display = 'none';
+      }
+      if (!heroVideo) {
+        heroVideo = document.createElement('video');
+        heroVideo.className = 'hero-video';
+        heroVideo.autoplay = true;
+        heroVideo.muted = true;
+        heroVideo.loop = true;
+        heroVideo.playsInline = true;
+        heroVideo.setAttribute('fetchpriority', 'high');
+        heroVideo.poster = '/Uvodni stranka/Uvodní fotka - hero sekce.webp';
+        heroVideo.innerHTML = `
+          <source src="/hero_master_v5.mp4" type="video/mp4">
+          <source src="https://jpvnvjcktpxyxrvsdukm.supabase.co/storage/v1/object/public/hotel-videos/hero_master_v5.mp4" type="video/mp4">
+        `;
+        heroSection.insertBefore(heroVideo, heroSection.firstChild);
+      } else {
+        heroVideo.style.display = 'block';
+        heroVideo.play().catch(() => {});
+      }
     }
   }
 
@@ -1679,20 +1755,20 @@ export function setSeasonMode(mode, savePreference = true) {
       item.classList.remove('is-active');
     }
   });
+
+  // Naplánování odloženého načtení neaktivního režimu
+  scheduleInactiveSeasonPreload(mode);
 }
 
 window.getInitialSeasonMode = getInitialSeasonMode;
 window.setSeasonMode = setSeasonMode;
-window.preloadWinterImages = preloadWinterImages;
+window.scheduleInactiveSeasonPreload = scheduleInactiveSeasonPreload;
 
 // Inicializace událostí a interaktivity po vykreslení
 const initInteractivity = () => {
-  // Preload zimních obrázků pro okamžité přepnutí
-  preloadWinterImages();
-
   // Aplikace sezónního režimu (Léto / Zima)
   const currentMode = getInitialSeasonMode();
-  setSeasonMode(currentMode, false);
+  scheduleInactiveSeasonPreload(currentMode);
 
   const seasonControls = document.querySelectorAll('.bottom-left-controls .control-item, .mobile-season-toggle .control-item');
   seasonControls.forEach(control => {
