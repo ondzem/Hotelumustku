@@ -1,4 +1,4 @@
-import { MOCK_ROOMS, getStoredReservations, updateStoredReservationStatus, deleteStoredReservation, getStoredBlockedDates, saveStoredBlockedDate, deleteStoredBlockedDate, getStoredDiscountCodes, saveStoredDiscountCode, deleteStoredDiscountCode, getStoredRoomPrices, saveStoredRoomPrice, isSupabaseConfigured, supabase } from '../lib/supabaseClient.js';
+import { MOCK_ROOMS, getStoredReservations, updateStoredReservationStatus, deleteStoredReservation, getStoredBlockedDates, saveStoredBlockedDate, deleteStoredBlockedDate, getStoredDiscountCodes, saveStoredDiscountCode, deleteStoredDiscountCode, getStoredRoomPrices, saveStoredRoomPrice, getStoredDisabledRooms, saveStoredDisabledRoom, isSupabaseConfigured, supabase } from '../lib/supabaseClient.js';
 import { calculateReservationPrice, generateSpaydQrUrl, BANK_ACCOUNT, formatCzechPrice, getVariableSymbol } from '../utils/pricing.js';
 import { sendEmail, generateEmail2ApprovalAndPaymentRequest, generateEmail3FinalConfirmation, generateEmailCancellation, getEmailLogs, sendAllTestEmailsTo } from '../utils/emailService.js';
 
@@ -35,12 +35,28 @@ export class AdminDashboard {
     this.loginError = false;
     this.reservations = [];
     this.blockedDates = [];
-    this.discountCodes = [];
-    this.roomPrices = [];
+    this.discountCodes = getStoredDiscountCodes();
+    this.roomPrices = getStoredRoomPrices();
+    (this.roomPrices || []).forEach(p => {
+      const priceVal = Number(p.base_price || p.basePrice);
+      if (p.room_id && !isNaN(priceVal) && priceVal > 0) {
+        const rm = MOCK_ROOMS.find(r => r.id === p.room_id);
+        if (rm) rm.basePrice = priceVal;
+      }
+    });
     this.showBlockModal = false;
     this.showDiscountModal = false;
     this.showPricesModal = false;
-    this.newDiscountForm = { code: '', discount_value: 5, discount_type: 'percent' };
+    this.showRoomMgmtModal = false;
+    this.showDisabledRoomsModal = false;
+    this.disabledRooms = getStoredDisabledRooms();
+    (this.disabledRooms || []).forEach(p => {
+      if (p.room_id) {
+        const rm = MOCK_ROOMS.find(r => r.id === p.room_id);
+        if (rm) rm.isDisabled = Boolean(p.is_disabled);
+      }
+    });
+    this.newDiscountForm = { code: '', discount_value: '', discount_type: 'percent' };
     this.blockForm = { room_id: 'all', reason: '' };
     this.blockSelectedDates = [];
     this.calYearMonth = null;
@@ -56,131 +72,273 @@ export class AdminDashboard {
   }
 
   async init() {
-    await this.fetchReservations();
-    await this.fetchBlockedDates();
-    await this.fetchDiscountCodes();
-    await this.fetchRoomPrices();
+    this.render();
+    try {
+      await Promise.allSettled([
+        this.fetchReservations(),
+        this.fetchBlockedDates(),
+        this.fetchDiscountCodes(),
+        this.fetchRoomPrices(),
+        this.fetchDisabledRooms()
+      ]);
+    } catch (err) {
+      console.error('AdminDashboard init fetch error:', err);
+    }
     this.render();
   }
 
   async fetchDiscountCodes() {
+    let localCodes = getStoredDiscountCodes();
     if (isSupabaseConfigured && supabase) {
       try {
         const { data, error } = await supabase.from('discount_codes').select('*').order('created_at', { ascending: false });
         if (!error && data) {
-          this.discountCodes = data;
+          const codeMap = new Map();
+          localCodes.forEach(c => codeMap.set(c.code, c));
+          data.forEach(c => codeMap.set(c.code, c));
+          this.discountCodes = Array.from(codeMap.values());
           return;
         }
       } catch (err) {
         console.error('Supabase fetchDiscountCodes failed:', err);
       }
     }
-    this.discountCodes = getStoredDiscountCodes();
+    this.discountCodes = localCodes;
   }
 
   async addDiscountCode(code, discount_value, discount_type = 'percent') {
     const cleanCode = String(code || '').trim().toUpperCase();
     if (!cleanCode) return;
-    const newItem = {
-      id: 'dc-' + Date.now(),
+    const payload = {
       code: cleanCode,
       discount_type: discount_type || 'percent',
-      discount_value: Number(discount_value) || 5,
+      discount_value: discount_value !== '' ? Number(discount_value) : 5,
       is_active: true,
       created_at: new Date().toISOString()
     };
 
     if (isSupabaseConfigured && supabase) {
       try {
-        const { data, error } = await supabase.from('discount_codes').upsert([newItem], { onConflict: 'code' }).select();
-        if (!error && data && data.length > 0) {
-          newItem.id = data[0].id;
+        const { data, error } = await supabase.from('discount_codes').upsert([payload], { onConflict: 'code' }).select();
+        if (error) {
+          console.error('Supabase addDiscountCode error:', error);
+        } else if (data && data.length > 0) {
+          payload.id = data[0].id;
         }
       } catch (err) {
         console.error('Supabase addDiscountCode failed:', err);
       }
     }
 
-    saveStoredDiscountCode(newItem);
-    await this.fetchDiscountCodes();
-    this.showAdminToast(`Slevový kód ${cleanCode} (-${newItem.discount_value} %) byl vytvořen.`);
-    this.newDiscountForm = { code: '', discount_value: 5, discount_type: 'percent' };
+    saveStoredDiscountCode(payload);
+    const existingIdx = (this.discountCodes || []).findIndex(c => c.code === cleanCode);
+    if (existingIdx >= 0) {
+      this.discountCodes[existingIdx] = payload;
+    } else {
+      this.discountCodes.unshift(payload);
+    }
+
+    this.showAdminToast(`Slevový kód ${cleanCode} (-${payload.discount_value} %) byl vytvořen.`);
+    this.newDiscountForm = { code: '', discount_value: '', discount_type: 'percent' };
+    this.showDiscountModal = true;
     this.render();
   }
 
-  async toggleDiscountCodeActive(id, newStatus) {
+  async toggleDiscountCodeActive(idOrCode, newStatus) {
+    const item = this.discountCodes.find(c => c.id === idOrCode || c.code === idOrCode);
+    if (!item) return;
+
+    item.is_active = newStatus;
+    saveStoredDiscountCode(item);
+
     if (isSupabaseConfigured && supabase) {
       try {
-        await supabase.from('discount_codes').update({ is_active: newStatus }).eq('id', id);
+        await supabase.from('discount_codes').update({ is_active: newStatus }).eq('code', item.code);
       } catch (err) {
         console.error('Supabase toggleDiscountCodeActive failed:', err);
       }
     }
-    const item = this.discountCodes.find(c => c.id === id);
-    if (item) {
-      item.is_active = newStatus;
-      saveStoredDiscountCode(item);
-    }
-    await this.fetchDiscountCodes();
+
+    this.showDiscountModal = true;
     this.render();
   }
 
   async deleteDiscountCode(idOrCode) {
-    if (isSupabaseConfigured && supabase) {
+    const item = this.discountCodes.find(c => c.id === idOrCode || c.code === idOrCode);
+    const codeToDelete = item ? item.code : idOrCode;
+
+    deleteStoredDiscountCode(idOrCode);
+    if (codeToDelete) deleteStoredDiscountCode(codeToDelete);
+
+    this.discountCodes = (this.discountCodes || []).filter(c => c.id !== idOrCode && c.code !== idOrCode && c.code !== codeToDelete);
+
+    if (isSupabaseConfigured && supabase && codeToDelete) {
       try {
-        await supabase.from('discount_codes').delete().eq('id', idOrCode);
+        await supabase.from('discount_codes').delete().eq('code', codeToDelete);
       } catch (err) {
         console.error('Supabase deleteDiscountCode failed:', err);
       }
     }
-    deleteStoredDiscountCode(idOrCode);
-    await this.fetchDiscountCodes();
+
     this.showAdminToast('Slevový kód byl vymazán.');
+    this.showDiscountModal = true;
     this.render();
   }
 
   async fetchRoomPrices() {
+    let localPrices = getStoredRoomPrices();
     if (isSupabaseConfigured && supabase) {
       try {
         const { data, error } = await supabase.from('room_prices').select('*');
-        if (!error && data) {
-          this.roomPrices = data;
-          return;
+        if (!error && data && data.length > 0) {
+          const priceMap = new Map();
+          localPrices.forEach(p => priceMap.set(p.room_id, p));
+          data.forEach(p => priceMap.set(p.room_id, p));
+          this.roomPrices = Array.from(priceMap.values());
+        } else {
+          this.roomPrices = localPrices;
         }
       } catch (err) {
         console.error('Supabase fetchRoomPrices failed:', err);
+        this.roomPrices = localPrices;
       }
+    } else {
+      this.roomPrices = localPrices;
     }
-    this.roomPrices = getStoredRoomPrices();
+
+    (this.roomPrices || []).forEach(p => {
+      const priceVal = Number(p.base_price || p.basePrice);
+      if (p.room_id && !isNaN(priceVal) && priceVal > 0) {
+        const rm = MOCK_ROOMS.find(r => r.id === p.room_id);
+        if (rm) rm.basePrice = priceVal;
+        saveStoredRoomPrice({ room_id: p.room_id, base_price: priceVal });
+      }
+    });
   }
 
   async updateRoomPrice(roomId, newBasePrice) {
     const priceNum = Number(newBasePrice);
     if (!roomId || isNaN(priceNum) || priceNum <= 0) return;
 
-    const newItem = {
-      id: 'rp-' + roomId,
+    const payload = {
       room_id: roomId,
       base_price: priceNum,
       updated_at: new Date().toISOString()
     };
 
-    if (isSupabaseConfigured && supabase) {
-      try {
-        await supabase.from('room_prices').upsert([newItem], { onConflict: 'room_id' });
-      } catch (err) {
-        console.error('Supabase updateRoomPrice failed:', err);
-      }
+    // 1. Immediately update local storage & memory state
+    saveStoredRoomPrice(payload);
+    const existingIdx = (this.roomPrices || []).findIndex(p => p.room_id === roomId);
+    if (existingIdx >= 0) {
+      this.roomPrices[existingIdx] = payload;
+    } else {
+      this.roomPrices.push(payload);
     }
-
-    saveStoredRoomPrice(newItem);
-    await this.fetchRoomPrices();
 
     const rm = MOCK_ROOMS.find(r => r.id === roomId);
     if (rm) rm.basePrice = priceNum;
 
+    // 2. In-place DOM update without re-rendering or blowing away input focus
+    if (this.container) {
+      const priceCard = this.container.querySelector(`.room-price-card[data-roomid="${roomId}"]`);
+      if (priceCard) {
+        const priceLabel = priceCard.querySelector('.current-price-label');
+        if (priceLabel) {
+          priceLabel.textContent = `${formatCzechPrice(priceNum)} / os / noc`;
+        }
+      }
+    }
+
+    if (typeof window !== 'undefined' && typeof window.syncDynamicRoomPricesToDOM === 'function') {
+      window.syncDynamicRoomPricesToDOM();
+    }
+
     this.showAdminToast(`Cena pokoje byla upravena na ${formatCzechPrice(priceNum)} / noc.`);
+
+    // 3. Save to Supabase asynchronously
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data, error } = await supabase.from('room_prices').upsert([payload], { onConflict: 'room_id' }).select();
+        if (error) {
+          console.error('Supabase updateRoomPrice error:', error);
+        } else if (data && data.length > 0) {
+          payload.id = data[0].id;
+        }
+      } catch (err) {
+        console.error('Supabase updateRoomPrice failed:', err);
+      }
+    }
+  }
+
+  async fetchDisabledRooms() {
+    let localDisabled = getStoredDisabledRooms();
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data, error } = await supabase.from('disabled_rooms').select('*');
+        if (!error && data && data.length > 0) {
+          const map = new Map();
+          localDisabled.forEach(d => map.set(d.room_id, d));
+          data.forEach(d => map.set(d.room_id, d));
+          this.disabledRooms = Array.from(map.values());
+        } else {
+          this.disabledRooms = localDisabled;
+        }
+      } catch (err) {
+        console.error('Supabase fetchDisabledRooms failed:', err);
+        this.disabledRooms = localDisabled;
+      }
+    } else {
+      this.disabledRooms = localDisabled;
+    }
+
+    (this.disabledRooms || []).forEach(d => {
+      if (d.room_id) {
+        const rm = MOCK_ROOMS.find(r => r.id === d.room_id);
+        if (rm) rm.isDisabled = Boolean(d.is_disabled);
+      }
+    });
+
+    if (typeof window !== 'undefined' && typeof window.syncDisabledRoomsToDOM === 'function') {
+      window.syncDisabledRoomsToDOM();
+    }
+  }
+
+  async toggleRoomDisabled(roomId, shouldDisable) {
+    if (!roomId) return;
+
+    const payload = {
+      room_id: roomId,
+      is_disabled: Boolean(shouldDisable),
+      updated_at: new Date().toISOString()
+    };
+
+    saveStoredDisabledRoom(payload);
+    const existingIdx = (this.disabledRooms || []).findIndex(d => d.room_id === roomId);
+    if (existingIdx >= 0) {
+      this.disabledRooms[existingIdx] = payload;
+    } else {
+      this.disabledRooms.push(payload);
+    }
+
+    const rm = MOCK_ROOMS.find(r => r.id === roomId);
+    if (rm) rm.isDisabled = Boolean(shouldDisable);
+
+    if (typeof window !== 'undefined' && typeof window.syncDisabledRoomsToDOM === 'function') {
+      window.syncDisabledRoomsToDOM();
+    }
+
+    const rmName = rm ? rm.name : roomId;
+    this.showAdminToast(shouldDisable ? `Pokoj ${rmName} byl zablokován pro rezervace.` : `Blokace pokoje ${rmName} byla zrušena.`);
+    this.showDisabledRoomsModal = true;
     this.render();
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from('disabled_rooms').upsert([payload], { onConflict: 'room_id' });
+      } catch (err) {
+        console.error('Supabase toggleRoomDisabled failed:', err);
+      }
+    }
   }
 
   async fetchReservations() {
@@ -553,6 +711,9 @@ export class AdminDashboard {
   }
 
   render() {
+    if (!this.container) {
+      this.container = document.getElementById('admin-container');
+    }
     if (!this.container) return;
 
     if (!this.isAuthenticated) {
@@ -620,10 +781,10 @@ export class AdminDashboard {
             <button type="button" class="btn btn-specs-secondary btn-admin-discounts">
               🏷️ Slevové kódy ${this.discountCodes.length > 0 ? `<span style="background: #4a5a24; color: #ffffff; border-radius: 99px; padding: 2px 7px; font-size: 11px; font-weight: 700; margin-left: 4px;">${this.discountCodes.length}</span>` : ''}
             </button>
-            <button type="button" class="btn btn-specs-secondary btn-admin-room-prices">
-              💰 Ceník pokojů
+            <button type="button" class="btn btn-specs-secondary btn-admin-room-mgmt">
+              ⚙️ Správa pokojů
             </button>
-            <button type="button" class="btn btn-booking-submit btn-admin-logout">Odhlásit se</button>
+            <button type="button" class="btn btn-booking-submit btn-admin-logout">🚪 Odhlásit se</button>
           </div>
         </div>
 
@@ -947,8 +1108,8 @@ export class AdminDashboard {
                     <input type="text" id="discount-code-input" class="form-input" placeholder="HOTEL5" style="height: 40px; font-size: 14px; text-transform: uppercase;" value="${this.newDiscountForm.code}">
                   </div>
                   <div>
-                    <label style="font-size: 12.5px; font-weight: 600; color: #555; display: block; margin-bottom: 6px;">Sleva v % (např. 5)</label>
-                    <input type="number" id="discount-value-input" class="form-input" placeholder="5" min="1" max="100" style="height: 40px; font-size: 14px;" value="${this.newDiscountForm.discount_value}">
+                    <label style="font-size: 12.5px; font-weight: 600; color: #555; display: block; margin-bottom: 6px;">Sleva v % (např. 10)</label>
+                    <input type="number" id="discount-value-input" class="form-input" placeholder="např. 10" min="1" max="100" style="height: 40px; font-size: 14px;" value="${this.newDiscountForm.discount_value || ''}">
                   </div>
                 </div>
                 <button type="button" class="btn btn-booking-submit btn-save-discount-code" style="width: 100%; height: 42px; font-size: 14.5px; border-radius: 1px;">
@@ -999,18 +1160,78 @@ export class AdminDashboard {
               <div style="display: flex; flex-direction: column; gap: 10px; max-height: 360px; overflow-y: auto; padding-right: 4px;">
                 ${MOCK_ROOMS.map(rm => {
                   const customP = (this.roomPrices || []).find(p => p.room_id === rm.id);
-                  const currentPrice = customP ? customP.base_price : rm.basePrice;
+                  const currentPrice = customP ? (customP.base_price || customP.basePrice) : rm.basePrice;
                   return `
-                    <div style="background: #ffffff; border: 1px solid #e0dfd5; border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+                    <div class="room-price-card" data-roomid="${rm.id}" style="background: #ffffff; border: 1px solid #e0dfd5; border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
                       <div>
                         <div style="font-weight: 700; font-size: 14.5px; color: #1c1c19;">${rm.name}</div>
-                        <div style="font-size: 12.5px; color: #777; margin-top: 2px;">Aktuální cena: <strong style="color: #4a5a24;">${formatCzechPrice(currentPrice)} / os / noc</strong></div>
+                        <div style="font-size: 12.5px; color: #777; margin-top: 2px;">Aktuální cena: <strong class="current-price-label" style="color: #4a5a24;">${formatCzechPrice(currentPrice)} / os / noc</strong></div>
                       </div>
                       <div style="display: flex; align-items: center; gap: 8px;">
                         <input type="number" class="form-input room-price-input" data-roomid="${rm.id}" value="${currentPrice}" style="width: 95px; height: 38px; font-size: 14px; text-align: right; padding-right: 8px;">
                         <span style="font-size: 13px; font-weight: 600; color: #555;">Kč</span>
                         <button type="button" class="btn btn-specs-secondary btn-save-room-price" data-roomid="${rm.id}" style="height: 38px; padding: 0 14px; font-size: 13px; border-radius: 1px;">
                           Uložit
+                        </button>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          </div>
+        ` : ''}
+
+        ${this.showRoomMgmtModal ? `
+          <div class="admin-modal-overlay admin-modal-overlay-mgmt">
+            <div class="admin-confirm-modal admin-block-modal" style="max-width: 480px; padding: 0 24px 24px 24px;">
+              <div class="admin-modal-header-sticky">
+                <h3 class="admin-modal-title" style="margin: 0; font-size: 18px; font-weight: 800; color: #1c1c19;">⚙️ Správa pokojů</h3>
+                <button type="button" class="btn-close-mgmt-modal" style="background: none; border: none; font-size: 26px; cursor: pointer; color: #777; line-height: 1; padding: 4px 8px;">&times;</button>
+              </div>
+              <p class="admin-modal-desc" style="margin-top: 14px; margin-bottom: 20px; font-size: 13.5px; color: #55554e; text-align: center;">
+                Vyberte možnost správy pokojů hotelu:
+              </p>
+
+              <div style="display: flex; flex-direction: column; gap: 12px;">
+                <button type="button" class="btn btn-specs-secondary btn-open-prices-from-mgmt" style="height: 45px; font-size: 14.5px; font-weight: 700; width: 100%; justify-content: center; border-radius: 1px;">
+                  💰 Ceník pokojů
+                </button>
+                <button type="button" class="btn btn-specs-secondary btn-open-disabled-from-mgmt" style="height: 45px; font-size: 14.5px; font-weight: 700; width: 100%; justify-content: center; background: #fff5f5; border-color: #f5c6cb; color: #c62828; border-radius: 1px;">
+                  🔒 Blokování pokojů
+                </button>
+              </div>
+            </div>
+          </div>
+        ` : ''}
+
+        ${this.showDisabledRoomsModal ? `
+          <div class="admin-modal-overlay admin-modal-overlay-block admin-modal-overlay-disabled">
+            <div class="admin-confirm-modal admin-block-modal" style="max-width: 620px; padding: 0 24px 24px 24px;">
+              <div class="admin-modal-header-sticky">
+                <h3 class="admin-modal-title" style="margin: 0; font-size: 18px; font-weight: 800; color: #1c1c19;">🔒 Blokování pokojů</h3>
+                <button type="button" class="btn-close-disabled-modal" style="background: none; border: none; font-size: 26px; cursor: pointer; color: #777; line-height: 1; padding: 4px 8px;">&times;</button>
+              </div>
+              <p class="admin-modal-desc" style="margin-top: 14px; margin-bottom: 16px; font-size: 13.5px; color: #55554e;">
+                Zablokujte vybraný pokoj. Zablokovaný pokoj zůstane na webu viditelný, ale tlačítko výběru se změní na „Dočasně nedostupné“ a v rezervaci bude označen jako zablokovaný.
+              </p>
+
+              <div style="display: flex; flex-direction: column; gap: 10px; max-height: 380px; overflow-y: auto; padding-right: 4px;">
+                ${MOCK_ROOMS.map(rm => {
+                  const isBlocked = Boolean(rm.isDisabled);
+                  return `
+                    <div class="room-disabled-card" data-roomid="${rm.id}" style="background: ${isBlocked ? '#fff5f5' : '#ffffff'}; border: 1px solid ${isBlocked ? '#f5c6cb' : '#e0dfd5'}; border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+                      <div>
+                        <div style="font-weight: 700; font-size: 14.5px; color: #1c1c19;">${rm.name}</div>
+                        <div style="font-size: 12.5px; color: #777; margin-top: 2px;">
+                          Stav: ${isBlocked 
+                            ? '<strong style="color: #c62828;">🔒 Zablokovaný (Dočasně nedostupný)</strong>' 
+                            : '<strong style="color: #2e7d32;">✓ Aktivní (Dostupný ke zvolení)</strong>'}
+                        </div>
+                      </div>
+                      <div>
+                        <button type="button" class="btn btn-toggle-room-disabled" data-roomid="${rm.id}" data-action="${isBlocked ? 'unblock' : 'block'}" style="height: 38px; padding: 0 16px; font-size: 13px; border-radius: 1px; ${isBlocked ? 'background: #2e7d32; color: #ffffff; border: none;' : 'background: #c62828; color: #ffffff; border: none;'}">
+                          ${isBlocked ? '🔓 Zrušit blokaci' : '🔒 Zablokovat pokoj'}
                         </button>
                       </div>
                     </div>
@@ -1120,6 +1341,78 @@ export class AdminDashboard {
       });
     }
 
+    const btnMgmt = this.container.querySelector('.btn-admin-room-mgmt');
+    if (btnMgmt) {
+      btnMgmt.addEventListener('click', () => {
+        this.showRoomMgmtModal = true;
+        this.render();
+      });
+    }
+
+    const btnCloseMgmtModal = this.container.querySelector('.btn-close-mgmt-modal');
+    if (btnCloseMgmtModal) {
+      btnCloseMgmtModal.addEventListener('click', () => {
+        this.showRoomMgmtModal = false;
+        this.render();
+      });
+    }
+
+    const mgmtModalOverlay = this.container.querySelector('.admin-modal-overlay-mgmt');
+    if (mgmtModalOverlay) {
+      mgmtModalOverlay.addEventListener('click', (e) => {
+        if (e.target === mgmtModalOverlay) {
+          this.showRoomMgmtModal = false;
+          this.render();
+        }
+      });
+    }
+
+    const btnOpenPricesFromMgmt = this.container.querySelector('.btn-open-prices-from-mgmt');
+    if (btnOpenPricesFromMgmt) {
+      btnOpenPricesFromMgmt.addEventListener('click', async () => {
+        this.showRoomMgmtModal = false;
+        await this.fetchRoomPrices();
+        this.showPricesModal = true;
+        this.render();
+      });
+    }
+
+    const btnOpenDisabledFromMgmt = this.container.querySelector('.btn-open-disabled-from-mgmt');
+    if (btnOpenDisabledFromMgmt) {
+      btnOpenDisabledFromMgmt.addEventListener('click', async () => {
+        this.showRoomMgmtModal = false;
+        await this.fetchDisabledRooms();
+        this.showDisabledRoomsModal = true;
+        this.render();
+      });
+    }
+
+    const btnCloseDisabledModal = this.container.querySelector('.btn-close-disabled-modal');
+    if (btnCloseDisabledModal) {
+      btnCloseDisabledModal.addEventListener('click', () => {
+        this.showDisabledRoomsModal = false;
+        this.render();
+      });
+    }
+
+    const disabledModalOverlay = this.container.querySelector('.admin-modal-overlay-disabled');
+    if (disabledModalOverlay) {
+      disabledModalOverlay.addEventListener('click', (e) => {
+        if (e.target === disabledModalOverlay) {
+          this.showDisabledRoomsModal = false;
+          this.render();
+        }
+      });
+    }
+
+    this.container.querySelectorAll('.btn-toggle-room-disabled').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const roomId = e.currentTarget.dataset.roomid;
+        const action = e.currentTarget.dataset.action;
+        this.toggleRoomDisabled(roomId, action === 'block');
+      });
+    });
+
     const pricesModalOverlay = this.container.querySelector('.admin-modal-overlay-prices');
     if (pricesModalOverlay) {
       pricesModalOverlay.addEventListener('click', (e) => {
@@ -1136,6 +1429,18 @@ export class AdminDashboard {
         const input = this.container.querySelector(`.room-price-input[data-roomid="${roomId}"]`);
         if (input && input.value) {
           this.updateRoomPrice(roomId, input.value);
+        }
+      });
+    });
+
+    this.container.querySelectorAll('.room-price-input').forEach(input => {
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const roomId = e.currentTarget.dataset.roomid;
+          if (input.value) {
+            this.updateRoomPrice(roomId, input.value);
+          }
         }
       });
     });

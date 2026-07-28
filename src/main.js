@@ -2,6 +2,87 @@ import './style.css';
 import './booking.css';
 import { BookingSystem } from './components/BookingSystem.js';
 import { AdminDashboard } from './components/AdminDashboard.js';
+import { getStoredRoomPrices, getStoredDisabledRooms, MOCK_ROOMS } from './lib/supabaseClient.js';
+
+export function syncDynamicRoomPricesToDOM() {
+  const roomPrices = getStoredRoomPrices();
+  const roomItems = document.querySelectorAll('.room-breakdown-item[data-room]');
+  roomItems.forEach(item => {
+    const roomId = item.dataset.room;
+    const priceAmountEl = item.querySelector('.price-amount');
+    if (!priceAmountEl || !roomId) return;
+
+    const customP = roomPrices.find(p => p.room_id === roomId);
+    let priceVal = null;
+    if (customP && customP.base_price) {
+      priceVal = customP.base_price;
+    } else {
+      const rmObj = MOCK_ROOMS.find(r => r.id === roomId);
+      if (rmObj && rmObj.basePrice) priceVal = rmObj.basePrice;
+    }
+    if (priceVal) {
+      priceAmountEl.textContent = `${priceVal} Kč`;
+    }
+  });
+}
+window.syncDynamicRoomPricesToDOM = syncDynamicRoomPricesToDOM;
+
+export function syncDisabledRoomsToDOM() {
+  const disabledRooms = getStoredDisabledRooms();
+  const roomItems = document.querySelectorAll('.room-breakdown-item[data-room]');
+  roomItems.forEach(item => {
+    const roomId = item.dataset.room;
+    if (!roomId) return;
+
+    const isRenovating = ['p1', 'p2', 'p3'].includes(roomId);
+    const isDisabled = isRenovating || disabledRooms.some(d => d.room_id === roomId && d.is_disabled);
+    const selectBtn = item.querySelector('.btn-room-reserve, .btn-choose-room');
+
+    if (selectBtn) {
+      if (isDisabled) {
+        selectBtn.classList.add('btn-room-disabled');
+        selectBtn.setAttribute('disabled', 'true');
+        selectBtn.style.background = '#999999';
+        selectBtn.style.color = '#ffffff';
+        selectBtn.style.cursor = 'not-allowed';
+        selectBtn.style.pointerEvents = 'none';
+        selectBtn.style.border = 'none';
+        selectBtn.innerHTML = `<span>Dočasně nedostupné</span>`;
+      } else {
+        selectBtn.classList.remove('btn-room-disabled');
+        selectBtn.removeAttribute('disabled');
+        selectBtn.style.background = '';
+        selectBtn.style.color = '';
+        selectBtn.style.cursor = '';
+        selectBtn.style.pointerEvents = '';
+        selectBtn.style.border = '';
+        selectBtn.innerHTML = `<span>Zvolit pokoj</span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`;
+      }
+    }
+  });
+
+  const roomSelect = document.getElementById('room-select');
+  if (roomSelect) {
+    Array.from(roomSelect.options).forEach(opt => {
+      const isRenovating = ['p1', 'p2', 'p3'].includes(opt.value);
+      const isDisabled = isRenovating || disabledRooms.some(d => d.room_id === opt.value && d.is_disabled);
+      if (isDisabled) {
+        opt.disabled = true;
+        opt.style.color = '#999';
+        opt.style.background = '#eee';
+        if (!opt.textContent.includes('🔒')) {
+          opt.textContent = opt.textContent + ' [🔒 Dočasně zablokováno]';
+        }
+      } else {
+        opt.disabled = false;
+        opt.style.color = '';
+        opt.style.background = '';
+        opt.textContent = opt.textContent.replace(' [🔒 Dočasně zablokováno]', '');
+      }
+    });
+  }
+}
+window.syncDisabledRoomsToDOM = syncDisabledRoomsToDOM;
 
 const getHeaderHTML = () => `
   <!-- Hlavička (Navigace a logo) -->
@@ -62,7 +143,7 @@ const getPromoHTML = () => `
     <div class="promo-inner">
       <div class="promo-content">
         <h2 class="promo-title">Jak získat nejvýhodnější pobyt?</h2>
-        <p class="promo-desc">Rezervací přímo na tomto webu získáte slevu <strong>10%</strong> na celý pobyt. Ušetříte a zajistíte si nejvýhodnější ubytování v našem hotelu.</p>
+        <p class="promo-desc">Rezervací přímo na tomto webu získáte slevu <strong>5%</strong> na celý pobyt. Ušetříte a zajistíte si nejvýhodnější ubytování v našem hotelu.</p>
       </div>
       <div class="promo-action">
         <button class="btn btn-promo" id="promo-booking-btn">Chci výhodné ubytování</button>
@@ -531,56 +612,25 @@ const getHomePageHTML = () => `
 // Render Funkce Pro Stránku "Nabídka Pokojů" (Ubytování)
 const getRoomsPageHTML = () => `
   <!-- HERO SEKCE POKOJŮ -->
-  <section class="hero-section rooms-hero-section" id="uvod-pokoje">
+  <section class="hero-section rooms-hero-section room-detail-hero" id="uvod-pokoje">
     <div class="hero-overlay"></div>
     <div class="hero-inner">
       ${getHeaderHTML()}
 
-      <!-- Středový nadpis (s odlišnými texty pro desktop vs mobil) -->
-      <h1 class="hero-title rooms-hero-title">
-        <span class="desktop-only-text">Nabídka pokojů</span>
-        <span class="mobile-only-text">Prohlédněte si pokoje a vyberte ten svůj</span>
-      </h1>
-
-      <!-- Mobilní tlačítko akce (pouze mobil) -->
-      <button class="btn btn-rooms-mobile-cta" id="rooms-mobile-cta">Prohlédnout nabídku</button>
-
-      <!-- Podtext posunutý blíže k nadpisu (pouze desktop) -->
-      <p class="rooms-hero-subtitle">Prohlédněte si nabídku našich pokojů a vyberte si ten správný pro váš pobyt v Jizerských horách.</p>
-
-      <!-- Date Picker Bar napůl v hero sekci a napůl v sekci pod ním -->
-      <div class="rooms-date-picker-bar">
-        <div class="date-picker-fields-group">
-          <div class="date-picker-field">
-            <div class="date-picker-info">
-              <span class="date-picker-label">Příjezd</span>
-            </div>
-            <svg class="date-picker-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>
-          </div>
-
-          <div class="date-picker-field">
-            <div class="date-picker-info">
-              <span class="date-picker-label">Odjezd</span>
-            </div>
-            <svg class="date-picker-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>
-          </div>
-        </div>
-
-        <button class="btn btn-booking rooms-search-btn">Zjistit dostupnost</button>
+      <div class="room-detail-hero-center">
+        <h1 class="hero-title room-detail-hero-title">
+          <span class="desktop-title-text">Nabídka pokojů</span>
+          <span class="mobile-tablet-title-text">Prohlédněte si nabídku pokojů</span>
+        </h1>
+        <p class="room-detail-hero-subtitle">
+          <span class="desktop-sub-text">Prohlédněte si nabídku našich pokojů a vyberte si ten správný pro pobyt v Jizerských horách.</span>
+          <span class="mobile-sub-text">Vyberte si ten správný pokoj v Jizerských horách</span>
+        </p>
+        <button class="btn btn-booking room-detail-hero-btn" id="btn-show-rooms-offer">Zobrazit nabídku</button>
       </div>
 
-      <!-- Spodní šipka dolů -->
-      <div class="scroll-down-btn" id="scroll-btn-pokoje">
+      <!-- Spodní šipka dolů (pouze mobil) -->
+      <div class="scroll-down-btn mobile-only-scroll-btn" id="scroll-btn-pokoje">
         <svg width="12" height="14" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M7.29 17.1C7.68 17.49 8.32 17.49 8.71 17.1L15.07 10.74C15.46 10.35 15.46 9.71 15.07 9.32C14.68 8.93 14.05 8.93 13.66 9.32L8 14.98L2.34 9.32C1.95 8.93 1.32 8.93 0.93 9.32C0.54 9.71 0.54 10.35 0.93 10.74L7.29 17.1ZM8 0H7V16.39H8H9V0H8Z" fill="white"/>
         </svg>
@@ -600,8 +650,7 @@ const getRoomsPageHTML = () => `
           <h2 class="room-card-title">Pokoje přízemí</h2>
           <p class="room-card-desc">Útulně a moderně zařízené pokoje s výhledem do zeleně. Tyto pokoje se nacházejí v přízemí hotelu, a nabízejí tak přímý a snadný přístup na venkovní terasu a k hlavnímu parkovišti.</p>
           <div class="room-card-buttons">
-            <button class="btn btn-booking btn-room-primary" id="btn-goto-prizemi">Zjistit více</button>
-            <button class="btn btn-rooms btn-room-secondary">Rezervovat</button>
+            <button class="btn btn-booking btn-room-primary" id="btn-goto-prizemi">Prohlédnout nabídku</button>
           </div>
         </div>
       </div>
@@ -612,8 +661,7 @@ const getRoomsPageHTML = () => `
           <h2 class="room-card-title">Pokoje s výhledem</h2>
           <p class="room-card-desc">Prostor a soukromí s vlastní prostornou terasou a výhledem na celé údolí. Tyto pokoje se nacházejí v patře hotelu a disponují vlastní koupelnou, balónem a nádherným výhledem.</p>
           <div class="room-card-buttons">
-            <button class="btn btn-booking btn-room-primary" id="btn-goto-vyhled">Zjistit více</button>
-            <button class="btn btn-rooms btn-room-secondary">Rezervovat</button>
+            <button class="btn btn-booking btn-room-primary" id="btn-goto-vyhled">Prohlédnout nabídku</button>
           </div>
         </div>
         <div class="room-card-image-wrap">
@@ -690,7 +738,7 @@ const getRoomGroundFloorHTML = () => `
           <span class="desktop-sub-text">Útulně a moderně zařízené pokoje v přízemí hotelu s výhledem do zeleně a přímým přístupem na venkovní terasu a parkoviště.</span>
           <span class="mobile-sub-text">Objevte zázemí se 100% bezbariérovým přístupem</span>
         </p>
-        <button class="btn btn-booking room-detail-hero-btn" id="btn-specs-rooms">Zjistit více</button>
+        <button class="btn btn-booking room-detail-hero-btn" id="btn-specs-rooms">Zjistit detaily</button>
       </div>
     </div>
   </section>
@@ -873,30 +921,17 @@ const getRoomGroundFloorHTML = () => `
 
           <div class="room-breakdown-drawer">
             <div class="drawer-inner">
-              <div class="room-carousel-viewport">
-                <div class="room-carousel-track">
-                  <div class="room-carousel-slide">
-                    <img src="/balkony 1 copy.webp" alt="Pokoj Turistický P1 - Náhled 1" loading="lazy" decoding="async">
-                  </div>
-                  <div class="room-carousel-slide">
-                    <img src="/hezky pokoj 1.webp" alt="Pokoj Turistický P1 - Náhled 2" loading="lazy" decoding="async">
-                  </div>
-                  <div class="room-carousel-slide">
-                    <img src="/Uvodni stranka/Vyhled z balkonu na skokanky.webp" alt="Pokoj Turistický P1 - Náhled 3" loading="lazy" decoding="async">
-                  </div>
+              <div class="renovation-notice-box" style="padding: 24px 0 20px 0; text-align: left;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                  <span style="font-size: 22px;">🔨</span>
+                  <h4 style="margin: 0; font-size: 16px; font-weight: 700; color: #1c1c19;">Probíhá rekonstrukce pokoje</h4>
                 </div>
+                <p style="margin: 0; font-size: 13.5px; color: #666660; line-height: 1.5; max-width: 580px;">
+                  V tomto pokoji v současnosti probíhá renovace. Pokoj je dočasně nedostupný pro rezervace. Prosíme, vyberte si jiný volný pokoj z naší nabídky.
+                </p>
               </div>
 
-              <div class="drawer-footer-controls">
-                <div class="drawer-arrows-wrap">
-                  <button class="btn-drawer-arrow btn-drawer-prev" aria-label="Předchozí fotka">
-                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M7 1L2 6L7 11" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
-                  </button>
-                  <button class="btn-drawer-arrow btn-drawer-next" aria-label="Další fotka">
-                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M1 1L6 6L1 11" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
-                  </button>
-                </div>
-
+              <div class="drawer-footer-controls" style="justify-content: flex-end;">
                 <div class="drawer-action-btns">
                   <div class="room-drawer-price-wrap" data-price="standard">
                     <div class="price-main-block">
@@ -907,7 +942,7 @@ const getRoomGroundFloorHTML = () => `
                       <span class="price-detail">za osobu • včetně snídaně</span>
                     </div>
                   </div>
-                  <button class="btn btn-booking btn-room-reserve">Zvolit pokoj</button>
+                  <button class="btn btn-booking btn-room-reserve btn-room-disabled" disabled style="background: #999999; color: #ffffff; cursor: not-allowed; pointer-events: none; border: none;"><span>Dočasně nedostupné</span></button>
                 </div>
               </div>
             </div>
@@ -926,30 +961,17 @@ const getRoomGroundFloorHTML = () => `
 
           <div class="room-breakdown-drawer">
             <div class="drawer-inner">
-              <div class="room-carousel-viewport">
-                <div class="room-carousel-track">
-                  <div class="room-carousel-slide">
-                    <img src="/hezky pokoj 1.webp" alt="Pokoj Turistický P2 - Náhled 1" loading="lazy" decoding="async">
-                  </div>
-                  <div class="room-carousel-slide">
-                    <img src="/balkony 1 copy.webp" alt="Pokoj Turistický P2 - Náhled 2" loading="lazy" decoding="async">
-                  </div>
-                  <div class="room-carousel-slide">
-                    <img src="/mobil hezky pokoj.webp" alt="Pokoj Turistický P2 - Náhled 3" loading="lazy" decoding="async">
-                  </div>
+              <div class="renovation-notice-box" style="padding: 24px 0 20px 0; text-align: left;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                  <span style="font-size: 22px;">🔨</span>
+                  <h4 style="margin: 0; font-size: 16px; font-weight: 700; color: #1c1c19;">Probíhá rekonstrukce pokoje</h4>
                 </div>
+                <p style="margin: 0; font-size: 13.5px; color: #666660; line-height: 1.5; max-width: 580px;">
+                  V tomto pokoji v současnosti probíhá renovace. Pokoj je dočasně nedostupný pro rezervace. Prosíme, vyberte si jiný volný pokoj z naší nabídky.
+                </p>
               </div>
 
-              <div class="drawer-footer-controls">
-                <div class="drawer-arrows-wrap">
-                  <button class="btn-drawer-arrow btn-drawer-prev" aria-label="Předchozí fotka">
-                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M7 1L2 6L7 11" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
-                  </button>
-                  <button class="btn-drawer-arrow btn-drawer-next" aria-label="Další fotka">
-                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M1 1L6 6L1 11" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
-                  </button>
-                </div>
-
+              <div class="drawer-footer-controls" style="justify-content: flex-end;">
                 <div class="drawer-action-btns">
                   <div class="room-drawer-price-wrap" data-price="standard">
                     <div class="price-main-block">
@@ -960,7 +982,7 @@ const getRoomGroundFloorHTML = () => `
                       <span class="price-detail">za osobu • včetně snídaně</span>
                     </div>
                   </div>
-                  <button class="btn btn-booking btn-room-reserve">Zvolit pokoj</button>
+                  <button class="btn btn-booking btn-room-reserve btn-room-disabled" disabled style="background: #999999; color: #ffffff; cursor: not-allowed; pointer-events: none; border: none;"><span>Dočasně nedostupné</span></button>
                 </div>
               </div>
             </div>
@@ -979,30 +1001,17 @@ const getRoomGroundFloorHTML = () => `
 
           <div class="room-breakdown-drawer">
             <div class="drawer-inner">
-              <div class="room-carousel-viewport">
-                <div class="room-carousel-track">
-                  <div class="room-carousel-slide">
-                    <img src="/balkony 1 copy.webp" alt="Pokoj Turistický P3 - Náhled 1" loading="lazy" decoding="async">
-                  </div>
-                  <div class="room-carousel-slide">
-                    <img src="/Uvodni stranka/Vyhled z balkonu na skokanky.webp" alt="Pokoj Turistický P3 - Náhled 2" loading="lazy" decoding="async">
-                  </div>
-                  <div class="room-carousel-slide">
-                    <img src="/hezky pokoj 1.webp" alt="Pokoj Turistický P3 - Náhled 3" loading="lazy" decoding="async">
-                  </div>
+              <div class="renovation-notice-box" style="padding: 24px 0 20px 0; text-align: left;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                  <span style="font-size: 22px;">🔨</span>
+                  <h4 style="margin: 0; font-size: 16px; font-weight: 700; color: #1c1c19;">Probíhá rekonstrukce pokoje</h4>
                 </div>
+                <p style="margin: 0; font-size: 13.5px; color: #666660; line-height: 1.5; max-width: 580px;">
+                  V tomto pokoji v současnosti probíhá renovace. Pokoj je dočasně nedostupný pro rezervace. Prosíme, vyberte si jiný volný pokoj z naší nabídky.
+                </p>
               </div>
 
-              <div class="drawer-footer-controls">
-                <div class="drawer-arrows-wrap">
-                  <button class="btn-drawer-arrow btn-drawer-prev" aria-label="Předchozí fotka">
-                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M7 1L2 6L7 11" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
-                  </button>
-                  <button class="btn-drawer-arrow btn-drawer-next" aria-label="Další fotka">
-                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M1 1L6 6L1 11" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
-                  </button>
-                </div>
-
+              <div class="drawer-footer-controls" style="justify-content: flex-end;">
                 <div class="drawer-action-btns">
                   <div class="room-drawer-price-wrap" data-price="standard">
                     <div class="price-main-block">
@@ -1013,7 +1022,7 @@ const getRoomGroundFloorHTML = () => `
                       <span class="price-detail">za osobu • včetně snídaně</span>
                     </div>
                   </div>
-                  <button class="btn btn-booking btn-room-reserve">Zvolit pokoj</button>
+                  <button class="btn btn-booking btn-room-reserve btn-room-disabled" disabled style="background: #999999; color: #ffffff; cursor: not-allowed; pointer-events: none; border: none;"><span>Dočasně nedostupné</span></button>
                 </div>
               </div>
             </div>
@@ -1466,6 +1475,106 @@ const getRoomViewFloorHTML = () => {
   return html;
 };
 
+export function closePromoCodeModal() {
+  const modalOverlay = document.getElementById('promo-code-modal-overlay');
+  if (modalOverlay) {
+    modalOverlay.style.display = 'none';
+  }
+  document.body.style.overflow = '';
+}
+
+export function openPromoCodeModal() {
+  let modalOverlay = document.getElementById('promo-code-modal-overlay');
+  if (!modalOverlay) {
+    modalOverlay = document.createElement('div');
+    modalOverlay.id = 'promo-code-modal-overlay';
+    modalOverlay.className = 'promo-code-modal-overlay';
+    document.body.appendChild(modalOverlay);
+  }
+
+  modalOverlay.innerHTML = `
+    <div class="promo-code-modal-card">
+      <button type="button" class="btn-close-promo-modal" style="position: absolute; top: 14px; right: 16px; background: none; border: none; font-size: 26px; cursor: pointer; color: #777; line-height: 1; padding: 4px 8px;">&times;</button>
+      
+      <div class="promo-modal-title-wrap">
+        <h3 class="promo-modal-title">Jak získat slevu 5 %?</h3>
+        <p class="promo-modal-desc">
+          Rezervací přímo na našem webu získáte slevu <strong>5 %</strong> na celý pobyt. Použijte níže uvedený slevový kód v rezervačním formuláři.
+        </p>
+      </div>
+
+      <div class="promo-code-display-box">
+        <div style="text-align: left;">
+          <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #777; letter-spacing: 0.05em; margin-bottom: 2px;">Váš slevový kód:</div>
+          <div class="promo-code-val">POBYT5</div>
+        </div>
+        <button type="button" class="btn-copy-promo-action">
+          Zkopírovat kód
+        </button>
+      </div>
+
+      <div style="border-top: 1px solid #e0dfd5; margin: 20px 0;"></div>
+
+      <div class="promo-modal-actions">
+        <button type="button" class="btn-promo-action-main btn-promo-goto-booking">
+          Rezervovat pobyt
+        </button>
+        <button type="button" class="btn-promo-action-secondary btn-promo-goto-rooms">
+          Nabídka pokojů
+        </button>
+      </div>
+    </div>
+  `;
+
+  modalOverlay.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+
+  const btnClose = modalOverlay.querySelector('.btn-close-promo-modal');
+  if (btnClose) {
+    btnClose.addEventListener('click', closePromoCodeModal);
+  }
+
+  modalOverlay.addEventListener('click', (e) => {
+    if (e.target === modalOverlay) closePromoCodeModal();
+  });
+
+  const btnCopy = modalOverlay.querySelector('.btn-copy-promo-action');
+  if (btnCopy) {
+    btnCopy.addEventListener('click', () => {
+      navigator.clipboard.writeText('POBYT5').then(() => {
+        btnCopy.innerHTML = `Zkopírováno!`;
+        btnCopy.style.background = '#4a5a24';
+        btnCopy.style.color = '#ffffff';
+        setTimeout(() => {
+          btnCopy.innerHTML = `Zkopírovat kód`;
+          btnCopy.style.background = '#ffffff';
+          btnCopy.style.color = '#4a5a24';
+        }, 2500);
+      }).catch(err => {
+        console.error('Clipboard copy failed:', err);
+      });
+    });
+  }
+
+  const btnGotoBooking = modalOverlay.querySelector('.btn-promo-goto-booking');
+  if (btnGotoBooking) {
+    btnGotoBooking.addEventListener('click', () => {
+      closePromoCodeModal();
+      window.location.hash = '#rezervace';
+    });
+  }
+
+  const btnGotoRooms = modalOverlay.querySelector('.btn-promo-goto-rooms');
+  if (btnGotoRooms) {
+    btnGotoRooms.addEventListener('click', () => {
+      closePromoCodeModal();
+      window.location.hash = '#pokoje';
+    });
+  }
+}
+window.openPromoCodeModal = openPromoCodeModal;
+window.closePromoCodeModal = closePromoCodeModal;
+
 // Inicializace událostí a interaktivity po vykreslení
 const initInteractivity = () => {
   // Mobile Hamburger Drawer
@@ -1765,8 +1874,17 @@ const initInteractivity = () => {
   // Button clicks
   const roomsBtn = document.getElementById('rooms-btn');
   if (roomsBtn) {
-    roomsBtn.addEventListener('click', () => {
-      window.location.hash = '#pokoje';
+    roomsBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.hash = '#pokoje-nabidka';
+    });
+  }
+
+  const aboutMoreBtn = document.getElementById('about-more-btn');
+  if (aboutMoreBtn) {
+    aboutMoreBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.hash = '#pokoje-nabidka';
     });
   }
 
@@ -1775,6 +1893,17 @@ const initInteractivity = () => {
     btnGotoPrizemi.addEventListener('click', (e) => {
       e.preventDefault();
       window.location.hash = '#pokoj-prizemi';
+    });
+  }
+
+  const btnShowRoomsOffer = document.getElementById('btn-show-rooms-offer');
+  if (btnShowRoomsOffer) {
+    btnShowRoomsOffer.addEventListener('click', (e) => {
+      e.preventDefault();
+      const roomsSec = document.querySelector('.rooms-list-section');
+      if (roomsSec) {
+        roomsSec.scrollIntoView({ behavior: 'smooth' });
+      }
     });
   }
 
@@ -1930,14 +2059,6 @@ const initInteractivity = () => {
     });
   }
 
-  const aboutMoreBtn = document.getElementById('about-more-btn');
-  if (aboutMoreBtn) {
-    aboutMoreBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.location.hash = '#nabidka-pokoju';
-    });
-  }
-
   // Kliknutí na logo ve futru přesune na vrchol stránky
   const scrollTopBtns = document.querySelectorAll('.btn-scroll-top, .footer-logo-wrap, .footer-mobile-logo');
   scrollTopBtns.forEach(btn => {
@@ -2021,10 +2142,18 @@ const initInteractivity = () => {
     });
   });
 
-  const bookingBtns = document.querySelectorAll('.btn-booking, .btn-promo, .btn-cta, .btn-room-reserve');
+  const promoBtns = document.querySelectorAll('.btn-promo, #promo-booking-btn');
+  promoBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openPromoCodeModal();
+    });
+  });
+
+  const bookingBtns = document.querySelectorAll('.btn-booking, .btn-cta, .btn-room-reserve');
   bookingBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
-      if (btn.id === 'btn-goto-prizemi' || btn.id === 'btn-goto-vyhled' || btn.id === 'btn-specs-rooms') return;
+      if (btn.id === 'btn-goto-prizemi' || btn.id === 'btn-goto-vyhled' || btn.id === 'btn-specs-rooms' || btn.id === 'btn-show-rooms-offer' || btn.classList.contains('btn-promo') || btn.id === 'promo-booking-btn') return;
       e.preventDefault();
       const roomItem = btn.closest('.room-breakdown-item');
       const roomId = roomItem ? roomItem.dataset.room : '';
@@ -2089,7 +2218,7 @@ const route = (isInitial = false) => {
     ? 'ground'
     : (hash === '#pokoj-vyhled' || hash === '#pokoje-vyhled' || hash === '#pokoj-s-vyhledem')
     ? 'view'
-    : (hash === '#pokoje' || hash === '#nabidka-pokoju') ? 'rooms' : 'home';
+    : (hash.startsWith('#pokoje') || hash === '#nabidka-pokoju') ? 'rooms' : 'home';
 
   const isNewPage = currentViewKey !== pageKey;
   currentViewKey = pageKey;
@@ -2116,12 +2245,26 @@ const route = (isInitial = false) => {
     app.innerHTML = getHomePageHTML();
   }
 
-  // Přesun na vrchol pouze při běžné navigaci na NOVOU stránku (vynechá se při automatickém zobrazení pokoje)
-  if (!isInitial && isNewPage && !window.pendingAutoOpenRoom) {
+  // Přesun na vrchol pouze při běžné navigaci na NOVOU stránku (vynechá se při odkazech se scrollováním)
+  if (!isInitial && isNewPage && !window.pendingAutoOpenRoom && hash !== '#pokoje-nabidka') {
     window.scrollTo(0, 0);
   }
 
   initInteractivity();
+  syncDynamicRoomPricesToDOM();
+  syncDisabledRoomsToDOM();
+
+  // Automatické odskrolování na sekci Nabídka pokojů při přechodu z tlačítka Nabídka pokojů
+  if (pageKey === 'rooms' && hash === '#pokoje-nabidka') {
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        const roomsSec = document.querySelector('.rooms-list-section');
+        if (roomsSec) {
+          roomsSec.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    });
+  }
 };
 
 window.addEventListener('hashchange', () => route(false));

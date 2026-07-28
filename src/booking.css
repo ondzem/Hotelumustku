@@ -4014,10 +4014,24 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 /* Sticky Modal Header & Backdrop Overlay Scroll */
-.admin-modal-overlay-block {
-  overflow-y: auto !important;
-  align-items: flex-start !important;
-  padding: 24px 12px !important;
+.admin-modal-overlay,
+.admin-modal-overlay-block,
+.admin-modal-overlay-discount,
+.admin-modal-overlay-prices {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(0, 0, 0, 0.48) !important;
+  backdrop-filter: blur(4px) !important;
+  z-index: 9999 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 20px 12px !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
 }
 
 .admin-block-modal {
@@ -4082,7 +4096,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   }
 
   .admin-top-actions .btn-admin-logout {
-    grid-column: span 2 !important;
+    grid-column: span 1 !important;
   }
 
   .admin-toolbar {
@@ -4159,5 +4173,196 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   .cal-week-days {
     font-size: 13px !important;
     font-weight: 700 !important;
+  }
+}
+
+/* 🏷️ PROMO CODE POP-UP MODAL STYLES */
+.promo-code-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.promo-code-modal-card {
+  background: #ffffff;
+  border-radius: 1px;
+  width: 100%;
+  max-width: 520px;
+  padding: 36px 32px;
+  position: relative;
+  box-sizing: border-box;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+  animation: promoModalScaleIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes promoModalScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.promo-modal-title-wrap {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.promo-modal-badge-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.promo-modal-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #1c1c19;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.02em;
+}
+
+.promo-modal-desc {
+  font-size: 14.5px;
+  color: #55554e;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.promo-code-display-box {
+  background: #faf9f6;
+  border: 1px dashed #4a5a24;
+  border-radius: 1px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.promo-code-val {
+  font-size: 24px;
+  font-weight: 800;
+  color: #4a5a24;
+  letter-spacing: 0.12em;
+  font-family: monospace;
+}
+
+.btn-copy-promo-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  border-radius: 1px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  height: 45px;
+  padding: 0 24px;
+  font-size: 15.5px;
+  background: #ffffff;
+  border: 1px solid #4a5a24;
+  color: #4a5a24;
+}
+
+.btn-copy-promo-action:hover {
+  background: #4a5a24;
+  color: #ffffff;
+}
+
+.promo-modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+.btn-promo-action-main {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  border-radius: 1px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  height: 45px;
+  padding: 0 28px;
+  font-size: 17px;
+  background: #4a5a24;
+  color: #ffffff;
+  border: none;
+}
+
+.btn-promo-action-main:hover {
+  background: #3b481c;
+}
+
+.btn-promo-action-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  border-radius: 1px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  height: 45px;
+  padding: 0 28px;
+  font-size: 17px;
+  background: #ffffff;
+  border: 1px solid #d8d5c9;
+  color: #1c1c19;
+}
+
+.btn-promo-action-secondary:hover {
+  background: #f5f4ef;
+}
+
+@media (max-width: 768px) {
+  .promo-code-modal-card {
+    padding: 28px 20px;
+  }
+  .btn-promo-action-main,
+  .btn-promo-action-secondary {
+    height: 36px;
+    padding: 0 20px;
+    font-size: 14.5px;
+    width: 100%;
+  }
+  .btn-copy-promo-action {
+    height: 36px;
+    padding: 0 16px;
+    font-size: 14px;
+    width: 100%;
+  }
+  .promo-code-display-box {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+  }
+}
+
+/* Hide scroll down arrow on desktop and tablet for Nabídka pokojů page */
+@media (min-width: 768px) {
+  #scroll-btn-pokoje,
+  .mobile-only-scroll-btn {
+    display: none !important;
   }
 }

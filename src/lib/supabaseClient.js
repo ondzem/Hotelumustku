@@ -180,6 +180,7 @@ export const deleteStoredBlockedDate = (id) => {
 // Local Storage Key for Discount Codes
 const DISCOUNT_CODES_STORAGE_KEY = 'hotel_umustku_discount_codes_v1';
 const INITIAL_MOCK_DISCOUNT_CODES = [
+  { id: 'dc-0', code: 'POBYT5', discount_type: 'percent', discount_value: 5, is_active: true },
   { id: 'dc-1', code: 'HOTEL5', discount_type: 'percent', discount_value: 5, is_active: true },
   { id: 'dc-2', code: 'HOTEL10', discount_type: 'percent', discount_value: 10, is_active: true }
 ];
@@ -187,9 +188,12 @@ const INITIAL_MOCK_DISCOUNT_CODES = [
 export const getStoredDiscountCodes = () => {
   try {
     const raw = localStorage.getItem(DISCOUNT_CODES_STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
-    localStorage.setItem(DISCOUNT_CODES_STORAGE_KEY, JSON.stringify(INITIAL_MOCK_DISCOUNT_CODES));
-    return INITIAL_MOCK_DISCOUNT_CODES;
+    let list = raw ? JSON.parse(raw) : [...INITIAL_MOCK_DISCOUNT_CODES];
+    if (!list.some(c => c.code === 'POBYT5')) {
+      list.unshift({ id: 'dc-0', code: 'POBYT5', discount_type: 'percent', discount_value: 5, is_active: true });
+      localStorage.setItem(DISCOUNT_CODES_STORAGE_KEY, JSON.stringify(list));
+    }
+    return list;
   } catch {
     return INITIAL_MOCK_DISCOUNT_CODES;
   }
@@ -249,3 +253,64 @@ export const saveStoredRoomPrice = (priceItem) => {
   }
   return priceItem;
 };
+
+export const initStoredRoomPricesInMock = () => {
+  try {
+    const stored = getStoredRoomPrices();
+    (stored || []).forEach(p => {
+      const priceVal = Number(p.base_price || p.basePrice);
+      if (p.room_id && !isNaN(priceVal) && priceVal > 0) {
+        const rm = MOCK_ROOMS.find(r => r.id === p.room_id);
+        if (rm) rm.basePrice = priceVal;
+      }
+    });
+  } catch (err) {
+    console.error('initStoredRoomPricesInMock failed:', err);
+  }
+};
+
+initStoredRoomPricesInMock();
+
+// Local Storage Key for Disabled Rooms
+const DISABLED_ROOMS_STORAGE_KEY = 'hotel_umustku_disabled_rooms_v1';
+
+export const getStoredDisabledRooms = () => {
+  try {
+    const raw = localStorage.getItem(DISABLED_ROOMS_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+};
+
+export const saveStoredDisabledRoom = (roomItem) => {
+  const current = getStoredDisabledRooms();
+  const existingIdx = current.findIndex(r => r.room_id === roomItem.room_id);
+  if (existingIdx >= 0) {
+    current[existingIdx] = roomItem;
+  } else {
+    current.push(roomItem);
+  }
+  try {
+    localStorage.setItem(DISABLED_ROOMS_STORAGE_KEY, JSON.stringify(current));
+  } catch (err) {
+    console.error('Failed to save disabled room locally:', err);
+  }
+  return roomItem;
+};
+
+export const initStoredDisabledRoomsInMock = () => {
+  try {
+    const stored = getStoredDisabledRooms();
+    (stored || []).forEach(p => {
+      if (p.room_id) {
+        const rm = MOCK_ROOMS.find(r => r.id === p.room_id);
+        if (rm) rm.isDisabled = Boolean(p.is_disabled);
+      }
+    });
+  } catch (err) {
+    console.error('initStoredDisabledRoomsInMock failed:', err);
+  }
+};
+
+initStoredDisabledRoomsInMock();

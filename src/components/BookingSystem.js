@@ -1,4 +1,4 @@
-import { MOCK_ROOMS, isSupabaseConfigured, supabase, getStoredReservations, saveStoredReservation, getStoredBlockedDates, getStoredDiscountCodes, getStoredRoomPrices } from '../lib/supabaseClient.js';
+import { MOCK_ROOMS, isSupabaseConfigured, supabase, getStoredReservations, saveStoredReservation, getStoredBlockedDates, getStoredDiscountCodes, getStoredRoomPrices, getStoredDisabledRooms } from '../lib/supabaseClient.js';
 import { calculateReservationPrice, generateReservationCode, generateManageToken, BANK_ACCOUNT, BANK_NAME, formatCzechPrice } from '../utils/pricing.js';
 import { sendEmail, generateEmail1RequestReceived, generateEmail1ReceptionNotification } from '../utils/emailService.js';
 function getTodayDateString() {
@@ -52,8 +52,15 @@ export class BookingSystem {
     this.roomsList = MOCK_ROOMS;
     this.activeReservations = [];
     this.blockedDates = [];
-    this.discountCodes = [];
-    this.roomPrices = [];
+    this.discountCodes = getStoredDiscountCodes().filter(c => c.is_active);
+    this.roomPrices = getStoredRoomPrices();
+    (this.roomPrices || []).forEach(p => {
+      const priceVal = Number(p.base_price || p.basePrice);
+      if (p.room_id && !isNaN(priceVal) && priceVal > 0) {
+        const rm = MOCK_ROOMS.find(r => r.id === p.room_id);
+        if (rm) rm.basePrice = priceVal;
+      }
+    });
     this.appliedDiscount = null;
     this.discountError = '';
     this.discountSuccessMsg = '';
@@ -122,41 +129,55 @@ export class BookingSystem {
     if (initialRoomId && this.roomsList.some(r => r.id === initialRoomId)) {
       this.state.selectedRoomId = initialRoomId;
     }
-    await this.fetchActiveReservations();
-    await this.fetchBlockedDates();
-    await this.fetchDiscountCodes();
-    await this.fetchRoomPrices();
     this.syncGuestsArray();
 
-    // Set initial history state for browser Back button support
     if (!window.history.state || !window.history.state.bookingStep) {
       window.history.replaceState({ bookingStep: 1 }, '', window.location.hash || '#rezervace');
     }
 
-    // Listen to browser Back & Forward button navigation
-    window.addEventListener('popstate', (e) => {
-      const targetStep = (e.state && e.state.bookingStep) ? e.state.bookingStep : 1;
-      if (targetStep !== this.currentStep) {
-        this.setStep(targetStep, false);
-      }
-    });
+    if (!this.popstateListenerAttached) {
+      this.popstateListenerAttached = true;
+      window.addEventListener('popstate', (e) => {
+        const targetStep = (e.state && e.state.bookingStep) ? e.state.bookingStep : 1;
+        if (targetStep !== this.currentStep) {
+          this.setStep(targetStep, false);
+        }
+      });
+    }
+
+    this.render();
+
+    try {
+      await Promise.allSettled([
+        this.fetchActiveReservations(),
+        this.fetchBlockedDates(),
+        this.fetchDiscountCodes(),
+        this.fetchRoomPrices()
+      ]);
+    } catch (err) {
+      console.error('BookingSystem init fetch error:', err);
+    }
 
     this.render();
   }
 
   async fetchDiscountCodes() {
+    let localCodes = getStoredDiscountCodes().filter(c => c.is_active);
     if (isSupabaseConfigured && supabase) {
       try {
         const { data, error } = await supabase.from('discount_codes').select('*').eq('is_active', true);
         if (!error && data) {
-          this.discountCodes = data;
+          const codeMap = new Map();
+          localCodes.forEach(c => codeMap.set(c.code, c));
+          data.forEach(c => codeMap.set(c.code, c));
+          this.discountCodes = Array.from(codeMap.values());
           return;
         }
       } catch (err) {
         console.error('Fetch discount codes error:', err);
       }
     }
-    this.discountCodes = getStoredDiscountCodes().filter(c => c.is_active);
+    this.discountCodes = localCodes;
   }
 
   async fetchRoomPrices() {
@@ -174,7 +195,7 @@ export class BookingSystem {
     this.roomPrices = getStoredRoomPrices();
   }
 
-  applyDiscountCode(inputCode) {
+  async applyDiscountCode(inputCode) {
     const clean = String(inputCode || '').trim().toUpperCase();
     this.discountError = '';
     if (!clean) {
@@ -183,7 +204,14 @@ export class BookingSystem {
       this.render();
       return;
     }
-    const found = (this.discountCodes || []).find(c => c.code === clean && c.is_active);
+
+    await this.fetchDiscountCodes();
+    const found = (this.discountCodes || []).find(c => {
+      const matchCode = String(c.code || '').trim().toUpperCase() === clean;
+      const isActive = c.is_active === true || c.is_active === 'true' || c.is_active === 1;
+      return matchCode && isActive;
+    });
+
     if (found) {
       this.appliedDiscount = found;
       this.discountSuccessMsg = `Slevový kód ${found.code} (-${found.discount_value} %) byl uplatněn!`;
@@ -452,7 +480,10 @@ export class BookingSystem {
   }
 
   getSelectedRoom() {
-    return this.roomsList.find(r => r.id === this.state.selectedRoomId) || this.roomsList[0];
+    const found = this.roomsList.find(r => r.id === this.state.selectedRoomId);
+    if (found && !found.isDisabled) return found;
+    const firstAvailable = this.roomsList.find(r => !r.isDisabled);
+    return firstAvailable || found || this.roomsList[0];
   }
 
   calculateNights() {
@@ -900,8 +931,8 @@ export class BookingSystem {
                 <label for="room-select" class="form-label">Vybraný pokoj:</label>
                 <select id="room-select" class="form-select">
                   ${this.roomsList.map(r => `
-                    <option value="${r.id}" ${r.id === room.id ? 'selected' : ''}>
-                      ${r.name} (${r.basePrice} Kč / noc)
+                    <option value="${r.id}" ${r.id === room.id ? 'selected' : ''} ${r.isDisabled ? 'disabled style="color:#888; background:#eee;"' : ''}>
+                      ${r.name} (${r.basePrice} Kč / noc) ${r.isDisabled ? ' [🔒 Dočasně zablokováno]' : ''}
                     </option>
                   `).join('')}
                 </select>
@@ -1068,16 +1099,16 @@ export class BookingSystem {
               ` : ''}
 
               <!-- PROMO CODE INPUT BOX -->
-              <div class="promo-code-box" style="margin-top: 14px; padding-top: 14px; border-top: 1px dashed #e0dfd5;">
-                <label style="font-size: 13px; font-weight: 700; color: #4a5a24; display: block; margin-bottom: 6px;">Máte slevový kód?</label>
-                <div style="display: flex; gap: 8px;">
-                  <input type="text" id="promo-code-input" class="form-input" placeholder="Zadejte kód (např. HOTEL5)" style="height: 38px; font-size: 13.5px; text-transform: uppercase;" value="${this.appliedDiscount ? this.appliedDiscount.code : (this.discountCodeInput || '')}" ${this.appliedDiscount ? 'disabled' : ''}>
-                  <button type="button" class="btn btn-specs-secondary btn-apply-promo" style="height: 38px; padding: 0 16px; font-size: 13px; white-space: nowrap; border-radius: 1px;">
+              <div class="promo-code-box" style="margin-top: 16px; padding-top: 14px; border-top: 1px dashed #e0dfd5;">
+                <label for="promo-code-input" style="font-size: 13.5px; font-weight: 700; color: #4a5a24; display: block; margin-bottom: 8px;">Máte slevový kód?</label>
+                <div style="display: flex; align-items: stretch; gap: 8px; width: 100%;">
+                  <input type="text" id="promo-code-input" placeholder="Např. HOTEL5" style="flex: 1; min-width: 0; height: 42px; padding: 0 12px; font-size: 14px; font-weight: 600; text-transform: uppercase; color: #1c1c19; background: #ffffff; border: 1px solid #c8c6b9; border-radius: 1px; box-sizing: border-box; outline: none;" value="${this.appliedDiscount ? this.appliedDiscount.code : (this.discountCodeInput || '')}" ${this.appliedDiscount ? 'disabled' : ''}>
+                  <button type="button" class="btn-apply-promo" style="height: 42px; padding: 0 20px; font-size: 14px; font-weight: 700; color: #ffffff; background: ${this.appliedDiscount ? '#c62828' : '#4a5a24'}; border: none; border-radius: 1px; cursor: pointer; white-space: nowrap; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; transition: background 0.15s ease;">
                     ${this.appliedDiscount ? 'Odebrat' : 'Uplatnit'}
                   </button>
                 </div>
-                ${this.discountError ? `<div style="color: #c62828; font-size: 12.5px; font-weight: 600; margin-top: 6px;">⚠️ ${this.discountError}</div>` : ''}
-                ${this.discountSuccessMsg ? `<div style="color: #2e7d32; font-size: 12.5px; font-weight: 700; margin-top: 6px;">✓ ${this.discountSuccessMsg}</div>` : ''}
+                ${this.discountError ? `<div style="color: #c62828; font-size: 12.5px; font-weight: 600; margin-top: 8px; display: flex; align-items: center; gap: 4px;">⚠️ ${this.discountError}</div>` : ''}
+                ${this.discountSuccessMsg ? `<div style="color: #2e7d32; font-size: 12.5px; font-weight: 700; margin-top: 8px; display: flex; align-items: center; gap: 4px;">✓ ${this.discountSuccessMsg}</div>` : ''}
               </div>
 
               ${(pricing.singleNightSurchargeTotal > 0 || pricing.hasHalfBoard || pricing.hasDog || pricing.hasEbike || pricing.cityTax > 0) ? `
