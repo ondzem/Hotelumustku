@@ -4367,42 +4367,47 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   }
 }
 
-/* Season Toggle (Léto / Zima) Styling */
+/* Season Toggle (Léto / Zima) Styling - Clean without background containers */
 .control-item {
   cursor: pointer !important;
   user-select: none;
-  padding: 6px 14px;
-  border-radius: 20px;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  transition: all 0.25s ease;
+  padding: 4px 6px;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 2px solid transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  opacity: 0.65;
+  transition: all 0.2s ease;
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  color: #ffffff !important;
 }
 
 .control-item:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.6);
-  color: #ffffff;
+  opacity: 0.95;
+  background: transparent !important;
+  border-bottom-color: rgba(255, 255, 255, 0.5) !important;
 }
 
 .control-item.is-active {
-  background: #ffffff !important;
-  color: #111111 !important;
-  border-color: #ffffff !important;
+  opacity: 1 !important;
+  background: transparent !important;
+  color: #ffffff !important;
+  border-bottom: 2px solid #ffffff !important;
   font-weight: 700 !important;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  box-shadow: none !important;
 }
 
-.control-item.is-active span {
-  color: #111111 !important;
+.control-item span {
+  color: #ffffff !important;
 }
 
 .mobile-season-toggle {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 24px;
   margin-top: 24px;
 }

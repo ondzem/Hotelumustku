@@ -1647,21 +1647,12 @@ export function setSeasonMode(mode, savePreference = true) {
       : '/Uvodni stranka/Pohled na hotel ze z predni strany.webp';
   }
 
-  // 3. Sekce Sleva / Promo
-  const promoSection = document.querySelector('.promo-banner');
-  const promoContourImg = document.querySelector('.promo-contour-img');
-  if (promoSection) {
-    if (mode === 'winter') {
-      promoSection.style.backgroundImage = "linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/Zimni rezim/Zima - zadni vchod.webp')";
-      promoSection.style.backgroundSize = 'cover';
-      promoSection.style.backgroundPosition = 'center';
-      if (promoContourImg) promoContourImg.style.opacity = '0.2';
-    } else {
-      promoSection.style.backgroundImage = '';
-      promoSection.style.backgroundSize = '';
-      promoSection.style.backgroundPosition = '';
-      if (promoContourImg) promoContourImg.style.opacity = '0.65';
-    }
+  // 3. Panoramatická fotka pod sekcí Sleva (Jak získat nejvýhodnější pobyt)
+  const panoramicImg = document.querySelector('.panoramic-section .panoramic-img');
+  if (panoramicImg) {
+    panoramicImg.src = mode === 'winter'
+      ? '/Zimni rezim/Zima - zadni vchod.webp'
+      : '/Uvodni stranka/Fotka Zahrady a Terasy.webp';
   }
 
   // 4. CTA Sekce
