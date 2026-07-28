@@ -1437,7 +1437,7 @@ const getRoomGroundFloorHTML = () => `
   <!-- 6. STRAVOVÁNÍ V HOTELU -->
   <section class="room-detail-dining-section">
     <div class="room-detail-dining-inner">
-      <h2 class="room-detail-dining-title">Co dalšího nabízíme?</h2>
+      <h2 class="room-detail-dining-title">Jak je to se stravováním?</h2>
 
       <div class="services-cards-wrap">
         <!-- Karta 1: Snídaně -->
