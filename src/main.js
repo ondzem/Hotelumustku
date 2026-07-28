@@ -1575,8 +1575,145 @@ export function openPromoCodeModal() {
 window.openPromoCodeModal = openPromoCodeModal;
 window.closePromoCodeModal = closePromoCodeModal;
 
+// Sezónní Režim (Léto / Zima)
+export function getInitialSeasonMode() {
+  const savedMode = localStorage.getItem('hotel_season_mode');
+  if (savedMode === 'summer' || savedMode === 'winter') {
+    return savedMode;
+  }
+  const month = new Date().getMonth(); // 0 = Jan, 3 = Apr, 9 = Oct, 10 = Nov
+  if (month >= 3 && month <= 9) {
+    return 'summer'; // Duben až Říjen
+  }
+  return 'winter'; // Listopad až Březen
+}
+
+export function preloadWinterImages() {
+  const images = [
+    '/Zimni rezim/Zima - hotel.webp',
+    '/Zimni rezim/Zima - prijezdova fotka.webp',
+    '/Zimni rezim/Zime - pohled zezadu.webp',
+    '/Zimni rezim/Zima - zadni vchod.webp',
+    '/Zimni rezim/tanvaldsky spicak.webp'
+  ];
+  images.forEach(src => {
+    const img = new Image();
+    img.src = src;
+  });
+}
+
+export function setSeasonMode(mode, savePreference = true) {
+  if (savePreference) {
+    localStorage.setItem('hotel_season_mode', mode);
+  }
+
+  window.currentSeasonMode = mode;
+
+  // 1. Změna Hero Sekce
+  const heroVideo = document.querySelector('.hero-video');
+  let heroWinterImg = document.querySelector('.hero-winter-img');
+  const heroSection = document.querySelector('.hero-section');
+
+  if (heroSection) {
+    if (!heroWinterImg) {
+      heroWinterImg = document.createElement('img');
+      heroWinterImg.className = 'hero-winter-img';
+      heroWinterImg.alt = 'Hotel u Můstku v zimě';
+      heroWinterImg.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;';
+      heroWinterImg.src = '/Zimni rezim/Zima - hotel.webp';
+      heroSection.insertBefore(heroWinterImg, heroSection.firstChild);
+    }
+
+    if (mode === 'winter') {
+      if (heroVideo) heroVideo.style.display = 'none';
+      heroWinterImg.style.display = 'block';
+    } else {
+      if (heroVideo) heroVideo.style.display = 'block';
+      heroWinterImg.style.display = 'none';
+    }
+  }
+
+  // 2. Sekce Zázemí (O nás)
+  const aboutTopImg = document.querySelector('.about-img-top img');
+  const aboutBottomImg = document.querySelector('.about-img-bottom img');
+  if (aboutTopImg) {
+    aboutTopImg.src = mode === 'winter'
+      ? '/Zimni rezim/Zima - prijezdova fotka.webp'
+      : '/Uvodni stranka/Vyhled z balkonu na skokanky.webp';
+  }
+  if (aboutBottomImg) {
+    aboutBottomImg.src = mode === 'winter'
+      ? '/Zimni rezim/Zime - pohled zezadu.webp'
+      : '/Uvodni stranka/Pohled na hotel ze z predni strany.webp';
+  }
+
+  // 3. Sekce Sleva / Promo
+  const promoSection = document.querySelector('.promo-banner');
+  const promoContourImg = document.querySelector('.promo-contour-img');
+  if (promoSection) {
+    if (mode === 'winter') {
+      promoSection.style.backgroundImage = "linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/Zimni rezim/Zima - zadni vchod.webp')";
+      promoSection.style.backgroundSize = 'cover';
+      promoSection.style.backgroundPosition = 'center';
+      if (promoContourImg) promoContourImg.style.opacity = '0.2';
+    } else {
+      promoSection.style.backgroundImage = '';
+      promoSection.style.backgroundSize = '';
+      promoSection.style.backgroundPosition = '';
+      if (promoContourImg) promoContourImg.style.opacity = '0.65';
+    }
+  }
+
+  // 4. CTA Sekce
+  const ctaSection = document.querySelector('.cta-section');
+  if (ctaSection) {
+    if (mode === 'winter') {
+      ctaSection.style.backgroundImage = "linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.45)), url('/Zimni rezim/tanvaldsky spicak.webp')";
+      ctaSection.style.backgroundPosition = 'center';
+      ctaSection.style.backgroundSize = 'cover';
+    } else {
+      ctaSection.style.backgroundImage = '';
+      ctaSection.style.backgroundPosition = '';
+      ctaSection.style.backgroundSize = '';
+    }
+  }
+
+  // 5. Aktualizace tlačítkového stavu (Léto / Zima)
+  const controlItems = document.querySelectorAll('.bottom-left-controls .control-item, .mobile-season-toggle .control-item');
+  controlItems.forEach((item) => {
+    const text = item.textContent.trim().toLowerCase();
+    if ((mode === 'summer' && text.includes('léto')) || (mode === 'winter' && text.includes('zima'))) {
+      item.classList.add('is-active');
+    } else {
+      item.classList.remove('is-active');
+    }
+  });
+}
+
+window.getInitialSeasonMode = getInitialSeasonMode;
+window.setSeasonMode = setSeasonMode;
+window.preloadWinterImages = preloadWinterImages;
+
 // Inicializace událostí a interaktivity po vykreslení
 const initInteractivity = () => {
+  // Preload zimních obrázků pro okamžité přepnutí
+  preloadWinterImages();
+
+  // Aplikace sezónního režimu (Léto / Zima)
+  const currentMode = getInitialSeasonMode();
+  setSeasonMode(currentMode, false);
+
+  const seasonControls = document.querySelectorAll('.bottom-left-controls .control-item, .mobile-season-toggle .control-item');
+  seasonControls.forEach(control => {
+    control.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const text = control.textContent.trim().toLowerCase();
+      const newMode = text.includes('zima') ? 'winter' : 'summer';
+      setSeasonMode(newMode, true);
+    });
+  });
+
   // Mobile Hamburger Drawer
   const mobileToggle = document.getElementById('mobile-menu-toggle');
   const mobileClose = document.getElementById('mobile-menu-close');
