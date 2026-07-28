@@ -1702,6 +1702,10 @@ const initInteractivity = () => {
       const text = control.textContent.trim().toLowerCase();
       const newMode = text.includes('zima') ? 'winter' : 'summer';
       setSeasonMode(newMode, true);
+      const mobileOverlay = document.getElementById('mobile-menu-overlay');
+      if (mobileOverlay) {
+        mobileOverlay.classList.remove('is-active');
+      }
     });
   });
 
