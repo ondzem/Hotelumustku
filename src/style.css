@@ -109,7 +109,7 @@ a {
   width: 100%;
   height: 95vh;
   min-height: 760px;
-  background-image: url('/Uvodni stranka/Uvodní fotka - hero sekce.webp');
+  background-image: url('/uvodni_hero_sekce.webp');
   background-size: cover;
   background-position: center;
   overflow: hidden;
@@ -7735,4 +7735,61 @@ img[loading="lazy"] {
 
 img[loading="lazy"].img-loaded {
   opacity: 1;
+}
+
+/* ----------------------------------------------------
+   404 ERROR STRÁNKA (Minimalistická & Čistá dle AGENTS.md)
+   ---------------------------------------------------- */
+.error-hero-section {
+  min-height: 380px !important;
+  height: 45vh !important;
+  background-image: url('/uvodni_hero_sekce.webp') !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+.error-page-main {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: clamp(56px, 7vw, 96px) 24px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.error-content-container {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.error-code-badge {
+  font-size: clamp(68px, 11vw, 115px);
+  font-weight: 800;
+  color: #697947;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  margin-bottom: 14px;
+}
+
+.error-title {
+  font-size: clamp(22px, 3vw, 32px);
+  font-weight: 700;
+  color: #1C1C19;
+  margin: 0 0 16px 0;
+  line-height: 1.25;
+}
+
+.error-desc {
+  font-size: clamp(15px, 1.8vw, 17px);
+  color: #55554E;
+  line-height: 1.65;
+  margin: 0 0 24px 0;
+}
+
+.error-actions-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
 }

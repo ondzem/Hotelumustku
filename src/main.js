@@ -716,7 +716,7 @@ const getHomePageHTML = () => {
 
   const heroMedia = isWinter
     ? `<img class="hero-winter-img" src="/Zimni rezim/Zima - hotel.webp" alt="Hotel u Můstku v zimě" fetchpriority="high" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">`
-    : `<img class="hero-summer-poster" src="/Uvodni stranka/Uvodní fotka - hero sekce.webp" alt="Hotel u Můstku" fetchpriority="high" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+    : `<img class="hero-summer-poster" src="/uvodni_hero_sekce.webp" alt="Hotel u Můstku" fetchpriority="high" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
        <video 
         class="hero-video" 
         autoplay 
@@ -724,6 +724,7 @@ const getHomePageHTML = () => {
         loop 
         playsinline 
         preload="auto" 
+        poster="/uvodni_hero_sekce.webp"
         fetchpriority="high"
         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; background: transparent;"
       >
@@ -938,6 +939,38 @@ const getAdminPageHTML = () => `
 
   <main class="admin-page-main">
     <div id="admin-container"></div>
+  </main>
+  ${getFooterHTML()}
+`;
+
+// Render Funkce Pro 404 Error Stránku (Stránka nenalezena)
+const get404PageHTML = () => `
+  <section class="hero-section error-hero-section" id="uvod-error">
+    <div class="hero-overlay"></div>
+    <div class="hero-inner">
+      ${getHeaderHTML()}
+
+      <div class="booking-hero-center" style="text-align: center;">
+        <h1 class="booking-hero-main-title">404 — Stránka nenalezena</h1>
+        <p class="booking-hero-subtitle">Hotel u Můstku — Desná v Jizerských horách</p>
+      </div>
+    </div>
+  </section>
+
+  <main class="error-page-main">
+    <div class="error-content-container">
+      <div class="error-code-badge">404</div>
+      <h2 class="error-title">Požadovaná stránka neexistuje</h2>
+      <p class="error-desc">
+        Omlouváme se, ale adresa, kterou jste zadali, na našem webu neexistuje, byla přesunuta nebo změněna. 
+        Pokračujte prosím zpět na hlavní stránku nebo si prohlédněte naši nabídku ubytování.
+      </p>
+      <div class="form-section-divider" style="margin: 28px 0;"></div>
+      <div class="error-actions-group">
+        <a href="#domu" class="btn btn-booking-submit btn-go-home">Zpět na hlavní stránku</a>
+        <a href="#pokoje" class="btn btn-specs-secondary">Nabídka pokojů</a>
+      </div>
+    </div>
   </main>
   ${getFooterHTML()}
 `;
@@ -1893,7 +1926,7 @@ export function setSeasonMode(mode, savePreference = true) {
         heroSummerPoster.alt = 'Hotel u Můstku';
         heroSummerPoster.setAttribute('fetchpriority', 'high');
         heroSummerPoster.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;';
-        heroSummerPoster.src = '/Uvodni stranka/Uvodní fotka - hero sekce.webp';
+        heroSummerPoster.src = '/uvodni_hero_sekce.webp';
         heroSection.insertBefore(heroSummerPoster, heroSection.firstChild);
       } else {
         heroSummerPoster.style.display = 'block';
@@ -2702,19 +2735,36 @@ const app = document.querySelector('#app');
 let currentViewKey = null;
 
 const route = (isInitial = false) => {
-  const hash = window.location.hash;
-  const isBooking = hash.startsWith('#rezervace');
-  const isAdmin = hash.startsWith('#admin');
+  const hash = window.location.hash || '';
+  const cleanHash = hash.split('?')[0];
 
-  const pageKey = isBooking
-    ? 'booking'
-    : isAdmin
-    ? 'admin'
-    : (hash === '#pokoj-prizemi' || hash === '#pokoje-prizemi' || hash === '#pokoj-v-prizemi')
-    ? 'ground'
-    : (hash === '#pokoj-vyhled' || hash === '#pokoje-vyhled' || hash === '#pokoj-s-vyhledem')
-    ? 'view'
-    : (hash.startsWith('#pokoje') || hash === '#nabidka-pokoju') ? 'rooms' : 'home';
+  const knownHomeHashes = [
+    '', '#', '#domu', '#uvod', '#o-nas', '#zazemi', '#sleva', '#promo',
+    '#sluzby', '#stravovani', '#recenze', '#hodnoceni', '#aktivity', '#okoli',
+    '#kontakt', '#kde-nas-najdete'
+  ];
+
+  let pageKey = 'home';
+
+  if (cleanHash.startsWith('#rezervace')) {
+    pageKey = 'booking';
+  } else if (cleanHash.startsWith('#admin')) {
+    pageKey = 'admin';
+  } else if (cleanHash === '#pokoj-prizemi' || cleanHash === '#pokoje-prizemi' || cleanHash === '#pokoj-v-prizemi') {
+    pageKey = 'ground';
+  } else if (cleanHash === '#pokoj-vyhled' || cleanHash === '#pokoje-vyhled' || cleanHash === '#pokoj-s-vyhledem') {
+    pageKey = 'view';
+  } else if (cleanHash.startsWith('#pokoje') || cleanHash === '#nabidka-pokoju') {
+    pageKey = 'rooms';
+  } else if (cleanHash === '#404' || cleanHash === '#error') {
+    pageKey = '404';
+  } else if (knownHomeHashes.includes(cleanHash)) {
+    pageKey = 'home';
+  } else if (cleanHash.length > 1) {
+    pageKey = '404';
+  } else {
+    pageKey = 'home';
+  }
 
   const isNewPage = currentViewKey !== pageKey;
   currentViewKey = pageKey;
@@ -2737,6 +2787,8 @@ const route = (isInitial = false) => {
     app.innerHTML = getRoomViewFloorHTML();
   } else if (pageKey === 'rooms') {
     app.innerHTML = getRoomsPageHTML();
+  } else if (pageKey === '404') {
+    app.innerHTML = get404PageHTML();
   } else {
     app.innerHTML = getHomePageHTML();
   }
