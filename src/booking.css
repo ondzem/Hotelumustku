@@ -407,6 +407,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   border-radius: 6px;
   flex-shrink: 0;
   border: 1px solid #d0d0d0;
+  filter: brightness(1.04) contrast(1.08) saturate(1.12);
+  transition: filter 0.35s ease;
 }
 
 .preview-info-wrap {

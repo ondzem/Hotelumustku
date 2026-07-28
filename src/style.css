@@ -5063,6 +5063,13 @@ h3 {
   height: 100%;
   object-fit: cover;
   display: block;
+  filter: brightness(1.04) contrast(1.08) saturate(1.12);
+  transition: filter 0.35s ease, transform 0.35s ease;
+}
+
+.room-card-image-wrap:hover img {
+  filter: brightness(1.06) contrast(1.10) saturate(1.15);
+  transform: scale(1.02);
 }
 
 .room-card-content {
@@ -6072,6 +6079,33 @@ h3 {
   height: 100%;
   object-fit: cover;
   display: block;
+  filter: brightness(1.04) contrast(1.08) saturate(1.12);
+  transition: filter 0.35s cubic-bezier(0.25, 1, 0.5, 1), transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.room-carousel-slide:hover img {
+  filter: brightness(1.06) contrast(1.10) saturate(1.15);
+}
+
+/* Špecifické vyladenie tónov podľa typu izby */
+.room-breakdown-item[data-room="pa"] .room-carousel-slide img {
+  /* Nadstandard Mahagon: Teplý luxusný tón dreva a kontrast */
+  filter: brightness(1.03) contrast(1.09) saturate(1.14);
+}
+
+.room-breakdown-item[data-room="a1"] .room-carousel-slide img,
+.room-breakdown-item[data-room="zen"] .room-carousel-slide img {
+  /* Nadstandard Motýľ & Zen: Čistý svetlý horský kontrast */
+  filter: brightness(1.05) contrast(1.07) saturate(1.12);
+}
+
+.room-breakdown-item[data-room="p5"] .room-carousel-slide img,
+.room-breakdown-item[data-room="p7"] .room-carousel-slide img,
+.room-breakdown-item[data-room="p10"] .room-carousel-slide img,
+.room-breakdown-item[data-room="p11"] .room-carousel-slide img,
+.room-breakdown-item[data-room="p12"] .room-carousel-slide img {
+  /* Standard P5, P7, P10, P11, P12: Živý, rozjasnený a svieži hotelový kontrast */
+  filter: brightness(1.04) contrast(1.08) saturate(1.12);
 }
 
 /* Ovládací prváky pod karuselem fotek */
