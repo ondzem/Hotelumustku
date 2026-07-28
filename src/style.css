@@ -64,6 +64,23 @@ body {
   overflow-x: hidden;
 }
 
+html.modal-open,
+body.modal-open {
+  overflow: hidden !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  touch-action: none !important;
+  overscroll-behavior: none !important;
+}
+
+.admin-modal-overlay,
+.promo-code-modal-overlay,
+.terms-modal-overlay,
+.mobile-menu-overlay,
+.admin-drawer-overlay {
+  overscroll-behavior: contain !important;
+}
+
 img {
   max-width: 100%;
   height: auto;

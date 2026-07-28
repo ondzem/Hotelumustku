@@ -1,375 +1,427 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8">
   <title>Bundled Page</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #FAFAF7; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
-    #__bundler_loading { position: fixed; bottom: 20px; right: 20px; font: 13px/1.4 -apple-system, BlinkMacSystemFont, sans-serif; color: #666; background: #fff; padding: 8px 14px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.12); z-index: 10000; }
-    #__bundler_thumbnail { position: fixed; inset: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #FAFAF7; z-index: 9999; }
-    #__bundler_thumbnail svg { width: 100%; height: 100%; object-fit: contain; }
-    #__bundler_placeholder { color: #999; font-size: 14px; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #FAFAF7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    #__bundler_loading {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      font: 13px/1.4 -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #666;
+      background: #fff;
+      padding: 8px 14px;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+      z-index: 10000;
+    }
+
+    #__bundler_thumbnail {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #FAFAF7;
+      z-index: 9999;
+    }
+
+    #__bundler_thumbnail svg {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    #__bundler_placeholder {
+      color: #999;
+      font-size: 14px;
+    }
   </style>
   <noscript>
-    <style>#__bundler_loading { display: none; }</style>
-    <div style="position:fixed;bottom:12px;left:12px;font:13px/1.4 -apple-system,BlinkMacSystemFont,sans-serif;color:#999;background:rgba(255,255,255,0.9);padding:6px 12px;border-radius:6px;box-shadow:0 1px 4px rgba(0,0,0,0.08);z-index:10000;">
+    <style>
+      #__bundler_loading {
+        display: none;
+      }
+    </style>
+    <div
+      style="position:fixed;bottom:12px;left:12px;font:13px/1.4 -apple-system,BlinkMacSystemFont,sans-serif;color:#999;background:rgba(255,255,255,0.9);padding:6px 12px;border-radius:6px;box-shadow:0 1px 4px rgba(0,0,0,0.08);z-index:10000;">
       This page requires JavaScript to display.
     </div>
   </noscript>
 </head>
+
 <body>
   <div id="__bundler_thumbnail">
-  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
-    <rect width="1200" height="800" fill="#FAFAF7"></rect>
-    <circle cx="600" cy="360" r="180" fill="#E1EDD6"></circle>
-    <path d="M510 370L575 440L700 290" stroke="#4A5A24" stroke-width="52" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
-    <rect x="420" y="580" width="360" height="34" rx="17" fill="#5D6B34"></rect>
-  </svg>
-</div>
+    <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+      <rect width="1200" height="800" fill="#FAFAF7"></rect>
+      <circle cx="600" cy="360" r="180" fill="#E1EDD6"></circle>
+      <path d="M510 370L575 440L700 290" stroke="#4A5A24" stroke-width="52" stroke-linecap="round"
+        stroke-linejoin="round" fill="none"></path>
+      <rect x="420" y="580" width="360" height="34" rx="17" fill="#5D6B34"></rect>
+    </svg>
+  </div>
   <div id="__bundler_loading">Unpacking...</div>
 
   <script>
-    
-document.addEventListener('DOMContentLoaded', async function() {
-  const loading = document.getElementById('__bundler_loading');
-  function setStatus(msg) { if (loading) loading.textContent = msg; }
 
-  const FONT_MIME = /^(font[/]|application[/](x-)?font-|application[/]vnd\.ms-fontobject)/i;
-  const MIME_TOKEN = /^[\w.+-]+[/][\w.+-]+$/;
-  function toBase64(bytes) {
-    let bin = '';
-    for (let i = 0; i < bytes.length; i += 0x8000) {
-      bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
-    }
-    return btoa(bin);
-  }
+    document.addEventListener('DOMContentLoaded', async function () {
+      const loading = document.getElementById('__bundler_loading');
+      function setStatus(msg) { if (loading) loading.textContent = msg; }
 
-  // Error sink persists across replaceWith since it's on window, not the DOM.
-  window.addEventListener('error', function(e) {
-    // Failed resource loads (CSP-blocked links, scripts, images) fire plain
-    // events at the element — warn only; real JS errors carry message/error.
-    if (!e.message && !e.error && e.target && e.target !== window) {
-      console.warn('[bundle] resource failed to load:',
-        e.target.tagName, String(e.target.src || e.target.href || ''));
-      return;
-    }
-    var p = document.body || document.documentElement;
-    var d = document.getElementById('__bundler_err') || p.appendChild(document.createElement('div'));
-    d.id = '__bundler_err';
-    d.style.cssText = 'position:fixed;bottom:12px;left:12px;right:12px;font:12px/1.4 ui-monospace,monospace;background:#2a1215;color:#ff8a80;padding:10px 14px;border-radius:8px;border:1px solid #5c2b2e;z-index:99999;white-space:pre-wrap;max-height:40vh;overflow:auto';
-    d.textContent = (d.textContent ? d.textContent + String.fromCharCode(10) : '') +
-      '[bundle] ' + (e.message || e.type) +
-      (e.filename ? ' (' + e.filename.slice(0, 60) + ':' + e.lineno + ')' : '');
-  }, true);
-
-  try {
-    const manifestEl = document.querySelector('script[type="__bundler/manifest"]');
-    const templateEl = document.querySelector('script[type="__bundler/template"]');
-    if (!manifestEl || !templateEl) {
-      setStatus('Error: missing bundle data');
-      console.error('[bundler] Missing script tags — manifestEl:', !!manifestEl, 'templateEl:', !!templateEl);
-      return;
-    }
-
-    const manifest = JSON.parse(manifestEl.textContent);
-    let template = JSON.parse(templateEl.textContent);
-
-    // Nested page bundles (iframe targets). Each ships ONCE, in the ROOT
-    // document's manifest; frame srcs carry an about:blank#<uuid> marker
-    // instead of a substitutable uuid. Every document mints the blobs for
-    // its OWN frames — from local text at the root, or text obtained from
-    // its DIRECT parent over the relay protocol below — so each frame
-    // navigation stays same-origin with its initiator and a deduped page
-    // loads at any depth on any host, including a file:// download's
-    // opaque origins (where a blob minted by one document cannot be
-    // navigated to by another).
-    const pageOrderEl = document.querySelector('script[type="__bundler/page_order"]');
-    const pageOrder = pageOrderEl ? JSON.parse(pageOrderEl.textContent) : [];
-    const pageSet = new Set(pageOrder);
-    const pageTexts = {};
-
-    // ── Nested-page text protocol (parent-chain relay) ──
-    // Page bundles ship once, in the ROOT document's manifest. Every
-    // document mints the blobs for its OWN frames, obtaining page text
-    // through a strict parent-chain relay: a document only ever SENDS to
-    // its direct parent (which, for every document the publisher's own
-    // runtime minted, is another publisher document) and only ACCEPTS
-    // text from that direct parent; requests from below are honored only
-    // for the document's own child frames, and the ROOT never sends
-    // upward at all. That last rule is load-bearing: the artifact host's
-    // frame-ancestors allows claude.ai (and friends) to frame an
-    // artifact, so window.top can be a FOREIGN document — a top-addressed
-    // protocol would hand page uuids to that ancestor and accept forged
-    // "page text" from it, minting attacker HTML as an artifact-origin
-    // blob document. The chain never touches the ancestor: requests stop
-    // at the root, replies are origin-addressed per hop (never '*' when
-    // an origin exists), and both directions are origin-gated (on https
-    // a foreign sender's origin can never equal this document's; in
-    // opaque contexts — file:// — everything serializes as 'null', where
-    // an embedded EXTERNAL frame still fails the gate by carrying its
-    // own real origin, and a sandboxed child of such a frame is excluded
-    // by the own-child-frames check plus uuid unguessability). Shape is
-    // deny-by-default: one request form, one reply form, no error
-    // replies.
-    // window.origin is the SERIALIZED SECURITY origin ('null' in opaque
-    // contexts such as a sandboxed preview iframe) — location.origin is
-    // computed from the URL and stays 'https://…' even when the document
-    // is sandboxed, which would misgate every opaque chain.
-    const OWN_TARGET = /^https?:[/][/]/.test(window.origin || '')
-      ? window.origin
-      : '*';
-    function trustedOrigin(e) {
-      if (e.origin === window.origin) return true; // https chains; opaque==opaque
-      // file:// trees: Chrome serializes the file document's origin as
-      // 'file://' while the blob: documents it mints serialize as 'null',
-      // so the two legitimate shapes can never string-match — accept the
-      // pair in both directions. https origins never serialize as either,
-      // and sender identity (own child frame / direct parent) is checked
-      // separately.
-      return (
-        (e.origin === 'null' &&
-          (window.origin === 'file://' ||
-            window.location.protocol === 'file:')) ||
-        (/^file:/.test(e.origin) && window.origin === 'null')
-      );
-    }
-    // Non-empty only in the root document (nested bundles ship an empty
-    // island), so it doubles as the root marker: the root answers from
-    // local text and treats a miss as authoritative — never relaying to
-    // its (possibly foreign) parent.
-    const isPageRoot = pageOrder.length > 0;
-    const blobUrls = {};
-    const resourceBlobs = {};
-    const UUID_SHAPE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
-    const pendingFrames = {}; // uuid -> [{el, frag}] awaiting text for own frames
-    const pendingRelays = {}; // uuid -> [childWindow] awaiting text to pass down
-    function mountPage(el, frag, text) {
-      const pageBlob = new Blob([text], { type: 'text/html' });
-      const u = URL.createObjectURL(pageBlob);
-      resourceBlobs[u] = pageBlob;
-      el.src = u + frag;
-    }
-    function deliverPage(uuid, text) {
-      const frames = pendingFrames[uuid];
-      delete pendingFrames[uuid];
-      if (frames) for (const f of frames) mountPage(f.el, f.frag, text);
-      const relays = pendingRelays[uuid];
-      delete pendingRelays[uuid];
-      if (relays) {
-        for (const cw of relays) {
-          try { cw.postMessage({ __bundler_page: uuid, __bundler_text: text }, OWN_TARGET); } catch (err) { /* gone */ }
+      const FONT_MIME = /^(font[/]|application[/](x-)?font-|application[/]vnd\.ms-fontobject)/i;
+      const MIME_TOKEN = /^[\w.+-]+[/][\w.+-]+$/;
+      function toBase64(bytes) {
+        let bin = '';
+        for (let i = 0; i < bytes.length; i += 0x8000) {
+          bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
         }
+        return btoa(bin);
       }
-    }
-    function ownFrameWindows() {
-      const out = [];
-      for (const f of Array.from(document.querySelectorAll('iframe'))) {
-        try { if (f.contentWindow) out.push(f.contentWindow); } catch (err) { /* detached */ }
-      }
-      return out;
-    }
-    window.addEventListener('message', function (e) {
-      const d = e.data;
-      if (!d || typeof d !== 'object' || !e.source) return;
-      // Origin gate first; the structural checks below (own-child-frames
-      // for requests, direct-parent + solicited-uuid for replies, the
-      // root's never-relay rule) are what hold in fully opaque chains
-      // where origin strings can't discriminate — a sandboxed root's
-      // FOREIGN wrapper still fails all three even though both serialize
-      // as real-vs-'null' rather than matching.
-      if (!trustedOrigin(e)) return;
-      if (typeof d.__bundler_need === 'string' && UUID_SHAPE.test(d.__bundler_need)) {
-        // Requests are honored only for this document's own child frames.
-        if (ownFrameWindows().indexOf(e.source) < 0) return;
-        const uuid = d.__bundler_need;
-        const text = pageTexts[uuid];
-        if (typeof text === 'string') {
-          try { e.source.postMessage({ __bundler_page: uuid, __bundler_text: text }, OWN_TARGET); } catch (err) { /* gone */ }
+
+      // Error sink persists across replaceWith since it's on window, not the DOM.
+      window.addEventListener('error', function (e) {
+        // Failed resource loads (CSP-blocked links, scripts, images) fire plain
+        // events at the element — warn only; real JS errors carry message/error.
+        if (!e.message && !e.error && e.target && e.target !== window) {
+          console.warn('[bundle] resource failed to load:',
+            e.target.tagName, String(e.target.src || e.target.href || ''));
           return;
         }
-        if (isPageRoot || window.parent === window) return; // authoritative miss
-        const waiting = pendingRelays[uuid];
-        if (waiting) {
-          if (waiting.indexOf(e.source) < 0) waiting.push(e.source);
-          return;
-        }
-        // Never-answered uuids would otherwise accumulate forever under a
-        // request spray; past the cap (far above any real page count) new
-        // relays are dropped rather than remembered.
-        if (Object.keys(pendingRelays).length >= 128) return;
-        pendingRelays[uuid] = [e.source];
-        window.parent.postMessage({ __bundler_need: uuid }, OWN_TARGET);
-      } else if (
-        typeof d.__bundler_page === 'string' &&
-        UUID_SHAPE.test(d.__bundler_page) &&
-        typeof d.__bundler_text === 'string'
-      ) {
-        // The shape test is load-bearing beyond tidiness: the solicited
-        // check below uses the in operator, which matches prototype keys
-        // ('__proto__', 'constructor') — an unshaped key would reach
-        // deliverPage and throw, painting the error banner.
-        // Text is accepted only from the direct parent — the document
-        // that minted this one.
-        if (e.source !== window.parent || window.parent === window) return;
-        if (!(d.__bundler_page in pendingFrames) && !(d.__bundler_page in pendingRelays)) return;
-        deliverPage(d.__bundler_page, d.__bundler_text);
-      }
-    });
+        var p = document.body || document.documentElement;
+        var d = document.getElementById('__bundler_err') || p.appendChild(document.createElement('div'));
+        d.id = '__bundler_err';
+        d.style.cssText = 'position:fixed;bottom:12px;left:12px;right:12px;font:12px/1.4 ui-monospace,monospace;background:#2a1215;color:#ff8a80;padding:10px 14px;border-radius:8px;border:1px solid #5c2b2e;z-index:99999;white-space:pre-wrap;max-height:40vh;overflow:auto';
+        d.textContent = (d.textContent ? d.textContent + String.fromCharCode(10) : '') +
+          '[bundle] ' + (e.message || e.type) +
+          (e.filename ? ' (' + e.filename.slice(0, 60) + ':' + e.lineno + ')' : '');
+      }, true);
 
-    const uuids = Object.keys(manifest);
-    setStatus('Unpacking ' + uuids.length + ' assets...');
-
-    await Promise.all(uuids.map(async (uuid) => {
-      const entry = manifest[uuid];
       try {
-        const binaryStr = atob(entry.data);
-        const bytes = new Uint8Array(binaryStr.length);
-        for (let i = 0; i < binaryStr.length; i++) bytes[i] = binaryStr.charCodeAt(i);
+        const manifestEl = document.querySelector('script[type="__bundler/manifest"]');
+        const templateEl = document.querySelector('script[type="__bundler/template"]');
+        if (!manifestEl || !templateEl) {
+          setStatus('Error: missing bundle data');
+          console.error('[bundler] Missing script tags — manifestEl:', !!manifestEl, 'templateEl:', !!templateEl);
+          return;
+        }
 
-        let finalBytes = bytes;
-        if (entry.compressed) {
-          if (typeof DecompressionStream !== 'undefined') {
-            const ds = new DecompressionStream('gzip');
-            const writer = ds.writable.getWriter();
-            const reader = ds.readable.getReader();
-            writer.write(bytes);
-            writer.close();
-            const chunks = [];
-            let totalLen = 0;
-            while (true) {
-              const { done, value } = await reader.read();
-              if (done) break;
-              chunks.push(value);
-              totalLen += value.length;
+        const manifest = JSON.parse(manifestEl.textContent);
+        let template = JSON.parse(templateEl.textContent);
+
+        // Nested page bundles (iframe targets). Each ships ONCE, in the ROOT
+        // document's manifest; frame srcs carry an about:blank#<uuid> marker
+        // instead of a substitutable uuid. Every document mints the blobs for
+        // its OWN frames — from local text at the root, or text obtained from
+        // its DIRECT parent over the relay protocol below — so each frame
+        // navigation stays same-origin with its initiator and a deduped page
+        // loads at any depth on any host, including a file:// download's
+        // opaque origins (where a blob minted by one document cannot be
+        // navigated to by another).
+        const pageOrderEl = document.querySelector('script[type="__bundler/page_order"]');
+        const pageOrder = pageOrderEl ? JSON.parse(pageOrderEl.textContent) : [];
+        const pageSet = new Set(pageOrder);
+        const pageTexts = {};
+
+        // ── Nested-page text protocol (parent-chain relay) ──
+        // Page bundles ship once, in the ROOT document's manifest. Every
+        // document mints the blobs for its OWN frames, obtaining page text
+        // through a strict parent-chain relay: a document only ever SENDS to
+        // its direct parent (which, for every document the publisher's own
+        // runtime minted, is another publisher document) and only ACCEPTS
+        // text from that direct parent; requests from below are honored only
+        // for the document's own child frames, and the ROOT never sends
+        // upward at all. That last rule is load-bearing: the artifact host's
+        // frame-ancestors allows claude.ai (and friends) to frame an
+        // artifact, so window.top can be a FOREIGN document — a top-addressed
+        // protocol would hand page uuids to that ancestor and accept forged
+        // "page text" from it, minting attacker HTML as an artifact-origin
+        // blob document. The chain never touches the ancestor: requests stop
+        // at the root, replies are origin-addressed per hop (never '*' when
+        // an origin exists), and both directions are origin-gated (on https
+        // a foreign sender's origin can never equal this document's; in
+        // opaque contexts — file:// — everything serializes as 'null', where
+        // an embedded EXTERNAL frame still fails the gate by carrying its
+        // own real origin, and a sandboxed child of such a frame is excluded
+        // by the own-child-frames check plus uuid unguessability). Shape is
+        // deny-by-default: one request form, one reply form, no error
+        // replies.
+        // window.origin is the SERIALIZED SECURITY origin ('null' in opaque
+        // contexts such as a sandboxed preview iframe) — location.origin is
+        // computed from the URL and stays 'https://…' even when the document
+        // is sandboxed, which would misgate every opaque chain.
+        const OWN_TARGET = /^https?:[/][/]/.test(window.origin || '')
+          ? window.origin
+          : '*';
+        function trustedOrigin(e) {
+          if (e.origin === window.origin) return true; // https chains; opaque==opaque
+          // file:// trees: Chrome serializes the file document's origin as
+          // 'file://' while the blob: documents it mints serialize as 'null',
+          // so the two legitimate shapes can never string-match — accept the
+          // pair in both directions. https origins never serialize as either,
+          // and sender identity (own child frame / direct parent) is checked
+          // separately.
+          return (
+            (e.origin === 'null' &&
+              (window.origin === 'file://' ||
+                window.location.protocol === 'file:')) ||
+            (/^file:/.test(e.origin) && window.origin === 'null')
+          );
+        }
+        // Non-empty only in the root document (nested bundles ship an empty
+        // island), so it doubles as the root marker: the root answers from
+        // local text and treats a miss as authoritative — never relaying to
+        // its (possibly foreign) parent.
+        const isPageRoot = pageOrder.length > 0;
+        const blobUrls = {};
+        const resourceBlobs = {};
+        const UUID_SHAPE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+        const pendingFrames = {}; // uuid -> [{el, frag}] awaiting text for own frames
+        const pendingRelays = {}; // uuid -> [childWindow] awaiting text to pass down
+        function mountPage(el, frag, text) {
+          const pageBlob = new Blob([text], { type: 'text/html' });
+          const u = URL.createObjectURL(pageBlob);
+          resourceBlobs[u] = pageBlob;
+          el.src = u + frag;
+        }
+        function deliverPage(uuid, text) {
+          const frames = pendingFrames[uuid];
+          delete pendingFrames[uuid];
+          if (frames) for (const f of frames) mountPage(f.el, f.frag, text);
+          const relays = pendingRelays[uuid];
+          delete pendingRelays[uuid];
+          if (relays) {
+            for (const cw of relays) {
+              try { cw.postMessage({ __bundler_page: uuid, __bundler_text: text }, OWN_TARGET); } catch (err) { /* gone */ }
             }
-            finalBytes = new Uint8Array(totalLen);
-            let offset = 0;
-            for (const chunk of chunks) { finalBytes.set(chunk, offset); offset += chunk.length; }
-          } else {
-            console.warn('DecompressionStream not available, asset ' + uuid + ' may not render');
+          }
+        }
+        function ownFrameWindows() {
+          const out = [];
+          for (const f of Array.from(document.querySelectorAll('iframe'))) {
+            try { if (f.contentWindow) out.push(f.contentWindow); } catch (err) { /* detached */ }
+          }
+          return out;
+        }
+        window.addEventListener('message', function (e) {
+          const d = e.data;
+          if (!d || typeof d !== 'object' || !e.source) return;
+          // Origin gate first; the structural checks below (own-child-frames
+          // for requests, direct-parent + solicited-uuid for replies, the
+          // root's never-relay rule) are what hold in fully opaque chains
+          // where origin strings can't discriminate — a sandboxed root's
+          // FOREIGN wrapper still fails all three even though both serialize
+          // as real-vs-'null' rather than matching.
+          if (!trustedOrigin(e)) return;
+          if (typeof d.__bundler_need === 'string' && UUID_SHAPE.test(d.__bundler_need)) {
+            // Requests are honored only for this document's own child frames.
+            if (ownFrameWindows().indexOf(e.source) < 0) return;
+            const uuid = d.__bundler_need;
+            const text = pageTexts[uuid];
+            if (typeof text === 'string') {
+              try { e.source.postMessage({ __bundler_page: uuid, __bundler_text: text }, OWN_TARGET); } catch (err) { /* gone */ }
+              return;
+            }
+            if (isPageRoot || window.parent === window) return; // authoritative miss
+            const waiting = pendingRelays[uuid];
+            if (waiting) {
+              if (waiting.indexOf(e.source) < 0) waiting.push(e.source);
+              return;
+            }
+            // Never-answered uuids would otherwise accumulate forever under a
+            // request spray; past the cap (far above any real page count) new
+            // relays are dropped rather than remembered.
+            if (Object.keys(pendingRelays).length >= 128) return;
+            pendingRelays[uuid] = [e.source];
+            window.parent.postMessage({ __bundler_need: uuid }, OWN_TARGET);
+          } else if (
+            typeof d.__bundler_page === 'string' &&
+            UUID_SHAPE.test(d.__bundler_page) &&
+            typeof d.__bundler_text === 'string'
+          ) {
+            // The shape test is load-bearing beyond tidiness: the solicited
+            // check below uses the in operator, which matches prototype keys
+            // ('__proto__', 'constructor') — an unshaped key would reach
+            // deliverPage and throw, painting the error banner.
+            // Text is accepted only from the direct parent — the document
+            // that minted this one.
+            if (e.source !== window.parent || window.parent === window) return;
+            if (!(d.__bundler_page in pendingFrames) && !(d.__bundler_page in pendingRelays)) return;
+            deliverPage(d.__bundler_page, d.__bundler_text);
+          }
+        });
+
+        const uuids = Object.keys(manifest);
+        setStatus('Unpacking ' + uuids.length + ' assets...');
+
+        await Promise.all(uuids.map(async (uuid) => {
+          const entry = manifest[uuid];
+          try {
+            const binaryStr = atob(entry.data);
+            const bytes = new Uint8Array(binaryStr.length);
+            for (let i = 0; i < binaryStr.length; i++) bytes[i] = binaryStr.charCodeAt(i);
+
+            let finalBytes = bytes;
+            if (entry.compressed) {
+              if (typeof DecompressionStream !== 'undefined') {
+                const ds = new DecompressionStream('gzip');
+                const writer = ds.writable.getWriter();
+                const reader = ds.readable.getReader();
+                writer.write(bytes);
+                writer.close();
+                const chunks = [];
+                let totalLen = 0;
+                while (true) {
+                  const { done, value } = await reader.read();
+                  if (done) break;
+                  chunks.push(value);
+                  totalLen += value.length;
+                }
+                finalBytes = new Uint8Array(totalLen);
+                let offset = 0;
+                for (const chunk of chunks) { finalBytes.set(chunk, offset); offset += chunk.length; }
+              } else {
+                console.warn('DecompressionStream not available, asset ' + uuid + ' may not render');
+              }
+            }
+
+            if (pageSet.has(uuid)) {
+              pageTexts[uuid] = new TextDecoder().decode(finalBytes);
+              return;
+            }
+            if (FONT_MIME.test(entry.mime) && MIME_TOKEN.test(entry.mime)) {
+              // Strict artifact hosts allow font-src data: but not blob:.
+              blobUrls[uuid] = 'data:' + entry.mime + ';base64,' +
+                (entry.compressed ? toBase64(finalBytes) : entry.data);
+            } else {
+              const blob = new Blob([finalBytes], { type: entry.mime });
+              blobUrls[uuid] = URL.createObjectURL(blob);
+              resourceBlobs[blobUrls[uuid]] = blob;
+            }
+          } catch (err) {
+            console.error('Failed to decode asset ' + uuid + ':', err);
+            const blob = new Blob([], { type: entry.mime });
+            blobUrls[uuid] = URL.createObjectURL(blob);
+            resourceBlobs[blobUrls[uuid]] = blob;
+          }
+        }));
+
+        const extResEl = document.querySelector('script[type="__bundler/ext_resources"]');
+        const extResources = extResEl ? JSON.parse(extResEl.textContent) : [];
+        const resourceMap = {};
+        for (const entry of extResources) {
+          if (blobUrls[entry.uuid]) resourceMap[entry.id] = blobUrls[entry.uuid];
+        }
+
+        // Artifact-host CSP (connect-src 'self') refuses fetch() of blob: URLs —
+        // consumers read these Blobs directly. Survives the swap like the error sink.
+        window.__resourceBlobs = resourceBlobs;
+
+        setStatus('Rendering...');
+        // Page uuids have no blob here — they ride inside about:blank#<uuid>
+        // frame markers the pass below resolves after the swap.
+        for (const uuid of uuids) {
+          if (pageSet.has(uuid)) continue;
+          template = template.split(uuid).join(blobUrls[uuid]);
+        }
+
+        // Strip integrity + crossorigin — blob URLs from a file:// document inherit
+        // a null origin, so crossorigin forces a CORS fetch that SRI then rejects.
+        // The manifest bytes are ours; SRI protects against CDN compromise, not this.
+        template = template.replace(/\s+integrity="[^"]*"/gi, '').replace(/\s+crossorigin="[^"]*"/gi, '');
+
+        const resourceScript = '<script>window.__resources = ' +
+          JSON.stringify(resourceMap).replace(/<\//g, '<\\/') +
+          ';</' + 'script>';
+        // Inject after <head> so the DOCTYPE stays first; prepending the script
+        // would push the parser into quirks mode. DOMParser always emits a <head>
+        // (synthesizing one if the source HTML omitted it) but may carry
+        // attributes through, so match the full opening tag. slice() rather than
+        // replace() keeps us clear of $-pattern substitution in resourceScript.
+        const headOpen = template.match(/<head[^>]*>/i);
+        if (headOpen) {
+          const i = headOpen.index + headOpen[0].length;
+          template = template.slice(0, i) + resourceScript + template.slice(i);
+        }
+
+        // Parse the template and swap the root element. Scripts inserted via
+        // DOMParser/replaceWith are inert per spec — re-create each with
+        // createElement so they execute, awaiting onload for src scripts to
+        // preserve ordering (React before ReactDOM before Babel before text/babel).
+        const doc = new DOMParser().parseFromString(template, 'text/html');
+        document.documentElement.replaceWith(doc.documentElement);
+
+        // Resolve page-frame markers: mint this document's own blob for each
+        // framed page — from local text when this is the root, otherwise by
+        // asking the direct parent over the relay protocol above. An
+        // unanswered request leaves the frame on about:blank, the same
+        // degraded state as a refused embed.
+        {
+          const MARKER = /^about:blank#([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(#.*)?$/;
+          const needed = [];
+          for (const el of Array.from(document.querySelectorAll('iframe'))) {
+            const m = MARKER.exec(el.getAttribute('src') || '');
+            if (!m) continue;
+            const text = pageTexts[m[1]];
+            if (typeof text === 'string') {
+              mountPage(el, m[2] || '', text);
+            } else if (window.parent !== window && !isPageRoot) {
+              const had = pendingFrames[m[1]];
+              (pendingFrames[m[1]] = had || []).push({ el: el, frag: m[2] || '' });
+              if (!had) needed.push(m[1]);
+            }
+          }
+          for (const uuid of needed) {
+            window.parent.postMessage({ __bundler_need: uuid }, OWN_TARGET);
           }
         }
 
-        if (pageSet.has(uuid)) {
-          pageTexts[uuid] = new TextDecoder().decode(finalBytes);
-          return;
+        const dead = Array.from(document.scripts);
+        for (const old of dead) {
+          const s = document.createElement('script');
+          for (const a of old.attributes) s.setAttribute(a.name, a.value);
+          s.textContent = old.textContent;
+          // text/babel scripts with a src: read and inline. transformScriptTags
+          // does XHR against the src, but blob:null/ from a file:// origin is
+          // silently dropped. Inlining makes it a plain inline babel script,
+          // which transformScriptTags handles unconditionally.
+          if ((s.type === 'text/babel' || s.type === 'text/jsx') && s.src) {
+            const pre = resourceBlobs[s.src.split('#')[0]];
+            s.textContent = pre ? await pre.text() : await (await fetch(s.src)).text();
+            s.removeAttribute('src');
+          }
+          const p = s.src ? new Promise(function (r) { s.onload = s.onerror = r; }) : null;
+          old.replaceWith(s);
+          if (p) await p;
         }
-        if (FONT_MIME.test(entry.mime) && MIME_TOKEN.test(entry.mime)) {
-          // Strict artifact hosts allow font-src data: but not blob:.
-          blobUrls[uuid] = 'data:' + entry.mime + ';base64,' +
-            (entry.compressed ? toBase64(finalBytes) : entry.data);
-        } else {
-          const blob = new Blob([finalBytes], { type: entry.mime });
-          blobUrls[uuid] = URL.createObjectURL(blob);
-          resourceBlobs[blobUrls[uuid]] = blob;
+        // Babel standalone auto-transforms type=text/babel on DOMContentLoaded,
+        // which fired before we swapped the document. Trigger manually if present.
+        if (window.Babel && typeof window.Babel.transformScriptTags === 'function') {
+          window.Babel.transformScriptTags();
         }
       } catch (err) {
-        console.error('Failed to decode asset ' + uuid + ':', err);
-        const blob = new Blob([], { type: entry.mime });
-        blobUrls[uuid] = URL.createObjectURL(blob);
-        resourceBlobs[blobUrls[uuid]] = blob;
+        setStatus('Error unpacking: ' + err.message);
+        console.error('Bundle unpack error:', err);
       }
-    }));
-
-    const extResEl = document.querySelector('script[type="__bundler/ext_resources"]');
-    const extResources = extResEl ? JSON.parse(extResEl.textContent) : [];
-    const resourceMap = {};
-    for (const entry of extResources) {
-      if (blobUrls[entry.uuid]) resourceMap[entry.id] = blobUrls[entry.uuid];
-    }
-
-    // Artifact-host CSP (connect-src 'self') refuses fetch() of blob: URLs —
-    // consumers read these Blobs directly. Survives the swap like the error sink.
-    window.__resourceBlobs = resourceBlobs;
-
-    setStatus('Rendering...');
-    // Page uuids have no blob here — they ride inside about:blank#<uuid>
-    // frame markers the pass below resolves after the swap.
-    for (const uuid of uuids) {
-      if (pageSet.has(uuid)) continue;
-      template = template.split(uuid).join(blobUrls[uuid]);
-    }
-
-    // Strip integrity + crossorigin — blob URLs from a file:// document inherit
-    // a null origin, so crossorigin forces a CORS fetch that SRI then rejects.
-    // The manifest bytes are ours; SRI protects against CDN compromise, not this.
-    template = template.replace(/\s+integrity="[^"]*"/gi, '').replace(/\s+crossorigin="[^"]*"/gi, '');
-
-    const resourceScript = '<script>window.__resources = ' +
-      JSON.stringify(resourceMap).replace(/<\//g, '<\\/') +
-      ';</' + 'script>';
-    // Inject after <head> so the DOCTYPE stays first; prepending the script
-    // would push the parser into quirks mode. DOMParser always emits a <head>
-    // (synthesizing one if the source HTML omitted it) but may carry
-    // attributes through, so match the full opening tag. slice() rather than
-    // replace() keeps us clear of $-pattern substitution in resourceScript.
-    const headOpen = template.match(/<head[^>]*>/i);
-    if (headOpen) {
-      const i = headOpen.index + headOpen[0].length;
-      template = template.slice(0, i) + resourceScript + template.slice(i);
-    }
-
-    // Parse the template and swap the root element. Scripts inserted via
-    // DOMParser/replaceWith are inert per spec — re-create each with
-    // createElement so they execute, awaiting onload for src scripts to
-    // preserve ordering (React before ReactDOM before Babel before text/babel).
-    const doc = new DOMParser().parseFromString(template, 'text/html');
-    document.documentElement.replaceWith(doc.documentElement);
-
-    // Resolve page-frame markers: mint this document's own blob for each
-    // framed page — from local text when this is the root, otherwise by
-    // asking the direct parent over the relay protocol above. An
-    // unanswered request leaves the frame on about:blank, the same
-    // degraded state as a refused embed.
-    {
-      const MARKER = /^about:blank#([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(#.*)?$/;
-      const needed = [];
-      for (const el of Array.from(document.querySelectorAll('iframe'))) {
-        const m = MARKER.exec(el.getAttribute('src') || '');
-        if (!m) continue;
-        const text = pageTexts[m[1]];
-        if (typeof text === 'string') {
-          mountPage(el, m[2] || '', text);
-        } else if (window.parent !== window && !isPageRoot) {
-          const had = pendingFrames[m[1]];
-          (pendingFrames[m[1]] = had || []).push({ el: el, frag: m[2] || '' });
-          if (!had) needed.push(m[1]);
-        }
-      }
-      for (const uuid of needed) {
-        window.parent.postMessage({ __bundler_need: uuid }, OWN_TARGET);
-      }
-    }
-
-    const dead = Array.from(document.scripts);
-    for (const old of dead) {
-      const s = document.createElement('script');
-      for (const a of old.attributes) s.setAttribute(a.name, a.value);
-      s.textContent = old.textContent;
-      // text/babel scripts with a src: read and inline. transformScriptTags
-      // does XHR against the src, but blob:null/ from a file:// origin is
-      // silently dropped. Inlining makes it a plain inline babel script,
-      // which transformScriptTags handles unconditionally.
-      if ((s.type === 'text/babel' || s.type === 'text/jsx') && s.src) {
-        const pre = resourceBlobs[s.src.split('#')[0]];
-        s.textContent = pre ? await pre.text() : await (await fetch(s.src)).text();
-        s.removeAttribute('src');
-      }
-      const p = s.src ? new Promise(function(r) { s.onload = s.onerror = r; }) : null;
-      old.replaceWith(s);
-      if (p) await p;
-    }
-    // Babel standalone auto-transforms type=text/babel on DOMContentLoaded,
-    // which fired before we swapped the document. Trigger manually if present.
-    if (window.Babel && typeof window.Babel.transformScriptTags === 'function') {
-      window.Babel.transformScriptTags();
-    }
-  } catch (err) {
-    setStatus('Error unpacking: ' + err.message);
-    console.error('Bundle unpack error:', err);
-  }
-});
+    });
 
   </script>
 
@@ -386,7 +438,8 @@ document.addEventListener('DOMContentLoaded', async function() {
   </script>
 
   <script type="__bundler/template">
-"<!DOCTYPE html>\n<html><head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<script src=\"bdf4ff96-2944-4688-9cbd-ef61c09b582d\"><\u002Fscript>\n\n<\u002Fhead>\n<body>\n<x-dc>\n<helmet>\n<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin=\"\">\n<style>/* latin-ext */\n@font-face {\n  font-family: 'Figtree';\n  font-style: normal;\n  font-weight: 400;\n  font-display: swap;\n  src: url(\"4e5b0a76-5522-41cd-9d42-14b8e3b38606\") format('woff2');\n  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;\n}\n/* latin */\n@font-face {\n  font-family: 'Figtree';\n  font-style: normal;\n  font-weight: 400;\n  font-display: swap;\n  src: url(\"9f975953-3fc5-4b3a-91d2-ae116d26f7e7\") format('woff2');\n  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;\n}\n/* latin-ext */\n@font-face {\n  font-family: 'Figtree';\n  font-style: normal;\n  font-weight: 500;\n  font-display: swap;\n  src: url(\"4e5b0a76-5522-41cd-9d42-14b8e3b38606\") format('woff2');\n  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;\n}\n/* latin */\n@font-face {\n  font-family: 'Figtree';\n  font-style: normal;\n  font-weight: 500;\n  font-display: swap;\n  src: url(\"9f975953-3fc5-4b3a-91d2-ae116d26f7e7\") format('woff2');\n  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;\n}\n/* latin-ext */\n@font-face {\n  font-family: 'Figtree';\n  font-style: normal;\n  font-weight: 600;\n  font-display: swap;\n  src: url(\"4e5b0a76-5522-41cd-9d42-14b8e3b38606\") format('woff2');\n  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;\n}\n/* latin */\n@font-face {\n  font-family: 'Figtree';\n  font-style: normal;\n  font-weight: 600;\n  font-display: swap;\n  src: url(\"9f975953-3fc5-4b3a-91d2-ae116d26f7e7\") format('woff2');\n  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;\n}\n/* latin-ext */\n@font-face {\n  font-family: 'Figtree';\n  font-style: normal;\n  font-weight: 700;\n  font-display: swap;\n  src: url(\"4e5b0a76-5522-41cd-9d42-14b8e3b38606\") format('woff2');\n  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;\n}\n/* latin */\n@font-face {\n  font-family: 'Figtree';\n  font-style: normal;\n  font-weight: 700;\n  font-display: swap;\n  src: url(\"9f975953-3fc5-4b3a-91d2-ae116d26f7e7\") format('woff2');\n  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;\n}\n/* latin-ext */\n@font-face {\n  font-family: 'Figtree';\n  font-style: normal;\n  font-weight: 800;\n  font-display: swap;\n  src: url(\"4e5b0a76-5522-41cd-9d42-14b8e3b38606\") format('woff2');\n  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;\n}\n/* latin */\n@font-face {\n  font-family: 'Figtree';\n  font-style: normal;\n  font-weight: 800;\n  font-display: swap;\n  src: url(\"9f975953-3fc5-4b3a-91d2-ae116d26f7e7\") format('woff2');\n  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;\n}\n<\u002Fstyle>\n<style>\n  * { box-sizing: border-box; }\n  body { margin: 0; background: #FAFAF7; font-family: \"Figtree\", \"Helvetica Neue\", Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }\n  a { color: #5D6B34; text-decoration: none; font-weight: 600; }\n  a:hover { color: #43501F; text-decoration: underline; }\n<\u002Fstyle>\n<\u002Fhelmet>\n<div style=\"min-height: 100vh; padding: clamp(20px, 4vw, 56px) clamp(16px, 4vw, 40px); color: #1C1C19; font-size: 18px; line-height: 1.6;\">\n  <div style=\"max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; gap: clamp(20px, 2.5vw, 32px);\">\n\n    <div style=\"background: #FFFFFF; border: 1px solid #E7E5DC; border-radius: 20px; padding: clamp(28px, 5vw, 56px) clamp(20px, 4vw, 56px); text-align: center;\">\n      <div style=\"width: 84px; height: 84px; border-radius: 50%; background: #E1EDD6; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;\">\n        <svg width=\"40\" height=\"40\" sc-camel-view-box=\"0 0 40 40\" fill=\"none\" aria-hidden=\"true\"><path d=\"M9 21.5L16.5 29L31 12.5\" stroke=\"#4A5A24\" stroke-width=\"4.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><\u002Fpath><\u002Fsvg>\n      <\u002Fdiv>\n      <h1 style=\"margin: 0 0 16px; font-size: clamp(28px, 4.4vw, 42px); line-height: 1.18; font-weight: 800; letter-spacing: -0.02em; text-wrap: balance;\">Žádost o rezervaci byla úspěšně odeslána!<\u002Fh1>\n      <p style=\"margin: 0 auto 28px; max-width: 46ch; font-size: clamp(17px, 1.6vw, 20px); color: #55554E; text-wrap: pretty;\">Potvrzení o přijetí žádosti jsme odeslali na váš e-mail <strong style=\"color: #1C1C19; font-weight: 700; white-space: nowrap;\">ondra.zeman05@gmail.com<\u002Fstrong>.<\u002Fp>\n      <div style=\"display: inline-flex; align-items: center; gap: 10px; background: #EDF2E4; color: #4A5A24; border-radius: 999px; padding: 12px 24px; font-size: clamp(16px, 1.5vw, 19px); font-weight: 700;\">\n        <span style=\"font-weight: 500; color: #5D6B34;\">Kód žádosti:<\u002Fspan> HM-2026-5099\n      <\u002Fdiv>\n    <\u002Fdiv>\n\n    <div style=\"display: grid; grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr)); gap: clamp(20px, 2.5vw, 32px); align-items: start;\">\n\n      <section style=\"background: #FFFFFF; border: 1px solid #E7E5DC; border-radius: 20px; padding: clamp(24px, 3.2vw, 40px);\">\n        <h2 style=\"margin: 0 0 14px; font-size: clamp(21px, 2.2vw, 26px); font-weight: 700; letter-spacing: -0.01em;\">Co bude následovat nyní?<\u002Fh2>\n        <p style=\"margin: 0 0 28px; color: #55554E; text-wrap: pretty;\">Abychom předešli překrývání termínů s externími rezervačními systémy, vaši rezervaci nyní fyzicky ověřuje recepce hotelu.<\u002Fp>\n\n        <ol style=\"list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px;\">\n          <li style=\"display: grid; grid-template-columns: 44px 1fr; gap: 18px; padding: 20px 0; border-top: 1px solid #EFEEE7;\">\n            <span style=\"width: 44px; height: 44px; border-radius: 50%; background: #4A5A24; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 700;\">1<\u002Fspan>\n            <div>\n              <h3 style=\"margin: 8px 0 6px; font-size: clamp(18px, 1.7vw, 21px); font-weight: 700;\">Ověření kapacity recepcí<\u002Fh3>\n              <p style=\"margin: 0; color: #55554E; text-wrap: pretty;\">Recepce zkontroluje dostupnost pokoje <strong style=\"color: #1C1C19;\">Pokoj Nadstandard A1<\u002Fstrong>. Dnes při odeslání <strong style=\"color: #1C1C19;\">neplatíte nic (0 Kč)<\u002Fstrong>.<\u002Fp>\n            <\u002Fdiv>\n          <\u002Fli>\n          <li style=\"display: grid; grid-template-columns: 44px 1fr; gap: 18px; padding: 20px 0; border-top: 1px solid #EFEEE7;\">\n            <span style=\"width: 44px; height: 44px; border-radius: 50%; background: #EDF2E4; color: #4A5A24; display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 700;\">2<\u002Fspan>\n            <div>\n              <h3 style=\"margin: 8px 0 6px; font-size: clamp(18px, 1.7vw, 21px); font-weight: 700;\">Výzva k úhradě 30% zálohy<\u002Fh3>\n              <p style=\"margin: 0; color: #55554E; text-wrap: pretty;\">Jakmile termín schválíme, zašleme vám e-mail s pokyny k úhradě 30% zálohy (<strong style=\"color: #1C1C19;\">714 Kč<\u002Fstrong>) s QR kódem.<\u002Fp>\n            <\u002Fdiv>\n          <\u002Fli>\n          <li style=\"display: grid; grid-template-columns: 44px 1fr; gap: 18px; padding: 20px 0; border-top: 1px solid #EFEEE7;\">\n            <span style=\"width: 44px; height: 44px; border-radius: 50%; background: #EDF2E4; color: #4A5A24; display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 700;\">3<\u002Fspan>\n            <div>\n              <h3 style=\"margin: 8px 0 6px; font-size: clamp(18px, 1.7vw, 21px); font-weight: 700;\">Závazné potvrzení pobytu<\u002Fh3>\n              <p style=\"margin: 0; color: #55554E; text-wrap: pretty;\">Po přijetí zálohy vám zašleme finální potvrzení. Doplatek 70 % (<strong style=\"color: #1C1C19;\">1666 Kč<\u002Fstrong>) zaplatíte na místě při příjezdu.<\u002Fp>\n            <\u002Fdiv>\n          <\u002Fli>\n        <\u002Fol>\n      <\u002Fsection>\n\n      <div style=\"display: flex; flex-direction: column; gap: clamp(20px, 2.5vw, 32px);\">\n\n        <section style=\"background: #FFFFFF; border: 1px solid #E7E5DC; border-radius: 20px; padding: clamp(24px, 3.2vw, 40px);\">\n          <h2 style=\"margin: 0 0 24px; font-size: clamp(21px, 2.2vw, 26px); font-weight: 700; letter-spacing: -0.01em;\">Rekapitulace rezervace<\u002Fh2>\n          <dl style=\"margin: 0; display: flex; flex-direction: column; gap: 0;\">\n            <div style=\"display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 20px; padding: 14px 0; border-top: 1px solid #EFEEE7;\">\n              <dt style=\"color: #55554E;\">Pokoj<\u002Fdt>\n              <dd style=\"margin: 0; font-weight: 700; text-align: right;\">Pokoj Nadstandard A1<\u002Fdd>\n            <\u002Fdiv>\n            <div style=\"display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 20px; padding: 14px 0; border-top: 1px solid #EFEEE7;\">\n              <dt style=\"color: #55554E;\">Termín<\u002Fdt>\n              <dd style=\"margin: 0; font-weight: 700; text-align: right;\">27. 7. 2026 – 29. 7. 2026<\u002Fdd>\n            <\u002Fdiv>\n            <div style=\"display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 20px; padding: 14px 0; border-top: 1px solid #EFEEE7;\">\n              <dt style=\"color: #55554E;\">Počet osob<\u002Fdt>\n              <dd style=\"margin: 0; font-weight: 700; text-align: right;\">1 dospělí<\u002Fdd>\n            <\u002Fdiv>\n            <div style=\"display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 20px; padding: 18px 0 14px; margin-top: 10px; border-top: 2px solid #E7E5DC;\">\n              <dt style=\"color: #55554E;\">Celková cena<\u002Fdt>\n              <dd style=\"margin: 0; font-weight: 700; font-size: clamp(19px, 1.8vw, 22px); text-align: right;\">2380 Kč s DPH<\u002Fdd>\n            <\u002Fdiv>\n          <\u002Fdl>\n          <div style=\"margin-top: 16px; background: #EDF2E4; border-radius: 14px; padding: 20px 24px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 20px;\">\n            <span style=\"color: #4A5A24; font-weight: 500;\">Záloha k platbě po schválení<\u002Fspan>\n            <strong style=\"color: #4A5A24; font-size: clamp(20px, 2vw, 24px); font-weight: 800;\">714 Kč<\u002Fstrong>\n          <\u002Fdiv>\n        <\u002Fsection>\n\n        <section style=\"background: #FFFFFF; border: 1px solid #E7E5DC; border-radius: 20px; padding: clamp(24px, 3.2vw, 40px);\">\n          <h2 style=\"margin: 0 0 24px; font-size: clamp(21px, 2.2vw, 26px); font-weight: 700; letter-spacing: -0.01em;\">Kontaktní údaje recepce hotelu<\u002Fh2>\n          <div style=\"display: flex; flex-direction: column; gap: 0;\">\n            <div style=\"padding: 14px 0; border-top: 1px solid #EFEEE7;\">\n              <div style=\"color: #55554E; font-size: 16px; margin-bottom: 2px;\">Adresa<\u002Fdiv>\n              <div style=\"font-weight: 600; text-wrap: pretty;\">Údolní 368, 468 61 Desná v Jizerských horách 1<\u002Fdiv>\n            <\u002Fdiv>\n            <div style=\"padding: 14px 0; border-top: 1px solid #EFEEE7; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr)); gap: 14px 24px;\">\n              <div>\n                <div style=\"color: #55554E; font-size: 16px; margin-bottom: 2px;\">Check-in (Příjezd)<\u002Fdiv>\n                <div style=\"font-weight: 600;\">14:00 – 19:00 hod.<\u002Fdiv>\n              <\u002Fdiv>\n              <div>\n                <div style=\"color: #55554E; font-size: 16px; margin-bottom: 2px;\">Check-out (Odjezd)<\u002Fdiv>\n                <div style=\"font-weight: 600;\">do 10:00 hod.<\u002Fdiv>\n              <\u002Fdiv>\n            <\u002Fdiv>\n            <div style=\"padding: 14px 0; border-top: 1px solid #EFEEE7;\">\n              <div style=\"color: #55554E; font-size: 16px; margin-bottom: 2px;\">Telefon<\u002Fdiv>\n              <a href=\"tel:+420777666273\" style=\"font-size: clamp(19px, 1.8vw, 22px); font-weight: 700;\">+420 777 666 273<\u002Fa>\n            <\u002Fdiv>\n            <div style=\"padding: 14px 0; border-top: 1px solid #EFEEE7;\">\n              <div style=\"color: #55554E; font-size: 16px; margin-bottom: 2px;\">E-mail<\u002Fdiv>\n              <a href=\"mailto:hotel@umustku.cz\" style=\"font-size: clamp(18px, 1.7vw, 20px); font-weight: 700;\">hotel@umustku.cz<\u002Fa>\n            <\u002Fdiv>\n          <\u002Fdiv>\n        <\u002Fsection>\n\n      <\u002Fdiv>\n    <\u002Fdiv>\n\n    <div style=\"display: flex; flex-wrap: wrap-reverse; gap: 16px; justify-content: space-between; align-items: stretch;\">\n      <a href=\"#\" style=\"flex: 1 1 260px; min-height: 60px; display: flex; align-items: center; justify-content: center; gap: 10px; background: #FFFFFF; border: 1px solid #D8D5C9; border-radius: 12px; padding: 16px 28px; color: #1C1C19; font-size: clamp(17px, 1.6vw, 19px); font-weight: 600;\" style-hover=\"background: #F3F2EC; border-color: #B9B5A5; text-decoration: none;\">← Vytvořit další žádost<\u002Fa>\n      <a href=\"#\" style=\"flex: 2 1 380px; min-height: 60px; display: flex; align-items: center; justify-content: center; background: #5D6B34; border: 1px solid #5D6B34; border-radius: 12px; padding: 16px 32px; color: #FFFFFF; font-size: clamp(17px, 1.7vw, 20px); font-weight: 700;\" style-hover=\"background: #47531F; border-color: #47531F; color: #FFFFFF; text-decoration: none;\">Zpět na hlavní stránku Hotelu u Můstku<\u002Fa>\n    <\u002Fdiv>\n\n  <\u002Fdiv>\n<\u002Fdiv>\n<\u002Fx-dc>\n\n\n<\u002Fbody><\u002Fhtml>"
+"<!DOCTYPE html>\n<html><head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<script src=\"bdf4ff96-2944-4688-9cbd-ef61c09b582d\"><\u002Fscript>\n\n<\u002Fhead>\n<body>\n<x-dc>\n<helmet>\n<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin=\"\">\n<style>/* latin-ext */\n@font-face {\n  font-family: 'Figtree';\n  font-style: normal;\n  font-weight: 400;\n  font-display: swap;\n  src: url(\"4e5b0a76-5522-41cd-9d42-14b8e3b38606\") format('woff2');\n  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;\n}\n/* latin */\n@font-face {\n  font-family: 'Figtree';\n  font-style: normal;\n  font-weight: 400;\n  font-display: swap;\n  src: url(\"9f975953-3fc5-4b3a-91d2-ae116d26f7e7\") format('woff2');\n  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;\n}\n/* latin-ext */\n@font-face {\n  font-family: 'Figtree';\n  font-style: normal;\n  font-weight: 500;\n  font-display: swap;\n  src: url(\"4e5b0a76-5522-41cd-9d42-14b8e3b38606\") format('woff2');\n  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;\n}\n/* latin */\n@font-face {\n  font-family: 'Figtree';\n  font-style: normal;\n  font-weight: 500;\n  font-display: swap;\n  src: url(\"9f975953-3fc5-4b3a-91d2-ae116d26f7e7\") format('woff2');\n  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;\n}\n/* latin-ext */\n@font-face {\n  font-family: 'Figtree';\n  font-style: normal;\n  font-weight: 600;\n  font-display: swap;\n  src: url(\"4e5b0a76-5522-41cd-9d42-14b8e3b38606\") format('woff2');\n  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;\n}\n/* latin */\n@font-face {\n  font-family: 'Figtree';\n  font-style: normal;\n  font-weight: 600;\n  font-display: swap;\n  src: url(\"9f975953-3fc5-4b3a-91d2-ae116d26f7e7\") format('woff2');\n  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;\n}\n/* latin-ext */\n@font-face {\n  font-family: 'Figtree';\n  font-style: normal;\n  font-weight: 700;\n  font-display: swap;\n  src: url(\"4e5b0a76-5522-41cd-9d42-14b8e3b38606\") format('woff2');\n  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;\n}\n/* latin */\n@font-face {\n  font-family: 'Figtree';\n  font-style: normal;\n  font-weight: 700;\n  font-display: swap;\n  src: url(\"9f975953-3fc5-4b3a-91d2-ae116d26f7e7\") format('woff2');\n  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;\n}\n/* latin-ext */\n@font-face {\n  font-family: 'Figtree';\n  font-style: normal;\n  font-weight: 800;\n  font-display: swap;\n  src: url(\"4e5b0a76-5522-41cd-9d42-14b8e3b38606\") format('woff2');\n  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;\n}\n/* latin */\n@font-face {\n  font-family: 'Figtree';\n  font-style: normal;\n  font-weight: 800;\n  font-display: swap;\n  src: url(\"9f975953-3fc5-4b3a-91d2-ae116d26f7e7\") format('woff2');\n  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;\n}\n<\u002Fstyle>\n<style>\n  * { box-sizing: border-box; }\n  body { margin: 0; background: #FAFAF7; font-family: \"Figtree\", \"Helvetica Neue\", Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }\n  a { color: #5D6B34; text-decoration: none; font-weight: 600; }\n  a:hover { color: #43501F; text-decoration: underline; }\n<\u002Fstyle>\n<\u002Fhelmet>\n<div style=\"min-height: 100vh; padding: clamp(20px, 4vw, 56px) clamp(16px, 4vw, 40px); color: #1C1C19; font-size: 18px; line-height: 1.6;\">\n  <div style=\"max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; gap: clamp(20px, 2.5vw, 32px);\">\n\n    <div style=\"background: #FFFFFF; border: 1px solid #E7E5DC; border-radius: 20px; padding: clamp(28px, 5vw, 56px) clamp(20px, 4vw, 56px); text-align: center;\">\n      <div style=\"width: 84px; height: 84px; border-radius: 50%; background: #E1EDD6; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;\">\n        <svg width=\"40\" height=\"40\" sc-camel-view-box=\"0 0 40 40\" fill=\"none\" aria-hidden=\"true\"><path d=\"M9 21.5L16.5 29L31 12.5\" stroke=\"#4A5A24\" stroke-width=\"4.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><\u002Fpath><\u002Fsvg>\n      <\u002Fdiv>\n      <h1 style=\"margin: 0 0 16px; font-size: clamp(28px, 4.4vw, 42px); line-height: 1.18; font-weight: 800; letter-spacing: -0.02em; text-wrap: balance;\">Žádost o rezervaci byla úspěšně odeslána!<\u002Fh1>\n      <p style=\"margin: 0 auto 28px; max-width: 46ch; font-size: clamp(17px, 1.6vw, 20px); color: #55554E; text-wrap: pretty;\">Potvrzení o přijetí žádosti jsme odeslali na váš e-mail <strong style=\"color: #1C1C19; font-weight: 700; white-space: nowrap;\">ondra.zeman05@gmail.com<\u002Fstrong>.<\u002Fp>\n      <div style=\"display: inline-flex; align-items: center; gap: 10px; background: #EDF2E4; color: #4A5A24; border-radius: 999px; padding: 12px 24px; font-size: clamp(16px, 1.5vw, 19px); font-weight: 700;\">\n        <span style=\"font-weight: 500; color: #5D6B34;\">Kód žádosti:<\u002Fspan> HM-2026-5099\n      <\u002Fdiv>\n    <\u002Fdiv>\n\n    <div style=\"display: grid; grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr)); gap: clamp(20px, 2.5vw, 32px); align-items: start;\">\n\n      <section style=\"background: #FFFFFF; border: 1px solid #E7E5DC; border-radius: 20px; padding: clamp(24px, 3.2vw, 40px);\">\n        <h2 style=\"margin: 0 0 14px; font-size: clamp(21px, 2.2vw, 26px); font-weight: 700; letter-spacing: -0.01em;\">Co bude následovat nyní?<\u002Fh2>\n        <p style=\"margin: 0 0 28px; color: #55554E; text-wrap: pretty;\">Abychom předešli překrývání termínů, vaši rezervaci nyní fyzicky ověřuje recepce hotelu.<\u002Fp>\n\n        <ol style=\"list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px;\">\n          <li style=\"display: grid; grid-template-columns: 44px 1fr; gap: 18px; padding: 20px 0; border-top: 1px solid #EFEEE7;\">\n            <span style=\"width: 44px; height: 44px; border-radius: 50%; background: #4A5A24; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 700;\">1<\u002Fspan>\n            <div>\n              <h3 style=\"margin: 8px 0 6px; font-size: clamp(18px, 1.7vw, 21px); font-weight: 700;\">Ověření kapacity recepcí<\u002Fh3>\n              <p style=\"margin: 0; color: #55554E; text-wrap: pretty;\">Recepce zkontroluje dostupnost pokoje <strong style=\"color: #1C1C19;\">Pokoj Nadstandard A1<\u002Fstrong>. Dnes při odeslání <strong style=\"color: #1C1C19;\">neplatíte nic (0 Kč)<\u002Fstrong>.<\u002Fp>\n            <\u002Fdiv>\n          <\u002Fli>\n          <li style=\"display: grid; grid-template-columns: 44px 1fr; gap: 18px; padding: 20px 0; border-top: 1px solid #EFEEE7;\">\n            <span style=\"width: 44px; height: 44px; border-radius: 50%; background: #EDF2E4; color: #4A5A24; display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 700;\">2<\u002Fspan>\n            <div>\n              <h3 style=\"margin: 8px 0 6px; font-size: clamp(18px, 1.7vw, 21px); font-weight: 700;\">Výzva k úhradě 30% zálohy<\u002Fh3>\n              <p style=\"margin: 0; color: #55554E; text-wrap: pretty;\">Jakmile termín schválíme, zašleme vám e-mail s pokyny k úhradě 30% zálohy (<strong style=\"color: #1C1C19;\">714 Kč<\u002Fstrong>) s QR kódem.<\u002Fp>\n            <\u002Fdiv>\n          <\u002Fli>\n          <li style=\"display: grid; grid-template-columns: 44px 1fr; gap: 18px; padding: 20px 0; border-top: 1px solid #EFEEE7;\">\n            <span style=\"width: 44px; height: 44px; border-radius: 50%; background: #EDF2E4; color: #4A5A24; display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 700;\">3<\u002Fspan>\n            <div>\n              <h3 style=\"margin: 8px 0 6px; font-size: clamp(18px, 1.7vw, 21px); font-weight: 700;\">Závazné potvrzení pobytu<\u002Fh3>\n              <p style=\"margin: 0; color: #55554E; text-wrap: pretty;\">Po přijetí zálohy vám zašleme finální potvrzení. Doplatek 70 % (<strong style=\"color: #1C1C19;\">1666 Kč<\u002Fstrong>) zaplatíte na místě při příjezdu.<\u002Fp>\n            <\u002Fdiv>\n          <\u002Fli>\n        <\u002Fol>\n      <\u002Fsection>\n\n      <div style=\"display: flex; flex-direction: column; gap: clamp(20px, 2.5vw, 32px);\">\n\n        <section style=\"background: #FFFFFF; border: 1px solid #E7E5DC; border-radius: 20px; padding: clamp(24px, 3.2vw, 40px);\">\n          <h2 style=\"margin: 0 0 24px; font-size: clamp(21px, 2.2vw, 26px); font-weight: 700; letter-spacing: -0.01em;\">Rekapitulace rezervace<\u002Fh2>\n          <dl style=\"margin: 0; display: flex; flex-direction: column; gap: 0;\">\n            <div style=\"display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 20px; padding: 14px 0; border-top: 1px solid #EFEEE7;\">\n              <dt style=\"color: #55554E;\">Pokoj<\u002Fdt>\n              <dd style=\"margin: 0; font-weight: 700; text-align: right;\">Pokoj Nadstandard A1<\u002Fdd>\n            <\u002Fdiv>\n            <div style=\"display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 20px; padding: 14px 0; border-top: 1px solid #EFEEE7;\">\n              <dt style=\"color: #55554E;\">Termín<\u002Fdt>\n              <dd style=\"margin: 0; font-weight: 700; text-align: right;\">27. 7. 2026 – 29. 7. 2026<\u002Fdd>\n            <\u002Fdiv>\n            <div style=\"display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 20px; padding: 14px 0; border-top: 1px solid #EFEEE7;\">\n              <dt style=\"color: #55554E;\">Počet osob<\u002Fdt>\n              <dd style=\"margin: 0; font-weight: 700; text-align: right;\">1 dospělí<\u002Fdd>\n            <\u002Fdiv>\n            <div style=\"display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 20px; padding: 18px 0 14px; margin-top: 10px; border-top: 2px solid #E7E5DC;\">\n              <dt style=\"color: #55554E;\">Celková cena<\u002Fdt>\n              <dd style=\"margin: 0; font-weight: 700; font-size: clamp(19px, 1.8vw, 22px); text-align: right;\">2380 Kč s DPH<\u002Fdd>\n            <\u002Fdiv>\n          <\u002Fdl>\n          <div style=\"margin-top: 16px; background: #EDF2E4; border-radius: 14px; padding: 20px 24px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 20px;\">\n            <span style=\"color: #4A5A24; font-weight: 500;\">Záloha k platbě po schválení<\u002Fspan>\n            <strong style=\"color: #4A5A24; font-size: clamp(20px, 2vw, 24px); font-weight: 800;\">714 Kč<\u002Fstrong>\n          <\u002Fdiv>\n        <\u002Fsection>\n\n        <section style=\"background: #FFFFFF; border: 1px solid #E7E5DC; border-radius: 20px; padding: clamp(24px, 3.2vw, 40px);\">\n          <h2 style=\"margin: 0 0 24px; font-size: clamp(21px, 2.2vw, 26px); font-weight: 700; letter-spacing: -0.01em;\">Kontaktní údaje recepce hotelu<\u002Fh2>\n          <div style=\"display: flex; flex-direction: column; gap: 0;\">\n            <div style=\"padding: 14px 0; border-top: 1px solid #EFEEE7;\">\n              <div style=\"color: #55554E; font-size: 16px; margin-bottom: 2px;\">Adresa<\u002Fdiv>\n              <div style=\"font-weight: 600; text-wrap: pretty;\">Údolní 368, 468 61 Desná v Jizerských horách 1<\u002Fdiv>\n            <\u002Fdiv>\n            <div style=\"padding: 14px 0; border-top: 1px solid #EFEEE7; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr)); gap: 14px 24px;\">\n              <div>\n                <div style=\"color: #55554E; font-size: 16px; margin-bottom: 2px;\">Check-in (Příjezd)<\u002Fdiv>\n                <div style=\"font-weight: 600;\">14:00 – 19:00 hod.<\u002Fdiv>\n              <\u002Fdiv>\n              <div>\n                <div style=\"color: #55554E; font-size: 16px; margin-bottom: 2px;\">Check-out (Odjezd)<\u002Fdiv>\n                <div style=\"font-weight: 600;\">do 10:00 hod.<\u002Fdiv>\n              <\u002Fdiv>\n            <\u002Fdiv>\n            <div style=\"padding: 14px 0; border-top: 1px solid #EFEEE7;\">\n              <div style=\"color: #55554E; font-size: 16px; margin-bottom: 2px;\">Telefon<\u002Fdiv>\n              <a href=\"tel:+420777666273\" style=\"font-size: clamp(19px, 1.8vw, 22px); font-weight: 700;\">+420 777 666 273<\u002Fa>\n            <\u002Fdiv>\n            <div style=\"padding: 14px 0; border-top: 1px solid #EFEEE7;\">\n              <div style=\"color: #55554E; font-size: 16px; margin-bottom: 2px;\">E-mail<\u002Fdiv>\n              <a href=\"mailto:hotel@umustku.cz\" style=\"font-size: clamp(18px, 1.7vw, 20px); font-weight: 700;\">hotel@umustku.cz<\u002Fa>\n            <\u002Fdiv>\n          <\u002Fdiv>\n        <\u002Fsection>\n\n      <\u002Fdiv>\n    <\u002Fdiv>\n\n    <div style=\"display: flex; flex-wrap: wrap-reverse; gap: 16px; justify-content: space-between; align-items: stretch;\">\n      <a href=\"#\" style=\"flex: 1 1 260px; min-height: 60px; display: flex; align-items: center; justify-content: center; gap: 10px; background: #FFFFFF; border: 1px solid #D8D5C9; border-radius: 12px; padding: 16px 28px; color: #1C1C19; font-size: clamp(17px, 1.6vw, 19px); font-weight: 600;\" style-hover=\"background: #F3F2EC; border-color: #B9B5A5; text-decoration: none;\">← Vytvořit další žádost<\u002Fa>\n      <a href=\"#\" style=\"flex: 2 1 380px; min-height: 60px; display: flex; align-items: center; justify-content: center; background: #5D6B34; border: 1px solid #5D6B34; border-radius: 12px; padding: 16px 32px; color: #FFFFFF; font-size: clamp(17px, 1.7vw, 20px); font-weight: 700;\" style-hover=\"background: #47531F; border-color: #47531F; color: #FFFFFF; text-decoration: none;\">Zpět na hlavní stránku Hotelu u Můstku<\u002Fa>\n    <\u002Fdiv>\n\n  <\u002Fdiv>\n<\u002Fdiv>\n<\u002Fx-dc>\n\n\n<\u002Fbody><\u002Fhtml>"
   </script>
 </body>
+
 </html>

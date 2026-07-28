@@ -1701,7 +1701,10 @@ export function closePromoCodeModal() {
   if (modalOverlay) {
     modalOverlay.style.display = 'none';
   }
+  document.documentElement.style.overflow = '';
   document.body.style.overflow = '';
+  document.documentElement.classList.remove('modal-open');
+  document.body.classList.remove('modal-open');
 }
 
 export function openPromoCodeModal() {
@@ -1748,7 +1751,10 @@ export function openPromoCodeModal() {
   `;
 
   modalOverlay.style.display = 'flex';
+  document.documentElement.style.overflow = 'hidden';
   document.body.style.overflow = 'hidden';
+  document.documentElement.classList.add('modal-open');
+  document.body.classList.add('modal-open');
 
   const btnClose = modalOverlay.querySelector('.btn-close-promo-modal');
   if (btnClose) {
@@ -1997,12 +2003,16 @@ const initInteractivity = () => {
   if (mobileToggle && mobileOverlay) {
     mobileToggle.addEventListener('click', () => {
       mobileOverlay.classList.add('is-active');
+      document.body.style.overflow = 'hidden';
+      document.body.classList.add('modal-open');
     });
   }
 
   if (mobileClose && mobileOverlay) {
     mobileClose.addEventListener('click', () => {
       mobileOverlay.classList.remove('is-active');
+      document.body.style.overflow = '';
+      document.body.classList.remove('modal-open');
     });
   }
 
@@ -2011,6 +2021,8 @@ const initInteractivity = () => {
   mobileNavLinks.forEach(link => {
     link.addEventListener('click', () => {
       if (mobileOverlay) mobileOverlay.classList.remove('is-active');
+      document.body.style.overflow = '';
+      document.body.classList.remove('modal-open');
     });
   });
 
@@ -2714,7 +2726,7 @@ const route = (isInitial = false) => {
   if (pageKey === 'booking') {
     app.innerHTML = getBookingPageHTML();
     const urlParams = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
-    const roomId = urlParams.get('room') || 'p5';
+    const roomId = urlParams.get('room') || '';
     new BookingSystem('booking-container').init(roomId);
   } else if (pageKey === 'admin') {
     app.innerHTML = getAdminPageHTML();

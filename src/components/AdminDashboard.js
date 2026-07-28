@@ -755,6 +755,26 @@ export class AdminDashboard {
       return;
     }
 
+    const isAnyAdminModalOpen = Boolean(
+      this.showBlockModal ||
+      this.showDiscountModal ||
+      this.showRoomPricesModal ||
+      this.showRoomMgmtModal ||
+      this.showDeleteModal ||
+      this.showDetailDrawerCode
+    );
+    if (isAnyAdminModalOpen) {
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+      document.documentElement.classList.add('modal-open');
+      document.body.classList.add('modal-open');
+    } else {
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+      document.documentElement.classList.remove('modal-open');
+      document.body.classList.remove('modal-open');
+    }
+
     const pendingCount = this.reservations.filter(r => r.status === 'pending_approval').length;
     const awaitingDepositCount = this.reservations.filter(r => r.status === 'awaiting_deposit').length;
     const confirmedCount = this.reservations.filter(r => r.status === 'confirmed').length;
@@ -1000,11 +1020,11 @@ export class AdminDashboard {
           <div class="admin-modal-overlay admin-modal-overlay-block">
             <div class="admin-confirm-modal admin-block-modal" style="max-width: 600px; padding: 0 28px 24px 28px;">
               <div class="admin-modal-header-sticky">
-                <h3 class="admin-modal-title" style="margin: 0; font-size: 18.5px; font-weight: 800;">📅 Správa uzávěrek & Blokování termínů</h3>
+                <h3 class="admin-modal-title" style="margin: 0; font-size: 18.5px; font-weight: 800;">📅 Rychlé blokování termínů (Booking.com / Telefon / Uzávěrka)</h3>
                 <button type="button" class="btn-close-block-modal" style="background: none; border: none; font-size: 26px; cursor: pointer; color: #777; line-height: 1; padding: 4px 8px;">&times;</button>
               </div>
-              <p class="admin-modal-desc" style="margin-top: 14px; margin-bottom: 16px; font-size: 13.5px; color: #55554e;">
-                Zaklikněte v kalendáři dny, které chcete zablokovat. Zablokované termíny nebudou na rezervačním portálu dostupné ke zvolení.
+              <p class="admin-modal-desc" style="margin-top: 14px; margin-bottom: 16px; font-size: 13.5px; color: #55554e; line-height: 1.45;">
+                Zde můžete bleskově zablokovat termíny pro konkrétní pokoj (např. při telefonické rezervaci hosta nebo obsazení přes Booking.com), aniž byste museli vypisovat jména a zakládat celou rezervaci.
               </p>
 
               <!-- PROSTŘEDÍ VÝBĚRU POKOJE A DŮVODU -->
@@ -1018,8 +1038,13 @@ export class AdminDashboard {
                     </select>
                   </div>
                   <div>
-                    <label style="font-size: 13px; font-weight: 600; color: #555; display: block; margin-bottom: 6px;">Důvod uzávěrky (volitelné)</label>
-                    <input type="text" id="block-reason-input" class="form-input" placeholder="např. Dovolená správy..." style="height: 40px; font-size: 13.5px;" value="${this.blockForm.reason}">
+                    <label style="font-size: 13px; font-weight: 600; color: #555; display: block; margin-bottom: 6px;">Důvod uzávěrky / Zdroj</label>
+                    <input type="text" id="block-reason-input" class="form-input" placeholder="např. Telefonát, Booking.com..." style="height: 40px; font-size: 13.5px;" value="${this.blockForm.reason}">
+                    <div style="display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px;">
+                      <button type="button" class="btn-preset-reason" data-reason="Booking.com" style="background:#eef2f5; border:1px solid #cbd5e1; border-radius:3px; padding:3px 7px; font-size:11.5px; font-weight:600; cursor:pointer; color:#334155;">+ Booking.com</button>
+                      <button type="button" class="btn-preset-reason" data-reason="Telefonická rezervace" style="background:#eef2f5; border:1px solid #cbd5e1; border-radius:3px; padding:3px 7px; font-size:11.5px; font-weight:600; cursor:pointer; color:#334155;">+ Telefon</button>
+                      <button type="button" class="btn-preset-reason" data-reason="Dovolená správy" style="background:#eef2f5; border:1px solid #cbd5e1; border-radius:3px; padding:3px 7px; font-size:11.5px; font-weight:600; cursor:pointer; color:#334155;">+ Dovolená</button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1523,6 +1548,15 @@ export class AdminDashboard {
         this.blockForm.reason = e.target.value;
       });
     }
+
+    this.container.querySelectorAll('.btn-preset-reason').forEach(chip => {
+      chip.addEventListener('click', (e) => {
+        e.preventDefault();
+        const presetVal = chip.dataset.reason;
+        this.blockForm.reason = presetVal;
+        if (blockReasonInput) blockReasonInput.value = presetVal;
+      });
+    });
 
     const btnSaveBlockDate = this.container.querySelector('.btn-save-block-date');
     if (btnSaveBlockDate) {

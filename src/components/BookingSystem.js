@@ -67,7 +67,7 @@ export class BookingSystem {
     this.discountCodeInput = '';
     this.currentStep = 1;
     this.state = {
-      selectedRoomId: 'p1',
+      selectedRoomId: '',
       dateFrom: '',
       dateTo: '',
       adults: 2,
@@ -292,10 +292,10 @@ export class BookingSystem {
   scrollToErrorMessage() {
     setTimeout(() => {
       const errBanner = this.container.querySelector('.booking-error-alert') ||
-                        this.container.querySelector('.booking-alert-error') ||
-                        this.container.querySelector('.form-field.has-error') ||
-                        this.container.querySelector('#date-from-btn') ||
-                        this.container.querySelector('.booking-card');
+        this.container.querySelector('.booking-alert-error') ||
+        this.container.querySelector('.form-field.has-error') ||
+        this.container.querySelector('#date-from-btn') ||
+        this.container.querySelector('.booking-card');
       if (errBanner) {
         errBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else {
@@ -480,10 +480,10 @@ export class BookingSystem {
   }
 
   getSelectedRoom() {
+    if (!this.state.selectedRoomId) return null;
     const found = this.roomsList.find(r => r.id === this.state.selectedRoomId);
     if (found && !found.isDisabled) return found;
-    const firstAvailable = this.roomsList.find(r => !r.isDisabled);
-    return firstAvailable || found || this.roomsList[0];
+    return null;
   }
 
   calculateNights() {
@@ -498,6 +498,24 @@ export class BookingSystem {
   getPricingBreakdown() {
     const room = this.getSelectedRoom();
     const nights = this.calculateNights();
+    if (!room) {
+      return {
+        nights,
+        roomBasePriceTotal: 0,
+        singleNightSurchargeTotal: 0,
+        halfBoardPriceTotal: 0,
+        dogPriceTotal: 0,
+        ebikePriceTotal: 0,
+        cityTax: 0,
+        discountAmount: 0,
+        discountPercent: 0,
+        discountLabel: '',
+        formattedDiscountAmount: '0 Kč',
+        totalPrice: 0,
+        depositPriceTotal: 0,
+        remainingPriceTotal: 0,
+      };
+    }
     const customPriceObj = (this.roomPrices || []).find(p => p.room_id === room.id);
     const customBaseRate = customPriceObj ? customPriceObj.base_price : room.basePrice;
 
@@ -686,6 +704,21 @@ export class BookingSystem {
 
   render() {
     if (!this.container) return;
+
+    if (this.state.showCalendarModal) {
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+      document.documentElement.classList.add('modal-open');
+      document.body.classList.add('modal-open');
+    } else {
+      const isTermsOpen = Boolean(this.container && this.container.querySelector('#terms-modal-overlay.is-open'));
+      if (!isTermsOpen) {
+        document.documentElement.style.overflow = '';
+        document.body.style.overflow = '';
+        document.documentElement.classList.remove('modal-open');
+        document.body.classList.remove('modal-open');
+      }
+    }
 
     const room = this.getSelectedRoom();
     const pricing = this.getPricingBreakdown();
@@ -930,33 +963,49 @@ export class BookingSystem {
               <div class="room-selector-group">
                 <label for="room-select" class="form-label">Vybraný pokoj:</label>
                 <select id="room-select" class="form-select">
+                  <option value="" ${!this.state.selectedRoomId ? 'selected disabled' : ''}>-- Vyberte si pokoj v nabídce --</option>
                   ${this.roomsList.map(r => `
-                    <option value="${r.id}" ${r.id === room.id ? 'selected' : ''} ${r.isDisabled ? 'disabled style="color:#888; background:#eee;"' : ''}>
+                    <option value="${r.id}" ${r.id === (room ? room.id : '') ? 'selected' : ''} ${r.isDisabled ? 'disabled style="color:#888; background:#eee;"' : ''}>
                       ${r.name} (${r.basePrice} Kč / noc) ${r.isDisabled ? ' [🔒 Dočasně zablokováno]' : ''}
                     </option>
                   `).join('')}
                 </select>
               </div>
 
-              <div class="room-mini-preview">
-                <img src="${room.image || '/hezky pokoj 1.webp'}" alt="${room.name}" class="preview-room-thumb" loading="lazy" decoding="async">
-                <div class="preview-info-wrap">
-                  <span class="preview-badge">${room.floor === 'prizemi' ? 'Přízemí' : '1. Patro (Výhled na můstky)'}</span>
-                  <h4 class="preview-room-title">${room.name}</h4>
-                  <p class="preview-desc">Kapacita: až 4 osoby (3 lůžka + možnost 1 přistýlky) • Včetně snídaně</p>
+              ${room ? `
+                <div class="room-mini-preview">
+                  <img src="${room.image || '/hezky pokoj 1.webp'}" alt="${room.name}" class="preview-room-thumb" loading="lazy" decoding="async">
+                  <div class="preview-info-wrap">
+                    <span class="preview-badge">${room.floor === 'prizemi' ? 'Přízemí' : '1. Patro (Výhled na můstky)'}</span>
+                    <h4 class="preview-room-title">${room.name}</h4>
+                    <p class="preview-desc">Kapacita: až 4 osoby (3 lůžka + možnost 1 přistýlky) • Včetně snídaně</p>
+                  </div>
+                  <button type="button" class="btn btn-view-room-details" id="btn-view-room-details" data-room-id="${room.id}">
+                    <span>Zobrazit pokoj</span>
+                    <svg class="btn-arrow-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="7" y1="17" x2="17" y2="7"></line>
+                      <polyline points="7 7 17 7 17 17"></polyline>
+                    </svg>
+                  </button>
                 </div>
-                <button type="button" class="btn btn-view-room-details" id="btn-view-room-details" data-room-id="${room.id}">
-                  <span>Zobrazit pokoj</span>
-                  <svg class="btn-arrow-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="7" y1="17" x2="17" y2="7"></line>
-                    <polyline points="7 7 17 7 17 17"></polyline>
-                  </svg>
-                </button>
-              </div>
+              ` : `
+                <div class="room-select-prompt" style="background: #FAF9F5; border: 1.5px dashed #C8C6B9; border-radius: 4px; padding: 18px 20px; text-align: left; margin-top: 14px;">
+                  <h4 style="margin: 0 0 4px 0; font-size: 15.5px; font-weight: 700; color: #1C1C19;">Zatím jste nevybrali žádný pokoj</h4>
+                  <p style="margin: 0; font-size: 13.5px; color: #666666;">Pro zobrazení informací a výpočet přesné ceny prosím vyberte pokoj v rozbalovací nabídce výše.</p>
+                </div>
+              `}
             </div>
 
             <div class="booking-card card-step-2">
               <h3 class="card-title">2. Termín pobytu <span class="required-badge">* Povinné</span></h3>
+              
+              ${!this.state.selectedRoomId ? `
+                <div class="room-required-hint" style="background: #FFFBF0; border: 1px solid #FFE5A3; border-radius: 4px; padding: 10px 14px; margin-bottom: 14px; font-size: 13.5px; color: #8C6B16; display: flex; align-items: center; gap: 8px;">
+                  <span style="font-size: 16px;">💡</span>
+                  <span><strong>Nejprve vyberte pokoj:</strong> Pro otevření kalendáře a výběr termínu pobytu si prosím nejprve zvolte pokoj v nabídce výše (Krok 1).</span>
+                </div>
+              ` : ''}
+
               <div class="dates-grid">
                 <div class="form-field">
                   <label for="date-from-btn" class="form-label">Datum příjezdu (Check-in od 15:00):</label>
@@ -1069,7 +1118,7 @@ export class BookingSystem {
               <div class="recap-clean-list">
                 <div class="recap-clean-item">
                   <span class="recap-clean-label">Vybraný pokoj:</span>
-                  <span class="recap-clean-val"><strong>${room.name}</strong></span>
+                  <span class="recap-clean-val"><strong>${room ? room.name : 'Vyberte si pokoj'}</strong></span>
                 </div>
 
                 <div class="recap-clean-item">
@@ -1119,8 +1168,8 @@ export class BookingSystem {
                       <div class="row-info">
                         <span class="row-label">
                           ${pricing.surchargeReason === 'single_occupancy'
-                            ? 'Příplatek za neobsazené lůžko'
-                            : (pricing.surchargeReason === 'both' ? 'Příplatek za 1 noc & 1 osobu' : 'Příplatek za 1 noc')}
+            ? 'Příplatek za neobsazené lůžko'
+            : (pricing.surchargeReason === 'both' ? 'Příplatek za 1 noc & 1 osobu' : 'Příplatek za 1 noc')}
                         </span>
                         <span class="row-details">(+${pricing.singleNightRatePerPerson} Kč / ${pricing.surchargeReason === 'single_occupancy' ? 'noc' : 'osoba'})</span>
                       </div>
@@ -1233,6 +1282,9 @@ export class BookingSystem {
         <div class="form-field ${this.state.fieldErrors['guest-0-email'] ? 'has-error' : ''}">
           <label for="guest-0-email" class="form-label">E-mailová adresa <span class="required">*</span></label>
           <input type="email" id="guest-0-email" class="form-input guest-input" data-idx="0" data-field="email" placeholder="např. jan.novak@seznam.cz" value="${g?.email || this.state.guestEmail}">
+          <p class="field-help-note" style="font-size: 12.5px; color: #666666; margin: 6px 0 0 0; line-height: 1.4;">
+            Na tento e-mail vám odešleme potvrzení rezervace, ubytovací pokyny a platební údaje.
+          </p>
           ${this.state.fieldErrors['guest-0-email'] ? `
             <div class="field-error-popover">
               <span class="popover-arrow"></span>
@@ -1331,8 +1383,8 @@ export class BookingSystem {
                   <h3 class="card-title" style="margin:0 0 6px 0;">${totalGuests === 1 ? 'Kontaktní údaje rezervujícího' : 'Údaje ubytovaných hostů'}</h3>
                   <p style="margin:0; font-size:14px; color:#666666;">
                     ${totalGuests === 1
-                      ? 'Vyplňte prosím vaše kontaktní informace pro potvrzení rezervace.'
-                      : `Vyplňte prosím informace o všech ubytovaných hostech (${totalGuests} ${totalGuests >= 2 && totalGuests <= 4 ? 'osoby' : 'osob'}).`}
+        ? 'Vyplňte prosím vaše kontaktní informace pro potvrzení rezervace.'
+        : `Vyplňte prosím informace o všech ubytovaných hostech (${totalGuests} ${totalGuests >= 2 && totalGuests <= 4 ? 'osoby' : 'osob'}).`}
                   </p>
                 </div>
 
@@ -1357,16 +1409,16 @@ export class BookingSystem {
                   <!-- AKORDEON PRO 2 A VÍCE HOSTŮ -->
                   <div class="guests-accordion-list">
                     ${this.state.guests.map((g, idx) => {
-                      const isMain = idx === 0;
-                      const isOpen = idx === 0;
-                      const hasError = isMain
-                        ? Boolean(this.state.fieldErrors['guest-0-name'] || this.state.fieldErrors['guest-0-email'] || this.state.fieldErrors['guest-0-phone'])
-                        : Boolean(this.state.fieldErrors[`guest-${idx}-name`]);
-                      const isFilled = isMain
-                        ? Boolean((g.name || this.state.guestName) && (g.email || this.state.guestEmail) && (g.phone || this.state.guestPhone))
-                        : Boolean(g.name && g.name.trim());
+          const isMain = idx === 0;
+          const isOpen = idx === 0;
+          const hasError = isMain
+            ? Boolean(this.state.fieldErrors['guest-0-name'] || this.state.fieldErrors['guest-0-email'] || this.state.fieldErrors['guest-0-phone'])
+            : Boolean(this.state.fieldErrors[`guest-${idx}-name`]);
+          const isFilled = isMain
+            ? Boolean((g.name || this.state.guestName) && (g.email || this.state.guestEmail) && (g.phone || this.state.guestPhone))
+            : Boolean(g.name && g.name.trim());
 
-                      return `
+          return `
                         <div class="guest-accordion-item ${isOpen ? 'is-open' : ''} ${hasError ? 'has-error' : ''}" id="guest-accordion-${idx}">
                           <button type="button" class="guest-accordion-header" data-idx="${idx}">
                             <div class="guest-header-left">
@@ -1434,7 +1486,7 @@ export class BookingSystem {
                           </div>
                         </div>
                       `;
-                    }).join('')}
+        }).join('')}
                   </div>
                 `}
 
@@ -1473,16 +1525,25 @@ export class BookingSystem {
                   </div>
                 </div>
 
-                ${(pricing.singleNightSurchargeTotal > 0 || pricing.hasHalfBoard || pricing.hasDog || pricing.hasEbike || pricing.cityTax > 0) ? `
+                ${(pricing.singleNightSurchargeTotal > 0 || pricing.hasHalfBoard || pricing.hasDog || pricing.hasEbike || pricing.discountAmount > 0 || pricing.cityTax > 0) ? `
                   <div class="summary-total-divider"></div>
                   <div class="summary-rows">
+                    ${pricing.discountAmount > 0 ? `
+                      <div class="summary-row discount-row" style="color: #2e7d32; font-weight: 700;">
+                        <div class="row-info">
+                          <span class="row-label">✓ ${pricing.discountLabel}</span>
+                        </div>
+                        <span class="row-price">-${pricing.formattedDiscountAmount}</span>
+                      </div>
+                    ` : ''}
+
                     ${pricing.singleNightSurchargeTotal > 0 ? `
                       <div class="summary-row surcharge">
                         <div class="row-info">
                           <span class="row-label">
                             ${pricing.surchargeReason === 'single_occupancy'
-                              ? 'Příplatek za neobsazené lůžko'
-                              : (pricing.surchargeReason === 'both' ? 'Příplatek za 1 noc & 1 osobu' : 'Příplatek za 1 noc')}
+            ? 'Příplatek za neobsazené lůžko'
+            : (pricing.surchargeReason === 'both' ? 'Příplatek za 1 noc & 1 osobu' : 'Příplatek za 1 noc')}
                           </span>
                           <span class="row-details">(+${pricing.singleNightRatePerPerson} Kč / ${pricing.surchargeReason === 'single_occupancy' ? 'noc' : 'osoba'})</span>
                         </div>
@@ -1611,7 +1672,7 @@ export class BookingSystem {
             <section style="background: #FFFFFF; border: 1px solid #E7E5DC; border-radius: 20px; padding: clamp(24px, 3.2vw, 40px);">
               <h2 style="margin: 0 0 14px; font-size: clamp(21px, 2.2vw, 25px); font-weight: 700; letter-spacing: -0.01em; color: #1C1C19;">Co bude následovat nyní?</h2>
               <p style="margin: 0 0 28px; color: #55554E; font-size: 15.5px; line-height: 1.6;">
-                Abychom předešli překrývání termínů s externími rezervačními systémy, vaši rezervaci nyní fyzicky ověřuje recepce hotelu.
+                Abychom předešli překrývání termínů, vaši rezervaci nyní fyzicky ověřuje recepce hotelu.
               </p>
 
               <ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px;">
@@ -1742,6 +1803,18 @@ export class BookingSystem {
       if (btnDateFrom) {
         btnDateFrom.addEventListener('click', (e) => {
           e.preventDefault();
+          if (!this.state.selectedRoomId) {
+            this.state.errorMessage = 'Vyberte si prosím nejprve pokoj v rozbalovací nabídce v bodu 1.';
+            this.render();
+            this.scrollToErrorMessage();
+            const roomSelect = document.getElementById('room-select');
+            if (roomSelect) {
+              roomSelect.focus();
+              roomSelect.style.outline = '2px solid #e67e22';
+              setTimeout(() => { roomSelect.style.outline = ''; }, 2500);
+            }
+            return;
+          }
           this.state.activeDateField = 'dateFrom';
           this.state.showCalendarModal = true;
           const [y, m] = (this.state.dateFrom || getTodayDateString()).split('-').map(Number);
@@ -1752,6 +1825,18 @@ export class BookingSystem {
       if (btnDateTo) {
         btnDateTo.addEventListener('click', (e) => {
           e.preventDefault();
+          if (!this.state.selectedRoomId) {
+            this.state.errorMessage = 'Vyberte si prosím nejprve pokoj v rozbalovací nabídce v bodu 1.';
+            this.render();
+            this.scrollToErrorMessage();
+            const roomSelect = document.getElementById('room-select');
+            if (roomSelect) {
+              roomSelect.focus();
+              roomSelect.style.outline = '2px solid #e67e22';
+              setTimeout(() => { roomSelect.style.outline = ''; }, 2500);
+            }
+            return;
+          }
           this.state.activeDateField = 'dateTo';
           this.state.showCalendarModal = true;
           const [y, m] = (this.state.dateTo || getTodayDateString()).split('-').map(Number);
@@ -1855,6 +1940,12 @@ export class BookingSystem {
       const btnNext = this.container.querySelector('.btn-next-step-1');
       if (btnNext) {
         btnNext.addEventListener('click', () => {
+          if (!this.state.selectedRoomId) {
+            this.state.errorMessage = 'Prosíme, vyberte si nejprve pokoj z nabídky.';
+            this.render();
+            this.scrollToErrorMessage();
+            return;
+          }
           const start = new Date(this.state.dateFrom);
           const end = new Date(this.state.dateTo);
           if (isNaN(start.getTime()) || isNaN(end.getTime()) || end <= start) {
@@ -1878,7 +1969,7 @@ export class BookingSystem {
           const item = header.closest('.guest-accordion-item');
           const body = item.querySelector('.guest-accordion-body');
           const chevron = header.querySelector('.guest-chevron');
-          
+
           const isCurrentlyOpen = item.classList.contains('is-open');
           if (isCurrentlyOpen) {
             item.classList.remove('is-open');
@@ -2000,7 +2091,10 @@ export class BookingSystem {
       if (modalOverlay) {
         modalOverlay.classList.add('is-open');
         modalOverlay.setAttribute('aria-hidden', 'false');
+        document.documentElement.style.overflow = 'hidden';
         document.body.style.overflow = 'hidden';
+        document.documentElement.classList.add('modal-open');
+        document.body.classList.add('modal-open');
       }
     };
 
@@ -2008,7 +2102,10 @@ export class BookingSystem {
       if (modalOverlay) {
         modalOverlay.classList.remove('is-open');
         modalOverlay.setAttribute('aria-hidden', 'true');
+        document.documentElement.style.overflow = '';
         document.body.style.overflow = '';
+        document.documentElement.classList.remove('modal-open');
+        document.body.classList.remove('modal-open');
       }
     };
 
@@ -2082,7 +2179,7 @@ export class BookingSystem {
           e.preventDefault();
           const selectedDate = dayBtn.dataset.date;
           const targetField = this.state.activeDateField || 'dateFrom';
-          
+
           if (targetField === 'dateFrom') {
             this.state.dateFrom = selectedDate;
             if (this.state.dateTo <= this.state.dateFrom) {
@@ -2098,7 +2195,7 @@ export class BookingSystem {
               this.state.dateTo = selectedDate;
             }
           }
-          
+
           this.state.showCalendarModal = false;
           this.render();
         });
