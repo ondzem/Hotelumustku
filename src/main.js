@@ -194,6 +194,245 @@ const getServicesHTML = () => `
   </section>
 `;
 
+// Anonymizovaná databáze reálných recenzí hostů (GDPR compliant, bez odpovědí provozovatele)
+const GUEST_REVIEWS = [
+  {
+    date: "26. 06. 2026",
+    author: "Jitka",
+    text: "Strávili jsme tady s manželem nádherný víkend. Krásné prostředí, útulný hotel, výborná kuchyně, i když vaří jenom jedno menu. Úschovna kol, kde jsme si mohli elektrokola nabít, a co bylo super v těchto vedrech — pod terasou nádherný splav, kde jsme se mohli koupat. Posezení na zahrádce u dobrého piva bylo super. Určitě ještě přijedeme."
+  },
+  {
+    date: "24. 08. 2025",
+    author: "Lenka a Ruda",
+    text: "Děkujeme za příjemně strávenou dovolenou v útulných, velmi čistých pokojích. Majitelé jsou pohodoví a ochotní, velký výběr domácích produktů ve snídaňovém bufetu, večeře výborné za lidové ceny. Určitě doporučujeme všem, kdo stojí o dovolenou v hezkém, klidném prostředí. Stoprocentní spokojenost, vřele doporučujeme. Děkujeme."
+  },
+  {
+    date: "17. 08. 2025",
+    author: "Dana N.",
+    text: "Byli jsme jen na tři dny, ale naprostá spokojenost. Tak čistý pokoj jsme snad ještě nezažili, majitelé vstřícní a jídlo také nemělo chybu. Pokud pojedeme do těchto končin znovu, určitě se ubytujeme opět tady."
+  },
+  {
+    date: "08. 08. 2025",
+    author: "Roman K.",
+    text: "Spokojenost, doporučuji."
+  },
+  {
+    date: "18. 02. 2025",
+    author: "Adam",
+    text: "Pobyt se nám u vás moc líbil. Milý přístup, krásně čisto, výborné jídlo, pěkné okolí hotelu a večer jsme se nenudili (kulečník, fotbálek, stolní tenis). Děkujeme :-)"
+  },
+  {
+    date: "02. 02. 2025",
+    author: "Honza",
+    text: "V současné době můžu pochválit ceny, krásně čisto, příjemný personál, klidné místo. Vřele doporučuji."
+  },
+  {
+    date: "10. 09. 2024",
+    author: "Jirka",
+    text: "Pokud chcete dovolenou v klidném prostředí, tak vřele doporučuji. Na hotelu klid, v noci klid a okolí krásné a klidné. Výborné večeře, sice bez výběru, jedno menu, ale kvalita, se kterou se hned tak nesetkáte. Podotýkám česká kuchyně. Rádi se sem vrátíme."
+  },
+  {
+    date: "18. 06. 2024",
+    author: "Tomáš",
+    text: "Vrátili jsme se po třech letech a můžu říct, že jsem opět mile překvapen. Ceny pořád stejné, výborná kuchyně a pokoje bez sebemenší špíny, prostě super. Díky."
+  },
+  {
+    date: "18. 06. 2024",
+    author: "Tomáš",
+    text: "Obrovská spokojenost, ceny stejné jako před třemi lety. Pořád krásně čisto, výborné jídlo a ochotný personál. Díky."
+  },
+  {
+    date: "05. 01. 2024",
+    author: "Zbyněk",
+    text: "Super místo, Silvestr neměl chybu. Perfektní jídlo, snídaně — velký výběr. V létě určitě přijedeme. Velice příjemný a ochotný personál. Určitě v létě přijedeme na kola."
+  },
+  {
+    date: "11. 08. 2023",
+    author: "Jana a Zdeněk",
+    text: "Na dovolené jsme zde byli už počtvrté a opět stoprocentní spokojenost. Ochotní majitelé, výborná kuchyně, čisté pokoje a hlavně klid a pohoda. Děkujeme za příjemně strávenou dovolenou. Těšíme se na příště."
+  },
+  {
+    date: "01. 01. 2023",
+    author: "Kymličkovi",
+    text: "Příjemné klidné prostředí s chutnou domácí stravou a personálem ochotným vyhovět specifickým požadavkům. Pokoje útulné a všude čisto. Pobyt byl milým překvapením a můžeme jen doporučit."
+  },
+  {
+    date: "13. 08. 2022",
+    author: "Jana a Jirka",
+    text: "Jezdíme pravidelně každý rok už od roku 2015. Dovolená je každý rok lepší a lepší. Skvělá kuchyně, výborné snídaně s domácími jogurty a chlebem, všude čisto, klid a pohoda. Vřele doporučujeme a těšíme se na příští léto. Děkujeme za krásnou dovolenou."
+  },
+  {
+    date: "02. 09. 2021",
+    author: "Jana a Jirka",
+    text: "Tak jako každý rok, byl ten týden u Vás v hotelu úplný balzám na tělo i duši. Škoda jen, že to vždy tak rychle uteče. Děkujeme a už nyní se těšíme na příští rok."
+  },
+  {
+    date: "08. 01. 2020",
+    author: "Jana a Filip",
+    text: "Děkujeme za příjemný pobyt v útulném prostředí a skvělou domácí kuchyni. V létě přijedeme zase."
+  },
+  {
+    date: "27. 07. 2019",
+    author: "Jana a Jirka",
+    text: "Stále stejně super hotel v klidném prostředí s výbornou kuchyní. Užili jsme si to my i děti. Příští rok se chystáme znovu. Děkujeme za nádhernou dovolenou."
+  },
+  {
+    date: "24. 01. 2019",
+    author: "J. M.",
+    text: "Vše tak, jak má být. Stoprocentní spokojenost. Děkujeme."
+  },
+  {
+    date: "14. 08. 2018",
+    author: "Jana a Jirka",
+    text: "Už čtvrtý pobyt a je to čím dál tím lepší. Doporučujeme."
+  },
+  {
+    date: "29. 07. 2018",
+    author: "P. a R. T.",
+    text: "Děkujeme vám za příjemně strávenou dovolenou ve vašem klidném, čistém a útulném hotelu s výbornou kuchyní. Moc se nám u vás líbilo. Všem doporučujeme."
+  },
+  {
+    date: "10. 03. 2018",
+    author: "Jitka a Michal",
+    text: "Klid, čisto, pohodlí, snídaně i večeře super. Přestože se vaří jednotné jídlo, s takovou kvalitou se setkáváme málokde. Doporučujeme."
+  },
+  {
+    date: "28. 08. 2017",
+    author: "Jana a Jirka",
+    text: "Letos jsme se vrátili už potřetí a určitě ne naposledy. Vřele doporučujeme — dovolená tady nemá chybu. Děkujeme."
+  },
+  {
+    date: "19. 08. 2017",
+    author: "Aleš D. s rodinou",
+    text: "S velmi dobrým pocitem odjíždíme z týdenního pobytu v tomto hotelu s velice příjemným a čistým prostředím, výbornou kuchyní a úžasnými majiteli. Velké díky za příjemné prožití letní dovolené a někdy zase na shledanou v hotelu U Můstků."
+  },
+  {
+    date: "06. 03. 2017",
+    author: "Jiří Č.",
+    text: "Moc Vám děkujeme za příjemný pobyt, dobré ubytování, výbornou domácí kuchyni a moc příjemné majitele. Určitě všem doporučujeme."
+  },
+  {
+    date: "04. 02. 2017",
+    author: "Thomas (DE)",
+    text: "Einfach, praktisch, super nette Leute und preiswert, super Frühstück und wer wollte exzellentes Abendbrot."
+  },
+  {
+    date: "11. 09. 2016",
+    author: "Majkovi",
+    text: "Děkujeme za úžasný týdenní pobyt nejen v příjemném hotelu s úžasnými majiteli, ale také za krásná místa v okolí. Hotel U Můstků můžeme všem jen doporučit. Ještě jednou děkujeme."
+  },
+  {
+    date: "01. 09. 2016",
+    author: "Novákovi",
+    text: "Děkujeme majitelům hotelu za příjemně strávený pobyt a vše, co pro nás dělali. Ještě jednou vřelý dík. Všem vřele doporučujeme."
+  },
+  {
+    date: "31. 07. 2016",
+    author: "Jana a Jirka",
+    text: "Všem doporučujeme — pěkný hotel a hlavně úžasní majitelé a výborná kuchyně. Letos jsme byli už podruhé, vrátili jsme se po roce a bylo to snad ještě lepší než loni :-) Děkujeme za nádhernou dovolenou."
+  },
+  {
+    date: "27. 06. 2016",
+    author: "Volfovi",
+    text: "Krásný hotel v krásné krajině, možnost mnoha výletů a procházek, skvělá kuchyně a velice milí a ochotní majitelé. Dovolená se nám moc líbila, ani odjíždět se nám nechtělo. Určitě se ještě někdy vrátíme."
+  },
+  {
+    date: "08. 03. 2016",
+    author: "Sládkovi",
+    text: "V hotelu jsme strávili týden a vřele ho doporučujeme všem návštěvníkům — levné a skvěle připravené jídlo, velice příjemní a ochotní majitelé."
+  },
+  {
+    date: "28. 01. 2016",
+    author: "Antonín H.",
+    text: "Zdejší hotel hodnotíme s manželkou — za slušné peníze hodně muziky. Výborné ubytování, služby, kuchyně, čistota a slušní majitelé. Procestovali jsme toho hodně a tento hotel s klidem můžeme doporučit."
+  },
+  {
+    date: "11. 01. 2016",
+    author: "Milan",
+    text: "Silvestrovský pobyt super. Děkujeme za krásný vstup do nového roku 2016."
+  },
+  {
+    date: "15. 09. 2015",
+    author: "Kamila",
+    text: "Pobyt v hotelu se nám moc líbil. Na pokoji nám nic nechybělo — vše mají promyšleno do detailů. Jídlo bylo moc dobré. Majitelé jsou velmi příjemní a ochotní. Vhodné i pro rodinu s malými dětmi. Byli jsme moc spokojení. Doporučujeme!"
+  },
+  {
+    date: "07. 09. 2015",
+    author: "Jindra",
+    text: "V neděli jsme měli oslavu narozenin ve zdejším hotelu. Všichni jsme byli velice mile překvapeni kvalitou a chutí jídla, zároveň příjemným, přitom profesionálním personálem. Vřele doporučujeme."
+  },
+  {
+    date: "10. 08. 2015",
+    author: "Jana a Zdeněk",
+    text: "V sobotu jsme se vrátili z týdenní dovolené, vše bylo super! Včetně vynikajícího personálu (tímto jej zdravíme) a domácí kuchyně! Ještě jednou díky za příjemně strávený týden. Vřele všem doporučujeme!"
+  },
+  {
+    date: "10. 08. 2015",
+    author: "Venca a Barča",
+    text: "Naprosto bezchybný týden dovolené, vše už zde bylo napsáno, naše hodnocení: jednička s hvězdou. Vše super, doporučujeme."
+  },
+  {
+    date: "01. 08. 2015",
+    author: "Jana a Jirka",
+    text: "Příjemný hotel, výborná domácí kuchyně, domácí atmosféra. Dovolenou tady vřele všem doporučujeme. Nádherná dovolená — děkujeme a moc rádi se vrátíme."
+  },
+  {
+    date: "30. 07. 2015",
+    author: "Jirka a Jana",
+    text: "Klidné prostředí, pohoda. Doporučuji."
+  },
+  {
+    date: "24. 03. 2015",
+    author: "Erika B.",
+    text: "Příjemně strávený pobyt v hotelu, všem doporučuji a hlavně dobrá kuchyně. Pozdrav provozovatelům."
+  },
+  {
+    date: "24. 03. 2015",
+    author: "Eva N.",
+    text: "S rodinou jsme byli v hotelu U Můstků v Desné, prostě paráda. Domácí strava a příjemná obsluha, palec nahoru."
+  },
+  {
+    date: "19. 01. 2015",
+    author: "Pavel K.",
+    text: "Na začátku ledna jsme se s rodinou ubytovali v hotelu, kde jsme strávili pět dnů. Byli jsme spokojeni. Doporučuji."
+  },
+  {
+    date: "09. 09. 2014",
+    author: "Honza s přáteli",
+    text: "O prázdninách jsme navštívili s kamarády Jizerské hory a ubytování v hotelu U Můstků bylo super. Určitě pojedeme znovu i v zimě na lyže. Tímto pozdravuji provozovatele."
+  },
+  {
+    date: "24. 07. 2014",
+    author: "Michal a Jitka",
+    text: "Rodinný hotel v klidném prostředí, výborná domácí kuchyně a příjemní lidé... :-) Parádní dovolená."
+  },
+  {
+    date: "13. 07. 2014",
+    author: "Dana",
+    text: "S přítelem jsme strávili tři dny a byli jsme velice spokojeni."
+  },
+  {
+    date: "31. 05. 2014",
+    author: "Jana V.",
+    text: "Minulý týden jsme se s rodinou ubytovali v hotelu U Můstků a můžu jenom doporučit. Velice příjemní lidé, výborná domácí kuchyně. Všude čisto. Opravdu doporučuji."
+  },
+  {
+    date: "16. 04. 2014",
+    author: "Ilona M.",
+    text: "Přespali jsme sice jenom jednu noc a musím konstatovat, že jsme spokojeni s přístupem a hlavně nádherně čistě uklizenými pokoji. Snídaně formou bufetu bez sebemenších připomínek."
+  },
+  {
+    date: "15. 04. 2014",
+    author: "Jaroslav K.",
+    text: "Za profesionální přístup personálu a příjemné prostředí palec nahoru. Mohu všem jen doporučit. Zároveň si přeji, aby takto fungovala všechna podobná zařízení v Desné. Majitelům a personálu přeji plno slušných hostů a hodně elánu do jejich další práce."
+  },
+  {
+    date: "03. 04. 2014",
+    author: "Zbyněk V.",
+    text: "Krásné prostředí, příjemná obsluha a výborná domácí kuchyně. Také jsme měli možnost ochutnat domácí uzený bůček a různé dobroty z grilu. Můžu jenom doporučit."
+  }
+];
+
 const getReviewsHTML = () => `
   <!-- SEKCE RECENZE (1:1 REPLIKA DLE SVG PŘEDLOHY + INTERAKTIVNÍ INFINITY SLIDER) -->
   <section class="reviews-section" id="recenze">
@@ -202,70 +441,19 @@ const getReviewsHTML = () => `
       
       <div class="reviews-slider-viewport" id="reviews-viewport">
         <div class="reviews-slider-track" id="reviews-track">
-          <!-- Recenze 1 -->
-          <div class="review-card">
-            <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
-            <p class="review-quote">Byli jsme jen na 3 dny ale naprostá spokojenost. Pokud pojedeme do těchto končin znovu, určitě se ubytujeme opět tady.</p>
-            <div class="review-contour-bg">
-              <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+          ${GUEST_REVIEWS.map(r => `
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">${r.text}</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">${r.author}</span>
+                <span class="review-date">${r.date}</span>
+              </div>
             </div>
-            <div class="review-footer">
-              <span class="review-author-name">Martin Novák</span>
-              <span class="review-date">17.8.2025</span>
-            </div>
-          </div>
-          
-          <!-- Recenze 2 -->
-          <div class="review-card">
-            <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
-            <p class="review-quote">Nádherný výhled na skokanské můstky a úžasná snídaně! Personál neuvěřitelně milý a ochotný.</p>
-            <div class="review-contour-bg">
-              <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
-            </div>
-            <div class="review-footer">
-              <span class="review-author-name">Lucie Králová</span>
-              <span class="review-date">2.9.2025</span>
-            </div>
-          </div>
-          
-          <!-- Recenze 3 -->
-          <div class="review-card">
-            <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
-            <p class="review-quote">Perfektní čistota pokojů, pohodlné matrace a klid na spaní. Ideální výchozí bod pro turistiku v Jizerskách.</p>
-            <div class="review-contour-bg">
-              <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
-            </div>
-            <div class="review-footer">
-              <span class="review-author-name">Pavel Dvořák</span>
-              <span class="review-date">14.10.2025</span>
-            </div>
-          </div>
-
-          <!-- Recenze 4 -->
-          <div class="review-card">
-            <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
-            <p class="review-quote">Skvělá zimní dovolená! Úschovna lyží hned v hotelu a kousek na sjezdovky. Rádi se sem příští rok vrátíme.</p>
-            <div class="review-contour-bg">
-              <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
-            </div>
-            <div class="review-footer">
-              <span class="review-author-name">Eva Šimková</span>
-              <span class="review-date">5.1.2026</span>
-            </div>
-          </div>
-
-          <!-- Recenze 5 -->
-          <div class="review-card">
-            <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
-            <p class="review-quote">Vynikající domácí kuchyně a posezení na terase přímo nad splavem. Velká spokojenost s celým naším pobytem.</p>
-            <div class="review-contour-bg">
-              <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
-            </div>
-            <div class="review-footer">
-              <span class="review-author-name">Tomáš Procházka</span>
-              <span class="review-date">20.2.2026</span>
-            </div>
-          </div>
+          `).join('')}
         </div>
       </div>
       
@@ -1903,8 +2091,25 @@ const initInteractivity = () => {
       reviewsTrack.style.transform = `translateX(-${currentIndex * step}px)`;
     };
 
+    // Jednotná výška všech karet podle nejdelší recenze
+    const syncReviewCardsHeight = () => {
+      allCards.forEach(c => c.style.height = 'auto');
+      let maxHeight = 0;
+      allCards.forEach(c => {
+        if (c.offsetHeight > maxHeight) maxHeight = c.offsetHeight;
+      });
+      if (maxHeight > 0) {
+        allCards.forEach(c => c.style.height = `${maxHeight}px`);
+      }
+    };
+
+    syncReviewCardsHeight();
     updatePosition(false);
-    window.addEventListener('resize', () => updatePosition(false));
+
+    window.addEventListener('resize', () => {
+      syncReviewCardsHeight();
+      updatePosition(false);
+    });
 
     const checkBoundary = () => {
       if (currentIndex >= totalOriginal * 2) {
