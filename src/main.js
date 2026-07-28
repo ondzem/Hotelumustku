@@ -2366,6 +2366,38 @@ const initInteractivity = () => {
     });
   });
 
+  const serviceRestaurantBtn = document.getElementById('service-restaurant-btn');
+  if (serviceRestaurantBtn) {
+    serviceRestaurantBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.hash = '#sluzby';
+    });
+  }
+
+  const serviceEventsBtn = document.getElementById('service-events-btn');
+  if (serviceEventsBtn) {
+    serviceEventsBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.hash = '#sluzby';
+    });
+  }
+
+  const surroundingsMoreBtn = document.getElementById('surroundings-more-btn');
+  if (surroundingsMoreBtn) {
+    surroundingsMoreBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.hash = '#aktivity';
+    });
+  }
+
+  const diningBtns = document.querySelectorAll('.btn-dining-more');
+  diningBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.hash = '#sluzby';
+    });
+  });
+
   const promoBtns = document.querySelectorAll('.btn-promo, #promo-booking-btn');
   promoBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -2374,14 +2406,36 @@ const initInteractivity = () => {
     });
   });
 
-  const bookingBtns = document.querySelectorAll('.btn-booking, .btn-cta, .btn-room-reserve');
+  const bookingBtns = document.querySelectorAll('.btn-booking, .btn-cta, .btn-room-reserve, .btn-breakdown-cta, .btn-terms-cta, .mobile-menu-booking');
   bookingBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
-      if (btn.id === 'btn-goto-prizemi' || btn.id === 'btn-goto-vyhled' || btn.id === 'btn-specs-rooms' || btn.id === 'btn-show-rooms-offer' || btn.classList.contains('btn-promo') || btn.id === 'promo-booking-btn') return;
+      if (
+        btn.id === 'btn-goto-prizemi' ||
+        btn.id === 'btn-goto-vyhled' ||
+        btn.id === 'btn-specs-rooms' ||
+        btn.id === 'btn-show-rooms-offer' ||
+        btn.id === 'rooms-btn' ||
+        btn.id === 'about-more-btn' ||
+        btn.id === 'surroundings-more-btn' ||
+        btn.id === 'service-restaurant-btn' ||
+        btn.id === 'service-events-btn' ||
+        btn.classList.contains('btn-promo') ||
+        btn.id === 'promo-booking-btn' ||
+        btn.classList.contains('btn-dining-more')
+      ) return;
+
       e.preventDefault();
+
+      // Zavřít mobilní menu drawer pokud bylo otevřené
+      const mobileOverlay = document.getElementById('mobile-menu-overlay');
+      if (mobileOverlay) {
+        mobileOverlay.classList.remove('is-active');
+      }
+
       const roomItem = btn.closest('.room-breakdown-item');
       const roomId = roomItem ? roomItem.dataset.room : '';
       window.location.hash = roomId ? `#rezervace?room=${roomId}` : '#rezervace';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   });
 
