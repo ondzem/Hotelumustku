@@ -528,7 +528,8 @@ const getHomePageHTML = () => {
 
   const heroMedia = isWinter
     ? `<img class="hero-winter-img" src="/Zimni rezim/Zima - hotel.webp" alt="Hotel u Můstku v zimě" fetchpriority="high" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">`
-    : `<video 
+    : `<img class="hero-summer-poster" src="/Uvodni stranka/Uvodní fotka - hero sekce.webp" alt="Hotel u Můstku" fetchpriority="high" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+       <video 
         class="hero-video" 
         autoplay 
         muted 
@@ -536,7 +537,7 @@ const getHomePageHTML = () => {
         playsinline 
         preload="auto" 
         fetchpriority="high"
-        poster="/Uvodni stranka/Uvodní fotka - hero sekce.webp"
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; background: transparent;"
       >
         <source src="/hero_master_v5.mp4" type="video/mp4">
         <source src="https://jpvnvjcktpxyxrvsdukm.supabase.co/storage/v1/object/public/hotel-videos/hero_master_v5.mp4" type="video/mp4">
@@ -1664,6 +1665,7 @@ export function setSeasonMode(mode, savePreference = true) {
 
   // 1. Změna Hero Sekce
   let heroVideo = document.querySelector('.hero-video');
+  let heroSummerPoster = document.querySelector('.hero-summer-poster');
   let heroWinterImg = document.querySelector('.hero-winter-img');
   const heroSection = document.querySelector('.hero-section');
 
@@ -1672,6 +1674,9 @@ export function setSeasonMode(mode, savePreference = true) {
       if (heroVideo) {
         heroVideo.pause();
         heroVideo.style.display = 'none';
+      }
+      if (heroSummerPoster) {
+        heroSummerPoster.style.display = 'none';
       }
       if (!heroWinterImg) {
         heroWinterImg = document.createElement('img');
@@ -1688,6 +1693,17 @@ export function setSeasonMode(mode, savePreference = true) {
       if (heroWinterImg) {
         heroWinterImg.style.display = 'none';
       }
+      if (!heroSummerPoster) {
+        heroSummerPoster = document.createElement('img');
+        heroSummerPoster.className = 'hero-summer-poster';
+        heroSummerPoster.alt = 'Hotel u Můstku';
+        heroSummerPoster.setAttribute('fetchpriority', 'high');
+        heroSummerPoster.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;';
+        heroSummerPoster.src = '/Uvodni stranka/Uvodní fotka - hero sekce.webp';
+        heroSection.insertBefore(heroSummerPoster, heroSection.firstChild);
+      } else {
+        heroSummerPoster.style.display = 'block';
+      }
       if (!heroVideo) {
         heroVideo = document.createElement('video');
         heroVideo.className = 'hero-video';
@@ -1696,7 +1712,7 @@ export function setSeasonMode(mode, savePreference = true) {
         heroVideo.loop = true;
         heroVideo.playsInline = true;
         heroVideo.setAttribute('fetchpriority', 'high');
-        heroVideo.poster = '/Uvodni stranka/Uvodní fotka - hero sekce.webp';
+        heroVideo.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; background: transparent;';
         heroVideo.innerHTML = `
           <source src="/hero_master_v5.mp4" type="video/mp4">
           <source src="https://jpvnvjcktpxyxrvsdukm.supabase.co/storage/v1/object/public/hotel-videos/hero_master_v5.mp4" type="video/mp4">
