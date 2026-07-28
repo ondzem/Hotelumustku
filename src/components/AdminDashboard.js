@@ -951,7 +951,10 @@ export class AdminDashboard {
                                   ${g.email ? `<li><span>E-mail:</span> <strong>${g.email}</strong></li>` : ''}
                                   <li><span>Datum narození:</span> <strong>${g.birth_date || 'Neuvedeno online'}</strong></li>
                                   <li><span>Číslo OP / Pasu:</span> <strong>${g.id_number || 'Neuvedeno online'}</strong></li>
-                                  <li><span>Bydliště:</span> <strong>${g.street ? g.street + ', ' : ''}${g.city || 'Neuvedeno online'}</strong></li>
+                                  <li><span>Ulice a č.p.:</span> <strong>${g.street || 'Neuvedeno online'}</strong></li>
+                                  <li><span>Město / Obec:</span> <strong>${g.city || 'Neuvedeno online'}</strong></li>
+                                  <li><span>PSČ:</span> <strong>${g.zip || 'Neuvedeno online'}</strong></li>
+                                  <li><span>Stát:</span> <strong>${g.country || 'Česká republika'}</strong></li>
                                 </ul>
                               </div>
                             </div>

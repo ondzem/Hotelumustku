@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS reservations (
   accommodation_price NUMERIC(10,2) NOT NULL,
   city_tax NUMERIC(10,2) NOT NULL,
   addons_price NUMERIC(10,2) NOT NULL DEFAULT 0.00,
+  guests JSONB DEFAULT '[]'::jsonb,
   status TEXT NOT NULL DEFAULT 'pending', -- 'pending' | 'confirmed' | 'cancelled' | 'paid'
   source TEXT NOT NULL DEFAULT 'web', -- 'web' | 'phone' | 'booking'
   created_at TIMESTAMPTZ DEFAULT NOW(),

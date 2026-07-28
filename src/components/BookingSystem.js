@@ -555,6 +555,25 @@ export class BookingSystem {
 
     this.syncGuestsArray();
 
+    // Sync all guest fields from DOM inputs
+    this.state.guests.forEach((g, idx) => {
+      const nameEl = this.container.querySelector(`#guest-${idx}-name`);
+      const birthEl = this.container.querySelector(`#guest-${idx}-birthdate`);
+      const idNumEl = this.container.querySelector(`#guest-${idx}-idnumber`);
+      const streetEl = this.container.querySelector(`#guest-${idx}-street`);
+      const cityEl = this.container.querySelector(`#guest-${idx}-city`);
+      const zipEl = this.container.querySelector(`#guest-${idx}-zip`);
+      const countryEl = this.container.querySelector(`#guest-${idx}-country`);
+
+      if (nameEl && nameEl.value) g.name = nameEl.value.trim();
+      if (birthEl && birthEl.value) g.birthDate = birthEl.value.trim();
+      if (idNumEl && idNumEl.value) g.idNumber = idNumEl.value.trim();
+      if (streetEl && streetEl.value) g.street = streetEl.value.trim();
+      if (cityEl && cityEl.value) g.city = cityEl.value.trim();
+      if (zipEl && zipEl.value) g.zip = zipEl.value.trim();
+      if (countryEl && countryEl.value) g.country = countryEl.value.trim();
+    });
+
     // Validate Host 1
     if (!this.state.guestName || !this.state.guestName.trim() || isDummyName(this.state.guestName)) {
       this.showFieldError('guest-0-name', 'Prosíme, vyplňte vaše platné Jméno a Příjmení.');
@@ -1477,6 +1496,29 @@ export class BookingSystem {
                                       ` : ''}
                                     </div>
                                   </div>
+                                  
+                                  <div class="form-grid-2col" style="margin-top: 10px;">
+                                    <div class="form-field">
+                                      <label for="guest-${idx}-street" class="form-label">Ulice a číslo popisné:</label>
+                                      <input type="text" id="guest-${idx}-street" class="form-input guest-input" data-idx="${idx}" data-field="street" placeholder="např. Nádražní 14" value="${g.street || ''}">
+                                    </div>
+                                    <div class="form-field">
+                                      <label for="guest-${idx}-city" class="form-label">Město / Obec:</label>
+                                      <input type="text" id="guest-${idx}-city" class="form-input guest-input" data-idx="${idx}" data-field="city" placeholder="např. Liberec" value="${g.city || ''}">
+                                    </div>
+                                  </div>
+
+                                  <div class="form-grid-2col" style="margin-top: 10px;">
+                                    <div class="form-field">
+                                      <label for="guest-${idx}-zip" class="form-label">PSČ:</label>
+                                      <input type="text" id="guest-${idx}-zip" class="form-input guest-input" data-idx="${idx}" data-field="zip" placeholder="např. 460 01" value="${g.zip || ''}">
+                                    </div>
+                                    <div class="form-field">
+                                      <label for="guest-${idx}-country" class="form-label">Stát:</label>
+                                      <input type="text" id="guest-${idx}-country" class="form-input guest-input" data-idx="${idx}" data-field="country" placeholder="Česká republika" value="${g.country || 'Česká republika'}">
+                                    </div>
+                                  </div>
+
                                   <p class="quick-checkin-notice" style="font-size: 13.5px; color: #55554E; margin: 16px 0 0 0; line-height: 1.5;">
                                     💡 <strong>Proč vyplnit tyto údaje online?</strong> Vyplněním ušetříte čas při příjezdu na recepci — nemusíte po cestě nic zdlouhavě vypisovat a klíče od pokoje vám předáme ihned.
                                   </p>
