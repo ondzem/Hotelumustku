@@ -8134,7 +8134,7 @@ img[loading="lazy"].img-loaded {
   font-size: clamp(28px, 2.5vw, 34px);
   font-weight: 600;
   color: #1c1c19;
-  margin: 0 0 16px 0;
+  margin: 0 0 28px 0;
   line-height: 1.25;
   letter-spacing: -0.015em;
 }
@@ -8468,6 +8468,7 @@ img[loading="lazy"].img-loaded {
     line-height: 1.55 !important;
   }
 
+  .dining-feature-inner,
   .dining-terrace-inner,
   .dining-grill-inner {
     width: 100% !important;
@@ -8504,7 +8505,7 @@ img[loading="lazy"].img-loaded {
     font-size: 30px !important;
     font-weight: 600 !important;
     line-height: 1.25 !important;
-    margin-bottom: 14px !important;
+    margin-bottom: 24px !important;
   }
 
   .dining-col-lead {
@@ -8761,6 +8762,7 @@ img[loading="lazy"].img-loaded {
   }
 
   /* Teráska a Grilování sekce na Mobilu (<768px) */
+  .dining-feature-inner,
   .dining-terrace-inner,
   .dining-grill-inner {
     width: 100% !important;
@@ -8798,7 +8800,7 @@ img[loading="lazy"].img-loaded {
     font-weight: 600 !important;
     line-height: 1.24 !important;
     letter-spacing: -0.015em !important;
-    margin-bottom: 12px !important;
+    margin-bottom: 20px !important;
     color: #1c1c19 !important;
   }
 
