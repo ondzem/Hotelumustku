@@ -2,6 +2,15 @@ import { MOCK_ROOMS, getStoredReservations, updateStoredReservationStatus, delet
 import { calculateReservationPrice, generateSpaydQrUrl, BANK_ACCOUNT, formatCzechPrice, getVariableSymbol } from '../utils/pricing.js';
 import { sendEmail, generateEmail2ApprovalAndPaymentRequest, generateEmail3FinalConfirmation, generateEmailCancellation, getEmailLogs, sendAllTestEmailsTo } from '../utils/emailService.js';
 
+function formatCzechDateStr(dateStr) {
+  if (!dateStr) return '';
+  const parts = dateStr.split('-');
+  if (parts.length === 3) {
+    return `${parseInt(parts[2], 10)}. ${parseInt(parts[1], 10)}. ${parts[0]}`;
+  }
+  return dateStr;
+}
+
 function groupContiguousDateRanges(dates) {
   if (!dates || dates.length === 0) return [];
   const sorted = [...dates].sort();
@@ -56,7 +65,10 @@ export class AdminDashboard {
         if (rm) rm.isDisabled = Boolean(p.is_disabled);
       }
     });
-    this.newDiscountForm = { code: '', discount_value: '', discount_type: 'percent' };
+    this.newDiscountForm = { code: '', discount_value: '', discount_type: 'percent', valid_from: '', valid_until: '', max_uses: '' };
+    this.showAdminCalendarModal = false;
+    this.adminActiveDateField = 'valid_from';
+    this.adminCalYearMonth = null;
     this.blockForm = { room_id: 'all', reason: '' };
     this.blockSelectedDates = [];
     this.calYearMonth = null;
@@ -89,14 +101,35 @@ export class AdminDashboard {
 
   async fetchDiscountCodes() {
     let localCodes = getStoredDiscountCodes();
+    const localMap = new Map();
+    localCodes.forEach(c => {
+      if (c.code) localMap.set(String(c.code).trim().toUpperCase(), c);
+    });
+
     if (isSupabaseConfigured && supabase) {
       try {
         const { data, error } = await supabase.from('discount_codes').select('*').order('created_at', { ascending: false });
         if (!error && data) {
-          const codeMap = new Map();
-          localCodes.forEach(c => codeMap.set(c.code, c));
-          data.forEach(c => codeMap.set(c.code, c));
-          this.discountCodes = Array.from(codeMap.values());
+          const remoteCodes = data.map(remoteItem => {
+            const cleanCode = String(remoteItem.code || '').trim().toUpperCase();
+            const localItem = localMap.get(cleanCode) || {};
+            return {
+              ...localItem,
+              ...remoteItem,
+              code: cleanCode,
+              valid_from: (remoteItem.valid_from) ? remoteItem.valid_from : (localItem.valid_from || null),
+              valid_until: (remoteItem.valid_until) ? remoteItem.valid_until : (localItem.valid_until || null),
+              max_uses: (remoteItem.max_uses !== undefined && remoteItem.max_uses !== null && remoteItem.max_uses !== '') ? Number(remoteItem.max_uses) : (localItem.max_uses !== undefined && localItem.max_uses !== null ? Number(localItem.max_uses) : null),
+              used_count: (remoteItem.used_count !== undefined && remoteItem.used_count !== null) ? Number(remoteItem.used_count) : Number(localItem.used_count || 0)
+            };
+          });
+
+          this.discountCodes = remoteCodes;
+          try {
+            localStorage.setItem('hotel_umustku_discount_codes_v1', JSON.stringify(remoteCodes));
+          } catch (e) {
+            console.error('Failed to sync discount codes to localStorage:', e);
+          }
           return;
         }
       } catch (err) {
@@ -106,42 +139,59 @@ export class AdminDashboard {
     this.discountCodes = localCodes;
   }
 
-  async addDiscountCode(code, discount_value, discount_type = 'percent') {
+  async addDiscountCode(code, discount_value, discount_type = 'percent', valid_from = null, valid_until = null, max_uses = null) {
     const cleanCode = String(code || '').trim().toUpperCase();
     if (!cleanCode) return;
+
+    const parsedMaxUses = (max_uses !== null && max_uses !== undefined && max_uses !== '') ? Number(max_uses) : null;
+
     const payload = {
+      id: 'dc-' + Date.now(),
       code: cleanCode,
       discount_type: discount_type || 'percent',
       discount_value: discount_value !== '' ? Number(discount_value) : 5,
+      valid_from: valid_from || null,
+      valid_until: valid_until || null,
+      max_uses: parsedMaxUses,
+      used_count: 0,
       is_active: true,
       created_at: new Date().toISOString()
     };
 
-    if (isSupabaseConfigured && supabase) {
-      try {
-        const { data, error } = await supabase.from('discount_codes').upsert([payload], { onConflict: 'code' }).select();
-        if (error) {
-          console.error('Supabase addDiscountCode error:', error);
-        } else if (data && data.length > 0) {
-          payload.id = data[0].id;
-        }
-      } catch (err) {
-        console.error('Supabase addDiscountCode failed:', err);
-      }
-    }
-
     saveStoredDiscountCode(payload);
     const existingIdx = (this.discountCodes || []).findIndex(c => c.code === cleanCode);
     if (existingIdx >= 0) {
-      this.discountCodes[existingIdx] = payload;
+      this.discountCodes[existingIdx] = { ...this.discountCodes[existingIdx], ...payload };
     } else {
       this.discountCodes.unshift(payload);
     }
 
     this.showAdminToast(`Slevový kód ${cleanCode} (-${payload.discount_value} %) byl vytvořen.`);
-    this.newDiscountForm = { code: '', discount_value: '', discount_type: 'percent' };
+    this.newDiscountForm = { code: '', discount_value: '', discount_type: 'percent', valid_from: '', valid_until: '', max_uses: '' };
     this.showDiscountModal = true;
     this.render();
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const dbPayload = {
+          code: cleanCode,
+          discount_type: discount_type || 'percent',
+          discount_value: payload.discount_value,
+          valid_from: valid_from || null,
+          valid_until: valid_until || null,
+          max_uses: parsedMaxUses,
+          used_count: 0,
+          is_active: true,
+          created_at: payload.created_at
+        };
+        const { error: fullError } = await supabase.from('discount_codes').upsert([dbPayload], { onConflict: 'code' });
+        if (fullError) {
+          console.warn('Supabase addDiscountCode full payload warning:', fullError.message);
+        }
+      } catch (err) {
+        console.error('Supabase addDiscountCode failed:', err);
+      }
+    }
   }
 
   async toggleDiscountCodeActive(idOrCode, newStatus) {
@@ -164,17 +214,18 @@ export class AdminDashboard {
   }
 
   async deleteDiscountCode(idOrCode) {
-    const item = this.discountCodes.find(c => c.id === idOrCode || c.code === idOrCode);
+    const item = (this.discountCodes || []).find(c => c.id === idOrCode || c.code === idOrCode || String(c.code).toUpperCase().trim() === String(idOrCode).toUpperCase().trim());
     const codeToDelete = item ? item.code : idOrCode;
+    const cleanCode = String(codeToDelete || '').toUpperCase().trim();
 
     deleteStoredDiscountCode(idOrCode);
     if (codeToDelete) deleteStoredDiscountCode(codeToDelete);
 
-    this.discountCodes = (this.discountCodes || []).filter(c => c.id !== idOrCode && c.code !== idOrCode && c.code !== codeToDelete);
+    this.discountCodes = (this.discountCodes || []).filter(c => c.id !== idOrCode && c.code !== idOrCode && String(c.code).toUpperCase().trim() !== cleanCode);
 
-    if (isSupabaseConfigured && supabase && codeToDelete) {
+    if (isSupabaseConfigured && supabase && cleanCode) {
       try {
-        await supabase.from('discount_codes').delete().eq('code', codeToDelete);
+        await supabase.from('discount_codes').delete().or(`code.eq.${cleanCode},code.eq.${cleanCode.toLowerCase()}`);
       } catch (err) {
         console.error('Supabase deleteDiscountCode failed:', err);
       }
@@ -187,82 +238,94 @@ export class AdminDashboard {
 
   async fetchRoomPrices() {
     let localPrices = getStoredRoomPrices();
+    const priceMap = new Map();
+    localPrices.forEach(p => priceMap.set(p.room_id, p));
+
     if (isSupabaseConfigured && supabase) {
       try {
         const { data, error } = await supabase.from('room_prices').select('*');
         if (!error && data && data.length > 0) {
-          const priceMap = new Map();
-          localPrices.forEach(p => priceMap.set(p.room_id, p));
-          data.forEach(p => priceMap.set(p.room_id, p));
-          this.roomPrices = Array.from(priceMap.values());
-        } else {
-          this.roomPrices = localPrices;
+          data.forEach(remoteItem => {
+            const localItem = priceMap.get(remoteItem.room_id) || {};
+            const merged = {
+              ...localItem,
+              ...remoteItem,
+              weekday_price: Number(remoteItem.weekday_price || localItem.weekday_price || remoteItem.base_price || 830),
+              weekend_price: Number(remoteItem.weekend_price || localItem.weekend_price || remoteItem.base_price || 890),
+              base_price: Number(remoteItem.base_price || localItem.base_price || 830)
+            };
+            priceMap.set(remoteItem.room_id, merged);
+          });
         }
       } catch (err) {
         console.error('Supabase fetchRoomPrices failed:', err);
-        this.roomPrices = localPrices;
       }
-    } else {
-      this.roomPrices = localPrices;
     }
 
+    this.roomPrices = Array.from(priceMap.values());
+
     (this.roomPrices || []).forEach(p => {
-      const priceVal = Number(p.base_price || p.basePrice);
-      if (p.room_id && !isNaN(priceVal) && priceVal > 0) {
-        const rm = MOCK_ROOMS.find(r => r.id === p.room_id);
-        if (rm) rm.basePrice = priceVal;
-        saveStoredRoomPrice({ room_id: p.room_id, base_price: priceVal });
+      const rm = MOCK_ROOMS.find(r => r.id === p.room_id);
+      if (rm) {
+        if (p.weekday_price) rm.weekdayPrice = Number(p.weekday_price);
+        if (p.weekend_price) rm.weekendPrice = Number(p.weekend_price);
+        if (p.base_price) rm.basePrice = Number(p.base_price);
       }
+      saveStoredRoomPrice(p);
     });
   }
 
-  async updateRoomPrice(roomId, newBasePrice) {
-    const priceNum = Number(newBasePrice);
-    if (!roomId || isNaN(priceNum) || priceNum <= 0) return;
+  async updateRoomPrice(roomId, newWeekdayPrice, newWeekendPrice) {
+    const weekdayNum = Number(newWeekdayPrice);
+    const weekendNum = Number(newWeekendPrice || newWeekdayPrice);
+    if (!roomId || isNaN(weekdayNum) || weekdayNum <= 0) return;
 
-    const payload = {
+    const fullPayload = {
       room_id: roomId,
-      base_price: priceNum,
+      base_price: weekdayNum,
+      weekday_price: weekdayNum,
+      weekend_price: weekendNum,
       updated_at: new Date().toISOString()
     };
 
     // 1. Immediately update local storage & memory state
-    saveStoredRoomPrice(payload);
+    saveStoredRoomPrice(fullPayload);
     const existingIdx = (this.roomPrices || []).findIndex(p => p.room_id === roomId);
     if (existingIdx >= 0) {
-      this.roomPrices[existingIdx] = payload;
+      this.roomPrices[existingIdx] = { ...this.roomPrices[existingIdx], ...fullPayload };
     } else {
-      this.roomPrices.push(payload);
+      this.roomPrices.push(fullPayload);
     }
 
     const rm = MOCK_ROOMS.find(r => r.id === roomId);
-    if (rm) rm.basePrice = priceNum;
-
-    // 2. In-place DOM update without re-rendering or blowing away input focus
-    if (this.container) {
-      const priceCard = this.container.querySelector(`.room-price-card[data-roomid="${roomId}"]`);
-      if (priceCard) {
-        const priceLabel = priceCard.querySelector('.current-price-label');
-        if (priceLabel) {
-          priceLabel.textContent = `${formatCzechPrice(priceNum)} / os / noc`;
-        }
-      }
+    if (rm) {
+      rm.basePrice = weekdayNum;
+      rm.weekdayPrice = weekdayNum;
+      rm.weekendPrice = weekendNum;
     }
 
     if (typeof window !== 'undefined' && typeof window.syncDynamicRoomPricesToDOM === 'function') {
       window.syncDynamicRoomPricesToDOM();
     }
 
-    this.showAdminToast(`Cena pokoje byla upravena na ${formatCzechPrice(priceNum)} / noc.`);
+    const roomName = rm ? rm.name : 'Pokoj';
+    this.showAdminToast(`✅ Ceny pro ${roomName} byly upraveny (Týden: ${formatCzechPrice(weekdayNum)}, Víkend: ${formatCzechPrice(weekendNum)}).`);
 
-    // 3. Save to Supabase asynchronously
+    // 2. Save to Supabase asynchronously with fallback if columns don't exist yet in remote schema
     if (isSupabaseConfigured && supabase) {
       try {
-        const { data, error } = await supabase.from('room_prices').upsert([payload], { onConflict: 'room_id' }).select();
-        if (error) {
-          console.error('Supabase updateRoomPrice error:', error);
-        } else if (data && data.length > 0) {
-          payload.id = data[0].id;
+        const { error: fullError } = await supabase.from('room_prices').upsert([fullPayload], { onConflict: 'room_id' });
+        if (fullError) {
+          console.warn('Full payload upsert returned error (attempting fallback base_price only):', fullError.message);
+          const baseOnlyPayload = {
+            room_id: roomId,
+            base_price: weekdayNum,
+            updated_at: new Date().toISOString()
+          };
+          const { error: baseError } = await supabase.from('room_prices').upsert([baseOnlyPayload], { onConflict: 'room_id' });
+          if (baseError) {
+            console.error('Supabase updateRoomPrice base fallback error:', baseError.message);
+          }
         }
       } catch (err) {
         console.error('Supabase updateRoomPrice failed:', err);
@@ -613,7 +676,7 @@ export class AdminDashboard {
       // Dispatch Email 2 (Payment Request with QR Code)
       try {
         const email2 = generateEmail2ApprovalAndPaymentRequest({ reservation, room, pricing });
-        sendEmail({
+        await sendEmail({
           to: reservation.guest_email,
           subject: email2.subject,
           html: email2.html,
@@ -638,7 +701,7 @@ export class AdminDashboard {
       // Dispatch Email 3 (Final Confirmation)
       try {
         const email3 = generateEmail3FinalConfirmation({ reservation, room, pricing });
-        sendEmail({
+        await sendEmail({
           to: reservation.guest_email,
           subject: email3.subject,
           html: email3.html,
@@ -667,7 +730,7 @@ export class AdminDashboard {
           room,
           reasonNote: 'Pokoj je v požadovaném termínu již plně obsazen nebo probíhá údržba kapacity.'
         });
-        sendEmail({
+        await sendEmail({
           to: reservation.guest_email,
           subject: emailCancel.subject,
           html: emailCancel.html,
@@ -801,8 +864,8 @@ export class AdminDashboard {
             <button type="button" class="btn btn-specs-secondary btn-admin-discounts">
               🏷️ Slevové kódy ${this.discountCodes.length > 0 ? `<span style="background: #4a5a24; color: #ffffff; border-radius: 99px; padding: 2px 7px; font-size: 11px; font-weight: 700; margin-left: 4px;">${this.discountCodes.length}</span>` : ''}
             </button>
-            <button type="button" class="btn btn-specs-secondary btn-admin-room-mgmt">
-              ⚙️ Správa pokojů
+            <button type="button" class="btn btn-specs-secondary btn-admin-prices">
+              💰 Ceník pokojů
             </button>
             <button type="button" class="btn btn-booking-submit btn-admin-logout">🚪 Odhlásit se</button>
           </div>
@@ -1128,19 +1191,56 @@ export class AdminDashboard {
                 Vytvořte nové slevové kódy pro hosty. Po zadání kódu v rezervaci se vypočtená sleva automaticky odečte z celkové ceny ubytování.
               </p>
 
-              <div style="background: #fafaf7; border: 1px solid #e8e7de; border-radius: 8px; padding: 16px; margin-bottom: 20px;">
-                <h4 style="margin: 0 0 12px 0; font-size: 14.5px; font-weight: 800; color: #1c1c19;">Vytvořit nový slevový kód</h4>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;" class="block-form-grid">
+              <div style="background: #fafaf7; border: 1px solid #e8e7de; border-radius: 8px; padding: 18px; margin-bottom: 20px;">
+                <h4 style="margin: 0 0 14px 0; font-size: 15px; font-weight: 800; color: #1c1c19;">Vytvořit nový slevový kód</h4>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;" class="block-form-grid">
                   <div>
-                    <label style="font-size: 12.5px; font-weight: 600; color: #555; display: block; margin-bottom: 6px;">Kód slevy (např. HOTEL5)</label>
-                    <input type="text" id="discount-code-input" class="form-input" placeholder="HOTEL5" style="height: 40px; font-size: 14px; text-transform: uppercase;" value="${this.newDiscountForm.code}">
+                    <label style="font-size: 12.5px; font-weight: 700; color: #444; display: block; margin-bottom: 5px;">Kód slevy (např. LETO20)</label>
+                    <input type="text" id="discount-code-input" class="admin-discount-input" placeholder="LETO20" style="text-transform: uppercase;" value="${this.newDiscountForm.code || ''}">
                   </div>
                   <div>
-                    <label style="font-size: 12.5px; font-weight: 600; color: #555; display: block; margin-bottom: 6px;">Sleva v % (např. 10)</label>
-                    <input type="number" id="discount-value-input" class="form-input" placeholder="např. 10" min="1" max="100" style="height: 40px; font-size: 14px;" value="${this.newDiscountForm.discount_value || ''}">
+                    <label style="font-size: 12.5px; font-weight: 700; color: #444; display: block; margin-bottom: 5px;">Sleva v % (např. 15)</label>
+                    <input type="number" id="discount-value-input" class="admin-discount-input" placeholder="např. 15" min="1" max="100" value="${this.newDiscountForm.discount_value || ''}">
                   </div>
                 </div>
-                <button type="button" class="btn btn-booking-submit btn-save-discount-code" style="width: 100%; height: 42px; font-size: 14.5px; border-radius: 1px;">
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px;" class="block-form-grid">
+                  <div>
+                    <label style="font-size: 12px; font-weight: 700; color: #444; display: block; margin-bottom: 5px;">Platnost OD (Volitelné)</label>
+                    <div style="position: relative; display: flex; align-items: center;" id="btn-trigger-valid-from">
+                      <input type="text" id="discount-valid-from-input" class="admin-discount-input" readonly placeholder="dd.mm.yyyy" value="${this.newDiscountForm.valid_from ? formatCzechDateStr(this.newDiscountForm.valid_from) : ''}" style="padding-right: 34px; cursor: pointer;">
+                      <span style="position: absolute; right: 10px; pointer-events: none; color: #4a5a24; display: flex; align-items: center;">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                          <line x1="16" y1="2" x2="16" y2="6"></line>
+                          <line x1="8" y1="2" x2="8" y2="6"></line>
+                          <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <label style="font-size: 12px; font-weight: 700; color: #444; display: block; margin-bottom: 5px;">Platnost DO (Volitelné)</label>
+                    <div style="position: relative; display: flex; align-items: center;" id="btn-trigger-valid-until">
+                      <input type="text" id="discount-valid-until-input" class="admin-discount-input" readonly placeholder="dd.mm.yyyy" value="${this.newDiscountForm.valid_until ? formatCzechDateStr(this.newDiscountForm.valid_until) : ''}" style="padding-right: 34px; cursor: pointer;">
+                      <span style="position: absolute; right: 10px; pointer-events: none; color: #4a5a24; display: flex; align-items: center;">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                          <line x1="16" y1="2" x2="16" y2="6"></line>
+                          <line x1="8" y1="2" x2="8" y2="6"></line>
+                          <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <label style="font-size: 12px; font-weight: 700; color: #444; display: block; margin-bottom: 5px;">Max. použití (Např. 20)</label>
+                    <input type="number" id="discount-max-uses-input" class="admin-discount-input" placeholder="Neomezeně" min="1" value="${this.newDiscountForm.max_uses || ''}">
+                  </div>
+                </div>
+
+                <button type="button" class="btn btn-booking-submit btn-save-discount-code" style="width: 100%; height: 44px; font-size: 15px; font-weight: 700; border-radius: 1px;">
                   Vytvořit slevový kód
                 </button>
               </div>
@@ -1150,23 +1250,35 @@ export class AdminDashboard {
                 ${this.discountCodes.length === 0 ? `
                   <p style="color: #777; font-size: 13.5px; text-align: center; margin: 16px 0;">V současnosti nejsou vytvořeny žádné slevové kódy.</p>
                 ` : `
-                  <div style="display: flex; flex-direction: column; gap: 10px; max-height: 220px; overflow-y: auto; padding-right: 4px;">
-                    ${this.discountCodes.map(c => `
-                      <div style="background: #ffffff; border: 1px solid #e0dfd5; border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
-                        <div>
-                          <div style="font-weight: 800; font-size: 15px; color: #4a5a24; letter-spacing: 0.04em;">${c.code}</div>
-                          <div style="font-size: 12.5px; color: #555; font-weight: 600; margin-top: 2px;">Sleva: <strong>-${c.discount_value} %</strong></div>
+                  <div style="display: flex; flex-direction: column; gap: 10px; max-height: 240px; overflow-y: auto; padding-right: 4px;">
+                    ${this.discountCodes.map(c => {
+                      const maxLabel = c.max_uses ? `Použito ${c.used_count || 0} z ${c.max_uses}` : `Použito ${c.used_count || 0}× (Neomezeně)`;
+                      const dateLabel = (c.valid_from || c.valid_until)
+                        ? `${c.valid_from ? formatCzechDateStr(c.valid_from) : 'Od teď'} – ${c.valid_until ? formatCzechDateStr(c.valid_until) : 'Neomezeně'}`
+                        : 'Neomezená platnost';
+                      return `
+                        <div style="background: #ffffff; border: 1px solid #e0dfd5; border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+                          <div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                              <span style="font-weight: 800; font-size: 15px; color: #4a5a24; letter-spacing: 0.04em;">${c.code}</span>
+                              <span style="font-size: 11.5px; font-weight: 700; background: #eef2e6; color: #4a5a24; padding: 2px 6px; border-radius: 3px;">-${c.discount_value} %</span>
+                            </div>
+                            <div style="font-size: 12px; color: #666; margin-top: 4px; display: flex; gap: 12px; flex-wrap: wrap;">
+                              <span>📅 ${dateLabel}</span>
+                              <span>👥 ${maxLabel}</span>
+                            </div>
+                          </div>
+                          <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                            <button type="button" class="btn-toggle-discount-active" data-id="${c.id}" data-active="${c.is_active ? 'false' : 'true'}" style="background: none; border: 1px solid #d8d5c9; border-radius: 4px; padding: 5px 10px; font-size: 12px; font-weight: 600; color: ${c.is_active ? '#2e7d32' : '#777'}; cursor: pointer;">
+                              ${c.is_active ? '✓ Aktivní' : 'Aktivovat'}
+                            </button>
+                            <button type="button" class="btn-delete-discount-item" data-id="${c.id}" style="background: none; border: 1px solid #d8d5c9; border-radius: 4px; padding: 5px 10px; font-size: 12px; font-weight: 600; color: #c62828; cursor: pointer;">
+                              Smazat
+                            </button>
+                          </div>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                          <button type="button" class="btn-toggle-discount-active" data-id="${c.id}" data-active="${c.is_active ? 'false' : 'true'}" style="background: none; border: 1px solid #d8d5c9; border-radius: 4px; padding: 5px 10px; font-size: 12px; font-weight: 600; color: ${c.is_active ? '#2e7d32' : '#777'}; cursor: pointer;">
-                            ${c.is_active ? '✓ Aktivní' : 'Aktivovat'}
-                          </button>
-                          <button type="button" class="btn-delete-discount-item" data-id="${c.id}" style="background: none; border: 1px solid #d8d5c9; border-radius: 4px; padding: 5px 10px; font-size: 12px; font-weight: 600; color: #c62828; cursor: pointer;">
-                            Smazat
-                          </button>
-                        </div>
-                      </div>
-                    `).join('')}
+                      `;
+                    }).join('')}
                   </div>
                 `}
               </div>
@@ -1176,29 +1288,45 @@ export class AdminDashboard {
 
         ${this.showPricesModal ? `
           <div class="admin-modal-overlay admin-modal-overlay-block admin-modal-overlay-prices">
-            <div class="admin-confirm-modal admin-block-modal" style="max-width: 580px; padding: 0 24px 24px 24px;">
+            <div class="admin-confirm-modal admin-block-modal" style="max-width: 660px; padding: 0 24px 24px 24px;">
               <div class="admin-modal-header-sticky">
-                <h3 class="admin-modal-title" style="margin: 0; font-size: 18px; font-weight: 800; color: #1c1c19;">💰 Úprava cen pokojů</h3>
+                <h3 class="admin-modal-title" style="margin: 0; font-size: 18px; font-weight: 800; color: #1c1c19;">💰 Ceník pokojů (Týdenní vs. Víkendové ceny)</h3>
                 <button type="button" class="btn-close-prices-modal" style="background: none; border: none; font-size: 26px; cursor: pointer; color: #777; line-height: 1; padding: 4px 8px;">&times;</button>
               </div>
-              <p class="admin-modal-desc" style="margin-top: 14px; margin-bottom: 16px; font-size: 13.5px; color: #55554e;">
-                Změňte základní cenu ubytování za noc u libovolného pokoje. Nová cena se okamžitě projeví ve všech nových rezervacích.
+              <p class="admin-modal-desc" style="margin-top: 14px; margin-bottom: 16px; font-size: 13.5px; color: #55554e; line-height: 1.5;">
+                Upravte ceny ubytování zvlášť pro <strong>týdenní dny (Po–Čt)</strong> a <strong>víkendové dny (Pá–Ne)</strong>. Systém při rezervaci automaticky rozezná jednotlivé dny a spočítá přesnou cenu pro každý den pobytu.
               </p>
 
-              <div style="display: flex; flex-direction: column; gap: 10px; max-height: 360px; overflow-y: auto; padding-right: 4px;">
+              <div style="display: flex; flex-direction: column; gap: 12px; max-height: 420px; overflow-y: auto; padding-right: 4px;">
                 ${MOCK_ROOMS.map(rm => {
                   const customP = (this.roomPrices || []).find(p => p.room_id === rm.id);
-                  const currentPrice = customP ? (customP.base_price || customP.basePrice) : rm.basePrice;
+                  const currentWeekdayPrice = customP ? (customP.weekday_price || customP.base_price || customP.basePrice) : (rm.weekdayPrice || rm.basePrice);
+                  const currentWeekendPrice = customP ? (customP.weekend_price || customP.base_price || customP.basePrice) : (rm.weekendPrice || rm.basePrice);
                   return `
-                    <div class="room-price-card" data-roomid="${rm.id}" style="background: #ffffff; border: 1px solid #e0dfd5; border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
-                      <div>
-                        <div style="font-weight: 700; font-size: 14.5px; color: #1c1c19;">${rm.name}</div>
-                        <div style="font-size: 12.5px; color: #777; margin-top: 2px;">Aktuální cena: <strong class="current-price-label" style="color: #4a5a24;">${formatCzechPrice(currentPrice)} / os / noc</strong></div>
+                    <div class="room-price-card" data-roomid="${rm.id}" style="background: #ffffff; border: 1px solid #e0dfd5; border-radius: 8px; padding: 14px 16px;">
+                      <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px;">
+                        <div style="font-weight: 800; font-size: 15px; color: #1c1c19;">${rm.name}</div>
+                        <span style="font-size: 12px; font-weight: 700; background: #eef2e6; color: #4a5a24; padding: 3px 8px; border-radius: 3px; text-transform: uppercase;">${rm.type}</span>
                       </div>
-                      <div style="display: flex; align-items: center; gap: 8px;">
-                        <input type="number" class="form-input room-price-input" data-roomid="${rm.id}" value="${currentPrice}" style="width: 95px; height: 38px; font-size: 14px; text-align: right; padding-right: 8px;">
-                        <span style="font-size: 13px; font-weight: 600; color: #555;">Kč</span>
-                        <button type="button" class="btn btn-specs-secondary btn-save-room-price" data-roomid="${rm.id}" style="height: 38px; padding: 0 14px; font-size: 13px; border-radius: 1px;">
+
+                      <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; align-items: flex-end;">
+                        <div>
+                          <label style="display: block; font-size: 12px; font-weight: 700; color: #55554e; margin-bottom: 4px;">🏢 Přes týden (Po – Čt):</label>
+                          <div style="display: flex; align-items: center; gap: 4px;">
+                            <input type="number" class="form-input room-weekday-price-input" data-roomid="${rm.id}" value="${currentWeekdayPrice}" style="width: 100%; height: 38px; font-size: 14px; font-weight: 700; text-align: right; padding-right: 8px;">
+                            <span style="font-size: 12.5px; font-weight: 600; color: #777;">Kč/noc</span>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label style="display: block; font-size: 12px; font-weight: 700; color: #4a5a24; margin-bottom: 4px;">🏔️ O víkendu (Pá – Ne):</label>
+                          <div style="display: flex; align-items: center; gap: 4px;">
+                            <input type="number" class="form-input room-weekend-price-input" data-roomid="${rm.id}" value="${currentWeekendPrice}" style="width: 100%; height: 38px; font-size: 14px; font-weight: 700; text-align: right; padding-right: 8px;">
+                            <span style="font-size: 12.5px; font-weight: 600; color: #777;">Kč/noc</span>
+                          </div>
+                        </div>
+
+                        <button type="button" class="btn btn-specs-secondary btn-save-room-price" data-roomid="${rm.id}" style="height: 38px; padding: 0 16px; font-size: 13.5px; font-weight: 700; border-radius: 1px; flex-shrink: 0;">
                           Uložit
                         </button>
                       </div>
@@ -1281,10 +1409,88 @@ export class AdminDashboard {
             </div>
           </div>
         ` : ''}
+        ${this.renderAdminCalendarModal()}
       </div>
     `;
 
     this.attachAdminListeners();
+  }
+
+  renderAdminCalendarModal() {
+    if (!this.showAdminCalendarModal) return '';
+
+    const targetField = this.adminActiveDateField || 'valid_from';
+    const currentDateStr = this.newDiscountForm[targetField] || new Date().toISOString().split('T')[0];
+
+    if (!this.adminCalYearMonth) {
+      const parts = (currentDateStr || '').split('-').map(Number);
+      const y = parts[0] || new Date().getFullYear();
+      const m = parts[1] || (new Date().getMonth() + 1);
+      this.adminCalYearMonth = { year: y, month: m };
+    }
+
+    const { year, month } = this.adminCalYearMonth;
+
+    const monthNames = [
+      'Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen',
+      'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec'
+    ];
+
+    const firstDayIndex = (new Date(year, month - 1, 1).getDay() + 6) % 7; // Mon = 0
+    const daysInMonth = new Date(year, month, 0).getDate();
+
+    let daysHtml = '';
+    for (let i = 0; i < firstDayIndex; i++) {
+      daysHtml += `<div class="cal-day cal-day-empty"></div>`;
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dayStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const isSelected = dayStr === this.newDiscountForm[targetField];
+
+      let dayClass = 'cal-day';
+      if (isSelected) dayClass += ' is-selected';
+
+      daysHtml += `
+        <button type="button" class="${dayClass}" data-date="${dayStr}">
+          ${day}
+        </button>
+      `;
+    }
+
+    return `
+      <div class="cal-modal-overlay" id="admin-cal-modal-overlay" style="z-index: 100000;">
+        <div class="cal-modal-card">
+          <div class="cal-modal-header">
+            <button type="button" class="cal-nav-btn" id="admin-cal-prev-month" aria-label="Předchozí měsíc">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+            <h4 class="cal-month-title">${monthNames[month - 1]} ${year}</h4>
+            <button type="button" class="cal-nav-btn" id="admin-cal-next-month" aria-label="Následující měsíc">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+            <button type="button" class="cal-close-btn" id="admin-cal-close-btn" aria-label="Zavřít">&times;</button>
+          </div>
+
+          <div class="cal-week-days">
+            <span>Po</span><span>Út</span><span>St</span><span>Čt</span><span>Pá</span><span>So</span><span>Ne</span>
+          </div>
+
+          <div class="cal-grid">
+            ${daysHtml}
+          </div>
+
+          <div class="cal-modal-footer" style="display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid #eee;">
+            <span class="cal-hint-text">Vyberte ${targetField === 'valid_from' ? 'platnost OD' : 'platnost DO'}</span>
+            <button type="button" id="btn-clear-admin-date" style="background: none; border: none; font-size: 12.5px; font-weight: 700; color: #c62828; cursor: pointer; text-decoration: underline;">Smazat datum</button>
+          </div>
+        </div>
+      </div>
+    `;
   }
 
   attachAdminListeners() {
@@ -1303,7 +1509,8 @@ export class AdminDashboard {
 
     const btnDiscounts = this.container.querySelector('.btn-admin-discounts');
     if (btnDiscounts) {
-      btnDiscounts.addEventListener('click', () => {
+      btnDiscounts.addEventListener('click', async () => {
+        await this.fetchDiscountCodes();
         this.showDiscountModal = true;
         this.render();
       });
@@ -1327,14 +1534,124 @@ export class AdminDashboard {
       });
     }
 
+    const discountCodeInputEl = this.container.querySelector('#discount-code-input');
+    if (discountCodeInputEl) {
+      discountCodeInputEl.addEventListener('input', (e) => {
+        this.newDiscountForm.code = e.target.value;
+      });
+    }
+
+    const discountValInputEl = this.container.querySelector('#discount-value-input');
+    if (discountValInputEl) {
+      discountValInputEl.addEventListener('input', (e) => {
+        this.newDiscountForm.discount_value = e.target.value;
+      });
+    }
+
+    const discountMaxUsesInputEl = this.container.querySelector('#discount-max-uses-input');
+    if (discountMaxUsesInputEl) {
+      discountMaxUsesInputEl.addEventListener('input', (e) => {
+        this.newDiscountForm.max_uses = e.target.value;
+      });
+    }
+
     const btnSaveDiscount = this.container.querySelector('.btn-save-discount-code');
     if (btnSaveDiscount) {
       btnSaveDiscount.addEventListener('click', () => {
         const codeInput = this.container.querySelector('#discount-code-input');
         const valInput = this.container.querySelector('#discount-value-input');
+        const maxUsesInput = this.container.querySelector('#discount-max-uses-input');
+
         const code = codeInput ? codeInput.value : '';
         const val = valInput ? valInput.value : 5;
-        this.addDiscountCode(code, val, 'percent');
+        const validFrom = this.newDiscountForm.valid_from || null;
+        const validUntil = this.newDiscountForm.valid_until || null;
+        const maxUses = maxUsesInput ? maxUsesInput.value : null;
+
+        this.addDiscountCode(code, val, 'percent', validFrom, validUntil, maxUses);
+      });
+    }
+
+    const btnValidFrom = this.container.querySelector('#btn-trigger-valid-from');
+    if (btnValidFrom) {
+      btnValidFrom.addEventListener('click', () => {
+        this.adminActiveDateField = 'valid_from';
+        const curDate = this.newDiscountForm.valid_from || new Date().toISOString().split('T')[0];
+        const [y, m] = curDate.split('-').map(Number);
+        this.adminCalYearMonth = { year: y || new Date().getFullYear(), month: m || (new Date().getMonth() + 1) };
+        this.showAdminCalendarModal = true;
+        this.render();
+      });
+    }
+
+    const btnValidUntil = this.container.querySelector('#btn-trigger-valid-until');
+    if (btnValidUntil) {
+      btnValidUntil.addEventListener('click', () => {
+        this.adminActiveDateField = 'valid_until';
+        const curDate = this.newDiscountForm.valid_until || new Date().toISOString().split('T')[0];
+        const [y, m] = curDate.split('-').map(Number);
+        this.adminCalYearMonth = { year: y || new Date().getFullYear(), month: m || (new Date().getMonth() + 1) };
+        this.showAdminCalendarModal = true;
+        this.render();
+      });
+    }
+
+    const adminCalOverlay = this.container.querySelector('#admin-cal-modal-overlay');
+    if (adminCalOverlay) {
+      const btnPrev = adminCalOverlay.querySelector('#admin-cal-prev-month');
+      const btnNext = adminCalOverlay.querySelector('#admin-cal-next-month');
+      const btnClose = adminCalOverlay.querySelector('#admin-cal-close-btn');
+      const btnClear = adminCalOverlay.querySelector('#btn-clear-admin-date');
+
+      if (btnPrev) {
+        btnPrev.addEventListener('click', (e) => {
+          e.preventDefault();
+          let { year, month } = this.adminCalYearMonth || { year: new Date().getFullYear(), month: new Date().getMonth() + 1 };
+          month--;
+          if (month < 1) { month = 12; year--; }
+          this.adminCalYearMonth = { year, month };
+          this.render();
+        });
+      }
+
+      if (btnNext) {
+        btnNext.addEventListener('click', (e) => {
+          e.preventDefault();
+          let { year, month } = this.adminCalYearMonth || { year: new Date().getFullYear(), month: new Date().getMonth() + 1 };
+          month++;
+          if (month > 12) { month = 1; year++; }
+          this.adminCalYearMonth = { year, month };
+          this.render();
+        });
+      }
+
+      if (btnClose) {
+        btnClose.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.showAdminCalendarModal = false;
+          this.render();
+        });
+      }
+
+      if (btnClear) {
+        btnClear.addEventListener('click', (e) => {
+          e.preventDefault();
+          const targetField = this.adminActiveDateField || 'valid_from';
+          this.newDiscountForm[targetField] = '';
+          this.showAdminCalendarModal = false;
+          this.render();
+        });
+      }
+
+      adminCalOverlay.querySelectorAll('.cal-day:not(.cal-day-empty)').forEach(dayBtn => {
+        dayBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const selectedDate = dayBtn.dataset.date;
+          const targetField = this.adminActiveDateField || 'valid_from';
+          this.newDiscountForm[targetField] = selectedDate;
+          this.showAdminCalendarModal = false;
+          this.render();
+        });
       });
     }
 
@@ -1353,9 +1670,10 @@ export class AdminDashboard {
       });
     });
 
-    const btnPrices = this.container.querySelector('.btn-admin-room-prices');
+    const btnPrices = this.container.querySelector('.btn-admin-prices, .btn-admin-room-prices');
     if (btnPrices) {
-      btnPrices.addEventListener('click', () => {
+      btnPrices.addEventListener('click', async () => {
+        await this.fetchRoomPrices();
         this.showPricesModal = true;
         this.render();
       });
@@ -1366,32 +1684,6 @@ export class AdminDashboard {
       btnClosePricesModal.addEventListener('click', () => {
         this.showPricesModal = false;
         this.render();
-      });
-    }
-
-    const btnMgmt = this.container.querySelector('.btn-admin-room-mgmt');
-    if (btnMgmt) {
-      btnMgmt.addEventListener('click', () => {
-        this.showRoomMgmtModal = true;
-        this.render();
-      });
-    }
-
-    const btnCloseMgmtModal = this.container.querySelector('.btn-close-mgmt-modal');
-    if (btnCloseMgmtModal) {
-      btnCloseMgmtModal.addEventListener('click', () => {
-        this.showRoomMgmtModal = false;
-        this.render();
-      });
-    }
-
-    const mgmtModalOverlay = this.container.querySelector('.admin-modal-overlay-mgmt');
-    if (mgmtModalOverlay) {
-      mgmtModalOverlay.addEventListener('click', (e) => {
-        if (e.target === mgmtModalOverlay) {
-          this.showRoomMgmtModal = false;
-          this.render();
-        }
       });
     }
 
@@ -1454,9 +1746,10 @@ export class AdminDashboard {
     this.container.querySelectorAll('.btn-save-room-price').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const roomId = e.currentTarget.dataset.roomid;
-        const input = this.container.querySelector(`.room-price-input[data-roomid="${roomId}"]`);
-        if (input && input.value) {
-          this.updateRoomPrice(roomId, input.value);
+        const weekdayInput = this.container.querySelector(`.room-weekday-price-input[data-roomid="${roomId}"]`);
+        const weekendInput = this.container.querySelector(`.room-weekend-price-input[data-roomid="${roomId}"]`);
+        if (weekdayInput && weekendInput) {
+          this.updateRoomPrice(roomId, weekdayInput.value, weekendInput.value);
         }
       });
     });

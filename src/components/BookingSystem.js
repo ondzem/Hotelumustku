@@ -1,5 +1,5 @@
-import { MOCK_ROOMS, isSupabaseConfigured, supabase, getStoredReservations, saveStoredReservation, getStoredBlockedDates, getStoredDiscountCodes, getStoredRoomPrices, getStoredDisabledRooms } from '../lib/supabaseClient.js';
-import { calculateReservationPrice, generateReservationCode, generateManageToken, BANK_ACCOUNT, BANK_NAME, formatCzechPrice } from '../utils/pricing.js';
+import { MOCK_ROOMS, isSupabaseConfigured, supabase, getStoredReservations, saveStoredReservation, getStoredBlockedDates, getStoredDiscountCodes, getStoredRoomPrices, getStoredDisabledRooms, getDeviceRedeemedDiscountCodes, markDiscountCodeRedeemedOnDevice, incrementDiscountCodeUsage } from '../lib/supabaseClient.js';
+import { calculateReservationPrice, generateReservationCode, generateManageToken, BANK_ACCOUNT, BANK_NAME, formatCzechPrice, validateSystemDateIntegrity } from '../utils/pricing.js';
 import { sendEmail, generateEmail1RequestReceived, generateEmail1ReceptionNotification } from '../utils/emailService.js';
 function getTodayDateString() {
   const d = new Date();
@@ -163,14 +163,30 @@ export class BookingSystem {
 
   async fetchDiscountCodes() {
     let localCodes = getStoredDiscountCodes().filter(c => c.is_active);
+    const localMap = new Map();
+    localCodes.forEach(c => {
+      if (c.code) localMap.set(String(c.code).trim().toUpperCase(), c);
+    });
+
     if (isSupabaseConfigured && supabase) {
       try {
         const { data, error } = await supabase.from('discount_codes').select('*').eq('is_active', true);
         if (!error && data) {
-          const codeMap = new Map();
-          localCodes.forEach(c => codeMap.set(c.code, c));
-          data.forEach(c => codeMap.set(c.code, c));
-          this.discountCodes = Array.from(codeMap.values());
+          const remoteCodes = data.map(remoteItem => {
+            const cleanCode = String(remoteItem.code || '').trim().toUpperCase();
+            const localItem = localMap.get(cleanCode) || {};
+            return {
+              ...localItem,
+              ...remoteItem,
+              code: cleanCode,
+              valid_from: (remoteItem.valid_from) ? remoteItem.valid_from : (localItem.valid_from || null),
+              valid_until: (remoteItem.valid_until) ? remoteItem.valid_until : (localItem.valid_until || null),
+              max_uses: (remoteItem.max_uses !== undefined && remoteItem.max_uses !== null && remoteItem.max_uses !== '') ? Number(remoteItem.max_uses) : (localItem.max_uses !== undefined && localItem.max_uses !== null ? Number(localItem.max_uses) : null),
+              used_count: (remoteItem.used_count !== undefined && remoteItem.used_count !== null) ? Number(remoteItem.used_count) : Number(localItem.used_count || 0)
+            };
+          });
+
+          this.discountCodes = remoteCodes;
           return;
         }
       } catch (err) {
@@ -207,20 +223,94 @@ export class BookingSystem {
 
     await this.fetchDiscountCodes();
     const found = (this.discountCodes || []).find(c => {
-      const matchCode = String(c.code || '').trim().toUpperCase() === clean;
-      const isActive = c.is_active === true || c.is_active === 'true' || c.is_active === 1;
-      return matchCode && isActive;
+      return String(c.code || '').trim().toUpperCase() === clean;
     });
 
-    if (found) {
-      this.appliedDiscount = found;
-      this.discountSuccessMsg = `Slevový kód ${found.code} (-${found.discount_value} %) byl uplatněn!`;
-      this.discountError = '';
-    } else {
+    if (!found) {
       this.appliedDiscount = null;
-      this.discountError = `Slevový kód "${clean}" je neplatný nebo vypršel.`;
+      this.discountError = `Slevový kód "${clean}" neexistuje.`;
       this.discountSuccessMsg = '';
+      this.render();
+      return;
     }
+
+    // 1. Active Check
+    const isActive = found.is_active === true || found.is_active === 'true' || found.is_active === 1;
+    if (!isActive) {
+      this.appliedDiscount = null;
+      this.discountError = `Slevový kód "${clean}" je neaktivní nebo vypršel.`;
+      this.discountSuccessMsg = '';
+      this.render();
+      return;
+    }
+
+    // 2. Date Range Check (valid_from / valid_until)
+    const todayStr = getTodayDateString();
+    const stayFromStr = this.state.dateFrom || todayStr;
+
+    if (found.valid_from) {
+      if (todayStr < found.valid_from) {
+        this.appliedDiscount = null;
+        this.discountError = `Slevový kód "${clean}" ještě není platný. Akce začíná od ${formatCzechDateStr(found.valid_from)}.`;
+        this.discountSuccessMsg = '';
+        this.render();
+        return;
+      }
+      if (stayFromStr < found.valid_from) {
+        this.appliedDiscount = null;
+        this.discountError = `Slevový kód "${clean}" nelze uplatnit na vybraný termín pobytu (Platí až od ${formatCzechDateStr(found.valid_from)}).`;
+        this.discountSuccessMsg = '';
+        this.render();
+        return;
+      }
+    }
+
+    if (found.valid_until) {
+      if (todayStr > found.valid_until) {
+        this.appliedDiscount = null;
+        this.discountError = `Slevový kód "${clean}" již vypršel dnem ${formatCzechDateStr(found.valid_until)}.`;
+        this.discountSuccessMsg = '';
+        this.render();
+        return;
+      }
+      if (stayFromStr > found.valid_until) {
+        this.appliedDiscount = null;
+        this.discountError = `Slevový kód "${clean}" nelze uplatnit na vybraný termín pobytu (Platí pouze do ${formatCzechDateStr(found.valid_until)}).`;
+        this.discountSuccessMsg = '';
+        this.render();
+        return;
+      }
+    }
+
+    // 3. Usage Count Cap Check
+    if (found.max_uses !== null && found.max_uses !== undefined && found.max_uses !== '') {
+      const maxUses = Number(found.max_uses);
+      const usedCount = Number(found.used_count || 0);
+      if (usedCount >= maxUses) {
+        this.appliedDiscount = null;
+        this.discountError = `Slevový kód "${clean}" již vyčerpal svojí maximální kapacitu použití (${maxUses}×).`;
+        this.discountSuccessMsg = '';
+        this.render();
+        return;
+      }
+    }
+
+    // 4. One-Use-Per-Device Protection Check (Only for single-use codes)
+    if (found.max_uses === 1) {
+      const deviceUsedCodes = getDeviceRedeemedDiscountCodes();
+      if (deviceUsedCodes.includes(clean)) {
+        this.appliedDiscount = null;
+        this.discountError = `Slevový kód "${clean}" jste již na svém zařízení v minulosti uplatnili. Každý kód lze uplatnit pouze 1× na osobu.`;
+        this.discountSuccessMsg = '';
+        this.render();
+        return;
+      }
+    }
+
+    // Valid code passed all 4 checks!
+    this.appliedDiscount = found;
+    this.discountSuccessMsg = `Slevový kód ${found.code} (-${found.discount_value} %) byl úspěšně uplatněn!`;
+    this.discountError = '';
     this.render();
   }
 
@@ -517,7 +607,9 @@ export class BookingSystem {
       };
     }
     const customPriceObj = (this.roomPrices || []).find(p => p.room_id === room.id);
-    const customBaseRate = customPriceObj ? customPriceObj.base_price : room.basePrice;
+    const customBaseRate = customPriceObj ? (customPriceObj.base_price || customPriceObj.weekday_price) : (room.weekdayPrice || room.basePrice);
+    const customWeekdayRate = customPriceObj ? (customPriceObj.weekday_price || customPriceObj.base_price) : room.weekdayPrice;
+    const customWeekendRate = customPriceObj ? (customPriceObj.weekend_price || customPriceObj.base_price) : room.weekendPrice;
 
     return calculateReservationPrice({
       roomType: room.type,
@@ -525,12 +617,16 @@ export class BookingSystem {
       persons: this.state.adults,
       adults: this.state.adults,
       children: this.state.children,
+      dateFrom: this.state.dateFrom,
+      dateTo: this.state.dateTo,
       hasDog: this.state.hasDog,
       hasEbike: this.state.hasEbike,
       ebikeCount: this.state.ebikeCount,
       hasHalfBoard: this.state.hasHalfBoard,
       halfBoardCount: this.state.halfBoardCount,
       customBaseRate,
+      customWeekdayRate,
+      customWeekendRate,
       discountObj: this.appliedDiscount,
     });
   }
@@ -692,6 +788,15 @@ export class BookingSystem {
     }
 
     saveStoredReservation(reservationData);
+
+    if (!this.appliedDiscount && (this.discountCodeInput || '').trim()) {
+      await this.applyDiscountCode(this.discountCodeInput.trim());
+    }
+
+    if (this.appliedDiscount) {
+      await incrementDiscountCodeUsage(this.appliedDiscount.code || this.appliedDiscount.id);
+      markDiscountCodeRedeemedOnDevice(this.appliedDiscount.code);
+    }
 
     // Send Phase 1 emails (Guest & Reception)
     try {
@@ -1144,7 +1249,7 @@ export class BookingSystem {
                   <span class="recap-clean-label">Termín pobytu:</span>
                   <div class="recap-clean-val-group">
                     <span class="recap-clean-val"><strong>${formatCzechDateStr(this.state.dateFrom)} – ${formatCzechDateStr(this.state.dateTo)}</strong></span>
-                    <span class="recap-sub-val">(${nights} ${nights === 1 ? 'noc' : (nights >= 2 && nights <= 4 ? 'noci' : 'nocí')})</span>
+                    <span class="recap-sub-val">(${nights} ${nights === 1 ? 'noc' : (nights >= 2 && nights <= 4 ? 'noci' : 'nocí')}${pricing.nightBreakdownLabel ? ` • ${pricing.nightBreakdownLabel}` : ''})</span>
                   </div>
                 </div>
 
@@ -1557,7 +1662,7 @@ export class BookingSystem {
                     <span class="recap-clean-label">Termín pobytu:</span>
                     <div class="recap-clean-val-group">
                       <span class="recap-clean-val"><strong>${formattedFrom} – ${formattedTo}</strong></span>
-                      <span class="recap-sub-val">(${nights} ${nights === 1 ? 'noc' : (nights >= 2 && nights <= 4 ? 'noci' : 'nocí')})</span>
+                      <span class="recap-sub-val">(${nights} ${nights === 1 ? 'noc' : (nights >= 2 && nights <= 4 ? 'noci' : 'nocí')}${pricing.nightBreakdownLabel ? ` • ${pricing.nightBreakdownLabel}` : ''})</span>
                     </div>
                   </div>
 

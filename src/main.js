@@ -14,14 +14,14 @@ export function syncDynamicRoomPricesToDOM() {
 
     const customP = roomPrices.find(p => p.room_id === roomId);
     let priceVal = null;
-    if (customP && customP.base_price) {
-      priceVal = customP.base_price;
+    if (customP && (customP.weekday_price || customP.base_price)) {
+      priceVal = customP.weekday_price || customP.base_price;
     } else {
       const rmObj = MOCK_ROOMS.find(r => r.id === roomId);
-      if (rmObj && rmObj.basePrice) priceVal = rmObj.basePrice;
+      if (rmObj && (rmObj.weekdayPrice || rmObj.basePrice)) priceVal = rmObj.weekdayPrice || rmObj.basePrice;
     }
     if (priceVal) {
-      priceAmountEl.textContent = `${priceVal} Kč`;
+      priceAmountEl.textContent = `od ${priceVal} Kč`;
     }
   });
 }
@@ -42,11 +42,11 @@ export function syncDisabledRoomsToDOM() {
       if (isDisabled) {
         selectBtn.classList.add('btn-room-disabled');
         selectBtn.setAttribute('disabled', 'true');
-        selectBtn.style.background = '#999999';
-        selectBtn.style.color = '#ffffff';
+        selectBtn.style.background = '#ffffff';
+        selectBtn.style.color = '#666660';
         selectBtn.style.cursor = 'not-allowed';
         selectBtn.style.pointerEvents = 'none';
-        selectBtn.style.border = 'none';
+        selectBtn.style.border = '1px solid #c8c6b9';
         selectBtn.innerHTML = `<span>Dočasně nedostupné</span>`;
       } else {
         selectBtn.classList.remove('btn-room-disabled');
@@ -94,7 +94,6 @@ export const ROOM_GALLERIES = {
     '/pokoje/mahagon/3.webp',
     '/pokoje/mahagon/4.webp',
     '/pokoje/mahagon/5.webp',
-    '/pokoje/mahagon/6.webp',
     '/pokoje/mahagon/7.webp',
     '/pokoje/mahagon/8.webp'
   ],
@@ -146,7 +145,6 @@ export const ROOM_GALLERIES = {
     '/pokoje/p10/2.webp',
     '/pokoje/p10/3.webp',
     '/pokoje/p10/4.webp',
-    '/pokoje/p10/5.webp',
     '/pokoje/p10/6.webp',
     '/pokoje/p10/7.webp',
     '/pokoje/p10/8.webp',
@@ -158,7 +156,6 @@ export const ROOM_GALLERIES = {
     '/pokoje/p11/3.webp',
     '/pokoje/p11/4.webp',
     '/pokoje/p11/5.webp',
-    '/pokoje/p11/6.webp',
     '/pokoje/p11/7.webp',
     '/pokoje/p11/8.webp',
     '/pokoje/p11/9.webp',
@@ -171,7 +168,6 @@ export const ROOM_GALLERIES = {
     '/pokoje/p12/4.webp',
     '/pokoje/p12/5.webp',
     '/pokoje/p12/6.webp',
-    '/pokoje/p12/7.webp',
     '/pokoje/p12/8.webp',
     '/pokoje/p12/9.webp',
     '/pokoje/p12/10.webp',
@@ -239,7 +235,7 @@ const getHeaderHTML = () => `
   <header class="site-header">
     <div class="nav-left">
       <a href="#pokoje" class="nav-link">Nabídka pokojů</a>
-      <a href="#sluzby" class="nav-link">Stravování</a>
+      <a href="#stravovani" class="nav-link">Stravování</a>
     </div>
     
     <a href="#domu" class="header-logo">
@@ -248,7 +244,7 @@ const getHeaderHTML = () => `
     
     <div class="nav-right">
       <a href="#aktivity" class="nav-link">Okolí</a>
-      <a href="#sluzby" class="nav-link">Akce</a>
+      <a href="#oslavy-akce" class="nav-link">Akce</a>
       <a href="#kontakt" class="nav-link">Kontakt</a>
     </div>
 
@@ -265,9 +261,9 @@ const getHeaderHTML = () => `
     <button class="mobile-menu-close" id="mobile-menu-close" aria-label="Zavřít menu">&times;</button>
     <nav class="mobile-menu-nav">
       <a href="#pokoje" class="mobile-nav-link">Nabídka pokojů</a>
-      <a href="#sluzby" class="mobile-nav-link">Stravování</a>
+      <a href="#stravovani" class="mobile-nav-link">Stravování</a>
       <a href="#aktivity" class="mobile-nav-link">Okolí</a>
-      <a href="#sluzby" class="mobile-nav-link">Akce</a>
+      <a href="#oslavy-akce" class="mobile-nav-link">Akce</a>
       <a href="#kontakt" class="mobile-nav-link">Kontakt</a>
     </nav>
     <button class="btn btn-booking mobile-menu-booking" id="mobile-menu-booking">Rezervovat pobyt</button>
@@ -809,8 +805,8 @@ const getFooterHTML = () => `
           <h3 class="footer-col-heading">Rychlé odkazy</h3>
           <ul class="footer-links-list">
             <li><a href="#pokoje">Nabídka pokojů</a></li>
-            <li><a href="#sluzby">Stravování</a></li>
-            <li><a href="#sluzby">Akce</a></li>
+            <li><a href="#stravovani">Stravování</a></li>
+            <li><a href="#oslavy-akce">Akce</a></li>
             <li><a href="#aktivity">Okolí</a></li>
             <li><a href="#kontakt">Kontakt</a></li>
           </ul>
@@ -878,8 +874,7 @@ const getHomePageHTML = () => {
         fetchpriority="high"
         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; background: transparent;"
       >
-        <source src="/hero_master_v5.mp4" type="video/mp4">
-        <source src="https://jpvnvjcktpxyxrvsdukm.supabase.co/storage/v1/object/public/hotel-videos/hero_master_v5.mp4" type="video/mp4">
+        <source src="https://jpvnvjcktpxyxrvsdukm.supabase.co/storage/v1/object/public/hotel-videos/hero_final_v5.mp4" type="video/mp4">
       </video>`;
 
   const aboutTopSrc = isWinter
@@ -1128,6 +1123,13 @@ const getRoomGroundFloorHTML = () => `
         </p>
         <button class="btn btn-booking room-detail-hero-btn" id="btn-specs-rooms">Zjistit detaily</button>
       </div>
+
+      <!-- Spodní šipka dolů (mobil + tablet) -->
+      <div class="scroll-down-btn mobile-only-scroll-btn" id="scroll-btn-prizemi">
+        <svg width="12" height="14" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7.29 17.1C7.68 17.49 8.32 17.49 8.71 17.1L15.07 10.74C15.46 10.35 15.46 9.71 15.07 9.32C14.68 8.93 14.05 8.93 13.66 9.32L8 14.98L2.34 9.32C1.95 8.93 1.32 8.93 0.93 9.32C0.54 9.71 0.54 10.35 0.93 10.74L7.29 17.1ZM8 0H7V16.39H8H9V0H8Z" fill="white"/>
+        </svg>
+      </div>
     </div>
   </section>
 
@@ -1297,134 +1299,107 @@ const getRoomGroundFloorHTML = () => `
       </div>
 
       <div class="room-breakdown-list">
-        <!-- Pokoj 1: Turistický P1 -->
-        <div class="room-breakdown-item" data-room="p1">
-          <div class="room-breakdown-row">
-            <span class="room-breakdown-name"><strong>Pokoj Turistický P1</strong> <span class="room-meal">(se snídaní)</span></span>
-            <button class="btn-toggle-details" aria-expanded="false">
-              <span class="toggle-text">Zobrazit podrobnosti</span>
-              <svg class="toggle-arrow" width="12" height="7" viewBox="0 0 12 7" fill="none"><path d="M1 1L6 6L11 1" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
-            </button>
-          </div>
+        <!-- Pokoj 1: Standard P1 -->
+        ${renderRoomBreakdownItem('p6', 'Pokoj Standard P1', 'standard', 830)}
 
-          <div class="room-breakdown-drawer">
-            <div class="drawer-inner">
-              <div class="renovation-notice-box" style="padding: 24px 0 20px 0; text-align: left;">
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                  <span style="font-size: 22px;">🔨</span>
-                  <h4 style="margin: 0; font-size: 16px; font-weight: 700; color: #1c1c19;">Probíhá rekonstrukce pokoje</h4>
-                </div>
-                <p style="margin: 0; font-size: 13.5px; color: #666660; line-height: 1.5; max-width: 580px;">
-                  V tomto pokoji v současnosti probíhá renovace. Pokoj je dočasně nedostupný pro rezervace. Prosíme, vyberte si jiný volný pokoj z naší nabídky.
-                </p>
-              </div>
+        <!-- Pokoj 2: Standard P2 -->
+        ${renderRoomBreakdownItem('p5', 'Pokoj Standard P2', 'standard', 830)}
 
-              <div class="drawer-footer-controls" style="justify-content: flex-end;">
-                <div class="drawer-action-btns">
-                  <div class="room-drawer-price-wrap" data-price="standard">
-                    <div class="price-main-block">
-                      <span class="price-amount">830 Kč</span>
-                      <span class="price-suffix">/ noc</span>
-                    </div>
-                    <div class="price-sub-block">
-                      <span class="price-detail">za osobu • včetně snídaně</span>
-                    </div>
-                  </div>
-                  <button class="btn btn-booking btn-room-reserve btn-room-disabled" disabled style="background: #999999; color: #ffffff; cursor: not-allowed; pointer-events: none; border: none;"><span>Dočasně nedostupné</span></button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Pokoj 2: Turistický P2 -->
-        <div class="room-breakdown-item" data-room="p2">
-          <div class="room-breakdown-row">
-            <span class="room-breakdown-name"><strong>Pokoj Turistický P2</strong> <span class="room-meal">(se snídaní)</span></span>
-            <button class="btn-toggle-details" aria-expanded="false">
-              <span class="toggle-text">Zobrazit podrobnosti</span>
-              <svg class="toggle-arrow" width="12" height="7" viewBox="0 0 12 7" fill="none"><path d="M1 1L6 6L11 1" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
-            </button>
-          </div>
-
-          <div class="room-breakdown-drawer">
-            <div class="drawer-inner">
-              <div class="renovation-notice-box" style="padding: 24px 0 20px 0; text-align: left;">
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                  <span style="font-size: 22px;">🔨</span>
-                  <h4 style="margin: 0; font-size: 16px; font-weight: 700; color: #1c1c19;">Probíhá rekonstrukce pokoje</h4>
-                </div>
-                <p style="margin: 0; font-size: 13.5px; color: #666660; line-height: 1.5; max-width: 580px;">
-                  V tomto pokoji v současnosti probíhá renovace. Pokoj je dočasně nedostupný pro rezervace. Prosíme, vyberte si jiný volný pokoj z naší nabídky.
-                </p>
-              </div>
-
-              <div class="drawer-footer-controls" style="justify-content: flex-end;">
-                <div class="drawer-action-btns">
-                  <div class="room-drawer-price-wrap" data-price="standard">
-                    <div class="price-main-block">
-                      <span class="price-amount">830 Kč</span>
-                      <span class="price-suffix">/ noc</span>
-                    </div>
-                    <div class="price-sub-block">
-                      <span class="price-detail">za osobu • včetně snídaně</span>
-                    </div>
-                  </div>
-                  <button class="btn btn-booking btn-room-reserve btn-room-disabled" disabled style="background: #999999; color: #ffffff; cursor: not-allowed; pointer-events: none; border: none;"><span>Dočasně nedostupné</span></button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Pokoj 3: Turistický P3 -->
-        <div class="room-breakdown-item" data-room="p3">
-          <div class="room-breakdown-row">
-            <span class="room-breakdown-name"><strong>Pokoj Turistický P3</strong> <span class="room-meal">(se snídaní)</span></span>
-            <button class="btn-toggle-details" aria-expanded="false">
-              <span class="toggle-text">Zobrazit podrobnosti</span>
-              <svg class="toggle-arrow" width="12" height="7" viewBox="0 0 12 7" fill="none"><path d="M1 1L6 6L11 1" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
-            </button>
-          </div>
-
-          <div class="room-breakdown-drawer">
-            <div class="drawer-inner">
-              <div class="renovation-notice-box" style="padding: 24px 0 20px 0; text-align: left;">
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                  <span style="font-size: 22px;">🔨</span>
-                  <h4 style="margin: 0; font-size: 16px; font-weight: 700; color: #1c1c19;">Probíhá rekonstrukce pokoje</h4>
-                </div>
-                <p style="margin: 0; font-size: 13.5px; color: #666660; line-height: 1.5; max-width: 580px;">
-                  V tomto pokoji v současnosti probíhá renovace. Pokoj je dočasně nedostupný pro rezervace. Prosíme, vyberte si jiný volný pokoj z naší nabídky.
-                </p>
-              </div>
-
-              <div class="drawer-footer-controls" style="justify-content: flex-end;">
-                <div class="drawer-action-btns">
-                  <div class="room-drawer-price-wrap" data-price="standard">
-                    <div class="price-main-block">
-                      <span class="price-amount">830 Kč</span>
-                      <span class="price-suffix">/ noc</span>
-                    </div>
-                    <div class="price-sub-block">
-                      <span class="price-detail">za osobu • včetně snídaně</span>
-                    </div>
-                  </div>
-                  <button class="btn btn-booking btn-room-reserve btn-room-disabled" disabled style="background: #999999; color: #ffffff; cursor: not-allowed; pointer-events: none; border: none;"><span>Dočasně nedostupné</span></button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Pokoj 4: Nadstandard Mahagon -->
+        <!-- Pokoj 3: Nadstandard Mahagon -->
         ${renderRoomBreakdownItem('pa', 'Pokoj Nadstandard Mahagon', 'nadstandard', 890)}
 
-        <!-- Pokoj 5: Standard P5 -->
-        ${renderRoomBreakdownItem('p5', 'Pokoj Standard P5', 'standard', 830)}
+        <!-- Pokoj 4: Turistický P4 (v rekonstrukci) -->
+        <div class="room-breakdown-item" data-room="p3">
+          <div class="room-breakdown-row">
+            <span class="room-breakdown-name"><strong>Pokoj Turistický P4</strong> <span class="room-meal">(se snídaní)</span></span>
+            <button class="btn-toggle-details" aria-expanded="false">
+              <span class="toggle-text">Zobrazit podrobnosti</span>
+              <svg class="toggle-arrow" width="12" height="7" viewBox="0 0 12 7" fill="none"><path d="M1 1L6 6L11 1" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </button>
+          </div>
 
-        <!-- Pokoj 6: Standard P6 -->
-        ${renderRoomBreakdownItem('p6', 'Pokoj Standard P6', 'standard', 830)}
+          <div class="room-breakdown-drawer">
+            <div class="drawer-inner">
+              <div class="renovation-notice-box" style="padding: 24px 0 20px 0; text-align: left;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                  <span style="font-size: 22px;">🔨</span>
+                  <h4 style="margin: 0; font-size: 16px; font-weight: 700; color: #1c1c19;">Probíhá rekonstrukce pokoje</h4>
+                </div>
+                <p style="margin: 0; font-size: 13.5px; color: #666660; line-height: 1.5; max-width: 580px;">
+                  V tomto pokoji v současnosti probíhá renovace. Pokoj je dočasně nedostupný pro rezervace. Prosíme, vyberte si jiný volný pokoj z naší nabídky.
+                </p>
+              </div>
+
+              <div class="drawer-footer-controls" style="justify-content: flex-end;">
+                <div class="drawer-action-btns">
+                  <button class="btn btn-booking btn-room-reserve btn-room-disabled" disabled><span>Dočasně nedostupné</span></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pokoj 5: Turistický P5 (v rekonstrukci) -->
+        <div class="room-breakdown-item" data-room="p2">
+          <div class="room-breakdown-row">
+            <span class="room-breakdown-name"><strong>Pokoj Turistický P5</strong> <span class="room-meal">(se snídaní)</span></span>
+            <button class="btn-toggle-details" aria-expanded="false">
+              <span class="toggle-text">Zobrazit podrobnosti</span>
+              <svg class="toggle-arrow" width="12" height="7" viewBox="0 0 12 7" fill="none"><path d="M1 1L6 6L11 1" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+
+          <div class="room-breakdown-drawer">
+            <div class="drawer-inner">
+              <div class="renovation-notice-box" style="padding: 24px 0 20px 0; text-align: left;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                  <span style="font-size: 22px;">🔨</span>
+                  <h4 style="margin: 0; font-size: 16px; font-weight: 700; color: #1c1c19;">Probíhá rekonstrukce pokoje</h4>
+                </div>
+                <p style="margin: 0; font-size: 13.5px; color: #666660; line-height: 1.5; max-width: 580px;">
+                  V tomto pokoji v současnosti probíhá renovace. Pokoj je dočasně nedostupný pro rezervace. Prosíme, vyberte si jiný volný pokoj z naší nabídky.
+                </p>
+              </div>
+
+              <div class="drawer-footer-controls" style="justify-content: flex-end;">
+                <div class="drawer-action-btns">
+                  <button class="btn btn-booking btn-room-reserve btn-room-disabled" disabled><span>Dočasně nedostupné</span></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pokoj 6: Turistický P6 (v rekonstrukci) -->
+        <div class="room-breakdown-item" data-room="p1">
+          <div class="room-breakdown-row">
+            <span class="room-breakdown-name"><strong>Pokoj Turistický P6</strong> <span class="room-meal">(se snídaní)</span></span>
+            <button class="btn-toggle-details" aria-expanded="false">
+              <span class="toggle-text">Zobrazit podrobnosti</span>
+              <svg class="toggle-arrow" width="12" height="7" viewBox="0 0 12 7" fill="none"><path d="M1 1L6 6L11 1" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+
+          <div class="room-breakdown-drawer">
+            <div class="drawer-inner">
+              <div class="renovation-notice-box" style="padding: 24px 0 20px 0; text-align: left;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                  <span style="font-size: 22px;">🔨</span>
+                  <h4 style="margin: 0; font-size: 16px; font-weight: 700; color: #1c1c19;">Probíhá rekonstrukce pokoje</h4>
+                </div>
+                <p style="margin: 0; font-size: 13.5px; color: #666660; line-height: 1.5; max-width: 580px;">
+                  V tomto pokoji v současnosti probíhá renovace. Pokoj je dočasně nedostupný pro rezervace. Prosíme, vyberte si jiný volný pokoj z naší nabídky.
+                </p>
+              </div>
+
+              <div class="drawer-footer-controls" style="justify-content: flex-end;">
+                <div class="drawer-action-btns">
+                  <button class="btn btn-booking btn-room-reserve btn-room-disabled" disabled><span>Dočasně nedostupné</span></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <p class="room-breakdown-footer-note">Pobyt na 1 noc: Příplatek +200 Kč / osoba / noc k základní ceně.</p>
@@ -1595,6 +1570,7 @@ const getRoomViewFloorHTML = () => {
 
   // 1. Změna Hero sekce (ID a třída pro fotky na pozadí)
   html = html.replace('id="uvod-prizemi"', 'id="uvod-vyhled"');
+  html = html.replace('id="scroll-btn-prizemi"', 'id="scroll-btn-vyhled"');
   html = html.replace(
     'class="hero-section rooms-hero-section room-detail-hero"',
     'class="hero-section rooms-hero-section room-detail-hero room-view-hero"'
@@ -1902,8 +1878,7 @@ export function setSeasonMode(mode, savePreference = true) {
         heroVideo.setAttribute('fetchpriority', 'high');
         heroVideo.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; background: transparent;';
         heroVideo.innerHTML = `
-          <source src="/hero_master_v5.mp4" type="video/mp4">
-          <source src="https://jpvnvjcktpxyxrvsdukm.supabase.co/storage/v1/object/public/hotel-videos/hero_master_v5.mp4" type="video/mp4">
+          <source src="https://jpvnvjcktpxyxrvsdukm.supabase.co/storage/v1/object/public/hotel-videos/hero_final_v5.mp4" type="video/mp4">
         `;
         heroSection.insertBefore(heroVideo, heroSection.firstChild);
       } else {
@@ -2513,6 +2488,17 @@ const initInteractivity = () => {
     });
   }
 
+  const scrollBtnStravovani = document.getElementById('scroll-btn-stravovani');
+  if (scrollBtnStravovani) {
+    scrollBtnStravovani.addEventListener('click', (e) => {
+      e.preventDefault();
+      const targetSec = document.getElementById('snidane');
+      if (targetSec) {
+        targetSec.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  }
+
   // Kliknutí na logo ve futru přesune na vrchol stránky
   const scrollTopBtns = document.querySelectorAll('.btn-scroll-top, .footer-logo-wrap, .footer-mobile-logo');
   scrollTopBtns.forEach(btn => {
@@ -2664,8 +2650,22 @@ const initInteractivity = () => {
 
       const roomItem = btn.closest('.room-breakdown-item');
       const roomId = roomItem ? roomItem.dataset.room : '';
-      window.location.hash = roomId ? `#rezervace?room=${roomId}` : '#rezervace';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const targetHash = roomId ? `#rezervace?room=${roomId}` : '#rezervace';
+
+      if (window.location.hash === targetHash) {
+        route(false);
+      } else {
+        window.location.hash = targetHash;
+      }
+
+      window.scrollTo(0, 0);
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+      requestAnimationFrame(() => {
+        window.scrollTo(0, 0);
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+      });
     });
   });
 
@@ -2709,6 +2709,207 @@ const preloadHeroImages = (pageKey) => {
   }
 };
 
+// Render Funkce Pro Samostatnou Stránku "Stravování"
+const getStravovaniPageHTML = () => `
+  <div class="dining-page">
+
+  <!-- 1. HERO SEKCE STRAVOVÁNÍ (1:1 DLE NABÍDKA POKOJŮ HERO SEKCE) -->
+  <section class="hero-section dining-hero-section room-detail-hero" id="uvod-stravovani">
+    <div class="hero-overlay"></div>
+    <div class="hero-inner">
+      ${getHeaderHTML()}
+
+      <div class="room-detail-hero-center">
+        <h1 class="hero-title room-detail-hero-title">
+          <span>Poctivá domácí kuchyně pouze pro naše hosty.</span>
+        </h1>
+        <p class="room-detail-hero-subtitle">
+          <span>Skvělé ubytování v Jizerských horách a poctivé stravování k sobě neodmyslitelně patří.</span>
+        </p>
+
+        <div class="dining-hero-buttons-wrap">
+          <a href="#snidane" class="btn btn-dining-read-more" id="btn-dining-read-more">Přečíst více</a>
+          <button class="btn btn-dining-not-guest" id="btn-dining-not-guest">Nejsem ubytovaný</button>
+        </div>
+      </div>
+
+      <!-- Spodní šipka dolů -->
+      <div class="scroll-down-btn" id="scroll-btn-stravovani">
+        <svg width="12" height="14" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7.29 17.1C7.68 17.49 8.32 17.49 8.71 17.1L15.07 10.74C15.46 10.35 15.46 9.71 15.07 9.32C14.68 8.93 14.05 8.93 13.66 9.32L8 14.98L2.34 9.32C1.95 8.93 1.32 8.93 0.93 9.32C0.54 9.71 0.54 10.35 0.93 10.74L7.29 17.1ZM8 0H7V16.39H8H9V0H8Z" fill="white"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. SNÍDANĚ FORUMU ŠVÉDSKÉHO STOLU -->
+  <section class="dining-feature-section dining-buffet-section" id="snidane">
+    <div class="dining-feature-inner">
+      <div class="dining-section-header">
+        <h2 class="dining-section-title">Snídaně formou švédského stolu</h2>
+        <p class="dining-section-lead">
+          Běžně podáváme snídaně formou švédských stolů v rozmezí od 8:00 do 9:00 hod. ranních.<br>Těšit se můžete na čerstvé pečivo, sýry, uzeniny, cereálie i teplé pokrmy.
+        </p>
+      </div>
+
+      <div class="dining-single-img-wrap">
+        <img src="/Stránka stravování/WhatsApp_Image_2026-07-13_20-56-33_professional_enhanced.webp" alt="Snídaně formou švédského stolu" loading="lazy" decoding="async">
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. VEČEŘE FORUMU POLOPENZE -->
+  <section class="dining-feature-section dining-dinner-section" id="vecere">
+    <div class="dining-feature-inner">
+      <div class="dining-section-header">
+        <h2 class="dining-section-title">Večeře formou polopenze</h2>
+        <p class="dining-section-lead">
+          Užijte si poctivou českou kuchyni formou dvouchodového menu, které pro vás vaříme z čerstvých sezónních surovin.
+        </p>
+      </div>
+
+      <div class="dining-single-img-wrap">
+        <img src="/Stránka stravování/Polopenze vecere.webp" alt="Večeře formou polopenze" loading="lazy" decoding="async">
+      </div>
+
+      <div class="dining-bottom-notice">
+        <p class="dining-bottom-notice-text">
+          Jelikož nejsme veřejná restaurace, večeře podáváme ubytovaným hostům společně v 18:00 hodin. Při pozdním návratu z výletu či túry vám jídlo po předchozí domluvě rádi uchováme a ohřejeme.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. PANORAMA KRB RESTAURACE -->
+  <section class="dining-fireplace-section" id="krb-restaurace">
+    <div class="dining-fireplace-img-wrap">
+      <img src="/Stránka stravování/Desná 17 - 1.webp" alt="Restaurace s krbem v Hotelu u Můstku" loading="lazy" decoding="async">
+    </div>
+  </section>
+
+  <!-- 5. LETNÍ RESTAURAČNÍ ZAHRÁDKA NAD SPLAVEM -->
+  <section class="dining-terrace-section" id="teraska">
+    <div class="dining-terrace-inner">
+      <div class="dining-2col-layout">
+        <!-- Levý sloupec: Informace s ikonami -->
+        <div class="dining-2col-content">
+          <h2 class="dining-col-title">Letní restaurační zahrádka nad splavem</h2>
+
+          <div class="dining-info-list">
+            <div class="dining-info-item">
+              <h3 class="dining-info-heading">
+                <img src="/Icons/Ikony/clock.png" alt="" class="dining-inline-icon">
+                <span>Provozní doba:</span>
+              </h3>
+              <p class="dining-info-desc">Květen – Září (otevřeno pro hotelové hosty i projíždějící cyklisty a pěší turisty).</p>
+            </div>
+
+            <div class="dining-info-item">
+              <h3 class="dining-info-heading">
+                <img src="/Icons/Ikony/beer.png" alt="" class="dining-inline-icon">
+                <span>Co je na čepu?</span>
+              </h3>
+              <p class="dining-info-desc">Točené pivo Bernard 10°, Polotmavý ležák Bernard 11°, Prémiový Pilsner Urquell 12°.</p>
+            </div>
+
+            <div class="dining-info-item">
+              <h3 class="dining-info-heading">
+                <img src="/Icons/Ikony/view.png" alt="" class="dining-inline-icon">
+                <span>Výhled na skokanské můstky</span>
+              </h3>
+              <p class="dining-info-desc">Přímo od stolu s chlazeným pivem můžete sledovat tréninky skokanů na protilehlých můstcích.</p>
+            </div>
+
+            <div class="dining-info-item">
+              <h3 class="dining-info-heading">
+                <img src="/Icons/Ikony/children.png" alt="" class="dining-inline-icon">
+                <span>Zábava pro děti</span>
+              </h3>
+              <p class="dining-info-desc">Děti se mohou bezpečně vyřádit na naší trampolíně, kterou máte po celou dobu pod dohledem přímo od stolu naší terasy.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pravý sloupec: Fotka terásky -->
+        <div class="dining-2col-image">
+          <img src="/Stránka stravování/226307197_professional_enhanced_extended.webp" alt="Letní restaurační zahrádka nad splavem" loading="lazy" decoding="async">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. VENKOVNÍ GRILOVÁNÍ A UZENÍ -->
+  <section class="dining-grill-section" id="grilovani">
+    <div class="dining-grill-inner">
+      <div class="dining-2col-layout dining-2col-reversed">
+        <!-- Levý sloupec: Fotka ohniště -->
+        <div class="dining-2col-image">
+          <img src="/Ohniste.webp" alt="Venkovní grilování a uzení" loading="lazy" decoding="async">
+        </div>
+
+        <!-- Pravý sloupec: Text a ikony -->
+        <div class="dining-2col-content">
+          <h2 class="dining-col-title">Venkovní grilování a uzení</h2>
+          <p class="dining-col-lead">Pro milovníky venkovního posezení jsme v areálu zahrady u splavu vybudovali zázemí pro letní relaxaci.</p>
+
+          <div class="dining-info-list">
+            <div class="dining-info-item">
+              <h3 class="dining-info-heading">
+                <img src="/Icons/Ikony/smoker.png" alt="" class="dining-inline-icon">
+                <span>Nová venkovní udírna:</span>
+              </h3>
+              <p class="dining-info-desc">Zbudovaná pro uzení chutných klobásek a dalších specialit.</p>
+            </div>
+
+            <div class="dining-info-item">
+              <h3 class="dining-info-heading">
+                <img src="/Icons/Ikony/campfire.png" alt="" class="dining-inline-icon">
+                <span>Kamenné ohniště</span>
+              </h3>
+              <p class="dining-info-desc">Ohniště nad splavem pro klasické táboráky a večerní posezení na zahradě.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. RODINNÉ OSLAVY, SVATBY ČI FIREMNÍ AKCE -->
+  <section class="dining-events-banner-section" id="oslavy-akce">
+    <img src="/Decoration/Hory - dekorace.webp" alt="" class="dining-events-contour-img" aria-hidden="true" loading="lazy" decoding="async">
+    <div class="dining-events-inner">
+      <div class="dining-events-content">
+        <h2 class="dining-events-title">Rodinné oslavy, svatby či firemní akce?</h2>
+        <p class="dining-events-p1">Plánujete skupinovou akci?</p>
+        <p class="dining-events-p2">Rádi pro vás po předchozí dohodě zajistíme kompletní pohoštění, rauty i ubytování pro skupiny do 40 osob.</p>
+        <p class="dining-events-p3">Postaráme se o rodinnou atmosféru a hladký průběh vaší akce v klidném údolí Jizerských hor.</p>
+      </div>
+      <div class="dining-events-action">
+        <a href="#kontakt" class="btn btn-about btn-events-cta" id="dining-events-cta-btn">Zjistit více</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. REUSED SEKTION: OKOLÍ -->
+  ${getSurroundingsHTML()}
+
+  <!-- 9. REUSED SEKTION: RECENZE -->
+  ${getReviewsHTML()}
+
+  <!-- 10. REUSED SEKTION: CTA BANNER -->
+  <section class="cta-section">
+    <div class="cta-overlay"></div>
+    <div class="cta-inner">
+      <h2 class="cta-title">Dopřejte si zasloužený<br>odpočinek v Jizerských horách</h2>
+      <button class="btn btn-booking btn-cta">Rezervovat pobyt</button>
+    </div>
+  </section>
+
+  <!-- 11. REUSED SEKTION: FOOTER -->
+  ${getFooterHTML()}
+  </div>
+`;
+
 // Router
 const app = document.querySelector('#app');
 let currentViewKey = null;
@@ -2719,8 +2920,13 @@ const route = (isInitial = false) => {
 
   const knownHomeHashes = [
     '', '#', '#domu', '#uvod', '#o-nas', '#zazemi', '#sleva', '#promo',
-    '#sluzby', '#stravovani', '#recenze', '#hodnoceni', '#aktivity', '#okoli',
+    '#recenze', '#hodnoceni', '#aktivity', '#okoli',
     '#kontakt', '#kde-nas-najdete'
+  ];
+
+  const knownDiningHashes = [
+    '#sluzby', '#stravovani', '#stravovani-stranka', '#restaurace',
+    '#snidane', '#vecere', '#krb-restaurace', '#teraska', '#grilovani', '#oslavy-akce'
   ];
 
   let pageKey = 'home';
@@ -2729,6 +2935,8 @@ const route = (isInitial = false) => {
     pageKey = 'booking';
   } else if (cleanHash.startsWith('#admin')) {
     pageKey = 'admin';
+  } else if (knownDiningHashes.includes(cleanHash)) {
+    pageKey = 'dining';
   } else if (cleanHash === '#pokoj-prizemi' || cleanHash === '#pokoje-prizemi' || cleanHash === '#pokoj-v-prizemi') {
     pageKey = 'ground';
   } else if (cleanHash === '#pokoj-vyhled' || cleanHash === '#pokoje-vyhled' || cleanHash === '#pokoj-s-vyhledem') {
@@ -2760,6 +2968,8 @@ const route = (isInitial = false) => {
   } else if (pageKey === 'admin') {
     app.innerHTML = getAdminPageHTML();
     new AdminDashboard('admin-container').init();
+  } else if (pageKey === 'dining') {
+    app.innerHTML = getStravovaniPageHTML();
   } else if (pageKey === 'ground') {
     app.innerHTML = getRoomGroundFloorHTML();
   } else if (pageKey === 'view') {
@@ -2772,9 +2982,12 @@ const route = (isInitial = false) => {
     app.innerHTML = getHomePageHTML();
   }
 
-  // Přesun na vrchol pouze při běžné navigaci na NOVOU stránku (vynechá se při odkazech se scrollováním)
-  if (!isInitial && isNewPage && !window.pendingAutoOpenRoom && hash !== '#pokoje-nabidka') {
+  // Přesun na vrchol při běžné navigaci na NOVOU stránku bez sekčního hashtagu
+  const isSectionHashOnDining = pageKey === 'dining' && ['#snidane', '#vecere', '#krb-restaurace', '#teraska', '#grilovani', '#oslavy-akce'].includes(cleanHash);
+  if (pageKey === 'booking' || (!isInitial && isNewPage && !window.pendingAutoOpenRoom && hash !== '#pokoje-nabidka' && !isSectionHashOnDining)) {
     window.scrollTo(0, 0);
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
   }
 
   initInteractivity();
@@ -2788,6 +3001,18 @@ const route = (isInitial = false) => {
         const roomsSec = document.querySelector('.rooms-list-section');
         if (roomsSec) {
           roomsSec.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    });
+  }
+
+  // Automatické odskrolování na podsekci na stránce Stravování
+  if (isSectionHashOnDining) {
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        const targetEl = document.querySelector(cleanHash);
+        if (targetEl) {
+          targetEl.scrollIntoView({ behavior: 'smooth' });
         }
       }, 100);
     });

@@ -63,5 +63,43 @@ Odpovídat vždy stručně, věcně a přímo k věci. Bez zbytečných omáček
 ## 🖼️ ZÁKAZ BAREVNÝCH RÁMEČKŮ A POZADÍ SEKCE (NO CONTAINER BOXES RULE)
 
 * **STRIKTNÍ ZÁKAZ BAREVNÝCH RÁMEČKŮ OSOBITÝCH SEKCÍ**: NIKDY nevkládat formulářové bloky, sekce adresy, upozornění ani doplňkové texty do barevných pozadí/boxů s rámečky (`background-color`, `border` rámečky okolo podsekcí).
-* Všechny sekce, podsekce a formulářová pole MUSÍ ležet přímo na čistém bílém podkladu karty bez zbytečných vnitřních obalovacích container boxů. Pro oddělení sekcí se používá výhradně jednoduchá jemná dělicí čára (`.form-section-divider`).
+
+## 🔍 Pravidlo pro diagnostiku a ověřování databázových chyb (Database Debugging Rule)
+
+* **ZÁKAZ PŘEDČASNÉHO PROHLÁŠENÍ ZA OPRAVENÉ**: Při jakémkoliv problému s ukládáním do databáze NIKDY neprohlašovat úkol za hotový pouze na základě syntaktické opravy nebo mock testu.
+* **POVINNÉ SELEKTOVÁNÍ REÁLNÉHO ZÁZNAMU**: Vždy nejprve provést přímý databázový dotaz (`SELECT * FROM table WHERE ...`) na konkrétní uživatelem vytvořené řádky v živé databázi a ověřit přesnou chybovou hlášku z databázového engine (např. typové chyby UUID vs TEXT v SQL).
+* **VERIFIKACE PODLE UŽIVATELSKÉHO KÓDU**: Před hlášením hotovo fyzicky ověřit přes databázový CLI/API dotaz, že se `used_count` a `max_uses` u konkrétního uživatelského kódového řetězce zvedly na očekávanou hodnotu.
+
+## 🏰 Pravidlo pro Hero sekce napříč zařízeními (Hero Section System)
+
+Všechny Hero sekce (Úvodní, Stravování, Pokoje, Přízemí, Výhled) MUSÍ striktně dodržovat následující responzivní rozdělení na 3 samostatné verze:
+
+### 📱 1. Mobilní verze (<768px)
+* **Struktura prvků**:
+  - **Hlavní nadpis + podnadpis (nebo tlačítko)**: Blok `.room-detail-hero-center` má posun `transform: translateY(50px) !important;` od středu dolů.
+  - **Prvky v bloku**: Mezera mezi nadpisem a tlačítkem/podnadpisem je `gap: 16px;`.
+  - **Pouze 1 tlačítko**: Primární tlačítko (např. *Nejsem ubytovaný* / *Rezervovat pobyt*) s rozměry dle Button Design System (`height: 36px !important; padding: 0 20px !important; font-size: 14.5px !important; border-radius: 1px !important; background-color: #ece8dd !important; color: #1c1c19 !important;`). Druhé tlačítko (např. *Přečíst více*) je skryté (`display: none !important`).
+  - **Spodní odskrolovávací šipka**: ZOBRAZENÁ a VYCENTROVANÁ NA STŘED (`display: flex !important; margin: 15px auto 0 auto !important; align-self: center !important; transform: translateY(-25px) !important;`). Odsazení šipky od spodního okraje je striktně zachováno.
+  - **Hover efekt tlačítka**: Plný neprahledný hover s jemným ztmavnutím podkladu (`background-color: #dcd7c5 !important; color: #1c1c19 !important; border: none !important;`).
+* **Výška sekce**: `height: 100vh !important; min-height: 520px !important;`.
+
+### 📱 2. Tabletová verze (768px - 1028.98px)
+* **Struktura prvků**:
+  - **Hlavní nadpis + podnadpis (nebo tlačítko)**: Blok `.room-detail-hero-center` má posun `transform: translateY(50px) !important;` od středu dolů.
+  - **Prvky v bloku**: Mezera mezi nadpisem a tlačítkem/podnadpisem je `gap: 16px;`.
+  - **Pouze 1 tlačítko**: Primární tlačítko s tabletovými rozměry dle Button Design System (`height: 40px !important; padding: 0 24px !important; font-size: 15.5px !important; border-radius: 1px !important; background-color: #ece8dd !important; color: #1c1c19 !important;`). Druhé tlačítko je skryté (`display: none !important`).
+  - **Spodní odskrolovávací šipka**: ZOBRAZENÁ a 100% VYCENTROVANÁ NA STŘED (`display: flex !important; margin: 15px auto 0 auto !important; align-self: center !important; transform: translateY(-25px) !important;`).
+  - **Hover efekt tlačítka**: Plný neprahledný hover s jemným ztmavnutím podkladu (`background-color: #dcd7c5 !important; color: #1c1c19 !important; border: none !important;`).
+* **Výška sekce**: `height: 100vh !important; min-height: 600px !important;`.
+
+### 💻 3. Desktopová verze (1029px+)
+* **Struktura prvků**:
+  - **Kompletní obsah**: Obsahuje Hlavní nadpis, Podtext a Tlačítka (1 nebo 2 tlačítka dle stránky).
+  - **Mezery (Spacing)**:
+    - Hlavní nadpis <-> Podtext: `margin-bottom: 12px;` / `margin-bottom: 16px;`.
+    - Podtext <-> Tlačítka: `margin-bottom: 24px;` / `gap: 16px;`.
+  - **Tlačítka**: Dle Button Design System: Standard Desktop (1440px): `45px` výška, `0 28px` padding, `17px` font. XXXL (1750px+): `48px` výška, `0 32px` padding, `18px` font. 4K (2200px+): `52px` výška, `0 36px` padding, `19.5px` font.
+  - **Spodní odskrolovávací šipka**: Na desktopových podstránkách SKRYTÁ (zobrazuje se pouze na úvodní stránce).
+* **Pozicování**: Čistý plynulý Flexbox layout bez statického absolutního překrývání.
+
 

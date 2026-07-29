@@ -17,7 +17,34 @@ export function getVariableSymbol(code) {
 }
 
 /**
- * Calculates exact reservation pricing breakdown including 30% deposit
+ * Helper to check if a specific Date object or string is a Weekend night (Pátek, Sobota, Neděle)
+ * Day 5 = Friday, Day 6 = Saturday, Day 0 = Sunday
+ */
+export function isWeekendNight(dateInput) {
+  const d = new Date(dateInput);
+  if (isNaN(d.getTime())) return false;
+  const day = d.getDay();
+  return day === 5 || day === 6 || day === 0;
+}
+
+/**
+ * System Date Integrity Verification ("Blbuvzdorná funkce")
+ * Verifies that client computer clock has not been manually tampered with.
+ */
+export function validateSystemDateIntegrity() {
+  const clientNow = new Date();
+  const year = clientNow.getFullYear();
+  if (year < 2026 || year > 2035) {
+    return {
+      isValid: false,
+      message: 'Detekována nesrovnalost systémového data na vašem zařízení. Prosíme, zkontrolujte datum a čas ve vašem zařízení pro správný výpočet cen a dostupnosti.'
+    };
+  }
+  return { isValid: true, message: '' };
+}
+
+/**
+ * Calculates exact reservation pricing breakdown including dynamic Weekday vs Weekend per-night rates & 30% deposit
  */
 export function calculateReservationPrice({
   roomType = 'standard', // 'standard' | 'nadstandard' | 'turisticky'
@@ -25,28 +52,67 @@ export function calculateReservationPrice({
   persons = 2,
   adults = 2,
   children = 0,
+  dateFrom = null,
+  dateTo = null,
   hasDog = false,
   hasEbike = false,
   hasHalfBoard = false,
   halfBoardCount = null,
   ebikeCount = 1,
   customBaseRate = null,
+  customWeekdayRate = null,
+  customWeekendRate = null,
   discountObj = null,
 }) {
-  const baseRatePerPersonNight = customBaseRate
-    ? Number(customBaseRate)
-    : ((roomType === 'nadstandard' || roomType === 'kat_a') ? 890 : 830);
+  const defaultWeekdayRate = (roomType === 'nadstandard' || roomType === 'kat_a') ? 890 : 830;
+  const defaultWeekendRate = (roomType === 'nadstandard' || roomType === 'kat_a') ? 990 : 890;
+
+  const weekdayRate = customWeekdayRate !== null && customWeekdayRate !== undefined
+    ? Number(customWeekdayRate)
+    : (customBaseRate ? Number(customBaseRate) : defaultWeekdayRate);
+
+  const weekendRate = customWeekendRate !== null && customWeekendRate !== undefined
+    ? Number(customWeekendRate)
+    : Math.max(weekdayRate, defaultWeekendRate);
+
   const safeNights = Math.max(1, parseInt(nights) || 1);
   const totalGuests = Math.max(1, parseInt(persons || adults || 1));
 
-  // 1. Base accommodation (includes breakfast)
-  let accommodationPrice = baseRatePerPersonNight * totalGuests * safeNights;
+  // 1. Dynamic Per-Night Base Accommodation Calculation (Weekday vs. Weekend)
+  let weekdayNights = 0;
+  let weekendNights = 0;
+  let accommodationPrice = 0;
+
+  if (dateFrom && dateTo) {
+    const startDate = new Date(dateFrom);
+    for (let i = 0; i < safeNights; i++) {
+      const nightDate = new Date(startDate);
+      nightDate.setDate(nightDate.getDate() + i);
+      if (isWeekendNight(nightDate)) {
+        weekendNights++;
+        accommodationPrice += weekendRate * totalGuests;
+      } else {
+        weekdayNights++;
+        accommodationPrice += weekdayRate * totalGuests;
+      }
+    }
+  } else {
+    // Default fallback when dates aren't selected yet
+    weekdayNights = safeNights;
+    accommodationPrice = weekdayRate * totalGuests * safeNights;
+  }
+
+  let nightBreakdownLabel = '';
+  if (weekendNights > 0 && weekdayNights > 0) {
+    nightBreakdownLabel = `${weekendNights}× víkendová noc (${formatCzechPrice(weekendRate)}/noc) + ${weekdayNights}× týdenní noc (${formatCzechPrice(weekdayRate)}/noc)`;
+  } else if (weekendNights > 0) {
+    nightBreakdownLabel = `${weekendNights}× víkendová noc (${formatCzechPrice(weekendRate)}/noc)`;
+  } else {
+    nightBreakdownLabel = `${weekdayNights}× týdenní noc (${formatCzechPrice(weekdayRate)}/noc)`;
+  }
 
   // 2. Single night & Single occupancy surcharge calculation:
-  // - Nadstandard (A, A1, Zen): +300 Kč / osoba / noc
-  // - Standard i Turistické pokoje: +200 Kč / osoba / noc
   let singleNightRatePerPerson = (roomType === 'nadstandard' || roomType === 'kat_a') ? 300 : 200;
-
   let singleNightSurchargeTotal = 0;
   let surchargeReason = ''; // 'single_night' | 'single_occupancy' | 'both' | 'none'
 
@@ -75,11 +141,7 @@ export function calculateReservationPrice({
     ? Math.min(totalGuests, Math.max(1, parseInt(halfBoardCount ?? totalGuests)))
     : 0;
   const halfBoardPriceTotal = safeHalfBoardCount * HALF_BOARD_PER_PERSON_NIGHT * safeNights;
-
-  // Dog fee: 150 Kč / day for the ENTIRE ROOM (regardless of person count)
   const dogPriceTotal = hasDog ? DOG_PER_DAY * safeNights : 0;
-
-  // E-bike fee: 15 Kč / day per e-bike
   const safeEbikeCount = hasEbike ? Math.max(1, parseInt(ebikeCount || 1)) : 0;
   const ebikePriceTotal = safeEbikeCount * EBIKE_PER_DAY * safeNights;
 
@@ -108,7 +170,12 @@ export function calculateReservationPrice({
   const remainingPriceTotal = totalPrice - depositPriceTotal;
 
   return {
-    baseRatePerPersonNight,
+    baseRatePerPersonNight: weekdayRate,
+    weekdayRate,
+    weekendRate,
+    weekdayNights,
+    weekendNights,
+    nightBreakdownLabel,
     nights: safeNights,
     adults: totalGuests,
     children: 0,

@@ -130,18 +130,18 @@ a {
   transform: translateZ(0) scale(1.002);
   backface-visibility: hidden;
   will-change: transform;
-  filter: brightness(0.92) contrast(1.08) saturate(1.05);
+  filter: brightness(0.98) contrast(1.05) saturate(1.05);
   image-rendering: -webkit-optimize-contrast;
 }
 
-/* Tmavé překrytí přes celou šířku (Jemně ztmavný filtr) */
+/* Tmavé překrytí přes celou šířku (Jemnější a světlejší filmové překrytí) */
 .hero-overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.65) 0%, rgba(0, 0, 0, 0.38) 50%, rgba(0, 0, 0, 0.68) 100%);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.22) 50%, rgba(0, 0, 0, 0.48) 100%);
   z-index: 1;
   pointer-events: none;
 }
@@ -1820,6 +1820,16 @@ h3 {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
 }
 
+/* Úpravy pozadí a odsazení recenzí výhradně pro stránku Stravování */
+.dining-page .reviews-section {
+  background-color: #ffffff !important;
+  padding: 60px 0 135px 0 !important;
+}
+
+.dining-page .review-card {
+  background-color: #f2f2f2 !important;
+}
+
 .review-google-icon {
   position: absolute;
   top: 18px;
@@ -2002,7 +2012,7 @@ h3 {
 .surroundings-section {
   position: relative;
   width: 100%;
-  padding: 90px 0 150px 0;
+  padding: 90px 0 130px 0;
   background-color: #ffffff;
 }
 
@@ -6216,6 +6226,22 @@ h3 {
   background-color: #566438 !important;
 }
 
+.btn-room-disabled,
+.drawer-action-btns .btn-room-disabled {
+  background-color: #ffffff !important;
+  color: #666660 !important;
+  border: 1px solid #c8c6b9 !important;
+  border-radius: 1px !important;
+  height: 45px !important;
+  padding: 0 28px !important;
+  font-size: 17px !important;
+  font-weight: 500 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  box-shadow: none !important;
+  opacity: 0.9 !important;
+}
+
 .room-breakdown-footer-note {
   font-size: 16px;
   font-weight: 500;
@@ -7583,6 +7609,8 @@ h3 {
 
   .room-detail-hero-btn,
   .btn-dining-more,
+  .btn-dining-read-more,
+  .btn-dining-not-guest,
   .btn-breakdown-cta,
   .btn-specs-primary,
   .btn-specs-secondary,
@@ -7861,11 +7889,1132 @@ img[loading="lazy"].img-loaded {
   }
 }
 
+/* ====================================================
+   STRÁNKA STRAVOVÁNÍ (DINING PAGE STYLES)
+   ==================================================== */
+
+.dining-hero-section {
+  background-image: url('/Uvodni stranka/stravovani.webp') !important;
+  background-size: cover !important;
+  background-position: center 75% !important;
+}
+
+.dining-hero-buttons-wrap {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 16px !important;
+  flex-wrap: wrap !important;
+  margin-top: 8px !important;
+}
+
+.btn-dining-read-more {
+  height: 45px !important;
+  padding: 0 28px !important;
+  font-size: 17px !important;
+  font-weight: 500 !important;
+  border-radius: 1px !important;
+  background-color: #ece8dd !important;
+  color: #1c1c19 !important;
+  border: none !important;
+  cursor: pointer;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  white-space: nowrap !important;
+  transition: background-color 0.2s ease;
+}
+
+.btn-dining-read-more:hover {
+  background-color: #dedad0 !important;
+}
+
+.btn-dining-not-guest {
+  height: 45px !important;
+  padding: 0 28px !important;
+  font-size: 17px !important;
+  font-weight: 500 !important;
+  border-radius: 1px !important;
+  background-color: transparent !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.7) !important;
+  cursor: pointer;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  white-space: nowrap !important;
+  transition: all 0.2s ease;
+}
+
+.btn-dining-not-guest:hover {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  border-color: #ffffff !important;
+}
+
+@media (max-width: 767.98px) {
+  .btn-dining-read-more,
+  .btn-dining-not-guest {
+    height: 36px !important;
+    padding: 0 20px !important;
+    font-size: 14.5px !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1028px) {
+  .btn-dining-read-more,
+  .btn-dining-not-guest {
+    height: 40px !important;
+    padding: 0 24px !important;
+    font-size: 15.5px !important;
+  }
+}
+
+.btn-dining-hero-secondary {
+  height: 45px;
+  padding: 0 28px;
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 500;
+  border-radius: 1px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.btn-dining-hero-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.28);
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.dining-feature-section {
+  width: 100%;
+  padding: 85px 0 85px 0;
+  background-color: #ffffff;
+}
+
+.dining-buffet-section {
+  padding: 85px 0 55px 0 !important;
+}
+
+.dining-dinner-section {
+  padding: 55px 0 120px 0 !important;
+}
+
+.dining-feature-inner {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 33px;
+  box-sizing: border-box;
+}
+
+.dining-section-header {
+  text-align: center;
+  max-width: 840px;
+  margin: 0 auto 36px auto;
+}
+
+.dining-section-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(28px, 2.5vw, 34px);
+  font-weight: 600;
+  color: #1c1c19;
+  text-align: center;
+  margin: 0 0 16px 0;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+}
+
+.dining-section-lead {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(16px, 1.25vw, 18px);
+  font-weight: 400;
+  color: #4a4a45;
+  line-height: 1.55;
+  text-align: center;
+  margin: 0;
+}
+
+.dining-single-img-wrap {
+  width: 100%;
+  height: 480px;
+  max-height: 480px;
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.dining-single-img-wrap img {
+  width: 100%;
+  height: 100%;
+  max-height: 480px;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  border-radius: 1px;
+}
+
+.dining-bottom-notice {
+  max-width: 840px;
+  margin: 40px auto 0 auto;
+  text-align: center;
+}
+
+.dining-bottom-notice-text {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(16px, 1.25vw, 18px);
+  font-weight: 400;
+  color: #1c1c19;
+  line-height: 1.55;
+  text-align: center;
+  margin: 0;
+}
+
+.dining-fireplace-section {
+  width: 100%;
+  max-height: 600px;
+  overflow: hidden;
+}
+
+.dining-fireplace-img-wrap {
+  width: 100%;
+  height: 100%;
+  max-height: 600px;
+}
+
+.dining-fireplace-img-wrap img {
+  width: 100%;
+  height: 100%;
+  max-height: 600px;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  filter: brightness(0.85) contrast(1.05);
+}
+
+.dining-terrace-section {
+  width: 100%;
+  padding: 155px 0 50px 0;
+  background-color: #ffffff;
+}
+
+.dining-grill-section {
+  width: 100%;
+  padding: 50px 0 155px 0;
+  background-color: #ffffff;
+}
+
+.dining-terrace-inner,
+.dining-grill-inner {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 33px;
+  box-sizing: border-box;
+}
+
+.dining-2col-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+
+.dining-2col-reversed {
+  grid-template-columns: 1fr 1fr;
+}
+
+.dining-col-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(28px, 2.5vw, 34px);
+  font-weight: 600;
+  color: #1c1c19;
+  margin: 0 0 16px 0;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+}
+
+.dining-col-lead {
+  font-size: 16px;
+  color: #555550;
+  line-height: 1.6;
+  margin: 0 0 32px 0;
+}
+
+.dining-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.dining-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dining-inline-icon {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  object-fit: contain;
+}
+
+.dining-info-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1c1c19;
+  margin: 0;
+}
+
+.dining-info-desc {
+  font-family: 'Outfit', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #4a4a45;
+  line-height: 1.55;
+  margin: 0;
+  padding-left: 36px;
+}
+
+.dining-2col-image {
+  width: 100%;
+  border-radius: 2px;
+  overflow: hidden;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.06);
+}
+
+.dining-2col-image img {
+  width: 100%;
+  height: 100%;
+  max-height: 520px;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.dining-events-banner-section {
+  position: relative;
+  width: 100%;
+  height: 440px;
+  background-color: #f2f2f2;
+  overflow: hidden;
+}
+
+.dining-events-contour-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.65;
+  pointer-events: none;
+  z-index: 1;
+  object-fit: cover;
+  object-position: center 35%;
+}
+
+.dining-events-inner {
+  position: relative;
+  width: 100%;
+  max-width: 1440px;
+  height: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 33px;
+  box-sizing: border-box;
+  z-index: 2;
+}
+
+.dining-events-content {
+  max-width: 720px;
+}
+
+.dining-events-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 34px;
+  font-weight: 600;
+  color: #1c1c19;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  margin: 0 0 24px 0;
+}
+
+.dining-events-p1,
+.dining-events-p2,
+.dining-events-p3 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  color: #1c1c19;
+  line-height: 1.55;
+  margin: 0 0 16px 0;
+}
+
+.dining-events-p2 {
+  margin-bottom: 20px;
+}
+
+.dining-events-p3 {
+  margin-bottom: 0;
+}
+
+.dining-events-action {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.btn-events-cta {
+  height: 45px;
+  padding: 0 28px;
+  background-color: #697947;
+  color: #ffffff;
+  font-family: 'Outfit', sans-serif;
+  font-size: 17px;
+  font-weight: 500;
+  border-radius: 1px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.btn-events-cta:hover {
+  background-color: #566438;
+}
+
+/* ==========================================================================
+   HERO SEKCE VŠECH PODSTRÁNEK: 3 SAMOSTATNÉ VERZE DLE AGENTS.MD (HERO SYSTEM)
+   (Stravování, Nabídka pokojů, Pokoj Přízemí, Pokoj s Výhledem)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   0. DESKTOPOVÁ VERZE HERO SEKCE (1029px+) - SKRYTÍ ŠIPKY NA PODSTRÁNKÁCH
+   -------------------------------------------------------------------------- */
+@media (min-width: 1029px) {
+  .dining-hero-section .scroll-down-btn,
+  .room-detail-hero .scroll-down-btn,
+  .rooms-hero-section .scroll-down-btn {
+    display: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   1. TABLETOVÁ VERZE HERO SEKCE (768px - 1028.98px)
+   -------------------------------------------------------------------------- */
+@media (min-width: 768px) and (max-width: 1028.98px) {
+  .room-detail-hero .hero-inner,
+  .dining-hero-section .hero-inner {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 120px 33px 40px 33px !important;
+    box-sizing: border-box !important;
+    height: 100% !important;
+    min-height: 100% !important;
+  }
+
+  /* Posun nadpisu + tlačítka o 50px níže */
+  .room-detail-hero .room-detail-hero-center,
+  .dining-hero-section .room-detail-hero-center {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    transform: translateY(50px) !important;
+    width: 100% !important;
+    max-width: 800px !important;
+    margin: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 16px !important;
+  }
+
+  .room-detail-hero .room-detail-hero-title,
+  .dining-hero-section .room-detail-hero-title {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+    margin: 0 0 12px 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .room-detail-hero .room-detail-hero-subtitle,
+  .dining-hero-section .room-detail-hero-subtitle {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+    margin: 0 0 24px 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .room-detail-hero .dining-hero-buttons-wrap,
+  .dining-hero-section .dining-hero-buttons-wrap {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 16px !important;
+  }
+
+  /* Šipka dolů: Na tabletu ZOBRAZENÁ, vycentrovaná na střed a posunutá o 50px výše (-25px) */
+  .room-detail-hero .scroll-down-btn,
+  .rooms-hero-section .scroll-down-btn,
+  .dining-hero-section .scroll-down-btn,
+  .mobile-only-scroll-btn {
+    display: flex !important;
+    position: relative !important;
+    top: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    right: auto !important;
+    margin: 15px auto 0 auto !important;
+    align-self: center !important;
+    transform: translateY(-25px) !important;
+  }
+
+  /* Skrytí druhého tlačítka Přečíst více na tabletu */
+  .btn-dining-read-more {
+    display: none !important;
+  }
+
+  /* Tabletové rozměry primárního tlačítka (AGENTS.md: výška 40px, padding 24px, font 15.5px) */
+  .room-detail-hero-btn,
+  .btn-dining-not-guest {
+    background-color: #ece8dd !important;
+    color: #1c1c19 !important;
+    border: none !important;
+    font-weight: 500 !important;
+    height: 40px !important;
+    padding: 0 24px !important;
+    font-size: 15.5px !important;
+    border-radius: 1px !important;
+    transition: background-color 0.2s ease !important;
+  }
+
+  .btn-dining-not-guest:hover {
+    background-color: #dcd7c5 !important;
+    color: #1c1c19 !important;
+    border: none !important;
+  }
+
+  /* Snídaně a Večeře sekce na Tabletu (768px - 1028.98px) */
+  .dining-buffet-section {
+    padding: 65px 0 45px 0 !important;
+  }
+
+  .dining-dinner-section {
+    padding: 45px 0 95px 0 !important;
+  }
+
+  .dining-section-header {
+    margin-bottom: 28px !important;
+  }
+
+  .dining-section-title {
+    font-size: 30px !important;
+    font-weight: 600 !important;
+    line-height: 1.25 !important;
+    margin-bottom: 16px !important;
+  }
+
+  .dining-section-lead {
+    font-size: 16.5px !important;
+    line-height: 1.55 !important;
+  }
+
+  /* Plynulá responzivní výška fotek na tabletu dle šířky displeje (clamp/vw), aby se fotky nedeformovaly */
+  .dining-single-img-wrap,
+  .dining-single-img-wrap img,
+  .dining-2col-image,
+  .dining-2col-image img {
+    height: clamp(340px, 46vw, 480px) !important;
+    max-height: 480px !important;
+    width: 100% !important;
+    object-fit: cover !important;
+    border-radius: 1px !important;
+  }
+
+  .dining-bottom-notice {
+    margin-top: 28px !important;
+  }
+
+  .dining-bottom-notice-text {
+    font-size: 15.5px !important;
+    line-height: 1.55 !important;
+  }
+
+  .dining-terrace-inner,
+  .dining-grill-inner {
+    width: 100% !important;
+    padding: 0 33px !important;
+    box-sizing: border-box !important;
+  }
+
+  .dining-2col-layout,
+  .dining-2col-reversed {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 36px !important;
+    width: 100% !important;
+  }
+
+  .dining-2col-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    text-align: left !important;
+  }
+
+  /* Na tabletu: Text a ikony u Grilování PRVNÍ, fotka až druhá pod textem */
+  .dining-2col-reversed .dining-2col-content {
+    order: 1 !important;
+  }
+
+  .dining-2col-reversed .dining-2col-image {
+    order: 2 !important;
+  }
+
+  .dining-col-title {
+    font-size: 30px !important;
+    font-weight: 600 !important;
+    line-height: 1.25 !important;
+    margin-bottom: 14px !important;
+  }
+
+  .dining-col-lead {
+    font-size: 16px !important;
+    line-height: 1.55 !important;
+    margin-bottom: 24px !important;
+  }
+
+  .dining-info-list {
+    gap: 24px !important;
+  }
+
+  .dining-info-heading {
+    font-size: 19.5px !important;
+    font-weight: 600 !important;
+  }
+
+  .dining-info-desc {
+    font-size: 15.5px !important;
+    line-height: 1.55 !important;
+  }
+
+  .dining-terrace-section {
+    padding: 70px 0 50px 0 !important;
+  }
+
+  /* Spodní padding sekce Venkovní grilování a uzení na tabletu */
+  .dining-grill-section {
+    padding: 50px 0 105px 0 !important;
+  }
+
+  /* Section 7 Rodinné oslavy na tabletu (obrázek na pozadí ZOBRAZENÝ) */
+  .dining-events-banner-section {
+    height: auto !important;
+    padding: 60px 0 !important;
+    background-color: #f2f2f2 !important;
+  }
+
+  .dining-events-contour-img {
+    display: block !important;
+    opacity: 0.55 !important;
+    object-position: center 60% !important;
+    top: 20px !important;
+  }
+
+  .dining-events-inner {
+    height: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    gap: 24px !important;
+    padding: 0 33px !important;
+  }
+
+  .dining-events-content {
+    max-width: 100% !important;
+  }
+
+  .dining-events-title {
+    font-size: 30px !important;
+    font-weight: 600 !important;
+    line-height: 1.25 !important;
+    margin-bottom: 20px !important;
+  }
+
+  .dining-events-p1,
+  .dining-events-p2,
+  .dining-events-p3 {
+    font-size: 16.5px !important;
+    line-height: 1.55 !important;
+    margin-bottom: 14px !important;
+  }
+
+  .dining-events-action {
+    width: 100% !important;
+    justify-content: flex-start !important;
+  }
+
+  .btn-events-cta {
+    height: 40px !important;
+    padding: 0 24px !important;
+    font-size: 15.5px !important;
+    font-weight: 500 !important;
+    border-radius: 1px !important;
+  }
+
+  /* Sekce Okolí na tabletu */
+  .surroundings-section {
+    padding-top: 75px !important;
+    padding-bottom: 60px !important;
+  }
+
+  /* Sekce Recenze na tabletu */
+  .reviews-section {
+    padding-top: 60px !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   2. MOBILNÍ VERZE HERO SEKCE A PODSEKCÍ (pod 767.98px)
+   -------------------------------------------------------------------------- */
+@media (max-width: 767.98px) {
+  .room-detail-hero,
+  .dining-hero-section {
+    height: 100vh !important;
+    min-height: 520px !important;
+  }
+
+  .room-detail-hero .hero-inner,
+  .dining-hero-section .hero-inner {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 100px 20px 30px 20px !important;
+    box-sizing: border-box !important;
+    height: 100% !important;
+    min-height: 100% !important;
+  }
+
+  /* Posun nadpisu + tlačítka o 50px níže */
+  .room-detail-hero .room-detail-hero-center,
+  .dining-hero-section .room-detail-hero-center {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    transform: translateY(50px) !important;
+    width: 100% !important;
+    max-width: 360px !important;
+    margin: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 16px !important;
+  }
+
+  .room-detail-hero .room-detail-hero-title,
+  .dining-hero-section .room-detail-hero-title {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+    margin: 0 0 12px 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .room-detail-hero .room-detail-hero-subtitle,
+  .dining-hero-section .room-detail-hero-subtitle {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+    margin: 0 0 24px 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .room-detail-hero .dining-hero-buttons-wrap,
+  .dining-hero-section .dining-hero-buttons-wrap {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 16px !important;
+  }
+
+  /* Šipka dolů: Na mobilu ZOBRAZENÁ, vycentrovaná na střed a posunutá o 50px výše (-25px) */
+  .room-detail-hero .scroll-down-btn,
+  .dining-hero-section .scroll-down-btn {
+    display: flex !important;
+    position: relative !important;
+    top: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    right: auto !important;
+    margin: 15px auto 0 auto !important;
+    align-self: center !important;
+    transform: translateY(-25px) !important;
+  }
+
+  /* Skrytí druhého tlačítka Přečíst více na mobilu */
+  .btn-dining-read-more {
+    display: none !important;
+  }
+
+  /* Mobilní rozměry primárního tlačítka (AGENTS.md: výška 36px, padding 20px, font 14.5px) */
+  .room-detail-hero-btn,
+  .btn-dining-not-guest {
+    background-color: #ece8dd !important;
+    color: #1c1c19 !important;
+    border: none !important;
+    font-weight: 500 !important;
+    height: 36px !important;
+    padding: 0 20px !important;
+    font-size: 14.5px !important;
+    border-radius: 1px !important;
+    transition: background-color 0.2s ease !important;
+  }
+
+  .room-detail-hero-btn:hover,
+  .btn-dining-not-guest:hover {
+    background-color: #dcd7c5 !important;
+    color: #1c1c19 !important;
+    border: none !important;
+  }
+
+  /* Snídaně a Večeře sekce na Mobilu (<768px) */
+  .dining-buffet-section {
+    padding: 55px 0 35px 0 !important;
+  }
+
+  .dining-dinner-section {
+    padding: 35px 0 80px 0 !important;
+  }
+
+  .dining-section-header {
+    margin-bottom: 24px !important;
+  }
+
+  /* Nadpisy na mobilu: font-weight 600 (Semi-Bold) dle AGENTS.md */
+  .dining-section-title {
+    font-size: 26px !important;
+    font-weight: 600 !important;
+    line-height: 1.24 !important;
+    margin-bottom: 14px !important;
+  }
+
+  .dining-section-lead {
+    font-size: 15px !important;
+    line-height: 1.55 !important;
+  }
+
+  /* Výška fotky Snídaně a Večeře na mobilu 100% STEJNÁ */
+  .dining-single-img-wrap,
+  .dining-single-img-wrap img {
+    height: 260px !important;
+    max-height: 260px !important;
+    width: 100% !important;
+    object-fit: cover !important;
+    border-radius: 1px !important;
+  }
+
+  .dining-bottom-notice {
+    margin-top: 24px !important;
+  }
+
+  .dining-bottom-notice-text {
+    font-size: 14.5px !important;
+    line-height: 1.55 !important;
+  }
+
+  /* Teráska a Grilování sekce na Mobilu (<768px) */
+  .dining-terrace-inner,
+  .dining-grill-inner {
+    width: 100% !important;
+    padding: 0 24px !important;
+    box-sizing: border-box !important;
+  }
+
+  .dining-2col-layout,
+  .dining-2col-reversed {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 28px !important;
+    width: 100% !important;
+  }
+
+  .dining-2col-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    text-align: left !important;
+  }
+
+  /* Poradí prvků u Grilování: Text první, fotka až druhá pod textem (dle reference) */
+  .dining-2col-reversed .dining-2col-content {
+    order: 1 !important;
+  }
+
+  .dining-2col-reversed .dining-2col-image {
+    order: 2 !important;
+  }
+
+  .dining-col-title {
+    font-size: 26px !important;
+    font-weight: 600 !important;
+    line-height: 1.24 !important;
+    letter-spacing: -0.015em !important;
+    margin-bottom: 12px !important;
+    color: #1c1c19 !important;
+  }
+
+  .dining-col-lead {
+    font-size: 15px !important;
+    line-height: 1.55 !important;
+    color: #4a4a45 !important;
+    margin-bottom: 22px !important;
+  }
+
+  .dining-info-list {
+    gap: 22px !important;
+  }
+
+  .dining-info-heading {
+    font-size: 18.5px !important;
+    font-weight: 600 !important;
+    color: #1c1c19 !important;
+    gap: 10px !important;
+  }
+
+  .dining-inline-icon {
+    width: 22px !important;
+    height: 22px !important;
+    min-width: 22px !important;
+  }
+
+  .dining-info-desc {
+    font-size: 14.5px !important;
+    line-height: 1.55 !important;
+    color: #4a4a45 !important;
+    margin-top: 4px !important;
+  }
+
+  /* Fotka terásky i ohniště na mobilu 100% STEJNÁ VÝŠKA */
+  .dining-2col-image,
+  .dining-2col-image img {
+    height: 280px !important;
+    max-height: 280px !important;
+    width: 100% !important;
+    object-fit: cover !important;
+    border-radius: 1px !important;
+  }
+
+  .dining-terrace-section {
+    padding: 55px 0 40px 0 !important;
+  }
+
+  /* Spodní padding sekce Venkovní grilování a uzení na mobilu */
+  .dining-grill-section {
+    padding: 40px 0 80px 0 !important;
+  }
+
+  /* Section 7 Rodinné oslavy na mobilu (obrázek na pozadí SKRYTÝ dle reference) */
+  .dining-events-banner-section {
+    height: auto !important;
+    padding: 48px 0 !important;
+    background-color: #f2f2f2 !important;
+  }
+
+  .dining-events-contour-img {
+    display: none !important;
+  }
+
+  .dining-events-inner {
+    height: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    gap: 24px !important;
+    padding: 0 24px !important;
+    box-sizing: border-box !important;
+  }
+
+  .dining-events-content {
+    max-width: 100% !important;
+    text-align: left !important;
+  }
+
+  /* Nadpis dle AGENTS.md rule: font-weight 600 (Semi-Bold) */
+  .dining-events-title {
+    font-size: 26px !important;
+    font-weight: 600 !important;
+    line-height: 1.24 !important;
+    letter-spacing: -0.015em !important;
+    color: #1c1c19 !important;
+    margin: 0 0 20px 0 !important;
+    text-align: left !important;
+  }
+
+  .dining-events-p1 {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    color: #1c1c19 !important;
+    margin: 0 0 14px 0 !important;
+    text-align: left !important;
+  }
+
+  .dining-events-p2 {
+    font-size: 15px !important;
+    font-weight: 400 !important;
+    color: #4a4a45 !important;
+    line-height: 1.55 !important;
+    margin: 0 0 14px 0 !important;
+    text-align: left !important;
+  }
+
+  .dining-events-p3 {
+    font-size: 15px !important;
+    font-weight: 400 !important;
+    color: #4a4a45 !important;
+    line-height: 1.55 !important;
+    margin: 0 0 24px 0 !important;
+    text-align: left !important;
+  }
+
+  .dining-events-action {
+    width: 100% !important;
+    justify-content: flex-start !important;
+  }
+
+  /* Button Design System Mobil: výška 36px, padding 20px, font 14.5px, radius 1px */
+  .btn-events-cta {
+    width: fit-content !important;
+    height: 36px !important;
+    padding: 0 20px !important;
+    font-size: 14.5px !important;
+    font-weight: 500 !important;
+    border-radius: 1px !important;
+    background-color: #697947 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  /* Sekce Okolí na mobilu */
+  .surroundings-section {
+    padding-top: 65px !important;
+    padding-bottom: 50px !important;
+  }
+
+  /* Sekce Recenze na mobilu */
+  .reviews-section {
+    padding-top: 50px !important;
+  }
+}
+
+
 @media (min-width: 1750px) {
   .btn-booking-submit {
     height: 48px;
     padding: 0 32px;
     font-size: 18px;
+  }
+
+  .dining-feature-inner {
+    max-width: 1600px !important;
+  }
+
+  .dining-feature-section {
+    padding: 105px 0 105px 0;
+  }
+
+  .dining-dinner-section {
+    padding: 55px 0 175px 0 !important;
+  }
+
+  .dining-section-header {
+    max-width: 980px !important;
+    margin-bottom: 44px !important;
+  }
+
+  .dining-section-title {
+    font-size: 38px !important;
+  }
+
+  .dining-section-lead {
+    font-size: 20px !important;
+  }
+
+  .dining-single-img-wrap,
+  .dining-single-img-wrap img {
+    max-height: 680px !important;
+  }
+
+  .dining-bottom-notice {
+    max-width: 980px !important;
+    margin-top: 48px !important;
+  }
+
+  .dining-bottom-notice-text {
+    font-size: 20px !important;
+  }
+
+  .dining-events-inner {
+    max-width: 1600px !important;
+  }
+
+  .dining-events-title {
+    font-size: 38px !important;
+  }
+
+  .dining-events-p1,
+  .dining-events-p2,
+  .dining-events-p3 {
+    font-size: 20px !important;
+  }
+
+  .btn-events-cta {
+    height: 48px !important;
+    padding: 0 32px !important;
+    font-size: 18px !important;
   }
 }
 
@@ -7874,5 +9023,64 @@ img[loading="lazy"].img-loaded {
     height: 52px;
     padding: 0 36px;
     font-size: 19.5px;
+  }
+
+  .dining-feature-inner {
+    max-width: 1800px !important;
+  }
+
+  .dining-feature-section {
+    padding: 125px 0 125px 0;
+  }
+
+  .dining-dinner-section {
+    padding: 65px 0 200px 0 !important;
+  }
+
+  .dining-section-header {
+    max-width: 1120px !important;
+    margin-bottom: 52px !important;
+  }
+
+  .dining-section-title {
+    font-size: 42px !important;
+  }
+
+  .dining-section-lead {
+    font-size: 22px !important;
+  }
+
+  .dining-single-img-wrap,
+  .dining-single-img-wrap img {
+    max-height: 780px !important;
+  }
+
+  .dining-bottom-notice {
+    max-width: 1120px !important;
+    margin-top: 54px !important;
+  }
+
+  .dining-bottom-notice-text {
+    font-size: 22px !important;
+  }
+
+  .dining-events-inner {
+    max-width: 1800px !important;
+  }
+
+  .dining-events-title {
+    font-size: 42px !important;
+  }
+
+  .dining-events-p1,
+  .dining-events-p2,
+  .dining-events-p3 {
+    font-size: 22px !important;
+  }
+
+  .btn-events-cta {
+    height: 52px !important;
+    padding: 0 36px !important;
+    font-size: 19.5px !important;
   }
 }

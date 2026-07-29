@@ -32,15 +32,7 @@ export function logSentEmail(emailRecord) {
 }
 
 export async function sendEmail({ to, subject, html, type, reservationCode }) {
-  console.log(`📧 [EMAIL SENT] Type: ${type} | To: ${to} | Subject: ${subject}`);
-  const record = logSentEmail({
-    to,
-    subject,
-    html,
-    type,
-    reservation_code: reservationCode,
-    status: 'delivered'
-  });
+  console.log(`📧 [EMAIL INITIATED] Type: ${type} | To: ${to} | Subject: ${subject}`);
 
   const fallbackKey = ['re', '_RHeiWx3u', '_GoYkaNeZg9kggfPtrxtJkSs6'].join('');
   const resendApiKey = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_RESEND_API_KEY) ||
@@ -48,39 +40,114 @@ export async function sendEmail({ to, subject, html, type, reservationCode }) {
     (typeof window !== 'undefined' && window.RESEND_API_KEY) ||
     fallbackKey;
 
-  if (resendApiKey) {
-    const sender = 'Hotel u Můstku <hotel@umustku.cz>';
-    const endpoints = (typeof window !== 'undefined') ? ['/api/resend/emails', 'https://api.resend.com/emails'] : ['https://api.resend.com/emails'];
+  let finalStatus = 'pending';
+  let liveResendId = null;
+  let deliveryNote = '';
 
-    for (const endpoint of endpoints) {
-      try {
-        const response = await fetch(endpoint, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${resendApiKey}`
-          },
-          body: JSON.stringify({
-            from: sender,
-            to: [to],
-            subject: subject,
-            html: html
-          })
-        });
-        const data = await response.json();
-        if (data && data.id) {
-          console.log(`✅ Resend Live Email Dispatched to [${to}] via ${sender} (ID: ${data.id})`);
-          break;
-        } else {
-          console.warn(`⚠️ Resend response via ${sender} on ${endpoint}:`, data);
+  if (resendApiKey) {
+    const senders = [
+      'Hotel u Můstku <hotel@umustku.cz>',
+      'Hotel u Můstku <onboarding@resend.dev>'
+    ];
+    const endpoints = (typeof window !== 'undefined')
+      ? ['/api/resend/emails', 'https://api.resend.com/emails']
+      : ['https://api.resend.com/emails'];
+
+    let dispatched = false;
+
+    for (const sender of senders) {
+      if (dispatched) break;
+
+      for (const endpoint of endpoints) {
+        try {
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${resendApiKey}`
+            },
+            body: JSON.stringify({
+              from: sender,
+              to: [to],
+              subject: subject,
+              html: html
+            })
+          });
+
+          let data = null;
+          const contentType = response.headers.get('content-type') || '';
+          if (contentType.includes('application/json')) {
+            data = await response.json();
+          }
+
+          if (data && data.id) {
+            console.log(`✅ Resend Live Email Dispatched to [${to}] via ${sender} (ID: ${data.id})`);
+            liveResendId = data.id;
+            finalStatus = 'delivered';
+            dispatched = true;
+            break;
+          } else if (data && data.message && (data.message.includes('only send testing emails') || data.message.includes('validation_error'))) {
+            // Resend Sandbox / Testing Mode restriction: forward email to owner with clear header notice
+            console.warn(`⚠️ Resend Sandbox/Domain Restriction: Forwarding email for [${to}] to owner email ondra.zeman05@gmail.com`);
+            const fallbackSubject = `[Určeno pro: ${to}] ${subject}`;
+            const fallbackHtml = `
+              <div style="background:#fff3cd; color:#856404; padding:14px 18px; border:1px solid #ffeeba; border-radius:6px; margin-bottom:20px; font-family:sans-serif; font-size:14px; line-height:1.5;">
+                ⚠️ <strong>Upozornění systému Hotel u Můstku:</strong> Tento e-mail byl doručen na recepci/vlastníka, protože doména nebo příjemce <strong>${to}</strong> vyžaduje dokončení ověření domény v Resend. E-mail pro klienta byl úspěšně vygenerován a uchován.
+              </div>
+              ${html}
+            `;
+
+            try {
+              const fbResponse = await fetch('https://api.resend.com/emails', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${resendApiKey}`
+                },
+                body: JSON.stringify({
+                  from: 'Hotel u Můstku <onboarding@resend.dev>',
+                  to: ['ondra.zeman05@gmail.com'],
+                  subject: fallbackSubject,
+                  html: fallbackHtml
+                })
+              });
+              let fbData = null;
+              const fbContentType = fbResponse.headers.get('content-type') || '';
+              if (fbContentType.includes('application/json')) {
+                fbData = await fbResponse.json();
+              }
+              if (fbData && fbData.id) {
+                liveResendId = fbData.id;
+                finalStatus = 'delivered_to_reception';
+                deliveryNote = `Doručeno na recepci (Cílový klient: ${to})`;
+                dispatched = true;
+                break;
+              }
+            } catch (fbErr) {
+              console.error('Fallback send error:', fbErr);
+            }
+          } else {
+            console.warn(`⚠️ Resend response via ${sender} on ${endpoint}:`, data);
+          }
+        } catch (err) {
+          console.error(`❌ Resend fetch error on ${endpoint}:`, err);
         }
-      } catch (err) {
-        console.error(`❌ Resend fetch error on ${endpoint}:`, err);
       }
     }
   }
 
-  return { success: true, record };
+  const record = logSentEmail({
+    to,
+    subject,
+    html,
+    type,
+    reservation_code: reservationCode,
+    status: finalStatus,
+    resend_id: liveResendId,
+    note: deliveryNote
+  });
+
+  return { success: finalStatus.startsWith('delivered'), record };
 }
 
 // -------------------------------------------------------------
@@ -466,7 +533,7 @@ export function sendAllTestEmailsTo(recipientEmail = 'ondra.zeman05@gmail.com') 
     id: 'res-test-1',
     code: 'HM-2026-TEST',
     room_id: 'p5',
-    room_name: 'Pokoj Standard P5',
+    room_name: 'Pokoj Standard P2',
     date_from: '2026-08-10',
     date_to: '2026-08-13',
     guest_name: 'Ondřej Zeman',
@@ -488,7 +555,7 @@ export function sendAllTestEmailsTo(recipientEmail = 'ondra.zeman05@gmail.com') 
     created_at: new Date().toISOString()
   };
 
-  const mockRoom = { id: 'p5', name: 'Pokoj Standard P5', type: 'standard' };
+  const mockRoom = { id: 'p5', name: 'Pokoj Standard P2', type: 'standard' };
   const mockPricing = {
     nights: 3,
     totalGuests: 2,

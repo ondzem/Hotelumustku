@@ -74,12 +74,12 @@ CREATE TABLE IF NOT EXISTS settings (
 
 -- SEED INITIAL ROOMS DATA (6 Ground Floor + 6 View Floor Rooms)
 INSERT INTO rooms (id, name, type, floor, capacity, extra_beds, base_price_per_night, sort_order) VALUES
-  ('p1', 'Pokoj Turistický P1', 'turisticky', 'prizemi', 2, 0, 830.00, 1),
-  ('p2', 'Pokoj Turistický P2', 'turisticky', 'prizemi', 2, 0, 830.00, 2),
-  ('p3', 'Pokoj Turistický P3', 'turisticky', 'prizemi', 2, 0, 830.00, 3),
-  ('pa', 'Pokoj Nadstandard A', 'nadstandard', 'prizemi', 2, 1, 890.00, 4),
-  ('p5', 'Pokoj Standard P5', 'standard', 'prizemi', 2, 0, 830.00, 5),
-  ('p6', 'Pokoj Standard P6', 'standard', 'prizemi', 2, 0, 830.00, 6),
+  ('p6', 'Pokoj Standard P1', 'standard', 'prizemi', 2, 0, 830.00, 1),
+  ('p5', 'Pokoj Standard P2', 'standard', 'prizemi', 2, 0, 830.00, 2),
+  ('pa', 'Pokoj Nadstandard Mahagon', 'nadstandard', 'prizemi', 2, 1, 890.00, 3),
+  ('p3', 'Pokoj Turistický P4', 'turisticky', 'prizemi', 2, 0, 830.00, 4),
+  ('p2', 'Pokoj Turistický P5', 'turisticky', 'prizemi', 2, 0, 830.00, 5),
+  ('p1', 'Pokoj Turistický P6', 'turisticky', 'prizemi', 2, 0, 830.00, 6),
   ('p7', 'Pokoj Standard P7', 'standard', 'vyhled', 2, 0, 830.00, 7),
   ('a1', 'Pokoj Nadstandard A1', 'nadstandard', 'vyhled', 2, 1, 890.00, 8),
   ('zen', 'Pokoj Nadstandard Zen', 'nadstandard', 'vyhled', 2, 0, 890.00, 9),
@@ -96,3 +96,9 @@ ON CONFLICT (id) DO UPDATE SET
 INSERT INTO settings (key, value) VALUES
   ('hotel_info', '{"bank_account": "123456789/0800", "bank_name": "Česká spořitelna", "city_tax_per_person_night": 20.00, "check_in_time": "14:00", "check_out_time": "10:00"}'::jsonb)
 ON CONFLICT (key) DO NOTHING;
+
+-- ALTER DISCOUNT CODES TABLE Schema to include Advanced Smart Fields
+ALTER TABLE discount_codes ADD COLUMN IF NOT EXISTS valid_from DATE;
+ALTER TABLE discount_codes ADD COLUMN IF NOT EXISTS valid_until DATE;
+ALTER TABLE discount_codes ADD COLUMN IF NOT EXISTS max_uses INT;
+ALTER TABLE discount_codes ADD COLUMN IF NOT EXISTS used_count INT DEFAULT 0;
