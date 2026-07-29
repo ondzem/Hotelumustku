@@ -2706,6 +2706,10 @@ const preloadHeroImages = (pageKey) => {
     const src = isMobile ? '/mobile_vyhled.webp' : '/vyhled.webp';
     const img = new Image();
     img.src = src;
+  } else if (pageKey === 'dining') {
+    const src = isMobile ? '/mobile_fotka_z_okna.webp' : '/stravovani 1.webp';
+    const img = new Image();
+    img.src = src;
   }
 };
 
@@ -2728,8 +2732,7 @@ const getStravovaniPageHTML = () => `
         </p>
 
         <div class="dining-hero-buttons-wrap">
-          <a href="#snidane" class="btn btn-dining-read-more" id="btn-dining-read-more">Přečíst více</a>
-          <button class="btn btn-dining-not-guest" id="btn-dining-not-guest">Nejsem ubytovaný</button>
+          <a href="#snidane" class="btn btn-dining-read-more room-detail-hero-btn" id="btn-dining-read-more">Přečíst více</a>
         </div>
       </div>
 
@@ -2753,7 +2756,7 @@ const getStravovaniPageHTML = () => `
       </div>
 
       <div class="dining-single-img-wrap">
-        <img src="/Stránka stravování/WhatsApp_Image_2026-07-13_20-56-33_professional_enhanced.webp" alt="Snídaně formou švédského stolu" loading="lazy" decoding="async">
+        <img src="/stravovani/snidane.webp" alt="Snídaně formou švédského stolu" loading="lazy" decoding="async">
       </div>
     </div>
   </section>
@@ -2769,7 +2772,7 @@ const getStravovaniPageHTML = () => `
       </div>
 
       <div class="dining-single-img-wrap">
-        <img src="/Stránka stravování/Polopenze vecere.webp" alt="Večeře formou polopenze" loading="lazy" decoding="async">
+        <img src="/stravovani/vecere.webp" alt="Večeře formou polopenze" loading="lazy" decoding="async">
       </div>
 
       <div class="dining-bottom-notice">
@@ -2783,7 +2786,7 @@ const getStravovaniPageHTML = () => `
   <!-- 4. PANORAMA KRB RESTAURACE -->
   <section class="dining-fireplace-section" id="krb-restaurace">
     <div class="dining-fireplace-img-wrap">
-      <img src="/Stránka stravování/Desná 17 - 1.webp" alt="Restaurace s krbem v Hotelu u Můstku" loading="lazy" decoding="async">
+      <img src="/stravovani/krb_restaurace.webp" alt="Restaurace s krbem v Hotelu u Můstku" loading="lazy" decoding="async">
     </div>
   </section>
 
@@ -2832,7 +2835,7 @@ const getStravovaniPageHTML = () => `
 
         <!-- Pravý sloupec: Fotka terásky -->
         <div class="dining-2col-image">
-          <img src="/Stránka stravování/226307197_professional_enhanced_extended.webp" alt="Letní restaurační zahrádka nad splavem" loading="lazy" decoding="async">
+          <img src="/stravovani/zahradka.webp" alt="Letní restaurační zahrádka nad splavem" loading="lazy" decoding="async">
         </div>
       </div>
     </div>
@@ -2844,7 +2847,7 @@ const getStravovaniPageHTML = () => `
       <div class="dining-2col-layout dining-2col-reversed">
         <!-- Levý sloupec: Fotka ohniště -->
         <div class="dining-2col-image">
-          <img src="/Ohniste.webp" alt="Venkovní grilování a uzení" loading="lazy" decoding="async">
+          <img src="/stravovani/ohniste.webp" alt="Venkovní grilování a uzení" loading="lazy" decoding="async">
         </div>
 
         <!-- Pravý sloupec: Text a ikony -->

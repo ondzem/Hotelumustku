@@ -8398,14 +8398,11 @@ img[loading="lazy"].img-loaded {
     transform: translateY(-25px) !important;
   }
 
-  /* Skrytí druhého tlačítka Přečíst více na tabletu */
-  .btn-dining-read-more {
-    display: none !important;
-  }
-
   /* Tabletové rozměry primárního tlačítka (AGENTS.md: výška 40px, padding 24px, font 15.5px) */
   .room-detail-hero-btn,
+  .btn-dining-read-more,
   .btn-dining-not-guest {
+    display: inline-flex !important;
     background-color: #ece8dd !important;
     color: #1c1c19 !important;
     border: none !important;
@@ -8417,6 +8414,8 @@ img[loading="lazy"].img-loaded {
     transition: background-color 0.2s ease !important;
   }
 
+  .room-detail-hero-btn:hover,
+  .btn-dining-read-more:hover,
   .btn-dining-not-guest:hover {
     background-color: #dcd7c5 !important;
     color: #1c1c19 !important;
@@ -8692,14 +8691,11 @@ img[loading="lazy"].img-loaded {
     transform: translateY(-25px) !important;
   }
 
-  /* Skrytí druhého tlačítka Přečíst více na mobilu */
-  .btn-dining-read-more {
-    display: none !important;
-  }
-
   /* Mobilní rozměry primárního tlačítka (AGENTS.md: výška 36px, padding 20px, font 14.5px) */
   .room-detail-hero-btn,
+  .btn-dining-read-more,
   .btn-dining-not-guest {
+    display: inline-flex !important;
     background-color: #ece8dd !important;
     color: #1c1c19 !important;
     border: none !important;
@@ -8712,6 +8708,7 @@ img[loading="lazy"].img-loaded {
   }
 
   .room-detail-hero-btn:hover,
+  .btn-dining-read-more:hover,
   .btn-dining-not-guest:hover {
     background-color: #dcd7c5 !important;
     color: #1c1c19 !important;
