@@ -244,7 +244,7 @@ const getHeaderHTML = () => `
     
     <div class="nav-right">
       <a href="#aktivity" class="nav-link">Okolí</a>
-      <a href="#oslavy-akce" class="nav-link">Akce</a>
+      <a href="#akce" class="nav-link">Akce</a>
       <a href="#kontakt" class="nav-link">Kontakt</a>
     </div>
 
@@ -263,7 +263,7 @@ const getHeaderHTML = () => `
       <a href="#pokoje" class="mobile-nav-link">Nabídka pokojů</a>
       <a href="#stravovani" class="mobile-nav-link">Stravování</a>
       <a href="#aktivity" class="mobile-nav-link">Okolí</a>
-      <a href="#oslavy-akce" class="mobile-nav-link">Akce</a>
+      <a href="#akce" class="mobile-nav-link">Akce</a>
       <a href="#kontakt" class="mobile-nav-link">Kontakt</a>
     </nav>
     <button class="btn btn-booking mobile-menu-booking" id="mobile-menu-booking">Rezervovat pobyt</button>
@@ -2957,35 +2957,29 @@ const getEventsPageHTML = () => `
     </div>
   </section>
 
-  <!-- 2. CELÝ HOTEL JEN PRO VÁS A VAŠE HOSTY (Zrcadlově obrácené Zázemí) -->
-  <section class="events-about-section" id="celay-hotel">
-    <div class="events-about-inner">
-      <!-- Levý sloupec: 2 překrývající se fotky -->
-      <div class="events-about-images-wrap">
-        <div class="events-about-img-back">
-          <img src="/akce/zahradka.webp" alt="Restaurační zahrádka u řeky Desné" loading="lazy" decoding="async">
+  <!-- 2. CELÝ HOTEL JEN PRO VÁS A VAŠE HOSTY (1:1 Identická kopie sekce Zázemí z úvodní stránky) -->
+  <section class="about-section events-about-section" id="celay-hotel">
+    <div class="about-inner">
+      <div class="about-content">
+        <h2 class="about-title">Celý hotel jen pro vás a vaše hosty</h2>
+        <div class="about-text">
+          <p>Plánujete skupinovou akci? Po předchozí dohodě pro vás zajistíme kompletní pronájem celého hotelu — ubytování, společenské prostory i pohoštění na jednom místě.</p>
+          <p>Postaráme se o rodinnou atmosféru a hladký průběh celé akce v klidném údolí Jizerských hor, stranou ruchu a s naprostým soukromím pro skupiny až do 42 osob.</p>
         </div>
-        <div class="events-about-img-front">
-          <img src="/akce/restaurace.webp" alt="Restaurace a interiér Hotelu u Můstku" loading="lazy" decoding="async">
-        </div>
+        <a href="#kontakt" class="btn btn-about btn-events-about-cta" id="events-about-cta-btn">Nezávazně poptat termín</a>
+      </div>
+      
+      <div class="about-img-top">
+        <img src="/akce/zahradka.webp" alt="Restaurační zahrádka u řeky Desné" loading="lazy" decoding="async">
       </div>
 
-      <!-- Pravý sloupec: Text a tlačítko -->
-      <div class="events-about-content">
-        <h2 class="events-about-title">Celý hotel jen pro vás a vaše hosty</h2>
-        <p class="events-about-p1">
-          Plánujete skupinovou akci? Dopřejte si maximální soukromí a komfort pro své hosté. Uspořádejte svatbu, rodinnou oslavu, teambuilding nebo soustředění.
-        </p>
-        <p class="events-about-p2">
-          K dispozici vám bude celý hotel i se zahradou a altánkem u řeky Desné. Ubytování pro 42 osob, restaurace a soukromí v krásné přírodě Jizerských hor.
-        </p>
-        <div class="events-about-action">
-          <a href="#kontakt" class="btn btn-about btn-events-about-cta">Nezávazně poptat termín</a>
-        </div>
+      <div class="about-img-bottom">
+        <img src="/akce/restaurace.webp" alt="Restaurace a interiér Hotelu u Můstku" loading="lazy" decoding="async">
       </div>
 
-      <!-- Dekorační prvek na pozadí vpravo dole -->
-      <img src="/Decoration/Hory - dekorace.webp" alt="" class="events-about-contour-img" aria-hidden="true" loading="lazy" decoding="async">
+      <div class="about-shadow-decor">
+        <img src="/Decoration/list_shadow.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
+      </div>
     </div>
   </section>
 
@@ -3144,11 +3138,11 @@ const route = (isInitial = false) => {
 
   const knownDiningHashes = [
     '#sluzby', '#stravovani', '#stravovani-stranka', '#restaurace',
-    '#snidane', '#vecere', '#krb-restaurace', '#teraska', '#grilovani', '#oslavy-akce'
+    '#snidane', '#vecere', '#krb-restaurace', '#teraska', '#grilovani'
   ];
 
   const knownEventsHashes = [
-    '#akce', '#skupinove-akce', '#skupinove-akce-stranka', '#akce-stranka',
+    '#akce', '#skupinove-akce', '#skupinove-akce-stranka', '#akce-stranka', '#oslavy-akce',
     '#celay-hotel', '#typy-akci', '#zaridime'
   ];
 
