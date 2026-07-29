@@ -9083,3 +9083,487 @@ img[loading="lazy"].img-loaded {
     font-size: 19.5px !important;
   }
 }
+
+/* ==========================================================================
+   STRÁNKA SKUPINOVÉ AKCE (#akce / #skupinove-akce)
+   ========================================================================== */
+
+/* 1. HERO SEKCE SKUPINOVÉ AKCE */
+.events-hero-section {
+  background-image: url('/akce/hero_akce.webp') !important;
+}
+
+.events-hero-buttons-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.btn-events-read-more {
+  height: 45px !important;
+  padding: 0 28px !important;
+  font-size: 17px !important;
+  font-weight: 500 !important;
+  border-radius: 1px !important;
+  background-color: #ece8dd !important;
+  color: #1c1c19 !important;
+  border: none !important;
+  cursor: pointer;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  white-space: nowrap !important;
+  transition: background-color 0.2s ease;
+  text-decoration: none;
+}
+
+.btn-events-read-more:hover {
+  background-color: #dedad0 !important;
+  color: #1c1c19 !important;
+}
+
+.btn-events-inquiry {
+  height: 45px !important;
+  padding: 0 28px !important;
+  font-size: 17px !important;
+  font-weight: 500 !important;
+  border-radius: 1px !important;
+  background-color: transparent !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.7) !important;
+  cursor: pointer;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  white-space: nowrap !important;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.btn-events-inquiry:hover {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  border-color: #ffffff !important;
+  color: #ffffff !important;
+}
+
+/* 2. CELÝ HOTEL JEN PRO VÁS A VAŠE HOSTY (Zrcadlově obrácené Zázemí) */
+.events-about-section {
+  width: 100%;
+  padding: 120px 0;
+  background-color: #ffffff;
+  position: relative;
+  overflow: hidden;
+}
+
+.events-about-inner {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 33px;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+/* Levý sloupec: 2 překrývající se fotky */
+.events-about-images-wrap {
+  position: relative;
+  width: 100%;
+  min-height: 460px;
+}
+
+.events-about-img-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 68%;
+  height: 340px;
+  border-radius: 1px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  z-index: 1;
+}
+
+.events-about-img-back img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.events-about-img-front {
+  position: absolute;
+  bottom: 0;
+  right: 15px;
+  width: 60%;
+  height: 300px;
+  border-radius: 1px;
+  overflow: hidden;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.14);
+  border: 4px solid #ffffff;
+  z-index: 2;
+}
+
+.events-about-img-front img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.events-about-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.events-about-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(28px, 2.5vw, 34px);
+  font-weight: 600;
+  color: #1c1c19;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  margin: 0 0 24px 0;
+}
+
+.events-about-p1,
+.events-about-p2 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #4a4a45;
+  line-height: 1.6;
+  margin: 0 0 20px 0;
+}
+
+.events-about-p2 {
+  margin-bottom: 32px;
+}
+
+.btn-events-about-cta {
+  height: 45px !important;
+  padding: 0 28px !important;
+  font-size: 17px !important;
+  font-weight: 500 !important;
+  border-radius: 1px !important;
+  background-color: #697947 !important;
+  color: #ffffff !important;
+  border: none !important;
+  text-decoration: none;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: background-color 0.2s ease;
+}
+
+.btn-events-about-cta:hover {
+  background-color: #58663b !important;
+  color: #ffffff !important;
+}
+
+.events-about-contour-img {
+  position: absolute;
+  bottom: -40px;
+  right: -40px;
+  width: 320px;
+  height: auto;
+  opacity: 0.14;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 3. JAKÉ AKCE U NÁS MŮŽETE NAPLÁNOVAT? */
+.events-types-section {
+  width: 100%;
+  padding: 100px 0;
+  background-color: #f2f2f2;
+}
+
+.events-types-inner {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 33px;
+  box-sizing: border-box;
+}
+
+.events-types-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(28px, 2.5vw, 34px);
+  font-weight: 600;
+  color: #1c1c19;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  text-align: center;
+  margin: 0 0 48px 0;
+}
+
+.events-types-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.events-type-card {
+  background-color: #ffffff;
+  border-radius: 1px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.events-type-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.09);
+}
+
+.events-type-img-wrap {
+  width: 100%;
+  height: 210px;
+  overflow: hidden;
+}
+
+.events-type-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.events-type-card:hover .events-type-img-wrap img {
+  transform: scale(1.05);
+}
+
+.events-type-card-content {
+  padding: 24px 20px 28px 20px;
+}
+
+.events-type-card-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1c1c19;
+  margin: 0 0 10px 0;
+}
+
+.events-type-card-desc {
+  font-family: 'Outfit', sans-serif;
+  font-size: 14.5px;
+  font-weight: 400;
+  color: #555550;
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* 4. CO PRO VAŠI AKCI ZAŘÍDÍME */
+.events-services-section {
+  width: 100%;
+  padding: 110px 0;
+  background-color: #ffffff;
+}
+
+.events-services-inner {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 33px;
+  box-sizing: border-box;
+}
+
+.events-services-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(28px, 2.5vw, 34px);
+  font-weight: 600;
+  color: #1c1c19;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  margin: 0 0 48px 0;
+}
+
+.events-services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 48px 36px;
+}
+
+.events-service-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+}
+
+.events-service-icon-wrap {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+
+.events-service-icon {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.events-service-heading {
+  font-family: 'Outfit', sans-serif;
+  font-size: 17.5px;
+  font-weight: 600;
+  color: #1c1c19;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.events-service-sub {
+  font-weight: 400;
+  color: #555550;
+}
+
+/* RESPONSIVE MEDIA QUERIES FOR TABLET & MOBILE */
+@media (min-width: 768px) and (max-width: 1028.98px) {
+  .events-hero-buttons-wrap {
+    margin-top: 16px;
+  }
+
+  .btn-events-inquiry {
+    display: none !important;
+  }
+
+  .btn-events-read-more {
+    height: 40px !important;
+    padding: 0 24px !important;
+    font-size: 15.5px !important;
+  }
+
+  .events-about-section {
+    padding: 80px 0;
+  }
+
+  .events-about-inner {
+    grid-template-columns: 1fr !important;
+    gap: 40px !important;
+    padding: 0 33px !important;
+  }
+
+  .events-about-images-wrap {
+    min-height: 380px;
+  }
+
+  .events-types-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 24px !important;
+  }
+
+  .events-services-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 36px 24px !important;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .events-hero-buttons-wrap {
+    margin-top: 16px;
+  }
+
+  .btn-events-inquiry {
+    display: none !important;
+  }
+
+  .btn-events-read-more {
+    height: 36px !important;
+    padding: 0 20px !important;
+    font-size: 14.5px !important;
+  }
+
+  .events-about-section {
+    padding: 55px 0;
+  }
+
+  .events-about-inner {
+    grid-template-columns: 1fr !important;
+    gap: 32px !important;
+    padding: 0 24px !important;
+  }
+
+  .events-about-images-wrap {
+    min-height: 280px;
+  }
+
+  .events-about-img-back {
+    width: 75%;
+    height: 220px;
+  }
+
+  .events-about-img-front {
+    width: 65%;
+    height: 190px;
+  }
+
+  .events-about-title {
+    font-size: 26px !important;
+    font-weight: 600 !important;
+    margin-bottom: 16px !important;
+  }
+
+  .events-about-p1,
+  .events-about-p2 {
+    font-size: 15px !important;
+    line-height: 1.55 !important;
+  }
+
+  .btn-events-about-cta {
+    height: 36px !important;
+    padding: 0 20px !important;
+    font-size: 14.5px !important;
+    width: fit-content !important;
+  }
+
+  .events-types-section {
+    padding: 60px 0;
+  }
+
+  .events-types-inner {
+    padding: 0 24px !important;
+  }
+
+  .events-types-title {
+    font-size: 26px !important;
+    font-weight: 600 !important;
+    margin-bottom: 32px !important;
+  }
+
+  .events-types-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+
+  .events-services-section {
+    padding: 60px 0;
+  }
+
+  .events-services-inner {
+    padding: 0 24px !important;
+  }
+
+  .events-services-title {
+    font-size: 26px !important;
+    font-weight: 600 !important;
+    margin-bottom: 32px !important;
+  }
+
+  .events-services-grid {
+    grid-template-columns: 1fr !important;
+    gap: 28px !important;
+  }
+}

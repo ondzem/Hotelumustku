@@ -2499,6 +2499,17 @@ const initInteractivity = () => {
     });
   }
 
+  const scrollBtnEvents = document.getElementById('scroll-btn-events');
+  if (scrollBtnEvents) {
+    scrollBtnEvents.addEventListener('click', (e) => {
+      e.preventDefault();
+      const targetSec = document.getElementById('celay-hotel');
+      if (targetSec) {
+        targetSec.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  }
+
   // Kliknutí na logo ve futru přesune na vrchol stránky
   const scrollTopBtns = document.querySelectorAll('.btn-scroll-top, .footer-logo-wrap, .footer-mobile-logo');
   scrollTopBtns.forEach(btn => {
@@ -2913,6 +2924,210 @@ const getStravovaniPageHTML = () => `
   </div>
 `;
 
+// Render Funkce Pro Samostatnou Stránku "Skupinové Akce"
+const getEventsPageHTML = () => `
+  <div class="events-page">
+
+  <!-- 1. HERO SEKCE SKUPINOVÉ AKCE -->
+  <section class="hero-section events-hero-section room-detail-hero" id="uvod-akce">
+    <div class="hero-overlay"></div>
+    <div class="hero-inner">
+      ${getHeaderHTML()}
+
+      <div class="room-detail-hero-center">
+        <h1 class="hero-title room-detail-hero-title">
+          <span>Skupinové akce</span>
+        </h1>
+        <p class="room-detail-hero-subtitle">
+          <span>Uspořádejte nezapomenutelnou akci v Jizerských horách — s kompletním pronájmem hotelu pro 42 hostů a rozlehlým areálem.</span>
+        </p>
+
+        <div class="events-hero-buttons-wrap">
+          <a href="#celay-hotel" class="btn btn-events-read-more room-detail-hero-btn" id="btn-events-read-more">Přečíst více</a>
+          <a href="#kontakt" class="btn btn-events-inquiry" id="btn-events-inquiry">Nezávazná poptávka</a>
+        </div>
+      </div>
+
+      <!-- Spodní šipka dolů -->
+      <div class="scroll-down-btn" id="scroll-btn-events">
+        <svg width="12" height="14" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7.29 17.1C7.68 17.49 8.32 17.49 8.71 17.1L15.07 10.74C15.46 10.35 15.46 9.71 15.07 9.32C14.68 8.93 14.05 8.93 13.66 9.32L8 14.98L2.34 9.32C1.95 8.93 1.32 8.93 0.93 9.32C0.54 9.71 0.54 10.35 0.93 10.74L7.29 17.1ZM8 0H7V16.39H8H9V0H8Z" fill="white"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. CELÝ HOTEL JEN PRO VÁS A VAŠE HOSTY (Zrcadlově obrácené Zázemí) -->
+  <section class="events-about-section" id="celay-hotel">
+    <div class="events-about-inner">
+      <!-- Levý sloupec: 2 překrývající se fotky -->
+      <div class="events-about-images-wrap">
+        <div class="events-about-img-back">
+          <img src="/akce/zahradka.webp" alt="Restaurační zahrádka u řeky Desné" loading="lazy" decoding="async">
+        </div>
+        <div class="events-about-img-front">
+          <img src="/akce/restaurace.webp" alt="Restaurace a interiér Hotelu u Můstku" loading="lazy" decoding="async">
+        </div>
+      </div>
+
+      <!-- Pravý sloupec: Text a tlačítko -->
+      <div class="events-about-content">
+        <h2 class="events-about-title">Celý hotel jen pro vás a vaše hosty</h2>
+        <p class="events-about-p1">
+          Plánujete skupinovou akci? Dopřejte si maximální soukromí a komfort pro své hosté. Uspořádejte svatbu, rodinnou oslavu, teambuilding nebo soustředění.
+        </p>
+        <p class="events-about-p2">
+          K dispozici vám bude celý hotel i se zahradou a altánkem u řeky Desné. Ubytování pro 42 osob, restaurace a soukromí v krásné přírodě Jizerských hor.
+        </p>
+        <div class="events-about-action">
+          <a href="#kontakt" class="btn btn-about btn-events-about-cta">Nezávazně poptat termín</a>
+        </div>
+      </div>
+
+      <!-- Dekorační prvek na pozadí vpravo dole -->
+      <img src="/Decoration/Hory - dekorace.webp" alt="" class="events-about-contour-img" aria-hidden="true" loading="lazy" decoding="async">
+    </div>
+  </section>
+
+  <!-- 3. JAKÉ AKCE U NÁS MŮŽETE NAPLÁNOVAT? -->
+  <section class="events-types-section" id="typy-akci">
+    <div class="events-types-inner">
+      <h2 class="events-types-title">Jaké akce u nás můžete naplánovat?</h2>
+
+      <div class="events-types-grid">
+        <!-- Kartička 1: Svatby -->
+        <div class="events-type-card">
+          <div class="events-type-img-wrap">
+            <img src="/akce/svatby.webp" alt="Svatby v Hotelu u Můstku" loading="lazy" decoding="async">
+          </div>
+          <div class="events-type-card-content">
+            <h3 class="events-type-card-title">Svatby</h3>
+            <p class="events-type-card-desc">Svatební obřad v zahradě u řeky Desné, svatební hostina v restauraci i ubytování pro vaše svatební hosty na jednom místě.</p>
+          </div>
+        </div>
+
+        <!-- Kartička 2: Firemní Akce -->
+        <div class="events-type-card">
+          <div class="events-type-img-wrap">
+            <img src="/akce/firemni_akce.webp" alt="Firemní akce a teambuilding" loading="lazy" decoding="async">
+          </div>
+          <div class="events-type-card-content">
+            <h3 class="events-type-card-title">Firemní Akce</h3>
+            <p class="events-type-card-desc">Teambuildingy, školení, firemní večírky a pracovní setkání v klidném přírodním prostředí Jizerských hor.</p>
+          </div>
+        </div>
+
+        <!-- Kartička 3: Rodinné Oslavy -->
+        <div class="events-type-card">
+          <div class="events-type-img-wrap">
+            <img src="/akce/rodinne_oslavy.webp" alt="Rodinné oslavy a jubilea" loading="lazy" decoding="async">
+          </div>
+          <div class="events-type-card-content">
+            <h3 class="events-type-card-title">Rodinné Oslavy</h3>
+            <p class="events-type-card-desc">Narozeniny, výročí, rodinná setkání a oslavy s možností vlastního grilování, uzení nebo rautu.</p>
+          </div>
+        </div>
+
+        <!-- Kartička 4: Klubové Soustředění -->
+        <div class="events-type-card">
+          <div class="events-type-img-wrap">
+            <img src="/akce/soustredeni.webp" alt="Klubové a sportovní soustředění" loading="lazy" decoding="async">
+          </div>
+          <div class="events-type-card-content">
+            <h3 class="events-type-card-title">Klubové Soustředění</h3>
+            <p class="events-type-card-desc">Soustředění pro sportovní kluby, zájmové skupiny i tvořivé kurzy v soukromí našich prostor.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. CO PRO VAŠI AKCI ZAŘÍDÍME -->
+  <section class="events-services-section" id="zaridime">
+    <div class="events-services-inner">
+      <h2 class="events-services-title">Co pro vaši akci zařídíme</h2>
+
+      <div class="events-services-grid">
+        <!-- 1. Pohoštění na míru -->
+        <div class="events-service-item">
+          <div class="events-service-icon-wrap">
+            <img src="/Icons/Ikony/Kuchařská ilustrace s transparentním pozadím.png" alt="" class="events-service-icon">
+          </div>
+          <div class="events-service-text-wrap">
+            <h3 class="events-service-heading">Pohoštění na míru: <span class="events-service-sub">domácí kuchyně z čerstvých surovin.</span></h3>
+          </div>
+        </div>
+
+        <!-- 2. Zajistíme dopravu -->
+        <div class="events-service-item">
+          <div class="events-service-icon-wrap">
+            <img src="/Icons/Ikony/Autobus se zavazadly na transparentním pozadí.png" alt="" class="events-service-icon">
+          </div>
+          <div class="events-service-text-wrap">
+            <h3 class="events-service-heading">Zajistíme dopravu: <span class="events-service-sub">mikrobusem či autobusem pro celou vaši skupinu.</span></h3>
+          </div>
+        </div>
+
+        <!-- 3. Pořádání akcí a oslav -->
+        <div class="events-service-item">
+          <div class="events-service-icon-wrap">
+            <img src="/Icons/Ikony/Obývací scéna s transparentním pozadím.png" alt="" class="events-service-icon">
+          </div>
+          <div class="events-service-text-wrap">
+            <h3 class="events-service-heading">Pořádání akcí a oslav <span class="events-service-sub">bez rušení ostatních hostů.</span></h3>
+          </div>
+        </div>
+
+        <!-- 4. Společenská místnost -->
+        <div class="events-service-item">
+          <div class="events-service-icon-wrap">
+            <img src="/Icons/Ikona - spolecenska herna.webp" alt="" class="events-service-icon">
+          </div>
+          <div class="events-service-text-wrap">
+            <h3 class="events-service-heading">Společenská místnost <span class="events-service-sub">pro zábavu i vzdělávání za jakéhokoliv počasí.</span></h3>
+          </div>
+        </div>
+
+        <!-- 5. Posezení u ranního či večerního ohniště -->
+        <div class="events-service-item">
+          <div class="events-service-icon-wrap">
+            <img src="/Icons/Ikona - ohniste.webp" alt="" class="events-service-icon">
+          </div>
+          <div class="events-service-text-wrap">
+            <h3 class="events-service-heading">Posezení u ranního či večerního ohniště <span class="events-service-sub">zahradní grill & udírna pro vaše školení a večerní setkání.</span></h3>
+          </div>
+        </div>
+
+        <!-- 6. Živá hudba -->
+        <div class="events-service-item">
+          <div class="events-service-icon-wrap">
+            <img src="/Icons/Ikona - turistika a cyklistika.webp" alt="" class="events-service-icon">
+          </div>
+          <div class="events-service-text-wrap">
+            <h3 class="events-service-heading">Živá hudba <span class="events-service-sub">venkovní párty a zábava pod širým nebem.</span></h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. REUSED SEKCE: RECENZE -->
+  ${getReviewsHTML()}
+
+  <!-- 6. REUSED SEKCE: CTA BANNER -->
+  <section class="cta-section">
+    <img src="/Decoration/Hory - dekorace.webp" alt="" class="cta-contour-bg" aria-hidden="true" loading="lazy" decoding="async">
+    <div class="cta-inner">
+      <h2 class="cta-title">Dopřejte si zasloužený<br>odpočinek v Jizerských horách</h2>
+      <a href="#kontakt" class="btn btn-cta">Mám zájem</a>
+    </div>
+  </section>
+
+  <!-- 7. REUSED SEKCE: FOOTER -->
+  ${getFooterHTML()}
+  </div>
+`;
+
 // Router
 const app = document.querySelector('#app');
 let currentViewKey = null;
@@ -2932,12 +3147,19 @@ const route = (isInitial = false) => {
     '#snidane', '#vecere', '#krb-restaurace', '#teraska', '#grilovani', '#oslavy-akce'
   ];
 
+  const knownEventsHashes = [
+    '#akce', '#skupinove-akce', '#skupinove-akce-stranka', '#akce-stranka',
+    '#celay-hotel', '#typy-akci', '#zaridime'
+  ];
+
   let pageKey = 'home';
 
   if (cleanHash.startsWith('#rezervace')) {
     pageKey = 'booking';
   } else if (cleanHash.startsWith('#admin')) {
     pageKey = 'admin';
+  } else if (knownEventsHashes.includes(cleanHash)) {
+    pageKey = 'events';
   } else if (knownDiningHashes.includes(cleanHash)) {
     pageKey = 'dining';
   } else if (cleanHash === '#pokoj-prizemi' || cleanHash === '#pokoje-prizemi' || cleanHash === '#pokoj-v-prizemi') {
@@ -2959,7 +3181,7 @@ const route = (isInitial = false) => {
   const isNewPage = currentViewKey !== pageKey;
   currentViewKey = pageKey;
 
-  if (pageKey === 'ground' || pageKey === 'view') {
+  if (pageKey === 'ground' || pageKey === 'view' || pageKey === 'dining' || pageKey === 'events') {
     preloadHeroImages(pageKey);
   }
 
@@ -2971,6 +3193,8 @@ const route = (isInitial = false) => {
   } else if (pageKey === 'admin') {
     app.innerHTML = getAdminPageHTML();
     new AdminDashboard('admin-container').init();
+  } else if (pageKey === 'events') {
+    app.innerHTML = getEventsPageHTML();
   } else if (pageKey === 'dining') {
     app.innerHTML = getStravovaniPageHTML();
   } else if (pageKey === 'ground') {
