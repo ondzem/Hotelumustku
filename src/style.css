@@ -157,17 +157,17 @@ a {
   box-sizing: border-box;
 }
 
-/* Hlavička s dokonale symetrickým Flexboxem */
+/* Hlavička s 100% matematicky vycentrovaným logem i odkazů */
 .site-header {
   position: absolute;
   top: 16px;
   left: 0;
   width: 100%;
+  height: 110px;
   padding: 0 33px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 36px;
+  justify-content: space-between;
   z-index: 10;
   box-sizing: border-box;
 }
@@ -177,14 +177,18 @@ a {
   align-items: center;
   gap: 36px;
   flex: 1;
+  height: 100%;
+  box-sizing: border-box;
 }
 
 .nav-left {
   justify-content: flex-end;
+  padding-right: 90px;
 }
 
 .nav-right {
   justify-content: flex-start;
+  padding-left: 90px;
 }
 
 .nav-link {
@@ -201,12 +205,17 @@ a {
 }
 
 .header-logo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   width: 110px;
   height: 110px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 12;
 }
 
 .header-logo img {
@@ -345,12 +354,21 @@ a {
 
   .site-header {
     top: 24px;
+    height: 126px;
     gap: 44px;
     padding: 0 60px;
   }
 
   .nav-left, .nav-right {
     gap: 44px;
+  }
+
+  .nav-left {
+    padding-right: 105px;
+  }
+
+  .nav-right {
+    padding-left: 105px;
   }
 
   .nav-link {
@@ -2449,6 +2467,10 @@ h3 {
   }
 
   .header-logo {
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    transform: none !important;
     width: 90px;
     height: auto;
     margin-left: -5px;
@@ -9142,6 +9164,23 @@ img[loading="lazy"].img-loaded {
    STRÁNKA SKUPINOVÉ AKCE (#akce / #skupinove-akce)
    ========================================================================== */
 
+/* Prepínání H1 nadpisu pro Skupinové akce (Desktop: "Skupinové akce", Mobil & Tablet: "Prohlédněte si nabídku našich skupinových akcí") */
+.events-title-desktop {
+  display: inline !important;
+}
+.events-title-mobile {
+  display: none !important;
+}
+
+@media (max-width: 1028.98px) {
+  .events-title-desktop {
+    display: none !important;
+  }
+  .events-title-mobile {
+    display: inline !important;
+  }
+}
+
 /* 1. HERO SEKCE SKUPINOVÉ AKCE */
 .events-hero-section {
   background-image: url('/akce/hero_akce.webp') !important;
@@ -9427,21 +9466,36 @@ img[loading="lazy"].img-loaded {
   font-size: 17px !important;
   font-weight: 500 !important;
   border-radius: 1px !important;
-  background-color: #ece8dd !important;
-  color: #1c1c19 !important;
-  border: none !important;
   cursor: pointer;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  transition: background-color 0.2s ease, transform 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
   text-decoration: none;
   white-space: nowrap;
 }
 
-.btn-activities-hero:hover {
+.btn-activities-hotel {
+  background-color: #ece8dd !important;
+  color: #1c1c19 !important;
+  border: none !important;
+}
+
+.btn-activities-hotel:hover {
   background-color: #dcd7c5 !important;
   color: #1c1c19 !important;
+}
+
+.btn-activities-surroundings {
+  background-color: transparent !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.7) !important;
+}
+
+.btn-activities-surroundings:hover {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  border-color: #ffffff !important;
+  color: #ffffff !important;
 }
 
 /* 2. AKTIVITY V NAŠEM HOTELU */
@@ -9802,21 +9856,27 @@ img[loading="lazy"].img-loaded {
   }
 
   .activities-hero-section .room-detail-hero-center {
-    transform: translateY(50px) !important;
+    transform: translateY(25px) !important;
   }
 
   .activities-hero-buttons-wrap {
-    margin-top: 16px;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 12px !important;
+    margin-top: 8px !important;
+    padding: 0 !important;
   }
 
   .btn-activities-hero {
     height: 40px !important;
-    padding: 0 24px !important;
-    font-size: 15.5px !important;
+    padding: 0 20px !important;
+    font-size: 15px !important;
     position: relative !important;
     top: auto !important;
     transform: none !important;
-    margin: 16px 0 0 0 !important;
+    margin: 14px 0 0 0 !important;
   }
 
   /* Skrytí tlačítka "Aktivity v okolí hotelu" v sekci 2 na tabletu */
@@ -9947,21 +10007,27 @@ img[loading="lazy"].img-loaded {
   }
 
   .activities-hero-section .room-detail-hero-center {
-    transform: translateY(50px) !important;
+    transform: translateY(25px) !important;
   }
 
   .activities-hero-buttons-wrap {
-    margin-top: 16px;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin-top: 8px !important;
+    padding: 0 !important;
   }
 
   .btn-activities-hero {
     height: 36px !important;
-    padding: 0 20px !important;
-    font-size: 14.5px !important;
+    padding: 0 14px !important;
+    font-size: 13.5px !important;
     position: relative !important;
     top: auto !important;
     transform: none !important;
-    margin: 16px 0 0 0 !important;
+    margin: 14px 0 0 0 !important;
   }
 
   /* Skrytí tlačítka "Aktivity v okolí hotelu" v sekci 2 na mobilu */
@@ -10073,7 +10139,348 @@ img[loading="lazy"].img-loaded {
   }
 }
 
+/* ==========================================================================
+   DETAILNÍ STRÁNKY KATEGORIÍ AKTIVIT & POP-UP MODAL PRO AKTIVITY
+   ========================================================================== */
+
+/* Jemné, neintruzivní tlačítko/odkaz v Sekci 3 "Prohlédnout aktivity" */
+.btn-category-explore {
+  display: inline-flex !important;
+  align-items: center !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  color: #1c1c19 !important;
+  background-color: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(28, 28, 25, 0.3) !important;
+  padding: 4px 0 !important;
+  border-radius: 0 !important;
+  text-decoration: none !important;
+  transition: color 0.2s ease, border-color 0.2s ease !important;
+}
+
+.btn-category-explore:hover {
+  color: #697947 !important;
+  border-bottom-color: #697947 !important;
+}
+
+/* Obal obrázku karty sekce 3 s proklikem */
+.surrounding-card-link-wrapper {
+  display: block;
+  text-decoration: none;
+}
+
+/* Mřížka aktivit na detailní stránce kategorie */
+.category-destinations-section {
+  padding: 80px 0 100px 0;
+  background-color: #f7f6f2;
+}
+
+.category-destinations-inner {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 33px;
+  box-sizing: border-box;
+}
+
+.category-destinations-header {
+  margin-bottom: 48px;
+  text-align: left;
+}
+
+.category-destinations-main-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 700;
+  color: #1c1c19;
+  margin: 0 0 12px 0;
+}
+
+.category-destinations-count {
+  font-size: 16px;
+  color: #666660;
+  margin: 0;
+}
+
+.category-destinations-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+}
+
+@media (min-width: 1750px) {
+  .category-destinations-inner {
+    padding: 0 60px;
+  }
+  .category-destinations-grid {
+    gap: 40px;
+  }
+  .category-destination-img-wrap {
+    height: clamp(380px, 22vw, 460px) !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1028.98px) {
+  .category-destinations-inner {
+    padding: 0 32px !important;
+  }
+  .category-destinations-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 32px !important;
+  }
+  .category-destination-img-wrap {
+    height: clamp(340px, 42vw, 480px) !important;
+  }
+}
+
 @media (max-width: 767.98px) {
+  .category-destinations-section {
+    padding: 45px 0 60px 0 !important;
+  }
+  .category-destinations-inner {
+    padding: 0 24px !important;
+  }
+  .category-destinations-header {
+    margin-bottom: 32px !important;
+  }
+  .category-destinations-main-title {
+    font-size: 26px !important;
+    font-weight: 600 !important;
+  }
+  .category-destinations-grid {
+    grid-template-columns: 1fr !important;
+    gap: 40px !important;
+  }
+  .category-destination-img-wrap {
+    height: clamp(340px, 75vw, 540px) !important;
+  }
+  .category-destination-title {
+    font-size: 18px !important;
+  }
+}
+
+.category-destination-card {
+  background: transparent;
+  border-radius: 0;
+  overflow: hidden;
+  box-shadow: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+}
+
+.category-destination-img-wrap {
+  position: relative;
+  width: 100%;
+  height: clamp(320px, 28vw, 410px);
+  overflow: hidden;
+  background-color: #e5e3dc;
+}
+
+.category-destination-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.category-destination-card:hover .category-destination-img-wrap img {
+  transform: scale(1.04);
+}
+
+.category-destination-footer {
+  display: flex !important;
+  align-items: baseline !important;
+  justify-content: space-between !important;
+  margin-top: 8px !important;
+  padding: 0 !important;
+  width: 100% !important;
+  gap: 12px;
+}
+
+.category-destination-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 20px !important;
+  font-weight: 600 !important;
+  color: #000000 !important;
+  text-transform: none !important;
+  margin: 0 !important;
+  line-height: 1.25 !important;
+  letter-spacing: -0.01em !important;
+  flex: 1;
+}
+
+.btn-destination-detail {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13.5px !important;
+  font-weight: 400 !important;
+  color: #666660 !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  white-space: nowrap !important;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.btn-destination-detail:hover {
+  color: #000000 !important;
+}
+
+/* POP-UP MODAL OVERLAY & CONTAINER */
+.destination-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.destination-modal-overlay.is-active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.destination-modal-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(12, 12, 10, 0.75);
+  backdrop-filter: blur(8px);
+}
+
+.destination-modal-container {
+  position: relative;
+  width: 90%;
+  max-width: 680px;
+  max-height: 90vh;
+  background-color: #ffffff;
+  border-radius: 4px;
+  padding: 36px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  z-index: 2;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+  transform: scale(0.95);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.destination-modal-overlay.is-active .destination-modal-container {
+  transform: scale(1);
+}
+
+.destination-modal-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f2f0ea;
+  border: none;
+  font-size: 24px;
+  line-height: 1;
+  color: #1c1c19;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.destination-modal-close:hover {
+  background: #e2ded4;
+}
+
+.destination-modal-header {
+  margin-bottom: 20px;
+  padding-right: 40px;
+}
+
+.destination-modal-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  background-color: #ece8dd;
+  color: #1c1c19;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 2px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.destination-modal-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: #1c1c19;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.destination-modal-img-wrap {
+  display: none !important;
+}
+
+.destination-modal-body {
+  margin-bottom: 28px;
+}
+
+.destination-modal-desc {
+  font-size: 16px;
+  line-height: 1.65;
+  color: #444440;
+  margin: 0;
+}
+
+.destination-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 767.98px) {
+  .destination-modal-container {
+    width: 95% !important;
+    max-width: 95% !important;
+    padding: 24px 20px 24px 20px !important;
+    border-radius: 4px !important;
+  }
+
+  .destination-modal-header {
+    margin-bottom: 16px !important;
+    padding-right: 36px !important;
+  }
+
+  .destination-modal-title {
+    font-size: 22px !important;
+  }
+
+  .destination-modal-desc {
+    font-size: 15px !important;
+    line-height: 1.6 !important;
+  }
+
+  .destination-modal-close {
+    top: 16px !important;
+    right: 16px !important;
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 20px !important;
+  }
+
   .home-surroundings-section,
   .rooms-surroundings-section {
     padding-top: 10px !important;
