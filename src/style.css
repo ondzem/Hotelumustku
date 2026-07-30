@@ -9458,9 +9458,11 @@ img[loading="lazy"].img-loaded {
 
 /* Mobile image cropping position shifts for Turistika & Cyklistika hero sections */
 @media (max-width: 767.98px) {
-  .hero-category-poster-turistika,
-  .hero-category-poster-cyklistika {
+  .hero-category-poster-turistika {
     object-position: 25% center !important;
+  }
+  .hero-category-poster-cyklistika {
+    object-position: 42% center !important;
   }
 }
 
