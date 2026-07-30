@@ -9460,7 +9460,7 @@ img[loading="lazy"].img-loaded {
 @media (max-width: 767.98px) {
   .hero-category-poster-turistika,
   .hero-category-poster-cyklistika {
-    object-position: 75% center !important;
+    object-position: 25% center !important;
   }
 }
 
