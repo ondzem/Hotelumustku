@@ -3364,7 +3364,7 @@ const CATEGORIES_DATA = {
   'turistika': {
     title: 'Turistika',
     subtitle: 'Objevte nejkrásnější pěší trasy a přírodní skvosty Jizerských hor přímo od našeho hotelu.',
-    heroImg: '/Aktivity v hotelu/turistika.webp',
+    heroImg: '/Fotky Aktivit/Turistika.webp',
     items: [
       {
         id: 'protrzena-prehrada',
@@ -3459,7 +3459,7 @@ const CATEGORIES_DATA = {
   'cyklistika': {
     title: 'Cyklistika',
     subtitle: 'Nekonečné kilometry cyklostezek, singltreky a horské hřebenovky pro začátečníky i náročné bikery.',
-    heroImg: '/Aktivity v hotelu/cyklistika.webp',
+    heroImg: '/Fotky Aktivit/cyklistika.webp',
     items: [
       {
         id: 'singltrek-pod-smrkem',
@@ -3538,7 +3538,7 @@ const CATEGORIES_DATA = {
   'zimni-vylety': {
     title: 'Výlety v zimě',
     subtitle: 'Zimní pohádka v Jizerských horách — špičkové ski areály, upravované běžecké stopy i rodinná zábava.',
-    heroImg: '/Aktivity v hotelu/zimni vylety.webp',
+    heroImg: '/Fotky Aktivit/Zimni vylety.webp',
     items: [
       {
         id: 'ski-cerna-ricka',
@@ -3628,7 +3628,7 @@ const CATEGORIES_DATA = {
   'vylety-autem': {
     title: 'Výlety autem',
     subtitle: 'Pohodlné výlety za kulturou, zábavou a památkami v širším okolí Jizerských hor a Severních Čech.',
-    heroImg: '/Aktivity v hotelu/vylety autem.webp',
+    heroImg: '/Fotky Aktivit/vylety autem.webp',
     items: [
       {
         id: 'bobova-draha-janov',
