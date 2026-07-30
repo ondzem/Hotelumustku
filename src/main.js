@@ -2996,7 +2996,7 @@ const getEventsPageHTML = () => `
           </div>
           <div class="events-type-card-content">
             <h3 class="events-type-card-title">Svatby</h3>
-            <p class="events-type-card-desc">Svatební obřad v zahradě u řeky Desné, svatební hostina v restauraci i ubytování pro vaše svatební hosty na jednom místě.</p>
+            <p class="events-type-card-desc">Obřad i hostina v krásném prostředí hor. Celý hotel jen pro vás a vaše svatební hosty s ubytováním přímo na místě.</p>
           </div>
         </div>
 
@@ -3007,7 +3007,7 @@ const getEventsPageHTML = () => `
           </div>
           <div class="events-type-card-content">
             <h3 class="events-type-card-title">Firemní Akce</h3>
-            <p class="events-type-card-desc">Teambuildingy, školení, firemní večírky a pracovní setkání v klidném přírodním prostředí Jizerských hor.</p>
+            <p class="events-type-card-desc">Zázemí pro školení, porady i teambuilding s aktivitami v přírodě, společenskou hernou a posezením na terase.</p>
           </div>
         </div>
 
@@ -3018,87 +3018,96 @@ const getEventsPageHTML = () => `
           </div>
           <div class="events-type-card-content">
             <h3 class="events-type-card-title">Rodinné Oslavy</h3>
-            <p class="events-type-card-desc">Narozeniny, výročí, rodinná setkání a oslavy s možností vlastního grilování, uzení nebo rautu.</p>
+            <p class="events-type-card-desc">Narozeniny, výročí nebo setkání rodiny pod jednou střechou — s domácí kuchyní, rauty a soukromím pro všechny.</p>
           </div>
         </div>
 
-        <!-- Kartička 4: Klubové Soustředění -->
+        <!-- Kartička 4: Klubová Soustředění -->
         <div class="events-type-card">
           <div class="events-type-img-wrap">
-            <img src="/akce/soustredeni.webp" alt="Klubové a sportovní soustředění" loading="lazy" decoding="async">
+            <img src="/akce/soustredeni.webp" alt="Klubová a sportovní soustředění" loading="lazy" decoding="async">
           </div>
           <div class="events-type-card-content">
-            <h3 class="events-type-card-title">Klubové Soustředění</h3>
-            <p class="events-type-card-desc">Soustředění pro sportovní kluby, zájmové skupiny i tvořivé kurzy v soukromí našich prostor.</p>
+            <h3 class="events-type-card-title">Klubová Soustředění</h3>
+            <p class="events-type-card-desc">Zázemí pro sportovní týmy i zájmové kluby s uzamykatelnou kolárnou, lyžárnou a stravou na míru.</p>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 4. CO PRO VAŠI AKCI ZAŘÍDÍME -->
-  <section class="events-services-section" id="zaridime">
-    <div class="events-services-inner">
-      <h2 class="events-services-title">Co pro vaši akci zařídíme</h2>
-
-      <div class="events-services-grid">
-        <!-- 1. Pohoštění na míru -->
-        <div class="events-service-item">
-          <div class="events-service-icon-wrap">
-            <img src="/Icons/Ikony/Kuchařská ilustrace s transparentním pozadím.png" alt="" class="events-service-icon">
+  <!-- 4. CO PRO VAŠI AKCI ZAŘÍDÍME (1:1 DLE SEKCE VÍCE NEŽ JEN UBYTOVÁNÍ) -->
+  <section class="features-section events-features-section" id="zaridime">
+    <div class="features-inner">
+      <h2 class="features-title">Co pro vaši akci zařídíme</h2>
+      
+      <div class="features-grid">
+        <!-- Horní řada (3 položky) -->
+        <div class="features-row">
+          <!-- Položka 1 -->
+          <div class="feature-item">
+            <div class="feature-icon">
+              <img src="/Icons/Ikony/Kuchařská ilustrace s transparentním pozadím.png" alt="Pohoštění na míru" loading="lazy" decoding="async">
+            </div>
+            <p class="feature-text">
+              <strong>Pohoštění na míru:</strong> domácí kuchyně z čerstvých surovin.
+            </p>
           </div>
-          <div class="events-service-text-wrap">
-            <h3 class="events-service-heading">Pohoštění na míru: <span class="events-service-sub">domácí kuchyně z čerstvých surovin.</span></h3>
+
+          <!-- Položka 2 -->
+          <div class="feature-item">
+            <div class="feature-icon">
+              <img src="/Icons/Ikony/Autobus se zavazadly na transparentním pozadí.png" alt="Zajistíme dopravu" loading="lazy" decoding="async">
+            </div>
+            <p class="feature-text">
+              <strong>Zajistíme dopravu:</strong> mikrobusem či autobusem pro celou vaši skupinu.
+            </p>
+          </div>
+
+          <!-- Položka 3 -->
+          <div class="feature-item">
+            <div class="feature-icon">
+              <img src="/Icons/Ikony/Obývací scéna s transparentním pozadím.png" alt="Pořádání akcí a oslav" loading="lazy" decoding="async">
+            </div>
+            <p class="feature-text">
+              <strong>Pořádání akcí a oslav</strong> bez rušení ostatních hostů.
+            </p>
           </div>
         </div>
 
-        <!-- 2. Zajistíme dopravu -->
-        <div class="events-service-item">
-          <div class="events-service-icon-wrap">
-            <img src="/Icons/Ikony/Autobus se zavazadly na transparentním pozadí.png" alt="" class="events-service-icon">
-          </div>
-          <div class="events-service-text-wrap">
-            <h3 class="events-service-heading">Zajistíme dopravu: <span class="events-service-sub">mikrobusem či autobusem pro celou vaši skupinu.</span></h3>
-          </div>
-        </div>
+        <!-- Horizontální dělicí čára -->
+        <div class="features-divider"></div>
 
-        <!-- 3. Pořádání akcí a oslav -->
-        <div class="events-service-item">
-          <div class="events-service-icon-wrap">
-            <img src="/Icons/Ikony/Obývací scéna s transparentním pozadím.png" alt="" class="events-service-icon">
+        <!-- Spodní řada (3 položky) -->
+        <div class="features-row">
+          <!-- Položka 4 -->
+          <div class="feature-item">
+            <div class="feature-icon">
+              <img src="/Icons/Ikona - spolecenska herna.webp" alt="Společenská místnost" loading="lazy" decoding="async">
+            </div>
+            <p class="feature-text">
+              <strong>Společenská místnost</strong> pro zábavu i vzdělávání za jakéhokoliv počasí.
+            </p>
           </div>
-          <div class="events-service-text-wrap">
-            <h3 class="events-service-heading">Pořádání akcí a oslav <span class="events-service-sub">bez rušení ostatních hostů.</span></h3>
-          </div>
-        </div>
 
-        <!-- 4. Společenská místnost -->
-        <div class="events-service-item">
-          <div class="events-service-icon-wrap">
-            <img src="/Icons/Ikona - spolecenska herna.webp" alt="" class="events-service-icon">
+          <!-- Položka 5 -->
+          <div class="feature-item">
+            <div class="feature-icon">
+              <img src="/Icons/Ikona - ohniste.webp" alt="Posezení u ohniště" loading="lazy" decoding="async">
+            </div>
+            <p class="feature-text">
+              <strong>Posezení u ohniště:</strong> zahradní grill & udírna pro vaši akci.
+            </p>
           </div>
-          <div class="events-service-text-wrap">
-            <h3 class="events-service-heading">Společenská místnost <span class="events-service-sub">pro zábavu i vzdělávání za jakéhokoliv počasí.</span></h3>
-          </div>
-        </div>
 
-        <!-- 5. Posezení u ranního či večerního ohniště -->
-        <div class="events-service-item">
-          <div class="events-service-icon-wrap">
-            <img src="/Icons/Ikona - ohniste.webp" alt="" class="events-service-icon">
-          </div>
-          <div class="events-service-text-wrap">
-            <h3 class="events-service-heading">Posezení u ranního či večerního ohniště <span class="events-service-sub">zahradní grill & udírna pro vaše školení a večerní setkání.</span></h3>
-          </div>
-        </div>
-
-        <!-- 6. Živá hudba -->
-        <div class="events-service-item">
-          <div class="events-service-icon-wrap">
-            <img src="/Icons/Ikona - turistika a cyklistika.webp" alt="" class="events-service-icon">
-          </div>
-          <div class="events-service-text-wrap">
-            <h3 class="events-service-heading">Živá hudba <span class="events-service-sub">venkovní párty a zábava pod širým nebem.</span></h3>
+          <!-- Položka 6 -->
+          <div class="feature-item">
+            <div class="feature-icon">
+              <img src="/Icons/Ikona - turistika a cyklistika.webp" alt="Živá hudba" loading="lazy" decoding="async">
+            </div>
+            <p class="feature-text">
+              <strong>Živá hudba:</strong> venkovní párty a zábava pod širým nebem.
+            </p>
           </div>
         </div>
       </div>
@@ -3109,13 +3118,7 @@ const getEventsPageHTML = () => `
   ${getReviewsHTML()}
 
   <!-- 6. REUSED SEKCE: CTA BANNER -->
-  <section class="cta-section">
-    <img src="/Decoration/Hory - dekorace.webp" alt="" class="cta-contour-bg" aria-hidden="true" loading="lazy" decoding="async">
-    <div class="cta-inner">
-      <h2 class="cta-title">Dopřejte si zasloužený<br>odpočinek v Jizerských horách</h2>
-      <a href="#kontakt" class="btn btn-cta">Mám zájem</a>
-    </div>
-  </section>
+  ${getCtaHTML()}
 
   <!-- 7. REUSED SEKCE: FOOTER -->
   ${getFooterHTML()}

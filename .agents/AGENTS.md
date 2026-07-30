@@ -77,7 +77,8 @@ Všechny Hero sekce (Úvodní, Stravování, Pokoje, Přízemí, Výhled) MUSÍ 
 ### 📱 1. Mobilní verze (<768px)
 * **Struktura prvků**:
   - **Hlavní nadpis + podnadpis (nebo tlačítko)**: Blok `.room-detail-hero-center` má posun `transform: translateY(50px) !important;` od středu dolů.
-  - **Prvky v bloku**: Mezera mezi nadpisem a tlačítkem/podnadpisem je `gap: 16px;`.
+  - **Prvky v bloku**: Mezera mezi nadpisem a tlačítkem/podnadpisem je přísně `gap: 16px;`. Při skrytí podnadpisu (`display: none !important`) MUSÍ mít nadpis i obal tlačítka `margin: 0 !important;`, aby se zamezilo sčítání mezer a vniknutí nepřirozeně velké vzdálenosti mezi nadpisem a tlačítkem.
+  - **Relativní pozicování tlačítka**: Primární tlačítko v Hero sekci (`.room-detail-hero-btn`, `.btn-dining-read-more`, `.btn-events-read-more`) MUSÍ mít na mobilu i tabletu relativní flexboxové pozicování (`position: relative !important; top: auto !important; transform: none !important; margin: 16px 0 0 0 !important;`), STRIKTNĚ ZÁKAZ absoltního pozicování (`position: absolute !important; top: calc(...)`), které by tlačítko odsunulo daleko dolů ke spodní šipce.
   - **Pouze 1 tlačítko**: Primární tlačítko (např. *Nejsem ubytovaný* / *Rezervovat pobyt*) s rozměry dle Button Design System (`height: 36px !important; padding: 0 20px !important; font-size: 14.5px !important; border-radius: 1px !important; background-color: #ece8dd !important; color: #1c1c19 !important;`). Druhé tlačítko (např. *Přečíst více*) je skryté (`display: none !important`).
   - **Spodní odskrolovávací šipka**: ZOBRAZENÁ a VYCENTROVANÁ NA STŘED (`display: flex !important; margin: 15px auto 0 auto !important; align-self: center !important; transform: translateY(-25px) !important;`). Odsazení šipky od spodního okraje je striktně zachováno.
   - **Hover efekt tlačítka**: Plný neprahledný hover s jemným ztmavnutím podkladu (`background-color: #dcd7c5 !important; color: #1c1c19 !important; border: none !important;`).
@@ -86,7 +87,8 @@ Všechny Hero sekce (Úvodní, Stravování, Pokoje, Přízemí, Výhled) MUSÍ 
 ### 📱 2. Tabletová verze (768px - 1028.98px)
 * **Struktura prvků**:
   - **Hlavní nadpis + podnadpis (nebo tlačítko)**: Blok `.room-detail-hero-center` má posun `transform: translateY(50px) !important;` od středu dolů.
-  - **Prvky v bloku**: Mezera mezi nadpisem a tlačítkem/podnadpisem je `gap: 16px;`.
+  - **Prvky v bloku**: Mezera mezi nadpisem a tlačítkem/podnadpisem je přísně `gap: 16px;`. Při skrytí podnadpisu (`display: none !important`) MUSÍ mít nadpis i obal tlačítka `margin: 0 !important;`.
+  - **Relativní pozicování tlačítka**: Primární tlačítko MUSÍ mít relativní flexboxové pozicování (`position: relative !important; top: auto !important; transform: none !important; margin: 16px 0 0 0 !important;`) pro přímé lícování těsně 16px pod nadpisem H1.
   - **Pouze 1 tlačítko**: Primární tlačítko s tabletovými rozměry dle Button Design System (`height: 40px !important; padding: 0 24px !important; font-size: 15.5px !important; border-radius: 1px !important; background-color: #ece8dd !important; color: #1c1c19 !important;`). Druhé tlačítko je skryté (`display: none !important`).
   - **Spodní odskrolovávací šipka**: ZOBRAZENÁ a 100% VYCENTROVANÁ NA STŘED (`display: flex !important; margin: 15px auto 0 auto !important; align-self: center !important; transform: translateY(-25px) !important;`).
   - **Hover efekt tlačítka**: Plný neprahledný hover s jemným ztmavnutím podkladu (`background-color: #dcd7c5 !important; color: #1c1c19 !important; border: none !important;`).

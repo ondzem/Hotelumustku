@@ -8331,13 +8331,14 @@ img[loading="lazy"].img-loaded {
     min-height: 100% !important;
   }
 
-  /* Posun nadpisu + tlačítka o 50px níže */
+  /* Posun nadpisu + tlačítka víc nahoru k sobě */
   .room-detail-hero .room-detail-hero-center,
-  .dining-hero-section .room-detail-hero-center {
+  .dining-hero-section .room-detail-hero-center,
+  .events-hero-section .room-detail-hero-center {
     position: relative !important;
     top: auto !important;
     left: auto !important;
-    transform: translateY(50px) !important;
+    transform: translateY(20px) !important;
     width: 100% !important;
     max-width: 800px !important;
     margin: auto !important;
@@ -8345,33 +8346,30 @@ img[loading="lazy"].img-loaded {
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 16px !important;
+    gap: 12px !important;
   }
 
   .room-detail-hero .room-detail-hero-title,
-  .dining-hero-section .room-detail-hero-title {
+  .dining-hero-section .room-detail-hero-title,
+  .events-hero-section .room-detail-hero-title {
     position: relative !important;
     top: auto !important;
     left: auto !important;
     transform: none !important;
-    margin: 0 0 12px 0 !important;
+    margin: 0 !important;
     width: 100% !important;
     max-width: 100% !important;
   }
 
   .room-detail-hero .room-detail-hero-subtitle,
-  .dining-hero-section .room-detail-hero-subtitle {
-    position: relative !important;
-    top: auto !important;
-    left: auto !important;
-    transform: none !important;
-    margin: 0 0 24px 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
+  .dining-hero-section .room-detail-hero-subtitle,
+  .events-hero-section .room-detail-hero-subtitle {
+    display: none !important;
   }
 
   .room-detail-hero .dining-hero-buttons-wrap,
-  .dining-hero-section .dining-hero-buttons-wrap {
+  .dining-hero-section .dining-hero-buttons-wrap,
+  .events-hero-buttons-wrap {
     position: relative !important;
     top: auto !important;
     left: auto !important;
@@ -8380,12 +8378,14 @@ img[loading="lazy"].img-loaded {
     align-items: center !important;
     justify-content: center !important;
     gap: 16px !important;
+    margin: 0 !important;
   }
 
   /* Šipka dolů: Na tabletu ZOBRAZENÁ, vycentrovaná na střed a posunutá o 50px výše (-25px) */
   .room-detail-hero .scroll-down-btn,
   .rooms-hero-section .scroll-down-btn,
   .dining-hero-section .scroll-down-btn,
+  .events-hero-section .scroll-down-btn,
   .mobile-only-scroll-btn {
     display: flex !important;
     position: relative !important;
@@ -8401,7 +8401,15 @@ img[loading="lazy"].img-loaded {
   /* Tabletové rozměry primárního tlačítka (AGENTS.md: výška 40px, padding 24px, font 15.5px) */
   .room-detail-hero-btn,
   .btn-dining-read-more,
-  .btn-dining-not-guest {
+  .btn-dining-not-guest,
+  .btn-events-read-more {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    margin: 16px 0 0 0 !important;
     display: inline-flex !important;
     background-color: #ece8dd !important;
     color: #1c1c19 !important;
@@ -8416,7 +8424,8 @@ img[loading="lazy"].img-loaded {
 
   .room-detail-hero-btn:hover,
   .btn-dining-read-more:hover,
-  .btn-dining-not-guest:hover {
+  .btn-dining-not-guest:hover,
+  .btn-events-read-more:hover {
     background-color: #dcd7c5 !important;
     color: #1c1c19 !important;
     border: none !important;
@@ -8627,13 +8636,14 @@ img[loading="lazy"].img-loaded {
     min-height: 100% !important;
   }
 
-  /* Posun nadpisu + tlačítka o 50px níže */
+  /* Posun nadpisu + tlačítka víc nahoru k sobě */
   .room-detail-hero .room-detail-hero-center,
-  .dining-hero-section .room-detail-hero-center {
+  .dining-hero-section .room-detail-hero-center,
+  .events-hero-section .room-detail-hero-center {
     position: relative !important;
     top: auto !important;
     left: auto !important;
-    transform: translateY(50px) !important;
+    transform: translateY(20px) !important;
     width: 100% !important;
     max-width: 360px !important;
     margin: auto !important;
@@ -8641,33 +8651,30 @@ img[loading="lazy"].img-loaded {
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 16px !important;
+    gap: 12px !important;
   }
 
   .room-detail-hero .room-detail-hero-title,
-  .dining-hero-section .room-detail-hero-title {
+  .dining-hero-section .room-detail-hero-title,
+  .events-hero-section .room-detail-hero-title {
     position: relative !important;
     top: auto !important;
     left: auto !important;
     transform: none !important;
-    margin: 0 0 12px 0 !important;
+    margin: 0 !important;
     width: 100% !important;
     max-width: 100% !important;
   }
 
   .room-detail-hero .room-detail-hero-subtitle,
-  .dining-hero-section .room-detail-hero-subtitle {
-    position: relative !important;
-    top: auto !important;
-    left: auto !important;
-    transform: none !important;
-    margin: 0 0 24px 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
+  .dining-hero-section .room-detail-hero-subtitle,
+  .events-hero-section .room-detail-hero-subtitle {
+    display: none !important;
   }
 
   .room-detail-hero .dining-hero-buttons-wrap,
-  .dining-hero-section .dining-hero-buttons-wrap {
+  .dining-hero-section .dining-hero-buttons-wrap,
+  .events-hero-buttons-wrap {
     position: relative !important;
     top: auto !important;
     left: auto !important;
@@ -8676,11 +8683,13 @@ img[loading="lazy"].img-loaded {
     align-items: center !important;
     justify-content: center !important;
     gap: 16px !important;
+    margin: 0 !important;
   }
 
   /* Šipka dolů: Na mobilu ZOBRAZENÁ, vycentrovaná na střed a posunutá o 50px výše (-25px) */
   .room-detail-hero .scroll-down-btn,
-  .dining-hero-section .scroll-down-btn {
+  .dining-hero-section .scroll-down-btn,
+  .events-hero-section .scroll-down-btn {
     display: flex !important;
     position: relative !important;
     top: auto !important;
@@ -8695,7 +8704,15 @@ img[loading="lazy"].img-loaded {
   /* Mobilní rozměry primárního tlačítka (AGENTS.md: výška 36px, padding 20px, font 14.5px) */
   .room-detail-hero-btn,
   .btn-dining-read-more,
-  .btn-dining-not-guest {
+  .btn-dining-not-guest,
+  .btn-events-read-more {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    margin: 16px 0 0 0 !important;
     display: inline-flex !important;
     background-color: #ece8dd !important;
     color: #1c1c19 !important;
@@ -8710,7 +8727,8 @@ img[loading="lazy"].img-loaded {
 
   .room-detail-hero-btn:hover,
   .btn-dining-read-more:hover,
-  .btn-dining-not-guest:hover {
+  .btn-dining-not-guest:hover,
+  .btn-events-read-more:hover {
     background-color: #dcd7c5 !important;
     color: #1c1c19 !important;
     border: none !important;
@@ -9177,10 +9195,10 @@ img[loading="lazy"].img-loaded {
   filter: brightness(0.82) contrast(1.06) !important;
 }
 
-/* 3. JAKÉ AKCE U NÁS MŮŽETE NAPLÁNOVAT? */
+/* 3. JAKÉ AKCE U NÁS MŮŽETE NAPLÁNOVAT? (1:1 DLE SVG PŘEDLOHY) */
 .events-types-section {
   width: 100%;
-  padding: 100px 0;
+  padding: 60px 0 100px 0;
   background-color: #f2f2f2;
 }
 
@@ -9194,38 +9212,39 @@ img[loading="lazy"].img-loaded {
 
 .events-types-title {
   font-family: 'Outfit', sans-serif;
-  font-size: clamp(28px, 2.5vw, 34px);
+  font-size: clamp(30px, 2.5vw, 36px);
   font-weight: 600;
-  color: #1c1c19;
+  color: #000000;
   line-height: 1.25;
   letter-spacing: -0.015em;
-  text-align: center;
-  margin: 0 0 48px 0;
+  text-align: left;
+  margin: 0 0 52px 0;
 }
 
 .events-types-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
+  gap: 28px;
 }
 
 .events-type-card {
-  background-color: #ffffff;
-  border-radius: 1px;
-  overflow: hidden;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  background-color: transparent;
+  border-radius: 0;
+  overflow: visible;
+  box-shadow: none;
+  border: none;
+  transition: transform 0.25s ease;
 }
 
 .events-type-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.09);
 }
 
 .events-type-img-wrap {
   width: 100%;
-  height: 210px;
+  height: 281px;
   overflow: hidden;
+  border-radius: 0;
 }
 
 .events-type-img-wrap img {
@@ -9237,95 +9256,48 @@ img[loading="lazy"].img-loaded {
 }
 
 .events-type-card:hover .events-type-img-wrap img {
-  transform: scale(1.05);
+  transform: scale(1.04);
 }
 
 .events-type-card-content {
-  padding: 24px 20px 28px 20px;
+  padding: 20px 0 0 0;
+  text-align: left;
 }
 
 .events-type-card-title {
   font-family: 'Outfit', sans-serif;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 600;
-  color: #1c1c19;
+  color: #000000;
   margin: 0 0 10px 0;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
 }
 
 .events-type-card-desc {
   font-family: 'Outfit', sans-serif;
-  font-size: 14.5px;
+  font-size: 15px;
   font-weight: 400;
-  color: #555550;
-  line-height: 1.55;
+  color: #111111;
+  line-height: 1.5;
   margin: 0;
 }
 
-/* 4. CO PRO VAŠI AKCI ZAŘÍDÍME */
-.events-services-section {
-  width: 100%;
-  padding: 110px 0;
-  background-color: #ffffff;
+/* 4. CO PRO VAŠI AKCI ZAŘÍDÍME (Pozadí #f2f2f2 jako sekce 3, zmenšený horní padding) */
+.events-features-section {
+  background-color: #f2f2f2 !important;
+  padding-top: 40px !important;
+  padding-bottom: 100px !important;
 }
 
-.events-services-inner {
-  width: 100%;
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: 0 33px;
-  box-sizing: border-box;
+/* 5. RECENZE PRO STRÁNKU SKUPINOVÉ AKCE (1:1 DLE STRÁNKY STRAVOVÁNÍ - Pozadí #ffffff, kartičky #f2f2f2, zvětšený horní padding) */
+.events-page .reviews-section {
+  background-color: #ffffff !important;
+  padding: 90px 0 135px 0 !important;
 }
 
-.events-services-title {
-  font-family: 'Outfit', sans-serif;
-  font-size: clamp(28px, 2.5vw, 34px);
-  font-weight: 600;
-  color: #1c1c19;
-  line-height: 1.25;
-  letter-spacing: -0.015em;
-  margin: 0 0 48px 0;
-}
-
-.events-services-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 48px 36px;
-}
-
-.events-service-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 18px;
-}
-
-.events-service-icon-wrap {
-  width: 44px;
-  height: 44px;
-  min-width: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 2px;
-}
-
-.events-service-icon {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-}
-
-.events-service-heading {
-  font-family: 'Outfit', sans-serif;
-  font-size: 17.5px;
-  font-weight: 600;
-  color: #1c1c19;
-  line-height: 1.45;
-  margin: 0;
-}
-
-.events-service-sub {
-  font-weight: 400;
-  color: #555550;
+.events-page .review-card {
+  background-color: #f2f2f2 !important;
 }
 
 /* RESPONSIVE MEDIA QUERIES FOR TABLET & MOBILE */
@@ -9344,14 +9316,14 @@ img[loading="lazy"].img-loaded {
     font-size: 15.5px !important;
   }
 
-  .events-types-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 24px !important;
+  .events-types-section {
+    padding-top: 50px !important;
+    padding-bottom: 80px !important;
   }
 
-  .events-services-grid {
+  .events-types-grid {
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 36px 24px !important;
+    gap: 40px 28px !important;
   }
 }
 
@@ -9371,7 +9343,7 @@ img[loading="lazy"].img-loaded {
   }
 
   .events-types-section {
-    padding: 60px 0;
+    padding: 50px 0 50px 0 !important;
   }
 
   .events-types-inner {
@@ -9381,30 +9353,17 @@ img[loading="lazy"].img-loaded {
   .events-types-title {
     font-size: 26px !important;
     font-weight: 600 !important;
+    text-align: left !important;
     margin-bottom: 32px !important;
   }
 
   .events-types-grid {
     grid-template-columns: 1fr !important;
-    gap: 20px !important;
+    gap: 40px !important;
   }
 
-  .events-services-section {
-    padding: 60px 0;
-  }
-
-  .events-services-inner {
-    padding: 0 24px !important;
-  }
-
-  .events-services-title {
-    font-size: 26px !important;
-    font-weight: 600 !important;
-    margin-bottom: 32px !important;
-  }
-
-  .events-services-grid {
-    grid-template-columns: 1fr !important;
-    gap: 28px !important;
+  .events-features-section {
+    padding-top: 85px !important;
+    padding-bottom: 60px !important;
   }
 }
