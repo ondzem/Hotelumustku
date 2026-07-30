@@ -2012,8 +2012,33 @@ h3 {
 .surroundings-section {
   position: relative;
   width: 100%;
-  padding: 90px 0 130px 0;
+  padding: 100px 0 100px 0;
   background-color: #ffffff;
+}
+
+/* Pouze na Úvodní stránce a na Stránce Nabídka pokojů: zmenšený horní padding a zvětšený spodní padding */
+.home-surroundings-section,
+.rooms-surroundings-section {
+  padding-top: 25px !important;
+  padding-bottom: 185px !important;
+}
+
+.surroundings-slider-viewport {
+  position: relative;
+  width: 100%;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  scrollbar-width: none !important;
+  cursor: grab;
+  user-select: none;
+}
+
+.surroundings-slider-viewport.is-dragging {
+  cursor: grabbing;
+}
+
+.surroundings-slider-viewport::-webkit-scrollbar {
+  display: none !important;
 }
 
 .surroundings-inner {
@@ -3135,13 +3160,21 @@ h3 {
     width: 100%;
     max-width: 100%;
     margin: 0 0 24px 0;
-    overflow: hidden;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+  }
+
+  .reviews-slider-viewport::-webkit-scrollbar {
+    display: none !important;
   }
 
   .reviews-slider-track {
     display: flex;
     align-items: stretch;
     gap: 16px;
+    width: max-content !important;
   }
 
   .review-card {
@@ -3150,6 +3183,7 @@ h3 {
     max-width: 500px !important;
     flex: 0 0 calc(100vw - 48px) !important;
     flex-shrink: 0 !important;
+    scroll-snap-align: start !important;
     height: auto !important;
     min-height: 184px;
     background-color: #ffffff;
@@ -4274,11 +4308,12 @@ h3 {
     max-width: 100%;
   }
 
-  /* Sekce Aktivity v okolí - Tablet */
-  .surroundings-section {
+  /* Sekce Aktivity v okolí - Pouze Úvod a Nabídka Pokojů (Tablet) */
+  .home-surroundings-section,
+  .rooms-surroundings-section {
     position: relative;
     width: 100%;
-    padding: clamp(60px, 5.5vw, 80px) 0 clamp(140px, 11vw, 175px) 0;
+    padding: clamp(15px, 1.8vw, 30px) 0 clamp(140px, 10vw, 175px) 0 !important;
     background-color: #ffffff;
   }
 
@@ -4803,11 +4838,12 @@ h3 {
   .features-row:nth-child(3) .feature-item:nth-child(2) { order: initial; }
   .features-row:nth-child(3) .feature-item:nth-child(3) { order: initial; }
 
-  /* Sekce Aktivity v okolí - Desktop 1029px-1500px */
-  .surroundings-section {
+  /* Sekce Aktivity v okolí - Pouze Úvod a Nabídka Pokojů */
+  .home-surroundings-section,
+  .rooms-surroundings-section {
     position: relative;
     width: 100%;
-    padding: clamp(60px, 5vw, 85px) 0 clamp(150px, 10vw, 190px) 0;
+    padding: clamp(20px, 2vw, 35px) 0 clamp(155px, 11vw, 195px) 0 !important;
     background-color: #ffffff;
   }
 
@@ -8603,7 +8639,7 @@ img[loading="lazy"].img-loaded {
   }
 
   /* Sekce Okolí na tabletu */
-  .surroundings-section {
+  .surroundings-section:not(.home-surroundings-section):not(.rooms-surroundings-section) {
     padding-top: 75px !important;
     padding-bottom: 60px !important;
   }
@@ -8956,7 +8992,7 @@ img[loading="lazy"].img-loaded {
   }
 
   /* Sekce Okolí na mobilu */
-  .surroundings-section {
+  .surroundings-section:not(.home-surroundings-section):not(.rooms-surroundings-section) {
     padding-top: 65px !important;
     padding-bottom: 50px !important;
   }
@@ -9365,5 +9401,682 @@ img[loading="lazy"].img-loaded {
   .events-features-section {
     padding-top: 85px !important;
     padding-bottom: 60px !important;
+  }
+}
+
+/* ==========================================================================
+   STRÁNKA AKTIVITY (#aktivity / #okoli) (1:1 DLE SVG PŘEDLOHY)
+   ========================================================================== */
+
+/* 1. HERO SEKCE AKTIVITY */
+.activities-hero-section {
+  background-image: url('/Aktivity v hotelu/vyhled na krajinu desktop.webp') !important;
+}
+
+.activities-hero-buttons-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.btn-activities-hero {
+  height: 45px !important;
+  padding: 0 28px !important;
+  font-size: 17px !important;
+  font-weight: 500 !important;
+  border-radius: 1px !important;
+  background-color: #ece8dd !important;
+  color: #1c1c19 !important;
+  border: none !important;
+  cursor: pointer;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-activities-hero:hover {
+  background-color: #dcd7c5 !important;
+  color: #1c1c19 !important;
+}
+
+/* 2. AKTIVITY V NAŠEM HOTELU */
+.hotel-activities-section {
+  width: 100%;
+  padding: 100px 0;
+  background-color: #ffffff;
+}
+
+.hotel-activities-inner {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 33px;
+  box-sizing: border-box;
+}
+
+.hotel-activities-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(30px, 2.5vw, 36px);
+  font-weight: 600;
+  color: #000000;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  text-align: left;
+  margin: 0 0 52px 0;
+}
+
+
+
+.hotel-activities-grid-top {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  margin-bottom: 40px;
+}
+
+.hotel-activities-grid-bottom {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  align-items: end;
+}
+
+.hotel-activity-card {
+  background-color: transparent;
+  border-radius: 0;
+  overflow: visible;
+  box-shadow: none;
+  border: none;
+  transition: transform 0.25s ease;
+}
+
+.hotel-activity-card:hover {
+  transform: translateY(-4px);
+}
+
+.hotel-activity-img-wrap {
+  position: relative;
+  width: 100%;
+  height: clamp(270px, 24vw, 350px);
+  overflow: hidden;
+  border-radius: 0;
+}
+
+.hotel-activity-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease, filter 0.3s ease;
+}
+
+.hotel-activity-card:hover .hotel-activity-img-wrap img {
+  transform: scale(1.04);
+}
+
+/* Moderní ostrá úprava fotek s vysokým kontrastem a živými barvami bez vyblednutí */
+.hotel-activity-card-kulecnik .hotel-activity-img-wrap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(75, 90, 45, 0.15);
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+.hotel-activity-card-kulecnik .hotel-activity-img-wrap img {
+  filter: contrast(1.08) saturate(1.02) brightness(0.98);
+}
+
+.hotel-activity-card-fotbalek .hotel-activity-img-wrap img,
+.hotel-activity-card-sipky .hotel-activity-img-wrap img,
+.hotel-activity-card-spolecenska .hotel-activity-img-wrap img {
+  filter: contrast(1.06) saturate(1.04) brightness(1.0);
+}
+
+.hotel-activities-desktop-grid .hotel-activity-card-title,
+.surroundings-activities-desktop-grid .surrounding-activity-card-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(20px, 1.6vw, 24px) !important;
+  font-weight: 600 !important;
+  color: #000000 !important;
+  text-transform: none !important;
+  letter-spacing: -0.01em !important;
+  line-height: 1.25 !important;
+  margin: 14px 0 0 0 !important;
+  text-align: left !important;
+}
+
+.hotel-activities-cta-wrap {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  height: 100%;
+  padding-bottom: 44px;
+}
+
+.btn-hotel-activities-cta {
+  height: 45px !important;
+  padding: 0 28px !important;
+  font-size: 17px !important;
+  font-weight: 500 !important;
+  border-radius: 1px !important;
+  background-color: #697947 !important;
+  color: #ffffff !important;
+  border: none !important;
+  cursor: pointer;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: background-color 0.2s ease;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-hotel-activities-cta:hover {
+  background-color: #58663b !important;
+  color: #ffffff !important;
+}
+
+/* 3. AKTIVITY V OKOLÍ HOTELU */
+.surroundings-activities-section {
+  width: 100%;
+  padding: 100px 0;
+  background-color: #f2f2f2;
+}
+
+.surroundings-activities-inner {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 33px;
+  box-sizing: border-box;
+}
+
+.surroundings-activities-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(30px, 2.5vw, 36px);
+  font-weight: 600;
+  color: #000000;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  text-align: left;
+  margin: 0 0 52px 0;
+}
+
+.surroundings-activities-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 28px;
+}
+
+.surrounding-activity-card {
+  background-color: transparent;
+  border-radius: 0;
+  overflow: visible;
+  box-shadow: none;
+  border: none;
+  transition: transform 0.25s ease;
+}
+
+.surrounding-activity-card:hover {
+  transform: translateY(-4px);
+}
+
+.surrounding-activity-img-wrap {
+  width: 100%;
+  height: clamp(320px, 28vw, 410px);
+  overflow: hidden;
+  border-radius: 0;
+}
+
+.surrounding-activity-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.surrounding-activity-card:hover .surrounding-activity-img-wrap img {
+  transform: scale(1.04);
+}
+
+.surrounding-activity-card-footer {
+  display: flex !important;
+  align-items: baseline !important;
+  justify-content: space-between !important;
+  margin-top: 8px !important;
+  width: 100% !important;
+}
+
+.surrounding-activity-card-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 20px !important;
+  font-weight: 600 !important;
+  color: #000000 !important;
+  text-transform: none !important;
+  margin: 0 !important;
+  line-height: 1.25 !important;
+  letter-spacing: -0.01em !important;
+}
+
+.surrounding-activity-link {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13.5px !important;
+  font-weight: 400 !important;
+  color: #666660 !important;
+  text-transform: none !important;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  white-space: nowrap;
+}
+
+.surrounding-activity-link:hover {
+  color: #697947;
+}
+
+/* 4. ČASTO KLADENÉ DOTAZY (FAQ ACCORDION) */
+.activities-faq-section {
+  width: 100%;
+  padding: 110px 0 130px 0;
+  background-color: #ffffff;
+}
+
+.activities-faq-inner {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 33px;
+  box-sizing: border-box;
+}
+
+.activities-faq-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(30px, 2.5vw, 36px);
+  font-weight: 600;
+  color: #000000;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  text-align: left;
+  margin: 0 0 52px 0;
+}
+
+.activities-faq-list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.faq-item {
+  border-bottom: 1px solid #e0e0e0;
+  padding: 24px 0;
+  transition: background-color 0.2s ease;
+}
+
+.faq-item:first-child {
+  border-top: 1px solid #e0e0e0;
+}
+
+.faq-question-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Outfit', sans-serif;
+}
+
+.faq-question-text {
+  font-family: 'Outfit', sans-serif;
+  font-size: 19px;
+  font-weight: 600;
+  color: #1c1c19;
+  line-height: 1.35;
+}
+
+.faq-action-text {
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: #666660;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  transition: color 0.2s ease;
+}
+
+.faq-arrow {
+  font-size: 18px;
+  line-height: 1;
+  transition: transform 0.3s ease;
+  display: inline-block;
+}
+
+.faq-question-btn:hover .faq-action-text {
+  color: #697947;
+}
+
+.faq-item.is-open .faq-arrow {
+  transform: rotate(90deg);
+}
+
+.faq-answer-content {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.35s ease, opacity 0.3s ease, margin-top 0.3s ease;
+}
+
+.faq-item.is-open .faq-answer-content {
+  max-height: 400px;
+  opacity: 1;
+  margin-top: 16px;
+}
+
+.faq-answer-content p {
+  font-family: 'Outfit', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #555550;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 960px;
+}
+
+/* MEDIA QUERIES PRO STRÁNKU AKTIVITY (TABLET & MOBIL CAROUSEL SLIDESHOW 1:1 DLE PŘEDLOHY) */
+@media (min-width: 768px) and (max-width: 1028.98px) {
+  .activities-hero-section {
+    height: 100vh !important;
+    min-height: 600px !important;
+  }
+
+  .activities-hero-section .room-detail-hero-center {
+    transform: translateY(50px) !important;
+  }
+
+  .activities-hero-buttons-wrap {
+    margin-top: 16px;
+  }
+
+  .btn-activities-hero {
+    height: 40px !important;
+    padding: 0 24px !important;
+    font-size: 15.5px !important;
+    position: relative !important;
+    top: auto !important;
+    transform: none !important;
+    margin: 16px 0 0 0 !important;
+  }
+
+  /* Skrytí tlačítka "Aktivity v okolí hotelu" v sekci 2 na tabletu */
+  .hotel-activities-cta-wrap {
+    display: none !important;
+  }
+}
+
+/* Desktop verze sekcí na stránce Aktivity (1025px+) */
+@media (min-width: 1025px) {
+  /* Sekce 3: Aktivity v okolí hotelu - 4 sloupce vedle sebe bez slideru a STRIKTNĚ BEZ šipek na desktopu */
+  #aktivity-v-okoli .surroundings-cards-grid,
+  .surroundings-activities-section .surroundings-cards-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 28px !important;
+    width: 100% !important;
+    overflow: visible !important;
+  }
+
+  #aktivity-v-okoli .surrounding-card,
+  .surroundings-activities-section .surrounding-card {
+    flex: none !important;
+    width: 100% !important;
+  }
+
+  #aktivity-v-okoli .surroundings-footer,
+  #aktivity-v-okoli .surroundings-activities-footer,
+  #aktivity-v-okoli .surroundings-nav-controls,
+  .surroundings-activities-section .surroundings-footer,
+  .surroundings-activities-section .surroundings-activities-footer {
+    display: none !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    visibility: hidden !important;
+  }
+
+  /* Sekce 2: Aktivity v našem hotelu - Plynulý slider s velkými fotkami a šipkami přiblíženými těsně pod fotky */
+  .hotel-activities-section .surroundings-cards-grid {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    width: max-content !important;
+    gap: 32px !important;
+  }
+
+  .hotel-activities-section .surrounding-card {
+    flex: 0 0 420px !important;
+    width: 420px !important;
+  }
+
+  .hotel-activities-section .surrounding-card-img-wrap {
+    height: 440px !important;
+  }
+
+  #aktivity-v-hotelu .surroundings-footer,
+  #aktivity-v-hotelu .hotel-activities-footer,
+  .hotel-activities-section .surroundings-footer,
+  .hotel-activities-section .hotel-activities-footer {
+    display: flex !important;
+    margin-top: 10px !important;
+    justify-content: flex-start !important;
+  }
+}
+
+@media (min-width: 1750px) {
+  .hotel-activities-section .surrounding-card {
+    flex: 0 0 480px !important;
+    width: 480px !important;
+  }
+
+  .hotel-activities-section .surrounding-card-img-wrap {
+    height: 480px !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024.98px) {
+  /* Plynulý dotykový slider pro obě sekce aktivit na tabletu */
+  .activities-page .surroundings-slider-viewport {
+    width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+  }
+
+  .activities-page .surroundings-slider-viewport::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .activities-page .surroundings-cards-grid {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    width: max-content !important;
+    gap: 24px !important;
+    margin: 0 !important;
+  }
+
+  .activities-page .surrounding-card,
+  .activities-page .hotel-activity-card,
+  .activities-page .surrounding-activity-card {
+    flex: 0 0 320px !important;
+    width: 320px !important;
+  }
+
+  .activities-page .surrounding-card-img-wrap,
+  .activities-page .hotel-activity-img-wrap,
+  .activities-page .surrounding-activity-img-wrap {
+    height: 400px !important;
+  }
+
+  .activities-page .hotel-activity-card-title,
+  .activities-page .surrounding-activity-card-title {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.02em !important;
+    margin-top: 18px !important;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .activities-hero-section {
+    height: 100vh !important;
+    min-height: 520px !important;
+  }
+
+  .activities-hero-section .room-detail-hero-center {
+    transform: translateY(50px) !important;
+  }
+
+  .activities-hero-buttons-wrap {
+    margin-top: 16px;
+  }
+
+  .btn-activities-hero {
+    height: 36px !important;
+    padding: 0 20px !important;
+    font-size: 14.5px !important;
+    position: relative !important;
+    top: auto !important;
+    transform: none !important;
+    margin: 16px 0 0 0 !important;
+  }
+
+  /* Skrytí tlačítka "Aktivity v okolí hotelu" v sekci 2 na mobilu */
+  .hotel-activities-cta-wrap {
+    display: none !important;
+  }
+
+  /* Plynulý dotykový slider pro obě sekce aktivit na mobilu */
+  .activities-page .surroundings-slider-viewport {
+    width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+  }
+
+  .activities-page .surroundings-slider-viewport::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .activities-page .surroundings-cards-grid {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    width: max-content !important;
+    gap: 18px !important;
+    margin: 0 !important;
+  }
+
+  .activities-page .surrounding-card,
+  .activities-page .hotel-activity-card,
+  .activities-page .surrounding-activity-card {
+    flex: 0 0 280px !important;
+    width: 280px !important;
+  }
+
+  .activities-page .surrounding-card-img-wrap,
+  .activities-page .hotel-activity-img-wrap,
+  .activities-page .surrounding-activity-img-wrap {
+    height: 350px !important;
+  }
+
+  .activities-mobile-slider-wrap .hotel-activity-card-title,
+  .activities-mobile-slider-wrap .surrounding-activity-card-title {
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.02em !important;
+    margin-top: 14px !important;
+  }
+
+  .activities-mobile-slider-wrap .surrounding-activity-card-footer {
+    margin-top: 8px !important;
+    display: flex !important;
+    align-items: baseline !important;
+    justify-content: space-between !important;
+  }
+
+  .activities-mobile-slider-wrap .surrounding-activity-link {
+    font-size: 13px !important;
+    font-weight: 400 !important;
+    text-transform: none !important;
+    color: #666660 !important;
+  }
+
+  .hotel-activities-title,
+  .surroundings-activities-title,
+  .activities-faq-title {
+    font-size: 26px !important;
+    font-weight: 600 !important;
+    margin-bottom: 32px !important;
+  }
+
+  .hotel-activities-inner,
+  .surroundings-activities-inner,
+  .activities-faq-inner {
+    padding: 0 24px !important;
+  }
+
+  /* Pouze na mobilu (<767.98px): Zmenšený horní i dolní padding pro obě sekce aktivit */
+  .hotel-activities-section,
+  .surroundings-activities-section {
+    padding: 45px 0 50px 0 !important;
+  }
+
+  .faq-question-text {
+    font-size: 16.5px !important;
+  }
+
+  .faq-action-text {
+    font-size: 13.5px !important;
+  }
+}
+
+/* ==========================================================================
+   STRICT OVERRIDE: PADDING SEKCE OKOLÍ POUZE NA ÚVODNÍ STRÁNCE A NABÍDCE POKOJŮ
+   (Zmenšený horní padding, výrazně zvětšený spodní padding)
+   ========================================================================== */
+.home-surroundings-section,
+.rooms-surroundings-section {
+  padding-top: 15px !important;
+  padding-bottom: 195px !important;
+}
+
+@media (min-width: 768px) and (max-width: 1028.98px) {
+  .home-surroundings-section,
+  .rooms-surroundings-section {
+    padding-top: 15px !important;
+    padding-bottom: 160px !important;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .home-surroundings-section,
+  .rooms-surroundings-section {
+    padding-top: 10px !important;
+    padding-bottom: 130px !important;
   }
 }

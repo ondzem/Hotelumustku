@@ -243,7 +243,7 @@ const getHeaderHTML = () => `
     </a>
     
     <div class="nav-right">
-      <a href="#aktivity" class="nav-link">Okolí</a>
+      <a href="#aktivity" class="nav-link">Aktivity</a>
       <a href="#akce" class="nav-link">Akce</a>
       <a href="#kontakt" class="nav-link">Kontakt</a>
     </div>
@@ -262,7 +262,7 @@ const getHeaderHTML = () => `
     <nav class="mobile-menu-nav">
       <a href="#pokoje" class="mobile-nav-link">Nabídka pokojů</a>
       <a href="#stravovani" class="mobile-nav-link">Stravování</a>
-      <a href="#aktivity" class="mobile-nav-link">Okolí</a>
+      <a href="#aktivity" class="mobile-nav-link">Aktivity</a>
       <a href="#akce" class="mobile-nav-link">Akce</a>
       <a href="#kontakt" class="mobile-nav-link">Kontakt</a>
     </nav>
@@ -695,9 +695,9 @@ const getFeaturesHTML = () => `
   </section>
 `;
 
-const getSurroundingsHTML = () => `
+const getSurroundingsHTML = (customClass = '') => `
   <!-- SEKCE AKTIVITY V OKOLÍ (1:1 REPLIKA DLE SVG PŘEDLOHY) -->
-  <section class="surroundings-section" id="aktivity">
+  <section class="surroundings-section ${customClass}" id="aktivity">
     <div class="surroundings-inner">
       <h2 class="surroundings-title">Co vše můžete v okolí podniknout?</h2>
       
@@ -807,7 +807,7 @@ const getFooterHTML = () => `
             <li><a href="#pokoje">Nabídka pokojů</a></li>
             <li><a href="#stravovani">Stravování</a></li>
             <li><a href="#oslavy-akce">Akce</a></li>
-            <li><a href="#aktivity">Okolí</a></li>
+            <li><a href="#aktivity">Aktivity</a></li>
             <li><a href="#kontakt">Kontakt</a></li>
           </ul>
         </div>
@@ -964,7 +964,7 @@ const getHomePageHTML = () => {
   ${getServicesHTML()}
   ${getReviewsHTML()}
   ${getFeaturesHTML()}
-  ${getSurroundingsHTML()}
+  ${getSurroundingsHTML('home-surroundings-section')}
   <section class="cta-section" ${ctaStyle ? `style="${ctaStyle}"` : ''}>
     <div class="cta-overlay"></div>
     <div class="cta-inner">
@@ -1043,7 +1043,7 @@ const getRoomsPageHTML = () => `
   ${getServicesHTML()}
   ${getReviewsHTML()}
   ${getFeaturesHTML()}
-  ${getSurroundingsHTML()}
+  ${getSurroundingsHTML('rooms-surroundings-section')}
   ${getCtaHTML()}
   ${getFooterHTML()}
 `;
@@ -1995,6 +1995,33 @@ const initInteractivity = () => {
     });
   });
 
+  // Interaktivita FAQ Accordionu na stránce Aktivity
+  const faqQuestionBtns = document.querySelectorAll('.faq-question-btn');
+  faqQuestionBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const item = btn.closest('.faq-item');
+      if (!item) return;
+      const isOpen = item.classList.contains('is-open');
+
+      document.querySelectorAll('.faq-item.is-open').forEach(otherItem => {
+        if (otherItem !== item) {
+          otherItem.classList.remove('is-open');
+          const otherBtn = otherItem.querySelector('.faq-question-btn');
+          if (otherBtn) otherBtn.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      if (isOpen) {
+        item.classList.remove('is-open');
+        btn.setAttribute('aria-expanded', 'false');
+      } else {
+        item.classList.add('is-open');
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+
   // Hero Video Handling (HomePage)
   const heroVideo = document.querySelector('.hero-video');
   const heroSection = document.querySelector('.hero-section');
@@ -2031,7 +2058,7 @@ const initInteractivity = () => {
     });
   }
 
-  // Reviews Slider
+  // Reviews Slider (Původní 100% funkční nekonečný slider)
   const reviewsTrack = document.getElementById('reviews-track');
   const reviewsViewport = document.getElementById('reviews-viewport');
   const prevBtn = document.getElementById('reviews-prev');
@@ -2072,7 +2099,6 @@ const initInteractivity = () => {
       reviewsTrack.style.transform = `translateX(-${currentIndex * step}px)`;
     };
 
-    // Jednotná výška všech karet podle nejdelší recenze + velkorysý odstup 28px pro vzdušnou eleganci
     const syncReviewCardsHeight = () => {
       allCards.forEach(c => c.style.height = 'auto');
       let maxHeight = 0;
@@ -2108,7 +2134,6 @@ const initInteractivity = () => {
     if (nextBtn) nextBtn.addEventListener('click', () => { currentIndex++; updatePosition(true); });
     if (prevBtn) prevBtn.addEventListener('click', () => { currentIndex--; updatePosition(true); });
 
-    // Touch Swipe & Drag Support Pro Recenze Slider
     let startX = 0;
     let startY = 0;
     let isDragging = false;
@@ -2161,126 +2186,95 @@ const initInteractivity = () => {
     });
   }
 
-  // Surroundings Slider
-  const surroundingsTrack = document.getElementById('surroundings-track');
-  const surroundingsViewport = document.getElementById('surroundings-viewport');
-  const surrPrevBtn = document.getElementById('surroundings-prev');
-  const surrNextBtn = document.getElementById('surroundings-next');
+  // Univerzální Plynulý Slider Logic (Pro Okolí & Aktivity na všech zařízeních)
+  const setupSlider = (trackId, viewportId, prevBtnId, nextBtnId) => {
+    const track = document.getElementById(trackId);
+    const viewport = document.getElementById(viewportId);
+    const prevBtn = document.getElementById(prevBtnId);
+    const nextBtn = document.getElementById(nextBtnId);
 
-  if (surroundingsTrack && surroundingsViewport) {
-    const cards = Array.from(surroundingsTrack.children);
-    let currentIndex = 0;
+    if (!track || !viewport) return;
 
     const getCardStep = () => {
-      if (cards.length === 0) return 0;
-      const cardWidth = cards[0].offsetWidth;
-      const style = window.getComputedStyle(surroundingsTrack);
+      const firstCard = track.children[0];
+      if (!firstCard) return 300;
+      const cardWidth = firstCard.offsetWidth;
+      const style = window.getComputedStyle(track);
       const gap = parseFloat(style.gap) || 24;
       return cardWidth + gap;
     };
 
     const getMaxScroll = () => {
-      return Math.max(0, surroundingsTrack.scrollWidth - surroundingsViewport.offsetWidth);
+      return Math.max(0, viewport.scrollWidth - viewport.offsetWidth);
     };
 
-    const updateBtnState = (offset, maxScroll) => {
-      if (surrPrevBtn) {
-        surrPrevBtn.style.opacity = offset <= 2 ? '0.4' : '1';
-        surrPrevBtn.style.cursor = offset <= 2 ? 'default' : 'pointer';
+    const updateBtnState = () => {
+      const scrollLeft = viewport.scrollLeft;
+      const maxScroll = getMaxScroll();
+      if (prevBtn) {
+        prevBtn.style.opacity = scrollLeft <= 5 ? '0.4' : '1';
+        prevBtn.style.cursor = scrollLeft <= 5 ? 'default' : 'pointer';
       }
-      if (surrNextBtn) {
-        surrNextBtn.style.opacity = offset >= maxScroll - 5 ? '0.4' : '1';
-        surrNextBtn.style.cursor = offset >= maxScroll - 5 ? 'default' : 'pointer';
+      if (nextBtn) {
+        nextBtn.style.opacity = scrollLeft >= maxScroll - 10 ? '0.4' : '1';
+        nextBtn.style.cursor = scrollLeft >= maxScroll - 10 ? 'default' : 'pointer';
       }
     };
 
-    const updatePosition = (animated = true) => {
-      if (window.innerWidth >= 1029) {
-        surroundingsTrack.style.transform = 'none';
-        surroundingsTrack.style.transition = 'none';
-        return;
-      }
+    viewport.addEventListener('scroll', updateBtnState, { passive: true });
+    window.addEventListener('resize', updateBtnState, { passive: true });
+    updateBtnState();
 
+    const handleNext = (e) => {
+      if (e) e.preventDefault();
       const step = getCardStep();
-      const maxScroll = getMaxScroll();
-      let targetOffset = Math.min(currentIndex * step, maxScroll);
-
-      surroundingsTrack.style.transition = animated ? 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)' : 'none';
-      surroundingsTrack.style.transform = `translateX(-${targetOffset}px)`;
-      updateBtnState(targetOffset, maxScroll);
+      viewport.scrollBy({ left: step, behavior: 'smooth' });
     };
 
-    updatePosition(false);
-    window.addEventListener('resize', () => updatePosition(false));
-
-    const handleNext = () => {
-      const maxScroll = getMaxScroll();
-      if (currentIndex * getCardStep() < maxScroll - 5) {
-        currentIndex++;
-        updatePosition(true);
-      }
+    const handlePrev = (e) => {
+      if (e) e.preventDefault();
+      const step = getCardStep();
+      viewport.scrollBy({ left: -step, behavior: 'smooth' });
     };
 
-    const handlePrev = () => {
-      if (currentIndex > 0) {
-        currentIndex--;
-        updatePosition(true);
-      }
-    };
+    if (nextBtn) nextBtn.addEventListener('click', handleNext);
+    if (prevBtn) prevBtn.addEventListener('click', handlePrev);
 
-    if (surrNextBtn) surrNextBtn.addEventListener('click', handleNext);
-    if (surrPrevBtn) surrPrevBtn.addEventListener('click', handlePrev);
+    // Mouse Drag (Volné plynulé přetahování myší bez tvrdých skoků)
+    let isDown = false;
+    let startX = 0;
+    let scrollLeft = 0;
 
-    // Touch Swipe & Drag Support Pro Okolí Slider
-    let surrStartX = 0;
-    let surrStartY = 0;
-    let surrIsDragging = false;
-
-    surroundingsViewport.addEventListener('touchstart', (e) => {
-      if (e.touches.length > 1) return;
-      surrStartX = e.touches[0].clientX;
-      surrStartY = e.touches[0].clientY;
-      surrIsDragging = true;
-    }, { passive: true });
-
-    surroundingsViewport.addEventListener('touchend', (e) => {
-      if (!surrIsDragging) return;
-      surrIsDragging = false;
-      const deltaX = surrStartX - e.changedTouches[0].clientX;
-      const deltaY = surrStartY - e.changedTouches[0].clientY;
-      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 30) {
-        if (deltaX > 0) {
-          handleNext();
-        } else {
-          handlePrev();
-        }
-      }
-    }, { passive: true });
-
-    surroundingsViewport.addEventListener('mousedown', (e) => {
-      surrStartX = e.clientX;
-      surrStartY = e.clientY;
-      surrIsDragging = true;
+    viewport.addEventListener('mousedown', (e) => {
+      isDown = true;
+      viewport.classList.add('is-dragging');
+      startX = e.pageX - viewport.offsetLeft;
+      scrollLeft = viewport.scrollLeft;
     });
 
-    surroundingsViewport.addEventListener('mouseup', (e) => {
-      if (!surrIsDragging) return;
-      surrIsDragging = false;
-      const deltaX = surrStartX - e.clientX;
-      const deltaY = surrStartY - e.clientY;
-      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 30) {
-        if (deltaX > 0) {
-          handleNext();
-        } else {
-          handlePrev();
-        }
-      }
+    viewport.addEventListener('mouseleave', () => {
+      isDown = false;
+      viewport.classList.remove('is-dragging');
     });
 
-    surroundingsViewport.addEventListener('mouseleave', () => {
-      surrIsDragging = false;
+    viewport.addEventListener('mouseup', () => {
+      isDown = false;
+      viewport.classList.remove('is-dragging');
     });
-  }
+
+    viewport.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - viewport.offsetLeft;
+      const walk = (x - startX) * 1.5;
+      viewport.scrollLeft = scrollLeft - walk;
+    });
+  };
+
+  // Aktivace sliderů napříč celým webem
+  setupSlider('surroundings-track', 'surroundings-viewport', 'surroundings-prev', 'surroundings-next');
+  setupSlider('hotel-activities-track', 'hotel-activities-viewport', 'hotel-activities-prev', 'hotel-activities-next');
+  setupSlider('surroundings-activities-track', 'surroundings-activities-viewport', 'surroundings-activities-prev', 'surroundings-activities-next');
 
   // Button clicks
   const roomsBtn = document.getElementById('rooms-btn');
@@ -2930,6 +2924,7 @@ const getEventsPageHTML = () => `
 
   <!-- 1. HERO SEKCE SKUPINOVÉ AKCE -->
   <section class="hero-section events-hero-section room-detail-hero" id="uvod-akce">
+    <img class="hero-events-poster" src="/akce/hero_akce.webp" alt="Skupinové akce v Hotelu u Můstku" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
     <div class="hero-overlay"></div>
     <div class="hero-inner">
       ${getHeaderHTML()}
@@ -3125,6 +3120,216 @@ const getEventsPageHTML = () => `
   </div>
 `;
 
+// Render Funkce Pro Stránku "Aktivity" (1:1 DLE SVG PŘEDLOHY OKOLÍ HOTELU)
+const getActivitiesPageHTML = () => `
+  <div class="activities-page">
+    <!-- 1. HERO SEKCE AKTIVITY -->
+    <section class="hero-section activities-hero-section room-detail-hero" id="uvod-aktivity">
+      <img class="hero-activities-poster" src="/Aktivity v hotelu/vyhled na krajinu desktop.webp" alt="Jaké aktivity nabízíme v Hotelu u Můstku" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+      <div class="hero-overlay"></div>
+      <div class="hero-inner">
+        ${getHeaderHTML()}
+
+        <div class="room-detail-hero-center">
+          <h1 class="hero-title room-detail-hero-title">
+            <span>Jaké aktivity nabízíme?</span>
+          </h1>
+          <p class="room-detail-hero-subtitle">
+            <span>Objevte nejkrásnější trasy Jizerských hor přímo od dveří našeho hotelu nebo prozkoumejte, co nabízí náš hotel.</span>
+          </p>
+
+          <div class="activities-hero-buttons-wrap">
+            <a href="#aktivity-v-hotelu" class="btn btn-activities-hero room-detail-hero-btn" id="btn-activities-hero">Prohlédnout aktivity</a>
+          </div>
+        </div>
+
+        <!-- Spodní šipka dolů -->
+        <div class="scroll-down-btn" id="scroll-btn-activities">
+          <svg width="12" height="14" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7.29 17.1C7.68 17.49 8.32 17.49 8.71 17.1L15.07 10.74C15.46 10.35 15.46 9.71 15.07 9.32C14.68 8.93 14.05 8.93 13.66 9.32L8 14.98L2.34 9.32C1.95 8.93 1.32 8.93 0.93 9.32C0.54 9.71 0.54 10.35 0.93 10.74L7.29 17.1ZM8 0H7V16.39H8H9V0H8Z" fill="white"/>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. AKTIVITY V NAŠEM HOTELU -->
+    <section class="hotel-activities-section surroundings-section" id="aktivity-v-hotelu">
+      <div class="hotel-activities-inner surroundings-inner">
+        <h2 class="hotel-activities-title surroundings-title">Aktivity v našem hotelu</h2>
+
+        <div class="surroundings-slider-viewport" id="hotel-activities-viewport">
+          <div class="surroundings-cards-grid" id="hotel-activities-track">
+            <!-- Karta 1: Otužování U Splavu -->
+            <div class="hotel-activity-card hotel-activity-card-otuzovani surrounding-card">
+              <div class="hotel-activity-img-wrap surrounding-card-img-wrap">
+                <img src="/Aktivity v hotelu/otuzovani.webp" alt="Otužování U Splavu" loading="lazy" decoding="async">
+              </div>
+              <h3 class="hotel-activity-card-title surrounding-card-title">Otužování U Splavu</h3>
+            </div>
+
+            <!-- Karta 2: Kulečník -->
+            <div class="hotel-activity-card hotel-activity-card-kulecnik surrounding-card">
+              <div class="hotel-activity-img-wrap surrounding-card-img-wrap">
+                <img src="/Aktivity v hotelu/kulecnik.webp" alt="Kulečník v Hotelu u Můstku" loading="lazy" decoding="async">
+              </div>
+              <h3 class="hotel-activity-card-title surrounding-card-title">Kulečník</h3>
+            </div>
+
+            <!-- Karta 3: Fotbálek -->
+            <div class="hotel-activity-card hotel-activity-card-fotbalek surrounding-card">
+              <div class="hotel-activity-img-wrap surrounding-card-img-wrap">
+                <img src="/Aktivity v hotelu/fotbalek.webp" alt="Stolní fotbálek" loading="lazy" decoding="async">
+              </div>
+              <h3 class="hotel-activity-card-title surrounding-card-title">Fotbálek</h3>
+            </div>
+
+            <!-- Karta 4: Šipky -->
+            <div class="hotel-activity-card hotel-activity-card-sipky surrounding-card">
+              <div class="hotel-activity-img-wrap surrounding-card-img-wrap">
+                <img src="/Aktivity v hotelu/sipky.webp" alt="Elektronické šipky" loading="lazy" decoding="async">
+              </div>
+              <h3 class="hotel-activity-card-title surrounding-card-title">Šipky</h3>
+            </div>
+
+            <!-- Karta 5: Společenská Místnost -->
+            <div class="hotel-activity-card hotel-activity-card-spolecenska surrounding-card">
+              <div class="hotel-activity-img-wrap surrounding-card-img-wrap">
+                <img src="/Aktivity v hotelu/spolecenska mistnost.webp" alt="Společenská místnost" loading="lazy" decoding="async">
+              </div>
+              <h3 class="hotel-activity-card-title surrounding-card-title">Společenská Místnost</h3>
+            </div>
+          </div>
+        </div>
+
+        <div class="surroundings-footer hotel-activities-footer">
+          <div class="surroundings-nav-controls">
+            <button class="surroundings-nav-btn" id="hotel-activities-prev" aria-label="Předchozí aktivity">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#333333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <button class="surroundings-nav-btn" id="hotel-activities-next" aria-label="Další aktivity">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#333333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. AKTIVITY V OKOLÍ HOTELU -->
+    <section class="surroundings-activities-section surroundings-section" id="aktivity-v-okoli">
+      <div class="surroundings-activities-inner surroundings-inner">
+        <h2 class="surroundings-activities-title surroundings-title">Aktivity v okolí hotelu</h2>
+
+        <div class="surroundings-slider-viewport" id="surroundings-activities-viewport">
+          <div class="surroundings-cards-grid" id="surroundings-activities-track">
+            <!-- Karta 1: Turistika -->
+            <div class="surrounding-activity-card surrounding-card">
+              <div class="surrounding-activity-img-wrap surrounding-card-img-wrap">
+                <img src="/Aktivity v hotelu/turistika.webp" alt="Turistika v Jizerských horách" loading="lazy" decoding="async">
+              </div>
+              <div class="surrounding-activity-card-footer">
+                <h3 class="surrounding-activity-card-title surrounding-card-title">Turistika</h3>
+                <a href="#kontakt" class="surrounding-activity-link">Zjistit více &rsaquo;</a>
+              </div>
+            </div>
+
+            <!-- Karta 2: Cyklistika -->
+            <div class="surrounding-activity-card surrounding-card">
+              <div class="surrounding-activity-img-wrap surrounding-card-img-wrap">
+                <img src="/Aktivity v hotelu/cyklistika.webp" alt="Cyklistika a cyklotrasy" loading="lazy" decoding="async">
+              </div>
+              <div class="surrounding-activity-card-footer">
+                <h3 class="surrounding-activity-card-title surrounding-card-title">Cyklistika</h3>
+                <a href="#kontakt" class="surrounding-activity-link">Zjistit více &rsaquo;</a>
+              </div>
+            </div>
+
+            <!-- Karta 3: Zimní výlety -->
+            <div class="surrounding-activity-card surrounding-card">
+              <div class="surrounding-activity-img-wrap surrounding-card-img-wrap">
+                <img src="/Aktivity v hotelu/zimni vylety.webp" alt="Zimní výlety a běžkování" loading="lazy" decoding="async">
+              </div>
+              <div class="surrounding-activity-card-footer">
+                <h3 class="surrounding-activity-card-title surrounding-card-title">Zimní výlety</h3>
+                <a href="#kontakt" class="surrounding-activity-link">Zjistit více &rsaquo;</a>
+              </div>
+            </div>
+
+            <!-- Karta 4: Výlety autem -->
+            <div class="surrounding-activity-card surrounding-card">
+              <div class="surrounding-activity-img-wrap surrounding-card-img-wrap">
+                <img src="/Aktivity v hotelu/vylety autem.webp" alt="Výlety autem po okolí" loading="lazy" decoding="async">
+              </div>
+              <div class="surrounding-activity-card-footer">
+                <h3 class="surrounding-activity-card-title surrounding-card-title">Výlety autem</h3>
+                <a href="#kontakt" class="surrounding-activity-link">Zjistit více &rsaquo;</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="surroundings-footer surroundings-activities-footer">
+          <div class="surroundings-nav-controls">
+            <button class="surroundings-nav-btn" id="surroundings-activities-prev" aria-label="Předchozí aktivity">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#333333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <button class="surroundings-nav-btn" id="surroundings-activities-next" aria-label="Další aktivity">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#333333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. ČASTO KLADENÉ DOTAZY (FAQ) -->
+    <section class="activities-faq-section" id="faq">
+      <div class="activities-faq-inner">
+        <h2 class="activities-faq-title">Často kladené dotazy</h2>
+
+        <div class="activities-faq-list">
+          <!-- FAQ Dotaz 1 -->
+          <div class="faq-item">
+            <button class="faq-question-btn" aria-expanded="false">
+              <span class="faq-question-text">Dá se v okolí hotelu pohodlně chodit s kočárkem nebo se psem?</span>
+              <span class="faq-action-text">Zobrazit odpověď <span class="faq-arrow">&rsaquo;</span></span>
+            </button>
+            <div class="faq-answer-content">
+              <p>Ano, v okolí hotelu se nachází mnoho asfaltek i zpevněných lesních cest, které jsou ideální pro pohodlné procházky s kočárkem i se psem. Rádi vám na recepci doporučíme konkrétní trasy odstupňované podle náročnosti.</p>
+            </div>
+          </div>
+
+          <!-- FAQ Dotaz 2 -->
+          <div class="faq-item">
+            <button class="faq-question-btn" aria-expanded="false">
+              <span class="faq-question-text">Kde si mohu v hotelu bezpečně uložit a dobít své elektrokolo?</span>
+              <span class="faq-action-text">Zobrazit odpověď <span class="faq-arrow">&rsaquo;</span></span>
+            </button>
+            <div class="faq-answer-content">
+              <p>Máme k dispozici uzamykatelnou kolárnu s možností bezplatného dobíjení elektrokol přímo v prostorách hotelu, takže vaše kola budou po celou dobu v bezpečí.</p>
+            </div>
+          </div>
+
+          <!-- FAQ Dotaz 3 -->
+          <div class="faq-item">
+            <button class="faq-question-btn" aria-expanded="false">
+              <span class="faq-question-text">Jak daleko je nejbližší lyžařský vlek pro rodiny s malými dětmi?</span>
+              <span class="faq-action-text">Zobrazit odpověď <span class="faq-arrow">&rsaquo;</span></span>
+            </button>
+            <div class="faq-answer-content">
+              <p>Nejbližší dětský vlek a lyžařská škola se nachází pouhých 5 minut jízdy od hotelu (např. Ski areál Černá Říčka nebo Tanvaldský Špičák), kam se snadno dostanete autem i skibusem.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. REUSED SEKCE: CTA BANNER -->
+    ${getCtaHTML()}
+
+    <!-- 6. REUSED SEKCE: FOOTER -->
+    ${getFooterHTML()}
+  </div>
+`;
+
 // Router
 const app = document.querySelector('#app');
 let currentViewKey = null;
@@ -3135,8 +3340,13 @@ const route = (isInitial = false) => {
 
   const knownHomeHashes = [
     '', '#', '#domu', '#uvod', '#o-nas', '#zazemi', '#sleva', '#promo',
-    '#recenze', '#hodnoceni', '#aktivity', '#okoli',
+    '#recenze', '#hodnoceni',
     '#kontakt', '#kde-nas-najdete'
+  ];
+
+  const knownActivitiesHashes = [
+    '#aktivity', '#okoli', '#aktivity-stranka', '#aktivity-v-hotelu',
+    '#aktivity-v-okoli', '#faq'
   ];
 
   const knownDiningHashes = [
@@ -3155,6 +3365,8 @@ const route = (isInitial = false) => {
     pageKey = 'booking';
   } else if (cleanHash.startsWith('#admin')) {
     pageKey = 'admin';
+  } else if (knownActivitiesHashes.includes(cleanHash)) {
+    pageKey = 'activities';
   } else if (knownEventsHashes.includes(cleanHash)) {
     pageKey = 'events';
   } else if (knownDiningHashes.includes(cleanHash)) {
@@ -3178,7 +3390,7 @@ const route = (isInitial = false) => {
   const isNewPage = currentViewKey !== pageKey;
   currentViewKey = pageKey;
 
-  if (pageKey === 'ground' || pageKey === 'view' || pageKey === 'dining' || pageKey === 'events') {
+  if (pageKey === 'ground' || pageKey === 'view' || pageKey === 'dining' || pageKey === 'events' || pageKey === 'activities') {
     preloadHeroImages(pageKey);
   }
 
@@ -3190,6 +3402,8 @@ const route = (isInitial = false) => {
   } else if (pageKey === 'admin') {
     app.innerHTML = getAdminPageHTML();
     new AdminDashboard('admin-container').init();
+  } else if (pageKey === 'activities') {
+    app.innerHTML = getActivitiesPageHTML();
   } else if (pageKey === 'events') {
     app.innerHTML = getEventsPageHTML();
   } else if (pageKey === 'dining') {
