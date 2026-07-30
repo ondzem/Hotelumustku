@@ -3145,7 +3145,7 @@ const getActivitiesPageHTML = () => `
     <section class="hero-section activities-hero-section room-detail-hero" id="uvod-aktivity">
       <picture style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
         <source media="(max-width: 767px)" srcset="/Aktivity v hotelu/vyhled na krajinu mobil.webp">
-        <img class="hero-activities-poster" src="/Aktivity v hotelu/vyhled na krajinu desktop.webp" alt="Jaké aktivity nabízíme v Hotelu u Můstku" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+        <img class="hero-activities-poster" src="/Aktivity v hotelu/vyhled na krajinu desktop.webp" alt="Jaké aktivity nabízíme v Hotelu u Můstku" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; filter: brightness(0.85);">
       </picture>
       <div class="hero-overlay"></div>
       <div class="hero-inner">
@@ -3770,7 +3770,7 @@ const getCategoryPageHTML = (catId) => {
     <div class="category-detail-page">
       <!-- HERO SEKCE KATEGORIE -->
       <section class="hero-section category-hero-section room-detail-hero" id="uvod-kategorie">
-        <img class="hero-category-poster" src="${cat.heroImg}" alt="${cat.title} - Hotel u Můstku" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+        <img class="hero-category-poster hero-category-poster-${catId}" src="${cat.heroImg}" alt="${cat.title} - Hotel u Můstku" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
         <div class="hero-overlay"></div>
         <div class="hero-inner">
           ${getHeaderHTML()}

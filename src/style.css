@@ -9452,6 +9452,18 @@ img[loading="lazy"].img-loaded {
   background-image: url('/Aktivity v hotelu/vyhled na krajinu desktop.webp') !important;
 }
 
+.activities-hero-section .hero-activities-poster {
+  filter: brightness(0.85) !important;
+}
+
+/* Mobile image cropping position shifts for Turistika & Cyklistika hero sections */
+@media (max-width: 767.98px) {
+  .hero-category-poster-turistika,
+  .hero-category-poster-cyklistika {
+    object-position: 75% center !important;
+  }
+}
+
 .activities-hero-buttons-wrap {
   display: flex;
   align-items: center;
