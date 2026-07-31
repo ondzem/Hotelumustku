@@ -11061,7 +11061,8 @@ img[loading="lazy"].img-loaded {
   }
 
   .contact-map-section {
-    padding: 95px 0 135px 0 !important;
+    padding: 0 0 135px 0 !important;
+    background-color: #f2f2f2 !important;
   }
 
   .contact-directions-inner {
@@ -11141,7 +11142,8 @@ img[loading="lazy"].img-loaded {
   }
 
   .contact-map-section {
-    padding: 90px 0 130px 0 !important;
+    padding: 0 0 130px 0 !important;
+    background-color: #f2f2f2 !important;
   }
 
   .contact-info-list {
