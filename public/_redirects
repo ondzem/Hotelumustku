@@ -9,4 +9,12 @@
 /cz/index.php?stranka=fotogalerie /              301
 
 /api/resend/*  https://api.resend.com/:splat  200!
-/* /index.html 200
+
+/ubytovani    /ubytovani.html   200
+/stravovani   /stravovani.html  200
+/akce         /akce.html        200
+/okoli        /okoli.html       200
+/aktuality    /aktuality.html   200
+/kontakt      /kontakt.html     200
+
+/*            /index.html       200

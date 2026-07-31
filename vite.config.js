@@ -5,6 +5,19 @@ export default defineConfig({
     port: 5173,
     strictPort: true
   },
+  build: {
+    rollupOptions: {
+      input: {
+        main: 'index.html',
+        ubytovani: 'ubytovani.html',
+        stravovani: 'stravovani.html',
+        akce: 'akce.html',
+        okoli: 'okoli.html',
+        aktuality: 'aktuality.html',
+        kontakt: 'kontakt.html'
+      }
+    }
+  },
   plugins: [
     {
       name: 'resend-api-middleware',

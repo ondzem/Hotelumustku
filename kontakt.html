@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Kontaktujte nás. Adresa, mapa, telefonní spojení a jak se k nám nejsnadněji dostat autem či vlakem v Desné." />
+    <meta name="keywords" content="hotel u můstku, ubytování desná, ubytování jizerské hory, hotel jizerské hory, rodinná dovolená desná" />
+    <meta name="author" content="Hotel u Můstku" />
+
+    <!-- Favicon & PWA Icons -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=5" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=5" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png?v=5" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png?v=5" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=5" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#1c1c19" />
+
+    <!-- High-Priority Preloading -->
+    <link rel="preload" href="/uvodni_hero_sekce.webp" as="image" fetchpriority="high">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Kontakt & Kde nás najdete | Hotel u Můstku Desná" />
+    <meta property="og:description" content="Kontaktujte nás. Adresa, mapa, telefonní spojení a jak se k nám nejsnadněji dostat autem či vlakem v Desné." />
+    <meta property="og:image" content="/uvodni_hero_sekce.webp" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <title>Kontakt & Kde nás najdete | Hotel u Můstku Desná</title>
+  </head>
+  <body>
+    <div id="app">
+  <div class="contact-page-wrapper">
+    <!-- 1. HERO SEKCE KONTAKTU -->
+    <section class="hero-section rooms-hero-section room-detail-hero contact-hero-section" id="uvod-kontakt">
+      <img class="hero-contact-poster" src="/kontakt/vyhled-na-mustky.webp" alt="Kontakt Hotel u Můstku" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+      <div class="hero-overlay"></div>
+      <div class="hero-inner">
+        
+  <!-- Hlavička (Navigace a logo) -->
+  <header class="site-header">
+    <div class="nav-left">
+      <a href="/ubytovani" class="nav-link">Nabídka pokojů</a>
+      <a href="/stravovani" class="nav-link">Stravování</a>
+      <a href="/okoli" class="nav-link">Aktivity</a>
+    </div>
+    
+    <a href="/" class="header-logo">
+      <img src="/Logo/white logo.webp" alt="Hotel u Můstku Logo" loading="eager" fetchpriority="high">
+    </a>
+    
+    <div class="nav-right">
+      <a href="/akce" class="nav-link">Skupinové akce</a>
+      <a href="/aktuality" class="nav-link" id="nav-link-aktuality">Aktuality</a>
+      <a href="/kontakt" class="nav-link">Kontakt</a>
+    </div>
+
+    <!-- Mobilní tlačítko menu (Hamburger) -->
+    <button class="mobile-menu-btn" id="mobile-menu-toggle" aria-label="Otevřít menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </header>
+
+  <!-- Mobilní navigace (Drawer Overlay) -->
+  <div class="mobile-menu-overlay" id="mobile-menu-overlay">
+    <button class="mobile-menu-close" id="mobile-menu-close" aria-label="Zavřít menu">&times;</button>
+    <nav class="mobile-menu-nav">
+      <a href="/ubytovani" class="mobile-nav-link">Nabídka pokojů</a>
+      <a href="/stravovani" class="mobile-nav-link">Stravování</a>
+      <a href="/okoli" class="mobile-nav-link">Aktivity</a>
+      <a href="/akce" class="mobile-nav-link">Skupinové akce</a>
+      <a href="/aktuality" class="mobile-nav-link" id="mobile-nav-link-aktuality">Aktuality</a>
+      <a href="/kontakt" class="mobile-nav-link">Kontakt</a>
+    </nav>
+    <button class="btn btn-booking mobile-menu-booking" id="mobile-menu-booking">Rezervovat pobyt</button>
+
+    <!-- Spodní přepínání Léto / Zima v mobilním menu -->
+    <div class="mobile-season-toggle">
+      <div class="control-item">
+        <img src="/Icons/sun_icon.png" alt="Slunce" class="control-icon">
+        <span>Léto</span>
+      </div>
+      <div class="control-item">
+        <img src="/Icons/snowflake_icon.png" alt="Vločka" class="control-icon">
+        <span>Zima</span>
+      </div>
+    </div>
+  </div>
+
+
+        <div class="room-detail-hero-center contact-hero-center">
+          <h1 class="hero-title room-detail-hero-title">
+            <span class="desktop-title-text">Kontakt</span>
+            <span class="mobile-tablet-title-text">Neváhejte nás kontaktovat</span>
+          </h1>
+          <p class="room-detail-hero-subtitle">
+            <span class="desktop-sub-text">Vše na jednom místě — jak nás zastihnout, jak k nám dojedete a kde nás přesně najdete. Rádi vám se vším poradíme.</span>
+            <span class="mobile-sub-text">Vše na jednom místě — jak nás zastihnout, jak k nám dojedete a kde nás přesně najdete. Rádi vám se vším poradíme.</span>
+          </p>
+          <button class="btn btn-contact-hero-btn room-detail-hero-btn" id="btn-goto-contact-form">Napište nám</button>
+        </div>
+
+        <!-- Spodní odskrolovávací šipka (mobil + tablet) -->
+        <div class="scroll-down-btn mobile-only-scroll-btn" id="scroll-btn-kontakt">
+          <svg width="12" height="14" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7.29 17.1C7.68 17.49 8.32 17.49 8.71 17.1L15.07 10.74C15.46 10.35 15.46 9.71 15.07 9.32C14.68 8.93 14.05 8.93 13.66 9.32L8 14.98L2.34 9.32C1.95 8.93 1.32 8.93 0.93 9.32C0.54 9.71 0.54 10.35 0.93 10.74L7.29 17.1ZM8 0H7V16.39H8H9V0H8Z" fill="white"/>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. KONTAKTNÍ ÚDAJE A FORMULÁŘ NAPIŠTE NÁM -->
+    <section class="contact-main-section" id="kontaktní-udaje">
+      <div class="contact-main-inner">
+        <!-- Levý sloupec: Kontakty -->
+        <div class="contact-info-column">
+          <div class="contact-info-list">
+            <!-- Item 1: Adresa -->
+            <div class="contact-info-item">
+              <div class="contact-info-icon-wrap">
+                <img src="/Icons/Ikony/location.png" alt="" class="contact-info-icon">
+              </div>
+              <div class="contact-info-text">
+                <span class="contact-info-label">Adresa</span>
+                <h3 class="contact-info-title">Údolní 368</h3>
+                <p class="contact-info-sub">468 61 Desná v Jizerských horách 1</p>
+              </div>
+            </div>
+
+            <!-- Item 2: Telefon -->
+            <div class="contact-info-item">
+              <div class="contact-info-icon-wrap">
+                <img src="/Icons/Ikony/phone-flip.png" alt="" class="contact-info-icon">
+              </div>
+              <div class="contact-info-text">
+                <span class="contact-info-label">Telefon</span>
+                <h3 class="contact-info-title"><a href="tel:+420777666273" class="contact-link">+420 777 666 273</a></h3>
+                <p class="contact-info-sub">Lenka Bellingerová — majitelka</p>
+              </div>
+            </div>
+
+            <!-- Item 3: E-mail -->
+            <div class="contact-info-item">
+              <div class="contact-info-icon-wrap">
+                <img src="/Icons/Ikony/envelope.png" alt="" class="contact-info-icon">
+              </div>
+              <div class="contact-info-text">
+                <span class="contact-info-label">E-mail</span>
+                <h3 class="contact-info-title"><a href="mailto:hotel@umustku.cz" class="contact-link">hotel@umustku.cz</a></h3>
+                <p class="contact-info-sub">Odpovídáme zpravidla do 48 hodin</p>
+              </div>
+            </div>
+
+            <!-- Item 4: Provoz -->
+            <div class="contact-info-item">
+              <div class="contact-info-icon-wrap">
+                <img src="/Icons/Ikony/clock.png" alt="" class="contact-info-icon">
+              </div>
+              <div class="contact-info-text">
+                <span class="contact-info-label">Provoz</span>
+                <h3 class="contact-info-title">Po–Ne : 8:00–20:00</h3>
+                <p class="contact-info-sub">Pozdější příjezd po telefonické domluvě</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pravý sloupec: Formulář -->
+        <div class="contact-form-column" id="form-sekce">
+          <h2 class="contact-form-title">Napište nám</h2>
+          <form id="contact-page-form" class="contact-form-element">
+            <div class="contact-form-row">
+              <div class="contact-form-group">
+                <label for="contact-name" class="contact-form-label">Jméno *</label>
+                <input type="text" id="contact-name" name="name" required class="contact-form-input">
+              </div>
+              <div class="contact-form-group">
+                <label for="contact-surname" class="contact-form-label">Příjmení *</label>
+                <input type="text" id="contact-surname" name="surname" required class="contact-form-input">
+              </div>
+            </div>
+
+            <div class="contact-form-row">
+              <div class="contact-form-group">
+                <label for="contact-email" class="contact-form-label">E-mail *</label>
+                <input type="email" id="contact-email" name="email" required class="contact-form-input">
+              </div>
+              <div class="contact-form-group">
+                <label for="contact-phone" class="contact-form-label">Telefon</label>
+                <input type="tel" id="contact-phone" name="phone" class="contact-form-input">
+              </div>
+            </div>
+
+            <div class="contact-form-group contact-form-full">
+              <label for="contact-message" class="contact-form-label">Zpráva</label>
+              <textarea id="contact-message" name="message" rows="1" class="contact-form-textarea"></textarea>
+            </div>
+
+            <div class="contact-form-gdpr">
+              <label class="contact-checkbox-label">
+                <input type="checkbox" id="contact-gdpr-check" required>
+                <span class="contact-checkbox-custom"></span>
+                <span class="contact-checkbox-text">Souhlasím se zpracováním osobních údajů pro účely vyřízení dotazu.</span>
+              </label>
+            </div>
+
+            <div class="contact-form-submit-wrap">
+              <button type="submit" class="btn btn-contact-submit">Odeslat zprávu</button>
+            </div>
+            <div id="contact-form-status" class="contact-form-status" style="display: none;"></div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. BANNER: POZOR NA UZAVÍRKU SILNICE V ZIMĚ -->
+    <section class="contact-road-closure-section">
+      <div class="road-closure-overlay"></div>
+      <div class="road-closure-inner">
+        <h2 class="road-closure-title">Pozor na uzavírku silnice v zimě</h2>
+        <p class="road-closure-desc">
+          V zimním období je silnice III/290 (úsek přehrada Souš – Smědava) uzavřena.<br>
+          K hotelu je celoročně přístupná cesta vždy od Tanvaldu a Desné.
+        </p>
+      </div>
+    </section>
+
+    <!-- 4. JAK SE K NÁM DOSTAT? -->
+    <section class="contact-directions-section">
+      <div class="contact-directions-inner">
+        <h2 class="directions-main-title">Jak se k nám dostat?</h2>
+
+        <div class="directions-grid">
+          <!-- Levá část: Parkování -->
+          <div class="directions-left-col">
+            <h3 class="directions-parking-title">Parkování zdarma přímo u hotelu</h3>
+            <p class="directions-parking-desc">
+              Uzamykatelné a hlídané kamerovým systémem, bez nutnosti rezervace místa.
+            </p>
+          </div>
+
+          <!-- Pravá část: Autem a Vlakem -->
+          <div class="directions-right-col">
+            <!-- Autem -->
+            <div class="directions-mode-item">
+              <div class="directions-icon-wrap">
+                <img src="/Icons/Ikony/car.png" alt="" class="directions-icon">
+              </div>
+              <div class="directions-mode-content">
+                <h3 class="directions-mode-title">Autem</h3>
+                <p class="directions-mode-desc">
+                  Cesta z Prahy přes Liberec trvá přibližně 80 minut. U hotelu na vás čeká bezplatné a bezpečné parkoviště hlídané kamerovým systémem.
+                </p>
+              </div>
+            </div>
+
+            <!-- Vlakem -->
+            <div class="directions-mode-item">
+              <div class="directions-icon-wrap">
+                <img src="/Icons/Ikony/train.png" alt="" class="directions-icon">
+              </div>
+              <div class="directions-mode-content">
+                <h3 class="directions-mode-title">Vlakem</h3>
+                <p class="directions-mode-desc">
+                  Vlaková zastávka je 1,5 km po rovině. V případě potřeby rádi zajistíme bezplatný odvoz vašich zavazadel od vlaku přímo k hotelu.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. SEKCE MAPA -->
+    <section class="contact-map-section" id="mapa">
+      <div class="contact-map-inner">
+        <div class="contact-map-wrapper">
+          <iframe 
+            src="https://maps.google.com/maps?q=Hotel%20u%20M%C5%AFstku%20Desn%C3%A1%20368&t=&z=15&ie=UTF8&iwloc=&output=embed" 
+            class="contact-google-map-iframe"
+            allowfullscreen="" 
+            loading="lazy" 
+            referrerpolicy="no-referrer-when-downgrade"
+            title="Mapa Hotel u Můstku">
+          </iframe>
+          <a href="https://www.google.com/maps/dir/?api=1&destination=Hotel+u+M%C5%AFstku+Desn%C3%A1+368" target="_blank" rel="noopener noreferrer" class="btn-open-google-maps">
+            Zobrazit celou mapu &rsaquo;
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. REUSED SEKCE: CTA BANNER -->
+    
+  <!-- CTA SEKCE (1:1 REPLIKA DLE SVG PŘEDLOHY) -->
+  <section class="cta-section">
+    <div class="cta-overlay"></div>
+    <div class="cta-inner">
+      <h2 class="cta-title">Dopřejte si zasloužený<br>odpočinek v Jizerských horách</h2>
+      <button class="btn btn-cta" id="cta-booking-btn">Rezervovat pobyt</button>
+    </div>
+  </section>
+
+
+    <!-- 7. REUSED SEKCE: FOOTER -->
+    
+  <!-- PATIČKA (SITE FOOTER 1:1 REPLIKA) -->
+  <footer class="site-footer" id="site-footer">
+    <div class="footer-contour-bg">
+      <img src="/Decoration/Dekorace footer.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
+    </div>
+
+    <div class="footer-inner">
+      <div class="footer-mobile-logo">
+        <img src="/Logo/white logo.webp" alt="Hotel U Můstku" loading="lazy" decoding="async">
+      </div>
+
+      <div class="footer-columns-grid">
+        <!-- Sloupec 1: Kontakty -->
+        <div class="footer-col footer-col-contact">
+          <div class="footer-contact-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            <a href="mailto:hotel@umustku.cz" class="footer-contact-link">hotel@umustku.cz</a>
+          </div>
+          <div class="footer-divider-line"></div>
+
+          <div class="footer-contact-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            <a href="tel:+420777666273" class="footer-contact-link">+420 777 666 273</a>
+          </div>
+          <div class="footer-divider-line"></div>
+
+          <div class="footer-contact-item footer-address-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            <div class="footer-address-text">
+              <span>Údolní 368</span>
+              <span>468 61 Desná v Jizerských horách 1</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sloupec 2: Rychlé odkazy -->
+        <div class="footer-col footer-col-links">
+          <h3 class="footer-col-heading">Rychlé odkazy</h3>
+          <ul class="footer-links-list">
+            <li><a href="#pokoje">Nabídka pokojů</a></li>
+            <li><a href="#stravovani">Stravování</a></li>
+            <li><a href="#oslavy-akce">Akce</a></li>
+            <li><a href="#aktivity">Aktivity</a></li>
+            <li><a href="#kontakt">Kontakt</a></li>
+          </ul>
+        </div>
+
+        <!-- Sloupec 3: Právní doložky -->
+        <div class="footer-col footer-col-legal">
+          <h3 class="footer-col-heading">Právní doložky</h3>
+          <ul class="footer-links-list">
+            <li><a href="#">Ochrana osobních údajů (GDPR)</a></li>
+            <li><a href="#">Používání cookies (Nastavení)</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Spodní lišta -->
+      <div class="footer-bottom-row">
+        <div class="footer-copyright secret-admin-trigger" title="Vstup pro recepci" style="cursor: pointer;">© 2026 All Rights Reserved.</div>
+        <div class="footer-logo-wrap btn-scroll-top" title="Zpět nahoru">
+          <img src="/Logo/white logo.webp" alt="Hotel U Můstku" loading="lazy" decoding="async">
+        </div>
+        <div class="footer-author">Vytvořil <a href="https://ozeman.cz" target="_blank" rel="noopener">ozeman.cz</a></div>
+      </div>
+    </div>
+  </footer>
+  
+
+  <!-- LIGHTBOX MODAL PRO ZVĚTŠENÍ FOTEK POKOJŮ (PRO SENIORY) -->
+  <div class="lightbox-modal" id="lightbox-modal" aria-hidden="true" role="dialog">
+    <div class="lightbox-overlay" id="lightbox-overlay"></div>
+    <div class="lightbox-content">
+      <button class="lightbox-close-btn" id="lightbox-close" aria-label="Zavřít zobrazení fotky" title="Zavřít fotku (Esc)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+
+      <button class="lightbox-nav-btn lightbox-prev-btn" id="lightbox-prev" aria-label="Předchozí fotka">
+        <svg width="12" height="20" viewBox="0 0 12 20" fill="none"><path d="M10 2L2 10L10 18" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/></svg>
+      </button>
+
+      <div class="lightbox-image-container">
+        <img src="" alt="Zvětšený náhled pokoje" id="lightbox-img" class="lightbox-img">
+      </div>
+
+      <button class="lightbox-nav-btn lightbox-next-btn" id="lightbox-next" aria-label="Další fotka">
+        <svg width="12" height="20" viewBox="0 0 12 20" fill="none"><path d="M2 2L10 10L2 18" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+  </div>
+</div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
