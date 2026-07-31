@@ -291,19 +291,19 @@ const getHeaderHTML = () => `
   <!-- Hlavička (Navigace a logo) -->
   <header class="site-header">
     <div class="nav-left">
-      <a href="#pokoje" class="nav-link">Nabídka pokojů</a>
-      <a href="#stravovani" class="nav-link">Stravování</a>
-      <a href="#aktivity" class="nav-link">Aktivity</a>
+      <a href="/ubytovani" class="nav-link">Nabídka pokojů</a>
+      <a href="/stravovani" class="nav-link">Stravování</a>
+      <a href="/okoli" class="nav-link">Aktivity</a>
     </div>
     
-    <a href="#domu" class="header-logo">
+    <a href="/" class="header-logo">
       <img src="/Logo/white logo.webp" alt="Hotel u Můstku Logo" loading="eager" fetchpriority="high">
     </a>
     
     <div class="nav-right">
-      <a href="#akce" class="nav-link">Skupinové akce</a>
-      <a href="#aktuality" class="nav-link" id="nav-link-aktuality">Aktuality</a>
-      <a href="#kontakt" class="nav-link">Kontakt</a>
+      <a href="/akce" class="nav-link">Skupinové akce</a>
+      <a href="/aktuality" class="nav-link" id="nav-link-aktuality">Aktuality</a>
+      <a href="/kontakt" class="nav-link">Kontakt</a>
     </div>
 
     <!-- Mobilní tlačítko menu (Hamburger) -->
@@ -318,12 +318,12 @@ const getHeaderHTML = () => `
   <div class="mobile-menu-overlay" id="mobile-menu-overlay">
     <button class="mobile-menu-close" id="mobile-menu-close" aria-label="Zavřít menu">&times;</button>
     <nav class="mobile-menu-nav">
-      <a href="#pokoje" class="mobile-nav-link">Nabídka pokojů</a>
-      <a href="#stravovani" class="mobile-nav-link">Stravování</a>
-      <a href="#aktivity" class="mobile-nav-link">Aktivity</a>
-      <a href="#akce" class="mobile-nav-link">Skupinové akce</a>
-      <a href="#aktuality" class="mobile-nav-link" id="mobile-nav-link-aktuality">Aktuality</a>
-      <a href="#kontakt" class="mobile-nav-link">Kontakt</a>
+      <a href="/ubytovani" class="mobile-nav-link">Nabídka pokojů</a>
+      <a href="/stravovani" class="mobile-nav-link">Stravování</a>
+      <a href="/okoli" class="mobile-nav-link">Aktivity</a>
+      <a href="/akce" class="mobile-nav-link">Skupinové akce</a>
+      <a href="/aktuality" class="mobile-nav-link" id="mobile-nav-link-aktuality">Aktuality</a>
+      <a href="/kontakt" class="mobile-nav-link">Kontakt</a>
     </nav>
     <button class="btn btn-booking mobile-menu-booking" id="mobile-menu-booking">Rezervovat pobyt</button>
 
@@ -4731,8 +4731,30 @@ const route = (isInitial = false) => {
   ];
 
   let pageKey = 'home';
+  const pathName = window.location.pathname.toLowerCase().replace(/\/$/, '');
 
-  if (cleanHash.startsWith('#rezervace')) {
+  // 1. Kontrola podle čisté URL adresy (Pathname)
+  if (pathName === '/ubytovani' || pathName === '/pokoje') {
+    pageKey = 'rooms';
+  } else if (pathName === '/stravovani' || pathName === '/gastronomie') {
+    pageKey = 'dining';
+  } else if (pathName === '/akce' || pathName === '/skupinove-akce') {
+    pageKey = 'events';
+  } else if (pathName === '/okoli' || pathName === '/aktivity' || pathName === '/vylety') {
+    pageKey = 'activities';
+  } else if (pathName === '/aktuality' || pathName === '/novinky') {
+    pageKey = 'news';
+  } else if (pathName === '/kontakt') {
+    pageKey = 'contact';
+  } else if (pathName === '/admin' || pathName === '/recepce') {
+    pageKey = 'admin';
+  } else if (pathName === '/rezervace' || pathName === '/booking') {
+    pageKey = 'booking';
+  } else if (pathName === '/prizemi') {
+    pageKey = 'ground';
+  } else if (pathName === '/vyhled') {
+    pageKey = 'view';
+  } else if (cleanHash.startsWith('#rezervace')) {
     pageKey = 'booking';
   } else if (cleanHash.startsWith('#admin')) {
     pageKey = 'admin';
@@ -4872,23 +4894,33 @@ const route = (isInitial = false) => {
   }
 };
 
-// Globální delegovaná obsluha prokliků na kategorie kdykoliv a kdekoliv
+// Globální delegovaná obsluha prokliků na odkazy a kategorie
 document.addEventListener('click', (e) => {
-  const link = e.target.closest('a[href="#turistika"], a[href="#cyklistika"], a[href="#zimni-vylety"], a[href="#vylety-autem"]');
-  if (link) {
+  const link = e.target.closest('a');
+  if (!link) return;
+  const href = link.getAttribute('href');
+  if (!href) return;
+
+  if (href.startsWith('http://') || href.startsWith('https://') || href.startsWith('tel:') || href.startsWith('mailto:')) return;
+
+  if (href.startsWith('/') || href.startsWith('#')) {
     e.preventDefault();
-    e.stopPropagation();
-    const href = link.getAttribute('href');
-    if (href) {
+
+    if (href.startsWith('/')) {
+      const parts = href.split('#');
+      const newPath = parts[0] || '/';
+      const newHash = parts[1] ? `#${parts[1]}` : '';
+
+      window.history.pushState(null, '', newPath + newHash);
+    } else {
       window.location.hash = href;
-      route(false);
-      window.scrollTo(0, 0);
-      document.body.scrollTop = 0;
-      document.documentElement.scrollTop = 0;
     }
+
+    route(false);
   }
 });
 
+window.addEventListener('popstate', () => route(false));
 window.addEventListener('hashchange', () => route(false));
 window.addEventListener('DOMContentLoaded', () => route(true));
 

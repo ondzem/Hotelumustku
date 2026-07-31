@@ -1,2 +1,12 @@
+/cz/index.php?stranka=uvod       /               301
+/cz/index.php?stranka=ubytovani  /ubytovani      301
+/cz/index.php?stranka=sluzby     /stravovani     301
+/cz/index.php?stranka=vylety     /okoli          301
+/cz/index.php?stranka=kontakt    /kontakt        301
+/cz/index.php?stranka=rezervace  /ubytovani      301
+/cz/index.php?stranka=cenik      /ubytovani      301
+/cz/index.php?stranka=akce       /akce           301
+/cz/index.php?stranka=fotogalerie /              301
+
 /api/resend/*  https://api.resend.com/:splat  200!
 /* /index.html 200
