@@ -415,11 +415,19 @@ export class BookingSystem {
       const targetContainer = el ? (el.closest('.form-field') || el) : this.container.querySelector('.form-field.has-error');
       if (targetContainer) {
         targetContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        if (el && typeof el.focus === 'function') el.focus({ preventScroll: true });
+        if (el && typeof el.focus === 'function') {
+          el.focus({ preventScroll: true });
+          if (typeof el.setCustomValidity === 'function') {
+            el.setCustomValidity(errorMsg || 'Vyplňte prosím toto pole.');
+            if (typeof el.reportValidity === 'function') {
+              el.reportValidity();
+            }
+          }
+        }
       } else {
         this.scrollToErrorMessage();
       }
-    }, 60);
+    }, 80);
   }
 
   clearFieldError(fieldId) {

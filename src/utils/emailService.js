@@ -582,3 +582,40 @@ export function sendAllTestEmailsTo(recipientEmail = 'ondra.zeman05@gmail.com') 
 
   return true;
 }
+
+// Generování šablony e-mailu pro zprávu z kontaktního formuláře (Design 1:1 dle rezervačních e-mailů)
+export function generateEmailContactNotification({ name, surname, email, phone, message }) {
+  const html = `
+    ${getEmailHeader('Nová zpráva z kontaktního formuláře')}
+    <p style="color: #1a1a1a !important; font-size: 15.5px; line-height: 1.5; margin-bottom: 20px;">Někdo vám odeslal novou zprávu přes kontaktní formulář na webu <strong>Hotel u Můstku</strong>:</p>
+    
+    <table class="info-table" style="background-color: #ffffff !important; margin: 20px 0; width: 100%; border-collapse: collapse;">
+      <tr>
+        <td style="color: #555555 !important; width: 140px; padding: 8px 12px; font-weight: 500; border-bottom: 1px solid #f0f0f0;">Jméno a příjmení:</td>
+        <td style="color: #1a1a1a !important; padding: 8px 12px; font-weight: 600; border-bottom: 1px solid #f0f0f0;">${name} ${surname}</td>
+      </tr>
+      <tr>
+        <td style="color: #555555 !important; padding: 8px 12px; font-weight: 500; border-bottom: 1px solid #f0f0f0;">E-mail:</td>
+        <td style="color: #1a1a1a !important; padding: 8px 12px; border-bottom: 1px solid #f0f0f0;"><a href="mailto:${email}" style="color: #697947 !important; text-decoration: underline; font-weight: 600;">${email}</a></td>
+      </tr>
+      ${phone ? `
+      <tr>
+        <td style="color: #555555 !important; padding: 8px 12px; font-weight: 500; border-bottom: 1px solid #f0f0f0;">Telefon:</td>
+        <td style="color: #1a1a1a !important; padding: 8px 12px; border-bottom: 1px solid #f0f0f0;"><a href="tel:${phone}" style="color: #1a1a1a !important; text-decoration: none;">${phone}</a></td>
+      </tr>` : ''}
+      <tr>
+        <td style="color: #555555 !important; padding: 8px 12px; font-weight: 500; vertical-align: top;">Zpráva:</td>
+        <td style="color: #1a1a1a !important; padding: 8px 12px; white-space: pre-wrap; line-height: 1.6;">${message || '<em>Bez textu zprávy</em>'}</td>
+      </tr>
+    </table>
+
+    <div class="alert-box" style="background-color: #fff9ed !important; color: #333333 !important; border-left: 4px solid #697947 !important; padding: 14px 18px; margin-top: 24px; border-radius: 4px;">
+      Na tuto zprávu můžete odpovědět přímo kliknutím na e-mail klienta: <a href="mailto:${email}" style="color: #697947 !important; font-weight: 600;">${email}</a>.
+    </div>
+    ${getEmailFooter()}
+  `;
+  return {
+    subject: `[KONTAKT] Nová zpráva od ${name} ${surname}`,
+    html
+  };
+}

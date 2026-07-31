@@ -4976,12 +4976,14 @@ h3 {
 
 /* Section 1: Hero Sekce Pro Pokojovou Stránku */
 /* Section 1: Hero Sekce Pro Pokojovou Stránku (90 % viewpointu) */
+#uvod-pokoje,
+.rooms-hero-section#uvod-pokoje,
 .rooms-hero-section {
   position: relative;
   width: 100%;
   height: 90vh;
   min-height: 700px;
-  background-image: url('/hezky pokoj 1.webp');
+  background-image: url('/nabidka pokojů.webp') !important;
   background-size: cover;
   background-position: center;
   overflow: visible;
@@ -5243,13 +5245,14 @@ h3 {
     margin: 0 auto;
   }
 
+  #uvod-pokoje,
   .rooms-hero-section {
     position: relative;
     width: 100%;
     height: 95vh;
     min-height: 540px;
     max-height: 750px;
-    background-image: url('/mobil hezky pokoj.webp') !important;
+    background-image: url('/nabidka pokojů.webp') !important;
     background-size: cover;
     background-position: center;
     overflow: hidden;
@@ -5650,7 +5653,7 @@ h3 {
    ==================================================== */
 
 /* 1. Hero Sekce Detailu Pokoje (Pokoje v přízemí) */
-.room-detail-hero {
+.room-detail-hero:not(#uvod-pokoje) {
   position: relative;
   width: 100%;
   height: 90vh;
@@ -6637,7 +6640,7 @@ h3 {
 
 /* Responsivita Hero Sekce Detailu Pokoje pro všechny velikosti (Mobil <768px, Tablet, 1750px+ i 2200px+ 4K) */
 @media (max-width: 768px) {
-  .room-detail-hero {
+  .room-detail-hero:not(#uvod-pokoje) {
     position: relative !important;
     width: 100% !important;
     height: 95vh !important;
@@ -10290,13 +10293,22 @@ img[loading="lazy"].img-loaded {
   height: clamp(320px, 28vw, 410px);
   overflow: hidden;
   background-color: #e5e3dc;
+  content-visibility: auto;
+  contain-intrinsic-size: 350px;
 }
 
 .category-destination-img-wrap img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.4s ease;
+  opacity: 0;
+  transition: opacity 0.35s ease, transform 0.4s ease;
+  will-change: opacity, transform;
+}
+
+.category-destination-img-wrap img.img-loaded,
+.category-destination-img-wrap img[loading="eager"] {
+  opacity: 1;
 }
 
 .category-destination-card:hover .category-destination-img-wrap img {
@@ -10499,5 +10511,696 @@ img[loading="lazy"].img-loaded {
   .rooms-surroundings-section {
     padding-top: 10px !important;
     padding-bottom: 130px !important;
+  }
+}
+
+/* ====================================================
+   SEKCE KONTAKT — STRÁNKA KONTAKT
+   ==================================================== */
+
+/* 1. Hero Sekce Kontakt */
+#uvod-kontakt,
+.contact-hero-section {
+  position: relative;
+  width: 100%;
+  height: 90vh;
+  min-height: 700px;
+  background-image: url('/Kontakt stránka fotky/Vyhled na mustky.webp') !important;
+  background-size: cover;
+  background-position: center;
+  overflow: visible;
+}
+
+@media (max-width: 768px) {
+  #uvod-kontakt,
+  .contact-hero-section {
+    height: 95vh !important;
+    min-height: 540px !important;
+    max-height: 750px !important;
+    background-image: url('/Kontakt stránka fotky/Vyhled na mustky.webp') !important;
+  }
+}
+
+/* 2. Hlavní Sekce Kontakty & Formulář */
+.contact-main-section {
+  width: 100%;
+  background-color: #ffffff;
+  padding: 100px 0;
+}
+
+.contact-main-inner {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 48px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  box-sizing: border-box;
+}
+
+.contact-info-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.contact-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+.contact-info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.contact-info-icon-wrap {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.contact-info-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.contact-info-label {
+  font-size: 12.5px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #888880;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.contact-info-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 21px;
+  font-weight: 700;
+  color: #1c1c19;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.contact-info-title .contact-link {
+  color: #1c1c19;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.contact-info-title .contact-link:hover {
+  color: #5c6748;
+}
+
+.contact-info-sub {
+  font-size: 14px;
+  color: #666660;
+  margin: 3px 0 0 0;
+}
+
+/* Pravý sloupec — Formulář Napište nám */
+.contact-form-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.contact-form-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: #1c1c19;
+  margin: 0 0 32px 0;
+}
+
+.contact-form-row {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.contact-form-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.contact-form-group.contact-form-full {
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.contact-form-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #444440;
+  margin-bottom: 8px;
+}
+
+.contact-form-input,
+.contact-form-textarea {
+  width: 100%;
+  padding: 10px 0;
+  border: none;
+  border-bottom: 1px solid #d0cfc9;
+  background: transparent;
+  font-family: 'Outfit', sans-serif;
+  font-size: 15.5px;
+  color: #1c1c19;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.25s ease;
+}
+
+.contact-form-textarea {
+  resize: vertical;
+  height: 38px;
+  min-height: 38px;
+  padding: 8px 0;
+  line-height: 1.4;
+}
+
+.contact-form-input:focus,
+.contact-form-textarea:focus {
+  border-bottom-color: #5c6748;
+}
+
+/* GDPR Checkbox */
+.contact-form-gdpr {
+  margin-bottom: 28px;
+}
+
+.contact-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.contact-checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #5c6748;
+  cursor: pointer;
+}
+
+.contact-checkbox-text {
+  font-size: 13.5px;
+  color: #666660;
+  line-height: 1.4;
+}
+
+/* Tlačítko Odeslat zprávu podle Button Design System */
+.btn-contact-submit {
+  height: 45px !important;
+  padding: 0 28px !important;
+  font-family: 'Outfit', sans-serif !important;
+  font-size: 17px !important;
+  font-weight: 500 !important;
+  border-radius: 1px !important;
+  background-color: #5c6748 !important;
+  color: #ffffff !important;
+  border: none !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  white-space: nowrap !important;
+  transition: background-color 0.25s ease !important;
+}
+
+.btn-contact-submit:hover {
+  background-color: #4a5339 !important;
+}
+
+.contact-form-input.input-field-error,
+.contact-form-textarea.input-field-error {
+  border-bottom-color: #d93025 !important;
+}
+
+/* Animované potvrzení odeslání kontaktního formuláře */
+.contact-success-wrapper {
+  text-align: left;
+  padding: 56px 0 48px 0;
+  animation: fadeInSuccess 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeInSuccess {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.success-checkmark-circle {
+  width: 64px;
+  height: 64px;
+  margin: 0 0 24px 0;
+}
+
+.checkmark-svg {
+  width: 64px;
+  height: 64px;
+  display: block;
+}
+
+.checkmark-circle-path {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  animation: strokeCircle 0.65s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark-check-path {
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: strokeCheck 0.45s cubic-bezier(0.65, 0, 0.45, 1) 0.4s forwards;
+}
+
+@keyframes strokeCircle {
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes strokeCheck {
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.success-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 25px;
+  font-weight: 600;
+  color: #1c1c19;
+  margin: 0 0 12px 0;
+  letter-spacing: -0.01em;
+  text-align: left;
+}
+
+.success-desc {
+  font-family: 'Outfit', sans-serif;
+  font-size: 15.5px;
+  color: #555555;
+  line-height: 1.6;
+  max-width: 480px;
+  margin: 0;
+  text-align: left;
+}
+
+/* 3. Sekce Pozor na uzavírku silnice v zimě */
+.contact-road-closure-section {
+  position: relative;
+  width: 100%;
+  min-height: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-image: url('/Kontakt stránka fotky/uzaverka silnice.webp');
+  background-size: cover;
+  background-position: center 75%;
+  color: #ffffff;
+}
+
+.road-closure-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1;
+}
+
+.road-closure-inner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 960px;
+  padding: 70px 32px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.road-closure-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(26px, 2.5vw, 36px);
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 16px 0;
+}
+
+.road-closure-desc {
+  font-size: clamp(15px, 1.2vw, 17.5px);
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.93);
+  font-weight: 400;
+  margin: 0;
+}
+
+/* 4. Sekce Jak se k nám dostat? */
+.contact-directions-section {
+  width: 100%;
+  background-color: #f2f2f2;
+  padding: 100px 0;
+}
+
+.contact-directions-inner {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 48px;
+  box-sizing: border-box;
+}
+
+.directions-main-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(28px, 2.8vw, 38px);
+  font-weight: 700;
+  color: #1c1c19;
+  margin: 0 0 48px 0;
+}
+
+.directions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: stretch;
+}
+
+.directions-left-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.directions-parking-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #1c1c19;
+  margin: 0 0 12px 0;
+}
+
+.directions-parking-desc {
+  font-size: 16px;
+  color: #555550;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 480px;
+}
+
+.directions-right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.directions-mode-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.directions-icon-wrap {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.directions-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.directions-mode-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #1c1c19;
+  margin: 0 0 8px 0;
+}
+
+.directions-mode-desc {
+  font-size: 15.5px;
+  color: #555550;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* 5. Sekce Mapa */
+.contact-map-section {
+  width: 100%;
+  background-color: #ffffff;
+  padding: 90px 0;
+}
+
+.contact-map-inner {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 48px;
+  box-sizing: border-box;
+}
+
+.contact-map-wrapper {
+  position: relative;
+  width: 100%;
+  height: 520px;
+  border-radius: 2px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.contact-google-map-iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.btn-open-google-maps {
+  position: absolute;
+  bottom: 24px;
+  right: 28px;
+  z-index: 10;
+  background: #ffffff;
+  color: #1c1c19;
+  padding: 12px 24px;
+  border-radius: 1px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-open-google-maps:hover {
+  background-color: #f2efe9;
+  transform: translateY(-2px);
+}
+
+/* Responsivita pro Kontakt (Mobil <768px & Tablet 768px-1028px) */
+@media (max-width: 1028px) {
+  .contact-hero-section .contact-hero-center {
+    transform: translateY(50px) !important;
+  }
+
+  .contact-hero-section .room-detail-hero-btn {
+    position: relative !important;
+    top: auto !important;
+    transform: none !important;
+    margin: 16px 0 0 0 !important;
+    height: 40px !important;
+    padding: 0 24px !important;
+    font-size: 15.5px !important;
+    border-radius: 1px !important;
+    background-color: #ece8dd !important;
+    color: #1c1c19 !important;
+  }
+
+  .contact-main-section {
+    padding: 60px 0 90px 0 !important;
+  }
+
+  .contact-main-inner {
+    grid-template-columns: 1fr !important;
+    gap: 0 !important;
+    padding: 0 32px;
+  }
+
+  .contact-info-column {
+    margin-bottom: 64px !important;
+  }
+
+  .contact-form-column {
+    padding-top: 0;
+    border-top: none !important;
+  }
+
+  .contact-form-title {
+    font-size: 26px;
+    margin-bottom: 48px !important;
+  }
+
+  .contact-directions-section {
+    padding: 60px 0 90px 0 !important;
+  }
+
+  .contact-map-section {
+    padding: 95px 0 135px 0 !important;
+  }
+
+  .contact-directions-inner,
+  .contact-map-inner {
+    padding: 0 32px;
+  }
+
+  .directions-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+    padding: 0;
+  }
+
+  .directions-right-col {
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+    order: 1;
+  }
+
+  .directions-left-col {
+    justify-content: flex-start;
+    order: 2;
+  }
+}
+
+@media (max-width: 768px) {
+  #uvod-kontakt,
+  .contact-hero-section {
+    height: 100vh !important;
+    min-height: 520px !important;
+  }
+
+  .contact-hero-section .room-detail-hero-btn {
+    height: 36px !important;
+    padding: 0 20px !important;
+    font-size: 14.5px !important;
+  }
+
+  .contact-main-section {
+    padding: 50px 0 90px 0 !important;
+  }
+
+  .contact-info-column {
+    margin-bottom: 60px !important;
+  }
+
+  .contact-form-column {
+    padding-top: 0;
+    border-top: none !important;
+  }
+
+  .contact-main-inner,
+  .contact-directions-inner,
+  .contact-map-inner {
+    padding: 0 20px;
+  }
+
+  .contact-directions-section {
+    padding: 50px 0 90px 0 !important;
+  }
+
+  .contact-map-section {
+    padding: 90px 0 130px 0 !important;
+  }
+
+  .contact-info-list {
+    gap: 28px;
+  }
+
+  .contact-info-title {
+    font-size: 19px;
+  }
+
+  .contact-form-title,
+  .road-closure-title,
+  .directions-main-title,
+  .directions-parking-title,
+  .directions-mode-title {
+    font-weight: 600 !important;
+  }
+
+  .contact-form-title {
+    font-size: 24px;
+    margin-bottom: 32px !important;
+  }
+
+  .contact-form-row {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .btn-contact-submit {
+    height: 36px !important;
+    padding: 0 20px !important;
+    font-size: 14.5px !important;
+  }
+
+  .road-closure-inner {
+    padding: 50px 20px;
+  }
+
+  .road-closure-title {
+    font-size: 22px;
+    margin-bottom: 12px;
+  }
+
+  .road-closure-desc {
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .directions-main-title {
+    font-size: 24px;
+    margin-bottom: 32px;
+  }
+
+  .directions-parking-title,
+  .directions-mode-title {
+    font-size: 20px;
+  }
+
+  .directions-parking-desc,
+  .directions-mode-desc {
+    font-size: 14.5px;
+    line-height: 1.55;
+  }
+
+  .contact-map-wrapper {
+    height: 360px;
+  }
+
+  .btn-open-google-maps {
+    bottom: 14px;
+    right: 14px;
+    padding: 9px 16px;
+    font-size: 13px;
   }
 }

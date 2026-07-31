@@ -2,7 +2,8 @@ import './style.css';
 import './booking.css';
 import { BookingSystem } from './components/BookingSystem.js';
 import { AdminDashboard } from './components/AdminDashboard.js';
-import { getStoredRoomPrices, getStoredDisabledRooms, MOCK_ROOMS } from './lib/supabaseClient.js';
+import { getStoredRoomPrices, getStoredDisabledRooms, MOCK_ROOMS, saveContactMessage } from './lib/supabaseClient.js';
+import { sendEmail, generateEmailContactNotification } from './utils/emailService.js';
 
 export function syncDynamicRoomPricesToDOM() {
   const roomPrices = getStoredRoomPrices();
@@ -980,6 +981,7 @@ const getHomePageHTML = () => {
 const getRoomsPageHTML = () => `
   <!-- HERO SEKCE POKOJŮ -->
   <section class="hero-section rooms-hero-section room-detail-hero" id="uvod-pokoje">
+    <img class="hero-rooms-poster" src="/nabidka pokojů.webp" alt="Nabídka pokojů Hotel u Můstku" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
     <div class="hero-overlay"></div>
     <div class="hero-inner">
       ${getHeaderHTML()}
@@ -1163,23 +1165,23 @@ const getRoomGroundFloorHTML = () => `
               </div>
             </li>
 
-            <!-- 3. Vytápění je ústřední -->
+            <!-- 3. Dětská postýlka -->
+            <li class="room-spec-item">
+              <div class="spec-icon-wrap">
+                <img src="/Icons/Ikony/cot.png" alt="" class="spec-icon-img">
+              </div>
+              <div class="spec-text-wrap">
+                <span class="spec-label"><strong>Možnost zapůjčení</strong> dětské postýlky</span>
+              </div>
+            </li>
+
+            <!-- 4. Vytápění je ústřední -->
             <li class="room-spec-item">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/air.png" alt="" class="spec-icon-img">
               </div>
               <div class="spec-text-wrap">
                 <span class="spec-label"><strong>Vytápění</strong> je ústřední</span>
-              </div>
-            </li>
-
-            <!-- 4. Vlastní koupelna -->
-            <li class="room-spec-item">
-              <div class="spec-icon-wrap">
-                <img src="/Icons/Ikony/bathroom.png" alt="" class="spec-icon-img">
-              </div>
-              <div class="spec-text-wrap">
-                <span class="spec-label"><strong>Vlastní koupelna:</strong> WC a sprchový kout</span>
               </div>
             </li>
 
@@ -1204,6 +1206,16 @@ const getRoomGroundFloorHTML = () => `
             </li>
 
             <!-- EXTENZE DETAILŮ (Zobrazí se plynule po kliknutí na Přečíst více) -->
+            <!-- Vlastní koupelna -->
+            <li class="room-spec-item spec-extra-item">
+              <div class="spec-icon-wrap">
+                <img src="/Icons/Ikony/bathroom.png" alt="" class="spec-icon-img">
+              </div>
+              <div class="spec-text-wrap">
+                <span class="spec-label"><strong>Vlastní koupelna:</strong> WC a sprchový kout</span>
+              </div>
+            </li>
+
             <li class="room-spec-item spec-extra-item">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/television.png" alt="" class="spec-icon-img">
@@ -1586,18 +1598,18 @@ const getRoomViewFloorHTML = () => {
     '<span class="mobile-tablet-title-text">Vyberte si svůj pokoj s výhledem</span>'
   );
 
-  // 3. Náhrada položky 3 v hlavním seznamu parametrů (Vytápění je ústřední -> 1. patro s výhledem + ikona balcony.png)
-  const oldHeatingItem = `<!-- 3. Vytápění je ústřední -->
+  // 3. Náhrada Wi-Fi zdarma v hlavním seznamu za 1. patro s výhledem
+  const oldWifiItem = `<!-- 5. Wi-Fi zdarma -->
             <li class="room-spec-item">
               <div class="spec-icon-wrap">
-                <img src="/Icons/Ikony/air.png" alt="" class="spec-icon-img">
+                <img src="/Icons/Ikony/wifi.png" alt="" class="spec-icon-img">
               </div>
               <div class="spec-text-wrap">
-                <span class="spec-label"><strong>Vytápění</strong> je ústřední</span>
+                <span class="spec-label"><strong>Wi-Fi</strong> zdarma</span>
               </div>
             </li>`;
 
-  const newViewFloorItem = `<!-- 3. 1. patro s výhledem -->
+  const newViewFloorItem = `<!-- 5. 1. patro s výhledem -->
             <li class="room-spec-item">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/balcony.png" alt="" class="spec-icon-img">
@@ -1607,32 +1619,32 @@ const getRoomViewFloorHTML = () => {
               </div>
             </li>`;
 
-  html = html.replace(oldHeatingItem, newViewFloorItem);
+  html = html.replace(oldWifiItem, newViewFloorItem);
 
-  // 4. Přidání Vytápění je ústřední do rozbalovací nabídky (Přečíst více) hned pod Máte mazlíčka?
-  const petItem = `<!-- 6. Máte mazlíčka? -->
-            <li class="room-spec-item">
-              <div class="spec-icon-wrap">
-                <img src="/Icons/Ikony/pawprint.png" alt="" class="spec-icon-img">
-              </div>
-              <div class="spec-text-wrap">
-                <span class="spec-label"><strong>Máte mazlíčka?</strong> <a href="#vyhody-ubytovani" class="spec-link" id="link-pet-more">Zjistit více <svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 1L5 5L9 1"/></svg></a></span>
-              </div>
-            </li>`;
-
-  const petItemWithHeating = `${petItem}
-
-            <!-- Vytápění je ústřední (Přesunuto do rozbalovací nabídky) -->
+  // 4. Přidání Wi-Fi zdarma do rozbalovací nabídky (Přečíst více) hned pod Vlastní koupelna
+  const bathroomExtraItem = `<!-- Vlastní koupelna -->
             <li class="room-spec-item spec-extra-item">
               <div class="spec-icon-wrap">
-                <img src="/Icons/Ikony/air.png" alt="" class="spec-icon-img">
+                <img src="/Icons/Ikony/bathroom.png" alt="" class="spec-icon-img">
               </div>
               <div class="spec-text-wrap">
-                <span class="spec-label"><strong>Vytápění</strong> je ústřední</span>
+                <span class="spec-label"><strong>Vlastní koupelna:</strong> WC a sprchový kout</span>
               </div>
             </li>`;
 
-  html = html.replace(petItem, petItemWithHeating);
+  const bathroomWithWifiExtraItem = `${bathroomExtraItem}
+
+            <!-- Wi-Fi zdarma (Přesunuto do rozbalovací nabídky pro Pokoje s výhledem) -->
+            <li class="room-spec-item spec-extra-item">
+              <div class="spec-icon-wrap">
+                <img src="/Icons/Ikony/wifi.png" alt="" class="spec-icon-img">
+              </div>
+              <div class="spec-text-wrap">
+                <span class="spec-label"><strong>Wi-Fi</strong> zdarma</span>
+              </div>
+            </li>`;
+
+  html = html.replace(bathroomExtraItem, bathroomWithWifiExtraItem);
 
   // 5. Výhody / Detaily pokojů fotka (desna_41.webp)
   html = html.replace('/hezky pokoj 1.webp', '/desna_41.webp');
@@ -1948,6 +1960,8 @@ const initInteractivity = () => {
   // Aplikace sezónního režimu (Léto / Zima)
   const currentMode = getInitialSeasonMode();
   scheduleInactiveSeasonPreload(currentMode);
+  initProgressiveLazyLoading();
+  initCategoryHoverPreload();
 
   const seasonControls = document.querySelectorAll('.bottom-left-controls .control-item, .mobile-season-toggle .control-item');
   seasonControls.forEach(control => {
@@ -2700,8 +2714,13 @@ const initInteractivity = () => {
     });
   });
 
-  // Progresivní Lazy Loading obrázků s předešitím o 300px
-  const lazyImages = document.querySelectorAll('img[loading="lazy"]');
+  // Progresivní Lazy Loading obrázků s předešitím o 600px
+  initProgressiveLazyLoading();
+};
+
+// Funkce pro dynamický lazy loading s velkou rezervou 600px
+const initProgressiveLazyLoading = () => {
+  const lazyImages = document.querySelectorAll('img[loading="lazy"]:not(.observer-active)');
   if ('IntersectionObserver' in window) {
     const imgObserver = new IntersectionObserver((entries, observer) => {
       entries.forEach(entry => {
@@ -2711,10 +2730,77 @@ const initInteractivity = () => {
           observer.unobserve(img);
         }
       });
-    }, { rootMargin: '300px 0px' });
+    }, { rootMargin: '600px 0px' });
 
-    lazyImages.forEach(img => imgObserver.observe(img));
+    lazyImages.forEach(img => {
+      img.classList.add('observer-active');
+      if (img.complete) {
+        img.classList.add('img-loaded');
+      } else {
+        imgObserver.observe(img);
+      }
+    });
+  } else {
+    lazyImages.forEach(img => img.classList.add('img-loaded'));
   }
+};
+
+// Preload Funkce Pro Obrázky v Kategoriích (Instantní načítání fotek aktivit)
+const preloadedCategories = new Set();
+const preloadCategoryImages = (catId) => {
+  if (!catId || preloadedCategories.has(catId)) return;
+  const cat = CATEGORIES_DATA[catId];
+  if (!cat) return;
+  preloadedCategories.add(catId);
+
+  // Preload Hero img
+  if (cat.heroImg) {
+    const heroImg = new Image();
+    heroImg.src = cat.heroImg;
+  }
+
+  // Preload vícenásobných položek asynchronně s lehkým rozestupem pro plynulost
+  if (cat.items && Array.isArray(cat.items)) {
+    cat.items.forEach((item, index) => {
+      setTimeout(() => {
+        if (item.img) {
+          const img = new Image();
+          img.src = item.img;
+        }
+      }, index * 30);
+    });
+  }
+};
+
+// Preload Všech Kategorií na pozadí v době nečinnosti prohlížeče
+const preloadAllCategoriesBackground = () => {
+  const doPreload = () => {
+    Object.keys(CATEGORIES_DATA).forEach((catId) => preloadCategoryImages(catId));
+  };
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(doPreload, { timeout: 2000 });
+  } else {
+    setTimeout(doPreload, 1000);
+  }
+};
+
+// Pre-warming fotek při najetí nebo dotyku na karty kategorií
+const initCategoryHoverPreload = () => {
+  document.querySelectorAll('a[href^="#turistik"], a[href^="#cykl"], a[href^="#zimn"], a[href^="#aut"], .activity-card-link').forEach(link => {
+    const handler = () => {
+      const href = link.getAttribute('href') || '';
+      let catId = href.replace('#', '');
+      if (catId.includes('turistik')) catId = 'turistika';
+      else if (catId.includes('cykl')) catId = 'cyklistika';
+      else if (catId.includes('zimn')) catId = 'zimni-vylety';
+      else if (catId.includes('aut')) catId = 'vylety-autem';
+      if (CATEGORIES_DATA[catId]) {
+        preloadCategoryImages(catId);
+      }
+    };
+    link.addEventListener('mouseenter', handler, { once: true });
+    link.addEventListener('touchstart', handler, { passive: true, once: true });
+  });
 };
 
 // Preload Funkce Pro Hero Obrázky (Zrychlení prvního vykreslení)
@@ -2730,6 +2816,10 @@ const preloadHeroImages = (pageKey) => {
     img.src = src;
   } else if (pageKey === 'dining') {
     const src = isMobile ? '/mobile_fotka_z_okna.webp' : '/stravovani 1.webp';
+    const img = new Image();
+    img.src = src;
+  } else if (pageKey === 'contact') {
+    const src = '/Kontakt stránka fotky/Vyhled na mustky.webp';
     const img = new Image();
     img.src = src;
   }
@@ -3318,33 +3408,33 @@ const getActivitiesPageHTML = () => `
           <!-- FAQ Dotaz 1 -->
           <div class="faq-item">
             <button class="faq-question-btn" aria-expanded="false">
-              <span class="faq-question-text">Dá se v okolí hotelu pohodlně chodit s kočárkem nebo se psem?</span>
+              <span class="faq-question-text">Které výlety zvládneme bez velkého stoupání?</span>
               <span class="faq-action-text">Zobrazit odpověď <span class="faq-arrow">&rsaquo;</span></span>
             </button>
             <div class="faq-answer-content">
-              <p>Ano, v okolí hotelu se nachází mnoho asfaltek i zpevněných lesních cest, které jsou ideální pro pohodlné procházky s kočárkem i se psem. Rádi vám na recepci doporučíme konkrétní trasy odstupňované podle náročnosti.</p>
+              <p>K Protržené přehradě se jde údolím po rovině, dojdete tam pěšky od hotelu. Kolem přehrady Souš vede zpevněný okruh bez převýšení. Rašeliniště Jizerky má dřevěné povalové chodníky. Řekněte nám, kolik chcete ujít, a doporučíme trasu na míru.</p>
             </div>
           </div>
 
           <!-- FAQ Dotaz 2 -->
           <div class="faq-item">
             <button class="faq-question-btn" aria-expanded="false">
-              <span class="faq-question-text">Kde si mohu v hotelu bezpečně uložit a dobít své elektrokolo?</span>
+              <span class="faq-question-text">Kdy je nejlepší čas přijet?</span>
               <span class="faq-action-text">Zobrazit odpověď <span class="faq-arrow">&rsaquo;</span></span>
             </button>
             <div class="faq-answer-content">
-              <p>Máme k dispozici uzamykatelnou kolárnu s možností bezplatného dobíjení elektrokol přímo v prostorách hotelu, takže vaše kola budou po celou dobu v bezpečí.</p>
+              <p>Špatný termín tu prakticky neexistuje. V květnu až říjnu fungují rozhledny s restauracemi a bikepark, nejhezčí bývá září. Prosinec až březen patří lyžím. Listopad a duben jsou nejklidnější a nejlevnější — muzea, jeskyně i aquapark fungují celoročně.</p>
             </div>
           </div>
 
           <!-- FAQ Dotaz 3 -->
           <div class="faq-item">
             <button class="faq-question-btn" aria-expanded="false">
-              <span class="faq-question-text">Jak daleko je nejbližší lyžařský vlek pro rodiny s malými dětmi?</span>
+              <span class="faq-question-text">Dá se do okolí vyrazit i vlakem?</span>
               <span class="faq-action-text">Zobrazit odpověď <span class="faq-arrow">&rsaquo;</span></span>
             </button>
             <div class="faq-answer-content">
-              <p>Nejbližší dětský vlek a lyžařská škola se nachází pouhých 5 minut jízdy od hotelu (např. Ski areál Černá Říčka nebo Tanvaldský Špičák), kam se snadno dostanete autem i skibusem.</p>
+              <p>Ano. Desná leží na trati z Tanvaldu do Harrachova a úsek přes Kořenov je ozubnicová dráha, jedna z mála v Evropě. Vlakem dojedete k Mumlavským vodopádům i do Jablonce k Muzeu skla. Jízdní řády vám vytiskneme na recepci.</p>
             </div>
           </div>
         </div>
@@ -3358,6 +3448,522 @@ const getActivitiesPageHTML = () => `
     ${getFooterHTML()}
   </div>
 `;
+
+// Render Funkce Pro Stránku "Kontakt"
+const getContactPageHTML = () => `
+  <div class="contact-page-wrapper">
+    <!-- 1. HERO SEKCE KONTAKTU -->
+    <section class="hero-section rooms-hero-section room-detail-hero contact-hero-section" id="uvod-kontakt">
+      <img class="hero-contact-poster" src="/Kontakt stránka fotky/Vyhled na mustky.webp" alt="Kontakt Hotel u Můstku" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+      <div class="hero-overlay"></div>
+      <div class="hero-inner">
+        ${getHeaderHTML()}
+
+        <div class="room-detail-hero-center contact-hero-center">
+          <h1 class="hero-title room-detail-hero-title">
+            <span class="desktop-title-text">Kontakt</span>
+            <span class="mobile-tablet-title-text">Neváhejte nás kontaktovat</span>
+          </h1>
+          <p class="room-detail-hero-subtitle">
+            <span class="desktop-sub-text">Vše na jednom místě — jak nás zastihnout, jak k nám dojedete a kde nás přesně najdete. Rádi vám se vším poradíme.</span>
+            <span class="mobile-sub-text">Vše na jednom místě — jak nás zastihnout, jak k nám dojedete a kde nás přesně najdete. Rádi vám se vším poradíme.</span>
+          </p>
+          <button class="btn btn-contact-hero-btn room-detail-hero-btn" id="btn-goto-contact-form">Napište nám</button>
+        </div>
+
+        <!-- Spodní odskrolovávací šipka (mobil + tablet) -->
+        <div class="scroll-down-btn mobile-only-scroll-btn" id="scroll-btn-kontakt">
+          <svg width="12" height="14" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7.29 17.1C7.68 17.49 8.32 17.49 8.71 17.1L15.07 10.74C15.46 10.35 15.46 9.71 15.07 9.32C14.68 8.93 14.05 8.93 13.66 9.32L8 14.98L2.34 9.32C1.95 8.93 1.32 8.93 0.93 9.32C0.54 9.71 0.54 10.35 0.93 10.74L7.29 17.1ZM8 0H7V16.39H8H9V0H8Z" fill="white"/>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. KONTAKTNÍ ÚDAJE A FORMULÁŘ NAPIŠTE NÁM -->
+    <section class="contact-main-section" id="kontaktní-udaje">
+      <div class="contact-main-inner">
+        <!-- Levý sloupec: Kontakty -->
+        <div class="contact-info-column">
+          <div class="contact-info-list">
+            <!-- Item 1: Adresa -->
+            <div class="contact-info-item">
+              <div class="contact-info-icon-wrap">
+                <img src="/Icons/Ikony/location.png" alt="" class="contact-info-icon">
+              </div>
+              <div class="contact-info-text">
+                <span class="contact-info-label">Adresa</span>
+                <h3 class="contact-info-title">Údolní 368</h3>
+                <p class="contact-info-sub">468 61 Desná v Jizerských horách 1</p>
+              </div>
+            </div>
+
+            <!-- Item 2: Telefon -->
+            <div class="contact-info-item">
+              <div class="contact-info-icon-wrap">
+                <img src="/Icons/Ikony/phone-flip.png" alt="" class="contact-info-icon">
+              </div>
+              <div class="contact-info-text">
+                <span class="contact-info-label">Telefon</span>
+                <h3 class="contact-info-title"><a href="tel:+420777666273" class="contact-link">+420 777 666 273</a></h3>
+                <p class="contact-info-sub">Lenka Bellingerová — majitelka</p>
+              </div>
+            </div>
+
+            <!-- Item 3: E-mail -->
+            <div class="contact-info-item">
+              <div class="contact-info-icon-wrap">
+                <img src="/Icons/Ikony/envelope.png" alt="" class="contact-info-icon">
+              </div>
+              <div class="contact-info-text">
+                <span class="contact-info-label">E-mail</span>
+                <h3 class="contact-info-title"><a href="mailto:hotel@umustku.cz" class="contact-link">hotel@umustku.cz</a></h3>
+                <p class="contact-info-sub">Odpovídáme zpravidla do 48 hodin</p>
+              </div>
+            </div>
+
+            <!-- Item 4: Provoz -->
+            <div class="contact-info-item">
+              <div class="contact-info-icon-wrap">
+                <img src="/Icons/Ikony/clock.png" alt="" class="contact-info-icon">
+              </div>
+              <div class="contact-info-text">
+                <span class="contact-info-label">Provoz</span>
+                <h3 class="contact-info-title">Po–Ne : 8:00–20:00</h3>
+                <p class="contact-info-sub">Pozdější příjezd po telefonické domluvě</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pravý sloupec: Formulář -->
+        <div class="contact-form-column" id="form-sekce">
+          <h2 class="contact-form-title">Napište nám</h2>
+          <form id="contact-page-form" class="contact-form-element">
+            <div class="contact-form-row">
+              <div class="contact-form-group">
+                <label for="contact-name" class="contact-form-label">Jméno *</label>
+                <input type="text" id="contact-name" name="name" required class="contact-form-input">
+              </div>
+              <div class="contact-form-group">
+                <label for="contact-surname" class="contact-form-label">Příjmení *</label>
+                <input type="text" id="contact-surname" name="surname" required class="contact-form-input">
+              </div>
+            </div>
+
+            <div class="contact-form-row">
+              <div class="contact-form-group">
+                <label for="contact-email" class="contact-form-label">E-mail *</label>
+                <input type="email" id="contact-email" name="email" required class="contact-form-input">
+              </div>
+              <div class="contact-form-group">
+                <label for="contact-phone" class="contact-form-label">Telefon</label>
+                <input type="tel" id="contact-phone" name="phone" class="contact-form-input">
+              </div>
+            </div>
+
+            <div class="contact-form-group contact-form-full">
+              <label for="contact-message" class="contact-form-label">Zpráva</label>
+              <textarea id="contact-message" name="message" rows="1" class="contact-form-textarea"></textarea>
+            </div>
+
+            <div class="contact-form-gdpr">
+              <label class="contact-checkbox-label">
+                <input type="checkbox" id="contact-gdpr-check" required>
+                <span class="contact-checkbox-custom"></span>
+                <span class="contact-checkbox-text">Souhlasím se zpracováním osobních údajů pro účely vyřízení dotazu.</span>
+              </label>
+            </div>
+
+            <div class="contact-form-submit-wrap">
+              <button type="submit" class="btn btn-contact-submit">Odeslat zprávu</button>
+            </div>
+            <div id="contact-form-status" class="contact-form-status" style="display: none;"></div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. BANNER: POZOR NA UZAVÍRKU SILNICE V ZIMĚ -->
+    <section class="contact-road-closure-section">
+      <div class="road-closure-overlay"></div>
+      <div class="road-closure-inner">
+        <h2 class="road-closure-title">Pozor na uzavírku silnice v zimě</h2>
+        <p class="road-closure-desc">
+          V zimním období je silnice III/290 (úsek přehrada Souš – Smědava) uzavřena.<br>
+          K hotelu je celoročně přístupná cesta vždy od Tanvaldu a Desné.
+        </p>
+      </div>
+    </section>
+
+    <!-- 4. JAK SE K NÁM DOSTAT? -->
+    <section class="contact-directions-section">
+      <div class="contact-directions-inner">
+        <h2 class="directions-main-title">Jak se k nám dostat?</h2>
+
+        <div class="directions-grid">
+          <!-- Levá část: Parkování -->
+          <div class="directions-left-col">
+            <h3 class="directions-parking-title">Parkování zdarma přímo u hotelu</h3>
+            <p class="directions-parking-desc">
+              Uzamykatelné a hlídané kamerovým systémem, bez nutnosti rezervace místa.
+            </p>
+          </div>
+
+          <!-- Pravá část: Autem a Vlakem -->
+          <div class="directions-right-col">
+            <!-- Autem -->
+            <div class="directions-mode-item">
+              <div class="directions-icon-wrap">
+                <img src="/Icons/Ikony/car.png" alt="" class="directions-icon">
+              </div>
+              <div class="directions-mode-content">
+                <h3 class="directions-mode-title">Autem</h3>
+                <p class="directions-mode-desc">
+                  Cesta z Prahy přes Liberec trvá přibližně 80 minut. U hotelu na vás čeká bezplatné a bezpečné parkoviště hlídané kamerovým systémem.
+                </p>
+              </div>
+            </div>
+
+            <!-- Vlakem -->
+            <div class="directions-mode-item">
+              <div class="directions-icon-wrap">
+                <img src="/Icons/Ikony/train.png" alt="" class="directions-icon">
+              </div>
+              <div class="directions-mode-content">
+                <h3 class="directions-mode-title">Vlakem</h3>
+                <p class="directions-mode-desc">
+                  Vlaková zastávka je 1,5 km po rovině. V případě potřeby rádi zajistíme bezplatný odvoz vašich zavazadel od vlaku přímo k hotelu.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. SEKCE MAPA -->
+    <section class="contact-map-section" id="mapa">
+      <div class="contact-map-inner">
+        <div class="contact-map-wrapper">
+          <iframe 
+            src="https://maps.google.com/maps?q=Hotel%20u%20M%C5%AFstku%20Desn%C3%A1%20368&t=&z=15&ie=UTF8&iwloc=&output=embed" 
+            class="contact-google-map-iframe"
+            allowfullscreen="" 
+            loading="lazy" 
+            referrerpolicy="no-referrer-when-downgrade"
+            title="Mapa Hotel u Můstku">
+          </iframe>
+          <a href="https://www.google.com/maps/dir/?api=1&destination=Hotel+u+M%C5%AFstku+Desn%C3%A1+368" target="_blank" rel="noopener noreferrer" class="btn-open-google-maps">
+            Zobrazit celou mapu &rsaquo;
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. REUSED SEKCE: CTA BANNER -->
+    ${getCtaHTML()}
+
+    <!-- 7. REUSED SEKCE: FOOTER -->
+    ${getFooterHTML()}
+  </div>
+`;
+
+// Interaktivita Stránky Kontakt
+const initContactPageInteractivity = () => {
+  const heroBtn = document.getElementById('btn-goto-contact-form');
+  if (heroBtn) {
+    heroBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const formSec = document.getElementById('form-sekce') || document.getElementById('contact-page-form');
+      if (formSec) {
+        formSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  }
+
+  const scrollBtn = document.getElementById('scroll-btn-kontakt');
+  if (scrollBtn) {
+    scrollBtn.addEventListener('click', () => {
+      const targetSec = document.getElementById('kontaktní-udaje');
+      if (targetSec) {
+        targetSec.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  }
+
+  const contactForm = document.getElementById('contact-page-form');
+  if (contactForm) {
+    const nameInput = document.getElementById('contact-name');
+    const surnameInput = document.getElementById('contact-surname');
+    const emailInput = document.getElementById('contact-email');
+    const requiredInputs = [nameInput, surnameInput, emailInput];
+
+    const applyCzechCustomValidity = (inp) => {
+      if (!inp) return;
+      inp.setCustomValidity('');
+      if (!inp.value.trim()) {
+        inp.setCustomValidity('Vyplňte prosím toto pole.');
+      } else if (inp.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(inp.value.trim())) {
+        inp.setCustomValidity('Zadejte prosím platnou e-mailovou adresu.');
+      }
+    };
+
+    requiredInputs.forEach(inp => {
+      if (!inp) return;
+      inp.addEventListener('invalid', function() {
+        if (this.validity.valueMissing) {
+          this.setCustomValidity('Vyplňte prosím toto pole.');
+        } else if (this.validity.typeMismatch || this.validity.patternMismatch) {
+          this.setCustomValidity('Zadejte prosím platnou e-mailovou adresu.');
+        }
+      });
+
+      inp.addEventListener('input', function() {
+        this.setCustomValidity('');
+        this.classList.remove('input-field-error');
+      });
+    });
+
+    const gdprInput = document.getElementById('contact-gdpr-check');
+    if (gdprInput) {
+      gdprInput.addEventListener('invalid', function() {
+        if (this.validity.valueMissing) {
+          this.setCustomValidity('Zaškrtněte prosím toto pole, pokud chcete pokračovat.');
+        }
+      });
+      gdprInput.addEventListener('change', function() {
+        this.setCustomValidity('');
+      });
+    }
+
+    contactForm.addEventListener('submit', async (e) => {
+      const submitBtn = contactForm.querySelector('button[type="submit"]');
+      const statusEl = document.getElementById('contact-form-status');
+
+      // 1. Kontrola a zobrazení českého obláčku přímo u pole + plynulé odskrolování
+      for (const inp of requiredInputs) {
+        if (!inp) continue;
+        applyCzechCustomValidity(inp);
+        if (!inp.checkValidity()) {
+          e.preventDefault();
+          inp.classList.add('input-field-error');
+          inp.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          setTimeout(() => {
+            inp.reportValidity();
+            inp.focus();
+          }, 250);
+          return;
+        }
+      }
+
+      if (gdprInput && !gdprInput.checked) {
+        e.preventDefault();
+        gdprInput.setCustomValidity('Zaškrtněte prosím toto pole, pokud chcete pokračovat.');
+        gdprInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => {
+          gdprInput.reportValidity();
+          gdprInput.focus();
+        }, 250);
+        if (statusEl) {
+          statusEl.style.display = 'block';
+          statusEl.style.color = '#d93025';
+          statusEl.style.marginTop = '16px';
+          statusEl.style.fontWeight = '500';
+          statusEl.innerHTML = '⚠️ Pro odeslání zprávy je nutné potvrdit souhlas se zpracováním osobních údajů.';
+        }
+        return;
+      }
+
+      e.preventDefault();
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.7';
+        submitBtn.innerHTML = 'Odesílání...';
+      }
+      if (statusEl) {
+        statusEl.style.display = 'none';
+      }
+
+      try {
+        const name = (nameInput?.value || '').trim();
+        const surname = (surnameInput?.value || '').trim();
+        const email = (emailInput?.value || '').trim();
+        const phone = (document.getElementById('contact-phone')?.value || '').trim();
+        const message = (document.getElementById('contact-message')?.value || '').trim();
+
+        const payload = { name, surname, email, phone, message };
+
+        // 1. Uložení do Supabase databáze
+        await saveContactMessage(payload);
+
+        // 2. Odeslání hezkého HTML e-mailu adminovi (ondra.zeman05@gmail.com)
+        const emailTemplate = generateEmailContactNotification(payload);
+        sendEmail({
+          to: 'ondra.zeman05@gmail.com',
+          subject: emailTemplate.subject,
+          html: emailTemplate.html,
+          type: 'contact_form_message'
+        });
+
+        // 3. UI úspěch s animovaným zaškrtávátkem a tlačítkem pro novou zprávu
+        contactForm.innerHTML = `
+          <div class="contact-success-wrapper">
+            <div class="success-checkmark-circle">
+              <svg class="checkmark-svg" viewBox="0 0 52 52">
+                <circle class="checkmark-circle-path" cx="26" cy="26" r="23" fill="none" stroke="#5c6748" stroke-width="2.5" />
+                <path class="checkmark-check-path" fill="none" stroke="#5c6748" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+              </svg>
+            </div>
+            <h3 class="success-title">Děkujeme za vaši zprávu!</h3>
+            <p class="success-desc">Vaši zprávu jsme v pořádku přijali. Náš tým se vám ozve zpět na e-mail <strong>${email}</strong> v co nejkratším čase.</p>
+            <div class="success-action-wrap" style="margin-top: 32px;">
+              <button type="button" id="btn-reset-contact-form" class="btn btn-contact-submit">Napsat další zprávu</button>
+            </div>
+          </div>
+        `;
+
+        const resetBtn = document.getElementById('btn-reset-contact-form');
+        if (resetBtn) {
+          resetBtn.addEventListener('click', () => {
+            const formContainer = document.getElementById('form-sekce');
+            if (formContainer) {
+              formContainer.innerHTML = `
+                <h2 class="contact-form-title">Napište nám</h2>
+                <form id="contact-page-form" class="contact-form-element">
+                  <div class="contact-form-row">
+                    <div class="contact-form-group">
+                      <label for="contact-name" class="contact-form-label">Jméno *</label>
+                      <input type="text" id="contact-name" name="name" required class="contact-form-input">
+                    </div>
+                    <div class="contact-form-group">
+                      <label for="contact-surname" class="contact-form-label">Příjmení *</label>
+                      <input type="text" id="contact-surname" name="surname" required class="contact-form-input">
+                    </div>
+                  </div>
+
+                  <div class="contact-form-row">
+                    <div class="contact-form-group">
+                      <label for="contact-email" class="contact-form-label">E-mail *</label>
+                      <input type="email" id="contact-email" name="email" required class="contact-form-input">
+                    </div>
+                    <div class="contact-form-group">
+                      <label for="contact-phone" class="contact-form-label">Telefon</label>
+                      <input type="tel" id="contact-phone" name="phone" class="contact-form-input">
+                    </div>
+                  </div>
+
+                  <div class="contact-form-group contact-form-full">
+                    <label for="contact-message" class="contact-form-label">Zpráva</label>
+                    <textarea id="contact-message" name="message" rows="1" class="contact-form-textarea"></textarea>
+                  </div>
+
+                  <div class="contact-form-gdpr">
+                    <label class="contact-checkbox-label">
+                      <input type="checkbox" id="contact-gdpr-check" required>
+                      <span class="contact-checkbox-custom"></span>
+                      <span class="contact-checkbox-text">Souhlasím se zpracováním osobních údajů pro účely vyřízení dotazu.</span>
+                    </label>
+                  </div>
+
+                  <div class="contact-form-submit-wrap">
+                    <button type="submit" class="btn btn-contact-submit">Odeslat zprávu</button>
+                  </div>
+                  <div id="contact-form-status" class="contact-form-status" style="display: none;"></div>
+                </form>
+              `;
+              initContactPageInteractivity();
+            }
+          });
+        }
+      } catch (err) {
+        console.error('Chyba při odesílání kontaktního formuláře:', err);
+        if (statusEl) {
+          statusEl.style.display = 'block';
+          statusEl.style.color = '#d93025';
+          statusEl.style.marginTop = '16px';
+          statusEl.style.fontWeight = '500';
+          statusEl.innerHTML = '❌ Omlouváme se, při odesílání došlo k chybě. Zkuste to prosím znovu.';
+        }
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.style.opacity = '1';
+          submitBtn.innerHTML = 'Odeslat zprávu';
+        }
+      }
+    });
+  }
+
+  initContactMap();
+};
+
+// Inicializace Interaktivní Leaflet Mapy
+const initContactMap = () => {
+  const mapContainer = document.getElementById('contact-leaflet-map');
+  if (!mapContainer) return;
+
+  const loadLeaflet = (callback) => {
+    if (window.L) {
+      callback();
+      return;
+    }
+    if (!document.getElementById('leaflet-css')) {
+      const link = document.createElement('link');
+      link.id = 'leaflet-css';
+      link.rel = 'stylesheet';
+      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+      document.head.appendChild(link);
+    }
+    if (!document.getElementById('leaflet-js')) {
+      const script = document.createElement('script');
+      script.id = 'leaflet-js';
+      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+      script.onload = callback;
+      document.head.appendChild(script);
+    } else {
+      const checkL = setInterval(() => {
+        if (window.L) {
+          clearInterval(checkL);
+          callback();
+        }
+      }, 50);
+    }
+  };
+
+  loadLeaflet(() => {
+    if (mapContainer._leaflet_id) return;
+    const lat = 50.7601;
+    const lng = 15.3184;
+    const map = window.L.map(mapContainer, {
+      center: [lat, lng],
+      zoom: 15,
+      scrollWheelZoom: false
+    });
+
+    window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
+
+    const customIcon = window.L.divIcon({
+      className: 'custom-map-pin',
+      html: `
+        <div class="map-pin-bubble">
+          <img src="/Icons/Ikony/location.png" class="pin-icon" alt="">
+          <span class="pin-title">Hotel u Můstku</span>
+        </div>
+      `,
+      iconSize: [160, 48],
+      iconAnchor: [80, 48]
+    });
+
+    const marker = window.L.marker([lat, lng], { icon: customIcon }).addTo(map);
+    marker.bindPopup('<b>Hotel u Můstku</b><br>Údolní 368, Desná v Jizerských horách 1').openPopup();
+  });
+};
 
 // Datové podklady pro 4 samostatné kategorie aktivit v okolí hotelu
 const CATEGORIES_DATA = {
@@ -3754,10 +4360,10 @@ const CATEGORIES_DATA = {
 const getCategoryPageHTML = (catId) => {
   const cat = CATEGORIES_DATA[catId] || CATEGORIES_DATA['turistika'];
   
-  const cardsHTML = cat.items.map((item) => `
+  const cardsHTML = cat.items.map((item, idx) => `
     <div class="category-destination-card" data-category="${catId}" data-id="${item.id}">
       <div class="category-destination-img-wrap">
-        <img src="${item.img}" alt="${item.alt || item.title}" loading="lazy" decoding="async"${item.objectPosition ? ` style="object-position: ${item.objectPosition};"` : ''}>
+        <img src="${item.img}" alt="${item.alt || item.title}" loading="${idx < 4 ? 'eager' : 'lazy'}" decoding="async"${idx < 4 ? ' fetchpriority="high"' : ''}${item.objectPosition ? ` style="object-position: ${item.objectPosition};"` : ''} class="${idx < 4 ? 'img-loaded' : ''}" onload="this.classList.add('img-loaded')">
       </div>
       <div class="category-destination-footer">
         <h3 class="category-destination-title">${item.title}</h3>
@@ -3907,8 +4513,11 @@ const route = (isInitial = false) => {
 
   const knownHomeHashes = [
     '', '#', '#domu', '#uvod', '#o-nas', '#zazemi', '#sleva', '#promo',
-    '#recenze', '#hodnoceni',
-    '#kontakt', '#kde-nas-najdete'
+    '#recenze', '#hodnoceni'
+  ];
+
+  const knownContactHashes = [
+    '#kontakt', '#kontakt-stranka', '#kde-nas-najdete', '#napiste-nam'
   ];
 
   const knownActivitiesHashes = [
@@ -3941,6 +4550,8 @@ const route = (isInitial = false) => {
     pageKey = 'admin';
   } else if (knownCategoryHashes.includes(cleanHash) || cleanHash.includes('turistik') || cleanHash.includes('cykl') || cleanHash.includes('zimn') || cleanHash.includes('autem')) {
     pageKey = 'category-detail';
+  } else if (knownContactHashes.includes(cleanHash) || cleanHash.includes('kontakt')) {
+    pageKey = 'contact';
   } else if (knownActivitiesHashes.includes(cleanHash)) {
     pageKey = 'activities';
   } else if (knownEventsHashes.includes(cleanHash)) {
@@ -3966,7 +4577,7 @@ const route = (isInitial = false) => {
   const isNewPage = currentViewKey !== pageKey;
   currentViewKey = pageKey;
 
-  if (pageKey === 'ground' || pageKey === 'view' || pageKey === 'dining' || pageKey === 'events' || pageKey === 'activities' || pageKey === 'category-detail') {
+  if (pageKey === 'ground' || pageKey === 'view' || pageKey === 'dining' || pageKey === 'events' || pageKey === 'activities' || pageKey === 'category-detail' || pageKey === 'contact') {
     preloadHeroImages(pageKey);
   }
 
@@ -3986,6 +4597,7 @@ const route = (isInitial = false) => {
     else if (catId.includes('aut')) catId = 'vylety-autem';
     else catId = 'turistika';
 
+    preloadCategoryImages(catId);
     app.innerHTML = getCategoryPageHTML(catId);
     initDestinationModal();
   } else if (pageKey === 'activities') {
@@ -4000,6 +4612,9 @@ const route = (isInitial = false) => {
     app.innerHTML = getRoomViewFloorHTML();
   } else if (pageKey === 'rooms') {
     app.innerHTML = getRoomsPageHTML();
+  } else if (pageKey === 'contact') {
+    app.innerHTML = getContactPageHTML();
+    initContactPageInteractivity();
   } else if (pageKey === '404') {
     app.innerHTML = get404PageHTML();
   } else {
@@ -4077,3 +4692,4 @@ window.addEventListener('DOMContentLoaded', () => route(true));
 
 // Initial trigger
 route(true);
+preloadAllCategoriesBackground();

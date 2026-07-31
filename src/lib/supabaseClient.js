@@ -454,3 +454,32 @@ export const initStoredDisabledRoomsInMock = () => {
 };
 
 initStoredDisabledRoomsInMock();
+
+// Uložení zprávy z kontaktního formuláře do Supabase databáze
+export const saveContactMessage = async (messageData) => {
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('contact_messages')
+        .insert([{
+          name: messageData.name,
+          surname: messageData.surname,
+          email: messageData.email,
+          phone: messageData.phone || '',
+          message: messageData.message || '',
+          status: 'new'
+        }])
+        .select();
+
+      if (error) {
+        console.error('Chyba při ukládání kontaktní zprávy do Supabase:', error);
+        return { success: false, error };
+      }
+      return { success: true, data: data ? data[0] : null };
+    } catch (err) {
+      console.error('Výjimka při ukládání kontaktní zprávy:', err);
+      return { success: false, error: err };
+    }
+  }
+  return { success: true, isMock: true };
+};
