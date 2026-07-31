@@ -638,10 +638,10 @@ const getFeaturesHTML = () => `
           <!-- Výhoda 2 -->
           <div class="feature-item">
             <div class="feature-icon">
-              <img src="/Icons/Ikona - venkovni prvky.webp" alt="Dětské venkovní herní prvky" loading="lazy" decoding="async">
+              <img src="/Icons/Ikona - venkovni prvky.webp" alt="Přírodní otužování u splavu" loading="lazy" decoding="async">
             </div>
             <p class="feature-text">
-              <strong>Dětské venkovní herní prvky</strong> pro radost vašich nejmenších.
+              <strong>Přírodní otužování u splavu</strong> pro dokonale svěží restart těla i mysli.
             </p>
           </div>
 
