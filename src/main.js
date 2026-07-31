@@ -2354,7 +2354,7 @@ const initInteractivity = () => {
   if (roomsBtn) {
     roomsBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      window.location.hash = '#pokoje-nabidka';
+      window.location.href = '/ubytovani.html';
     });
   }
 
@@ -2362,7 +2362,7 @@ const initInteractivity = () => {
   if (aboutMoreBtn) {
     aboutMoreBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      window.location.hash = '#pokoje-nabidka';
+      window.location.href = '/ubytovani.html';
     });
   }
 
@@ -2370,7 +2370,11 @@ const initInteractivity = () => {
   if (btnGotoPrizemi) {
     btnGotoPrizemi.addEventListener('click', (e) => {
       e.preventDefault();
-      window.location.hash = '#pokoj-prizemi';
+      window.location.hash = '#prizemi';
+      route(false);
+      window.scrollTo(0, 0);
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
     });
   }
 
@@ -2389,7 +2393,11 @@ const initInteractivity = () => {
   if (btnGotoVyhled) {
     btnGotoVyhled.addEventListener('click', (e) => {
       e.preventDefault();
-      window.location.hash = '#pokoj-vyhled';
+      window.location.hash = '#vyhled';
+      route(false);
+      window.scrollTo(0, 0);
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
     });
   }
 
@@ -2664,7 +2672,7 @@ const initInteractivity = () => {
   if (serviceRestaurantBtn) {
     serviceRestaurantBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      window.location.hash = '#sluzby';
+      window.location.href = '/stravovani.html';
     });
   }
 
@@ -2672,7 +2680,7 @@ const initInteractivity = () => {
   if (serviceEventsBtn) {
     serviceEventsBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      window.location.hash = '#sluzby';
+      window.location.href = '/akce.html';
     });
   }
 
@@ -2680,7 +2688,7 @@ const initInteractivity = () => {
   if (surroundingsMoreBtn) {
     surroundingsMoreBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      window.location.hash = '#aktivity';
+      window.location.href = '/okoli.html';
     });
   }
 
@@ -2690,13 +2698,18 @@ const initInteractivity = () => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      const href = btn.getAttribute('href');
-      if (href) {
-        window.location.hash = href;
-        route(false);
-        window.scrollTo(0, 0);
-        document.body.scrollTop = 0;
-        document.documentElement.scrollTop = 0;
+      const href = btn.getAttribute('href') || '';
+      if (href.includes('turistika')) window.location.href = '/okoli-turistika.html';
+      else if (href.includes('cyklistika')) window.location.href = '/okoli-cyklistika.html';
+      else if (href.includes('zima')) window.location.href = '/okoli-zima.html';
+      else if (href.includes('autem')) window.location.href = '/okoli-vylety-autem.html';
+      else if (href.startsWith('/')) window.location.href = href;
+      else if (href.startsWith('#')) {
+        const clean = href.replace('#', '');
+        if (clean === 'turistika') window.location.href = '/okoli-turistika.html';
+        else if (clean === 'cyklistika') window.location.href = '/okoli-cyklistika.html';
+        else if (clean === 'zimni-vylety' || clean === 'zima') window.location.href = '/okoli-zima.html';
+        else if (clean === 'vylety-autem' || clean === 'autem') window.location.href = '/okoli-vylety-autem.html';
       }
     });
   });
@@ -2705,7 +2718,7 @@ const initInteractivity = () => {
   diningBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
-      window.location.hash = '#sluzby';
+      window.location.href = '/stravovani.html';
     });
   });
 
