@@ -116,7 +116,7 @@ export const ROOM_GALLERIES = {
     '/pokoje/p7/2.webp',
     '/pokoje/p7/3.webp',
     '/pokoje/p7/4.webp',
-    '/pokoje/p7/5.png',
+    '/pokoje/p7/5.webp',
     '/pokoje/p7/6.webp',
     '/pokoje/p7/7.webp',
     '/pokoje/p7/8.webp',
@@ -863,11 +863,11 @@ const getFooterHTML = () => `
         <div class="footer-col footer-col-links">
           <h3 class="footer-col-heading">Rychlé odkazy</h3>
           <ul class="footer-links-list">
-            <li><a href="#pokoje">Nabídka pokojů</a></li>
-            <li><a href="#stravovani">Stravování</a></li>
-            <li><a href="#oslavy-akce">Akce</a></li>
-            <li><a href="#aktivity">Aktivity</a></li>
-            <li><a href="#kontakt">Kontakt</a></li>
+            <li><a href="/ubytovani.html">Nabídka pokojů</a></li>
+            <li><a href="/stravovani.html">Stravování</a></li>
+            <li><a href="/akce.html">Akce</a></li>
+            <li><a href="/okoli.html">Aktivity</a></li>
+            <li><a href="/kontakt.html">Kontakt</a></li>
           </ul>
         </div>
 
@@ -875,8 +875,8 @@ const getFooterHTML = () => `
         <div class="footer-col footer-col-legal">
           <h3 class="footer-col-heading">Právní doložky</h3>
           <ul class="footer-links-list">
-            <li><a href="#">Ochrana osobních údajů (GDPR)</a></li>
-            <li><a href="#">Používání cookies (Nastavení)</a></li>
+            <li><a href="/gdpr.html">Ochrana osobních údajů (GDPR)</a></li>
+            <li><a href="/cookies.html" id="footer-cookie-settings-link">Používání cookies (Nastavení)</a></li>
           </ul>
         </div>
       </div>
@@ -995,10 +995,10 @@ const getHomePageHTML = () => {
   <section class="about-section" id="ubytovani">
     <div class="about-inner">
       <div class="about-content">
-        <h2 class="about-title" id="o-nas">Zázemí, do kterého se budete rádi vracet.</h2>
+        <h2 class="about-title" id="o-nas">Klid Jizerských hor, do kterého se budete rádi vracet</h2>
         <div class="about-text">
-          <p>Náš hotel najdete ukrytý v tichém lesním údolí, stranou ruchu měst. Čeká vás komfortní ubytování, poctivá domácí kuchyně a osobní přístup, díky kterému se tu budete cítit jako doma.</p>
-          <p>Ať už přijedete za odpočinkem, nebo za výlety po okolních horách, o pohodlný pobyt se postaráme za vás.</p>
+          <p>Hotel U Můstků najdete ukrytý v tichém údolí nad Desnou. Pod okny šumí splav Bílé Desné, z balkónů dohlédnete na skokanské můstky.</p>
+          <p>Čeká vás poctivá domácí kuchyně a osobní přístup, díky kterému se tu budete cítit jako doma.</p>
         </div>
         <button class="btn btn-about" id="about-more-btn">Nabídka pokojů</button>
       </div>
@@ -1047,8 +1047,8 @@ const getRoomsPageHTML = () => `
 
       <div class="room-detail-hero-center">
         <h1 class="hero-title room-detail-hero-title">
-          <span class="desktop-title-text">Nabídka pokojů</span>
-          <span class="mobile-tablet-title-text">Prohlédněte si nabídku pokojů</span>
+          <span class="desktop-title-text">Ubytování v Jizerských horách — pokoje hotelu U Můstků</span>
+          <span class="mobile-tablet-title-text">Ubytování v Jizerských horách — pokoje hotelu U Můstků</span>
         </h1>
         <p class="room-detail-hero-subtitle">
           <span class="desktop-sub-text">Prohlédněte si nabídku našich pokojů a vyberte si ten správný pro pobyt v Jizerských horách.</span>
@@ -1076,7 +1076,7 @@ const getRoomsPageHTML = () => `
         </div>
         <div class="room-card-content">
           <h2 class="room-card-title">Pokoje přízemí</h2>
-          <p class="room-card-desc">Útulně a moderně zařízené pokoje s výhledem do zeleně. Tyto pokoje se nacházejí v přízemí hotelu, a nabízejí tak přímý a snadný přístup na venkovní terasu a k hlavnímu parkovišti.</p>
+          <p class="room-card-desc">Útulně a moderně zařízené pokoje Standard v přízemí hotelu nabízejí příjemný pobyt s vlastním balkónem a výhledem.</p>
           <div class="room-card-buttons">
             <button class="btn btn-booking btn-room-primary" id="btn-goto-prizemi">Prohlédnout nabídku</button>
           </div>
@@ -1087,7 +1087,7 @@ const getRoomsPageHTML = () => `
       <div class="room-card">
         <div class="room-card-content">
           <h2 class="room-card-title">Pokoje s výhledem</h2>
-          <p class="room-card-desc">Prostor a soukromí s vlastní prostornou terasou a výhledem na celé údolí. Tyto pokoje se nacházejí v patře hotelu a disponují vlastní koupelnou, balónem a nádherným výhledem.</p>
+          <p class="room-card-desc">Prostorné pokoje v patře hotelu s vlastním balkónem v alpském stylu. Nabízejí nádherný přímý výhled na šumící splav řeky Bílé Desné a na skokanské můstky.</p>
           <div class="room-card-buttons">
             <button class="btn btn-booking btn-room-primary" id="btn-goto-vyhled">Prohlédnout nabídku</button>
           </div>
@@ -1179,8 +1179,8 @@ const getRoomGroundFloorHTML = () => `
           <span class="mobile-tablet-title-text">Vyberte si svůj pokoj v přízemí</span>
         </h1>
         <p class="room-detail-hero-subtitle">
-          <span class="desktop-sub-text">Útulně a moderně zařízené pokoje v přízemí hotelu s výhledem do zeleně a přímým přístupem na venkovní terasu a parkoviště.</span>
-          <span class="mobile-sub-text">Objevte zázemí se 100% bezbariérovým přístupem</span>
+          <span class="desktop-sub-text">Útulně a moderně zařízené pokoje Standard v přízemí hotelu nabízejí příjemný pobyt s vlastním balkónem a výhledem.</span>
+          <span class="mobile-sub-text">Příjemný pobyt v přízemí hotelu s vlastním balkónem a výhledem</span>
         </p>
         <button class="btn btn-booking room-detail-hero-btn" id="btn-specs-rooms">Zjistit detaily</button>
       </div>
@@ -1357,7 +1357,7 @@ const getRoomGroundFloorHTML = () => `
   <section class="room-banner-section">
     <div class="room-banner-overlay"></div>
     <div class="room-banner-inner">
-      <p class="room-banner-text">Pokoje Standard v přízemí hotelu jsou navrženy pro maximální pohodlí bez překážek.<br>Díky přístupu zcela bez schodů jsou ideální volbou pro rodiny s kočárky i seniory.</p>
+      <p class="room-banner-text">Pokoje Standard v přízemí hotelu nabízejí útulné a pohodlné ubytování.<br>Disponují vlastním balkónem a výhledem.</p>
     </div>
   </section>
 
@@ -1710,7 +1710,7 @@ const getRoomViewFloorHTML = () => {
   html = html.replace('alt="Detaily Pokojů v Přízemí"', 'alt="Detaily Pokojů s Výhledem" class="img-desna-41"');
 
   // 6. Panoramatický banner fotka na pozadí a text
-  const oldBannerText = `Pokoje Standard v přízemí hotelu jsou navrženy pro maximální pohodlí bez překážek.<br>Díky přístupu zcela bez schodů jsou ideální volbou pro rodiny s kočárky i seniory.`;
+  const oldBannerText = `Pokoje Standard v přízemí hotelu nabízejí útulné a pohodlné ubytování.<br>Disponují vlastním balkónem a výhledem.`;
   const newBannerText = `Nově zrekonstruovaný pokoj v prvním patře s dřevěným alpským balkónem.<br>Užijte si jedinečný výhled na můstky a uklidňující šumění splavu Bílé Desné přímo pod okny.`;
 
   html = html.replace(oldBannerText, newBannerText);
@@ -3006,14 +3006,6 @@ const getStravovaniPageHTML = () => `
               </h3>
               <p class="dining-info-desc">Přímo od stolu s chlazeným pivem můžete sledovat tréninky skokanů na protilehlých můstcích.</p>
             </div>
-
-            <div class="dining-info-item">
-              <h3 class="dining-info-heading">
-                <img src="/Icons/Ikony/children.png" alt="" class="dining-inline-icon">
-                <span>Zábava pro děti</span>
-              </h3>
-              <p class="dining-info-desc">Děti se mohou bezpečně vyřádit na naší trampolíně, kterou máte po celou dobu pod dohledem přímo od stolu naší terasy.</p>
-            </div>
           </div>
         </div>
 
@@ -3081,6 +3073,8 @@ const getStravovaniPageHTML = () => `
   ${getSurroundingsHTML()}
 
   <!-- 9. REUSED SEKTION: RECENZE -->
+  
+
   ${getReviewsHTML()}
 
   <!-- 10. REUSED SEKTION: CTA BANNER -->
@@ -3222,7 +3216,7 @@ const getEventsPageHTML = () => `
           <!-- Položka 1 -->
           <div class="feature-item">
             <div class="feature-icon">
-              <img src="/Icons/Ikony/Kuchařská ilustrace s transparentním pozadím.png" alt="Pohoštění na míru" loading="lazy" decoding="async">
+              <img src="/Icons/Ikony/Kuchařská ilustrace s transparentním pozadím.webp" alt="Pohoštění na míru" loading="lazy" decoding="async">
             </div>
             <p class="feature-text">
               <strong>Pohoštění na míru:</strong> domácí kuchyně z čerstvých surovin.
@@ -3242,7 +3236,7 @@ const getEventsPageHTML = () => `
           <!-- Položka 3 -->
           <div class="feature-item">
             <div class="feature-icon">
-              <img src="/Icons/Ikony/Obývací scéna s transparentním pozadím.png" alt="Pořádání akcí a oslav" loading="lazy" decoding="async">
+              <img src="/Icons/Ikony/Obývací scéna s transparentním pozadím.webp" alt="Pořádání akcí a oslav" loading="lazy" decoding="async">
             </div>
             <p class="feature-text">
               <strong>Pořádání akcí a oslav</strong> bez rušení ostatních hostů.
@@ -3293,6 +3287,18 @@ const getEventsPageHTML = () => `
   ${getReviewsHTML()}
 
   <!-- 6. REUSED SEKCE: CTA BANNER -->
+  
+
+  
+  
+
+  
+  
+  
+  
+  
+  
+
   ${getCtaHTML()}
 
   <!-- 7. REUSED SEKCE: FOOTER -->
@@ -3323,7 +3329,7 @@ const getActivitiesPageHTML = () => `
 
           <div class="activities-hero-buttons-wrap">
             <a href="#aktivity-v-hotelu" class="btn btn-activities-hero btn-activities-hotel" id="btn-activities-hotel">Aktivity v hotelu</a>
-            <a href="#aktivity-v-okoli" class="btn btn-activities-hero btn-activities-surroundings" id="btn-activities-surroundings">Aktivity v okolí</a>
+            <a href="/okoli#aktivity-v-okoli" class="btn btn-activities-hero btn-activities-surroundings" id="btn-activities-surroundings">Aktivity v okolí</a>
           </div>
         </div>
 
@@ -3471,6 +3477,10 @@ const getActivitiesPageHTML = () => `
       </div>
     </section>
 
+    
+
+    <!-- 5. REUSED SEKCE: CTA BANNER -->
+    
     <!-- 4. ČASTO KLADENÉ DOTAZY (FAQ) -->
     <section class="activities-faq-section" id="faq">
       <div class="activities-faq-inner">
@@ -3484,7 +3494,7 @@ const getActivitiesPageHTML = () => `
               <span class="faq-action-text">Zobrazit odpověď <span class="faq-arrow">&rsaquo;</span></span>
             </button>
             <div class="faq-answer-content">
-              <p>K Protržené přehradě se jde údolím po rovině, dojdete tam pěšky od hotelu. Kolem přehrady Souš vede zpevněný okruh bez převýšení. Rašeliniště Jizerky má dřevěné povalové chodníky. Řekněte nám, kolik chcete ujít, a doporučíme trasu na míru.</p>
+              <p>K Protržené přehradě se jde údolím Černé Desné s převýšením cca 300 m, dojdete tam pěšky přímo od hotelu. Kolem přehrady Souš vede zpevněný okruh bez převýšení. Rašeliniště Jizerky má dřevěné povalové chodníky. Řekněte nám, kolik chcete ujít, a doporučíme trasu na míru.</p>
             </div>
           </div>
 
@@ -3513,7 +3523,6 @@ const getActivitiesPageHTML = () => `
       </div>
     </section>
 
-    <!-- 5. REUSED SEKCE: CTA BANNER -->
     ${getCtaHTML()}
 
     <!-- 6. REUSED SEKCE: FOOTER -->
@@ -3543,7 +3552,7 @@ const getNewsPageHTML = async () => {
 
           <div class="room-detail-hero-center news-hero-center">
             <h1 class="hero-title room-detail-hero-title">
-              <span class="desktop-title-text">Aktuality & Novinky</span>
+              <span class="desktop-title-text">Aktuality a novinky z Hotelu U Můstků</span>
               <span class="mobile-tablet-title-text">Aktuality & Novinky</span>
             </h1>
             <p class="room-detail-hero-subtitle">
@@ -3626,7 +3635,7 @@ const getContactPageHTML = () => `
 
         <div class="room-detail-hero-center contact-hero-center">
           <h1 class="hero-title room-detail-hero-title">
-            <span class="desktop-title-text">Kontakt</span>
+            <span class="desktop-title-text">Kontakt a cesta k hotelu v Desné</span>
             <span class="mobile-tablet-title-text">Neváhejte nás kontaktovat</span>
           </h1>
           <p class="room-detail-hero-subtitle">
@@ -3785,7 +3794,7 @@ const getContactPageHTML = () => `
               <div class="directions-mode-content">
                 <h3 class="directions-mode-title">Autem</h3>
                 <p class="directions-mode-desc">
-                  Cesta z Prahy přes Liberec trvá přibližně 80 minut. U hotelu na vás čeká bezplatné a bezpečné parkoviště hlídané kamerovým systémem.
+                  Z Prahy (Černý Most) je to k hotelu pouhých 108 km — cca 75 minut předpisové jízdy (mimo Liberec). U hotelu na vás čeká bezplatné a bezpečné parkoviště hlídané kamerovým systémem.
                 </p>
               </div>
             </div>
@@ -3798,7 +3807,7 @@ const getContactPageHTML = () => `
               <div class="directions-mode-content">
                 <h3 class="directions-mode-title">Vlakem</h3>
                 <p class="directions-mode-desc">
-                  Vlaková zastávka je 1,5 km po rovině. V případě potřeby rádi zajistíme bezplatný odvoz vašich zavazadel od vlaku přímo k hotelu.
+                  Vlaková zastávka v Desné je vzdálená 1,5 km od hotelu. V případě potřeby rádi zajistíme bezplatný odvoz vašich zavazadel od vlaku přímo k hotelu.
                 </p>
               </div>
             </div>
@@ -3827,10 +3836,17 @@ const getContactPageHTML = () => `
     </section>
 
     <!-- 6. REUSED SEKCE: CTA BANNER -->
-    ${getCtaHTML()}
+    
+
+  ${getCtaHTML()}
 
     <!-- 7. REUSED SEKCE: FOOTER -->
-    ${getFooterHTML()}
+    
+
+  
+  
+  
+  ${getFooterHTML()}
   </div>
 `;
 
@@ -4381,7 +4397,7 @@ const CATEGORIES_DATA = {
         id: 'zoo-botanicka-zima',
         title: 'Zoo a botanická zahrada Liberec',
         subtitle: '32 km od hotelu | Liberec',
-        img: '/Fotky Aktivit/zoo-liberec.jpg',
+        img: '/Fotky Aktivit/zoo-liberec.webp',
         alt: 'Zvířata ve výběhu liberecké zoologické zahrady',
         desc: 'V zimě je v zoo klid a žádné fronty. Některým zvířatům chladné počasí naopak svědčí — sněžní levharti, sobi nebo vlci jsou v zimě nejaktivnější.\n\nKousek od zoo je botanická zahrada s vyhřívanými skleníky, kde se dá mezi procházkami ohřát. Ideální kombinace: hodina venku u zvířat, hodina v teple mezi tropickými rostlinami.'
       },
@@ -4454,7 +4470,7 @@ const CATEGORIES_DATA = {
         id: 'zoo-liberec-auto',
         title: 'Zoo Liberec',
         subtitle: '32 km od hotelu | Liberec',
-        img: '/Fotky Aktivit/zoo-liberec.jpg',
+        img: '/Fotky Aktivit/zoo-liberec.webp',
         alt: 'Výběh se zvířaty v liberecké zoologické zahrady',
         desc: 'Liberecká zoo je nejstarší zoologická zahrada v Česku, funguje od roku 1904. Žije tu kolem sto sedmdesáti druhů zvířat ze všech světadílů.\n\nNa rozdíl od velkých zahrad se dá projít pohodlně za dvě až tři hodiny, aniž byste se uchodili. K nejoblíbenějším patří pandy červené, lachtani a levharti sněžní. V areálu je občerstvení i místa na odpočinek.'
       },
@@ -4555,7 +4571,7 @@ const getCategoryPageHTML = (catId) => {
             </p>
 
             <div class="category-hero-buttons-wrap">
-              <a href="#aktivity-v-okoli" class="btn btn-activities-hero btn-activities-hotel">‹ Zpět na přehled aktivit</a>
+              <a href="/okoli#aktivity-v-okoli" class="btn btn-activities-hero btn-activities-hotel">‹ Zpět na přehled aktivit</a>
             </div>
           </div>
 
@@ -4639,6 +4655,37 @@ const initDestinationModal = () => {
   });
 
   // Globální handler pro boční záložku a pop-up modal oznámení
+  
+  // Global Delegation for FAQ Accordion (Full Area Clickable)
+  document.addEventListener('click', (e) => {
+    const faqItem = e.target && e.target.closest('.faq-item');
+    if (faqItem) {
+      const answerContent = e.target.closest('.faq-answer-content');
+      if (!answerContent) {
+        e.preventDefault();
+        const isOpen = faqItem.classList.contains('is-open');
+        const btn = faqItem.querySelector('.faq-question-btn');
+
+        document.querySelectorAll('.faq-item.is-open').forEach(otherItem => {
+          if (otherItem !== faqItem) {
+            otherItem.classList.remove('is-open');
+            const otherBtn = otherItem.querySelector('.faq-question-btn');
+            if (otherBtn) otherBtn.setAttribute('aria-expanded', 'false');
+          }
+        });
+
+        if (isOpen) {
+          faqItem.classList.remove('is-open');
+          if (btn) btn.setAttribute('aria-expanded', 'false');
+        } else {
+          faqItem.classList.add('is-open');
+          if (btn) btn.setAttribute('aria-expanded', 'true');
+        }
+      }
+    }
+  });
+
+
   document.addEventListener('click', (e) => {
     // 1. Otevření pop-up modalu z boční záložky nebo tlačítka
     if (e.target && (e.target.closest('#announcement-side-tab') || e.target.closest('#btn-open-announcement-modal'))) {
@@ -4746,20 +4793,32 @@ const route = (isInitial = false) => {
   let pageKey = 'home';
   const pathName = window.location.pathname.toLowerCase().replace(/\/$/, '');
 
-  // 1. Kontrola podle čisté URL adresy (Pathname)
-  if (pathName === '/ubytovani' || pathName === '/pokoje') {
+  // 1. SPECIFICKÉ SUB-VIEW HASHE (přehodnocení nad obecnou pathname pro #prizemi, #vyhled, #turistika atd.)
+  if (cleanHash === '#prizemi' || cleanHash === '#pokoj-prizemi' || cleanHash === '#pokoje-prizemi' || cleanHash === '#pokoj-v-prizemi' || cleanHash === '#prizemi-detail') {
+    pageKey = 'ground';
+  } else if (cleanHash === '#vyhled' || cleanHash === '#pokoj-vyhled' || cleanHash === '#pokoje-vyhled' || cleanHash === '#pokoj-s-vyhledem' || cleanHash === '#vyhled-detail') {
+    pageKey = 'view';
+  } else if (cleanHash.startsWith('#rezervace')) {
+    pageKey = 'booking';
+  } else if (cleanHash.startsWith('#admin')) {
+    pageKey = 'admin';
+  } else if (knownCategoryHashes.includes(cleanHash) || cleanHash.includes('turistik') || cleanHash.includes('cykl') || cleanHash.includes('zimn') || cleanHash.includes('autem')) {
+    pageKey = 'category-detail';
+  }
+  // 2. PATHNAME KONTROLA (podle čisté URL adresy v adresním řádku)
+  else if (pathName === '/ubytovani' || pathName === '/ubytovani.html' || pathName === '/pokoje') {
     pageKey = 'rooms';
-  } else if (pathName === '/stravovani' || pathName === '/gastronomie') {
+  } else if (pathName === '/stravovani' || pathName === '/stravovani.html' || pathName === '/gastronomie') {
     pageKey = 'dining';
-  } else if (pathName === '/akce' || pathName === '/skupinove-akce') {
+  } else if (pathName === '/akce' || pathName === '/akce.html' || pathName === '/skupinove-akce') {
     pageKey = 'events';
   } else if (pathName === '/okoli-turistika.html' || pathName === '/okoli/turistika' || pathName === '/okoli-cyklistika.html' || pathName === '/okoli/cyklistika' || pathName === '/okoli-zima.html' || pathName === '/okoli/zima' || pathName === '/okoli-vylety-autem.html' || pathName === '/okoli/vylety-autem') {
     pageKey = 'category-detail';
-  } else if (pathName === '/okoli' || pathName === '/aktivity' || pathName === '/vylety') {
+  } else if (pathName === '/okoli' || pathName === '/okoli.html' || pathName === '/aktivity' || pathName === '/vylety') {
     pageKey = 'activities';
-  } else if (pathName === '/aktuality' || pathName === '/novinky') {
+  } else if (pathName === '/aktuality' || pathName === '/aktuality.html' || pathName === '/novinky') {
     pageKey = 'news';
-  } else if (pathName === '/kontakt') {
+  } else if (pathName === '/kontakt' || pathName === '/kontakt.html') {
     pageKey = 'contact';
   } else if (pathName === '/admin' || pathName === '/recepce') {
     pageKey = 'admin';
@@ -4769,13 +4828,13 @@ const route = (isInitial = false) => {
     pageKey = 'ground';
   } else if (pathName === '/vyhled') {
     pageKey = 'view';
-  } else if (cleanHash.startsWith('#rezervace')) {
-    pageKey = 'booking';
-  } else if (cleanHash.startsWith('#admin')) {
-    pageKey = 'admin';
-  } else if (knownCategoryHashes.includes(cleanHash) || cleanHash.includes('turistik') || cleanHash.includes('cykl') || cleanHash.includes('zimn') || cleanHash.includes('autem')) {
-    pageKey = 'category-detail';
-  } else if (knownNewsHashes.includes(cleanHash) || cleanHash.includes('aktualit') || cleanHash.includes('novink')) {
+  } else if (pathName === '/gdpr' || pathName === '/gdpr.html') {
+    pageKey = 'gdpr';
+  } else if (pathName === '/cookies' || pathName === '/cookies.html') {
+    pageKey = 'cookies';
+  }
+  // 3. DOKONČENÍ SEKCIONÁLNÍCH HASHŮ
+  else if (knownNewsHashes.includes(cleanHash) || cleanHash.includes('aktualit') || cleanHash.includes('novink')) {
     pageKey = 'news';
   } else if (knownContactHashes.includes(cleanHash) || cleanHash.includes('kontakt')) {
     pageKey = 'contact';
@@ -4785,10 +4844,6 @@ const route = (isInitial = false) => {
     pageKey = 'events';
   } else if (knownDiningHashes.includes(cleanHash)) {
     pageKey = 'dining';
-  } else if (cleanHash === '#pokoj-prizemi' || cleanHash === '#pokoje-prizemi' || cleanHash === '#pokoj-v-prizemi') {
-    pageKey = 'ground';
-  } else if (cleanHash === '#pokoj-vyhled' || cleanHash === '#pokoje-vyhled' || cleanHash === '#pokoj-s-vyhledem') {
-    pageKey = 'view';
   } else if (cleanHash.startsWith('#pokoje') || cleanHash === '#nabidka-pokoju') {
     pageKey = 'rooms';
   } else if (cleanHash === '#404' || cleanHash === '#error') {
@@ -4808,8 +4863,8 @@ const route = (isInitial = false) => {
     preloadHeroImages(pageKey);
   }
 
-  // Pre-rendered check: IF #app already has static HTML rendered for this page on initial load, do NOT overwrite it
-  const isPreRendered = isInitial && app.children && app.children.length > 0;
+  // Pouze pokud na úvodním načtení BEZ hashtagu existují static deti, přeskočíme přepsání
+  const isPreRenderedMatch = isInitial && app.children && app.children.length > 0 && !hash;
 
   if (pageKey === 'booking') {
     app.innerHTML = getBookingPageHTML();
@@ -4819,8 +4874,11 @@ const route = (isInitial = false) => {
   } else if (pageKey === 'admin') {
     app.innerHTML = getAdminPageHTML();
     new AdminDashboard('admin-container').init();
+  } else if (pageKey === 'gdpr' || pageKey === 'cookies') {
+    // Statická právní stránka — ponecháme pre-renderované HTML z gdpr.html nebo cookies.html
+    initInteractivity();
   } else if (pageKey === 'news') {
-    if (!isPreRendered || isNewPage) {
+    if (!isPreRenderedMatch || isNewPage) {
       getNewsPageHTML().then(html => {
         app.innerHTML = html;
         initInteractivity();
@@ -4847,38 +4905,30 @@ const route = (isInitial = false) => {
     else if (catId.includes('aut')) catId = 'vylety-autem';
     else catId = 'turistika';
 
-    // If accessed via hash link from another page (e.g. /okoli#turistika), redirect to the real HTML page
-    if (hash && (hash.includes('turistik') || hash.includes('cykl') || hash.includes('zimn') || hash.includes('aut'))) {
-      if (catId === 'turistika' && !pathName.includes('okoli-turistika')) { window.location.href = '/okoli-turistika.html'; return; }
-      if (catId === 'cyklistika' && !pathName.includes('okoli-cyklistika')) { window.location.href = '/okoli-cyklistika.html'; return; }
-      if (catId === 'zimni-vylety' && !pathName.includes('okoli-zima')) { window.location.href = '/okoli-zima.html'; return; }
-      if (catId === 'vylety-autem' && !pathName.includes('okoli-vylety-autem')) { window.location.href = '/okoli-vylety-autem.html'; return; }
-    }
-
     preloadCategoryImages(catId);
-    if (!isPreRendered || isNewPage) {
+    if (!isPreRenderedMatch || isNewPage) {
       app.innerHTML = getCategoryPageHTML(catId);
     }
     initDestinationModal();
   } else if (pageKey === 'activities') {
-    if (!isPreRendered || isNewPage) app.innerHTML = getActivitiesPageHTML();
+    if (!isPreRenderedMatch || isNewPage) app.innerHTML = getActivitiesPageHTML();
   } else if (pageKey === 'events') {
-    if (!isPreRendered || isNewPage) app.innerHTML = getEventsPageHTML();
+    if (!isPreRenderedMatch || isNewPage) app.innerHTML = getEventsPageHTML();
   } else if (pageKey === 'dining') {
-    if (!isPreRendered || isNewPage) app.innerHTML = getStravovaniPageHTML();
+    if (!isPreRenderedMatch || isNewPage) app.innerHTML = getStravovaniPageHTML();
   } else if (pageKey === 'ground') {
     app.innerHTML = getRoomGroundFloorHTML();
   } else if (pageKey === 'view') {
     app.innerHTML = getRoomViewFloorHTML();
   } else if (pageKey === 'rooms') {
-    if (!isPreRendered || isNewPage) app.innerHTML = getRoomsPageHTML();
+    if (!isPreRenderedMatch || isNewPage) app.innerHTML = getRoomsPageHTML();
   } else if (pageKey === 'contact') {
-    if (!isPreRendered || isNewPage) app.innerHTML = getContactPageHTML();
+    if (!isPreRenderedMatch || isNewPage) app.innerHTML = getContactPageHTML();
     initContactPageInteractivity();
   } else if (pageKey === '404') {
     app.innerHTML = get404PageHTML();
   } else {
-    if (!isPreRendered || isNewPage) app.innerHTML = getHomePageHTML();
+    if (!isPreRenderedMatch || isNewPage) app.innerHTML = getHomePageHTML();
   }
 
   // Přesun na vrchol při běžné navigaci na NOVOU stránku nebo na kontakt / aktuality
@@ -5023,12 +5073,195 @@ document.addEventListener('click', (e) => {
   }
 });
 
+/* =====================================================================
+   COOKIE CONSENT SYSTEM (SENIOR FRIENDLY & GDPR COMPLIANT)
+   ===================================================================== */
+const COOKIE_CONSENT_KEY = 'hotel_cookie_consent_v1';
+
+const getStoredConsent = () => {
+  try {
+    const val = localStorage.getItem(COOKIE_CONSENT_KEY);
+    return val ? JSON.parse(val) : null;
+  } catch (e) {
+    return null;
+  }
+};
+
+const saveStoredConsent = (analyticsAllowed) => {
+  try {
+    const data = {
+      analytics: !!analyticsAllowed,
+      timestamp: new Date().toISOString()
+    };
+    localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify(data));
+    return data;
+  } catch (e) {
+    return { analytics: !!analyticsAllowed };
+  }
+};
+
+const initGA4 = () => {
+  if (window.ga4Initialized) return;
+  window.ga4Initialized = true;
+
+  const script = document.createElement('script');
+  script.async = true;
+  script.src = 'https://www.googletagmanager.com/gtag/js?id=G-X62MWWL0FV';
+  document.head.appendChild(script);
+
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ window.dataLayer.push(arguments); }
+  window.gtag = gtag;
+  gtag('js', new Date());
+  gtag('config', 'G-X62MWWL0FV', { anonymize_ip: true });
+};
+
+const initCookieManager = () => {
+  const currentConsent = getStoredConsent();
+
+  // If consent already given and analytics allowed, start GA4
+  if (currentConsent && currentConsent.analytics) {
+    initGA4();
+  }
+
+  // Ensure Banner DOM elements exist
+  if (!document.getElementById('cookie-banner-wrap')) {
+    const bannerHTML = `
+      <div class="cookie-banner-wrap${currentConsent ? ' is-hidden' : ''}" id="cookie-banner-wrap" aria-label="Nastavení cookies">
+        <div class="cookie-banner-inner">
+          <div class="cookie-banner-content">
+            <h3 class="cookie-banner-title">Respektujeme vaše soukromí</h3>
+            <p class="cookie-banner-desc">Používáme sušenky (cookies), aby náš web správně fungoval a věděli jsme, jak se vám u nás líbí. Žádné údaje neprodáváme ani na nich nevyděláváme.</p>
+          </div>
+          <div class="cookie-banner-actions">
+            <button class="btn-cookie-accept" id="btn-cookie-accept-all">Přijmout vše</button>
+            <button class="btn-cookie-reject" id="btn-cookie-reject-all">Odmítnout</button>
+            <button class="btn-cookie-settings-link" id="btn-cookie-open-modal">Nastavení</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="cookie-modal-overlay" id="cookie-modal-overlay" role="dialog" aria-modal="true">
+        <div class="cookie-modal-container">
+          <div class="cookie-modal-header">
+            <div>
+              <h3 class="cookie-modal-title">Nastavení cookies</h3>
+              <p class="cookie-modal-subtitle">Vyberte si, které soubory cookies nám dovolíte používat.</p>
+            </div>
+            <button class="cookie-modal-close" id="btn-cookie-modal-close" aria-label="Zavřít okno">&times;</button>
+          </div>
+
+          <div class="cookie-modal-body">
+            <div class="cookie-option-card">
+              <div class="cookie-option-header">
+                <span class="cookie-option-name">Technické (Nutné) cookies</span>
+                <span class="cookie-badge-necessary">Vždy povolené</span>
+              </div>
+              <p class="cookie-option-desc">Tyto cookies jsou nezbytné pro správné fungování webu, odeslání rezervačního formuláře a zapamatování vašeho nastavení soukromí. Nelze je vypnout.</p>
+            </div>
+
+            <div class="cookie-option-card">
+              <div class="cookie-option-header">
+                <span class="cookie-option-name">Analytické cookies (Google Analytics)</span>
+                <label class="cookie-switch">
+                  <input type="checkbox" id="cookie-toggle-analytics"${(currentConsent && currentConsent.analytics) || !currentConsent ? ' checked' : ''}>
+                  <span class="cookie-slider"></span>
+                </label>
+              </div>
+              <p class="cookie-option-desc">Pomáhají nám anonymně měřit návštěvnost webu (kolik lidí nás navštívilo a které stránky si prohlížejí), abychom mohli web neustále vylepšovat.</p>
+            </div>
+          </div>
+
+          <div class="cookie-modal-footer">
+            <button class="btn-cookie-accept" id="btn-cookie-save-settings">Uložit moje nastavení</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', bannerHTML);
+  }
+
+  const bannerWrap = document.getElementById('cookie-banner-wrap');
+  const modalOverlay = document.getElementById('cookie-modal-overlay');
+
+  const btnAcceptAll = document.getElementById('btn-cookie-accept-all');
+  const btnRejectAll = document.getElementById('btn-cookie-reject-all');
+  const btnOpenModal = document.getElementById('btn-cookie-open-modal');
+  const btnCloseModal = document.getElementById('btn-cookie-modal-close');
+  const btnSaveSettings = document.getElementById('btn-cookie-save-settings');
+  const toggleAnalytics = document.getElementById('cookie-toggle-analytics');
+
+  const hideBanner = () => {
+    if (bannerWrap) bannerWrap.classList.add('is-hidden');
+  };
+
+  const openModal = () => {
+    if (modalOverlay) modalOverlay.classList.add('is-active');
+  };
+
+  const closeModal = () => {
+    if (modalOverlay) modalOverlay.classList.remove('is-active');
+  };
+
+  if (btnAcceptAll) {
+    btnAcceptAll.addEventListener('click', () => {
+      saveStoredConsent(true);
+      initGA4();
+      hideBanner();
+      closeModal();
+    });
+  }
+
+  if (btnRejectAll) {
+    btnRejectAll.addEventListener('click', () => {
+      saveStoredConsent(false);
+      hideBanner();
+      closeModal();
+    });
+  }
+
+  if (btnOpenModal) {
+    btnOpenModal.addEventListener('click', () => {
+      openModal();
+    });
+  }
+
+  if (btnCloseModal) {
+    btnCloseModal.addEventListener('click', () => {
+      closeModal();
+    });
+  }
+
+  if (btnSaveSettings) {
+    btnSaveSettings.addEventListener('click', () => {
+      const isAnalyticsChecked = toggleAnalytics ? toggleAnalytics.checked : false;
+      saveStoredConsent(isAnalyticsChecked);
+      if (isAnalyticsChecked) initGA4();
+      hideBanner();
+      closeModal();
+    });
+  }
+
+  // Globální obsluha otevření nastavení cookies odkudkoliv
+  document.addEventListener('click', (e) => {
+    const trigger = e.target.closest('#footer-cookie-settings-link, #btn-open-cookie-settings-page, .btn-open-cookie-settings');
+    if (trigger) {
+      e.preventDefault();
+      openModal();
+    }
+  });
+};
+
 window.addEventListener('popstate', () => route(false));
 window.addEventListener('hashchange', () => route(false));
-window.addEventListener('DOMContentLoaded', () => route(true));
+window.addEventListener('DOMContentLoaded', () => {
+  route(true);
+  initCookieManager();
+});
 
 // Initial trigger
 refreshActiveBanner().then(() => {
   route(true);
+  initCookieManager();
   preloadAllCategoriesBackground();
 });

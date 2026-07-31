@@ -13,13 +13,13 @@
 /cz/index.php   stranka=akce          /akce         301!
 /cz/index.php   stranka=cenik         /ubytovani    301!
 /cz/index.php   stranka=rezervace     /ubytovani    301!
-/cz/index.php   stranka=kniha         /             301!
+/cz/index.php   stranka=kniha         /#recenze     301!
 /cz/index.php   stranka=vylety        /okoli        301!
 /cz/index.php   stranka=mapy          /kontakt      301!
 /cz/index.php   stranka=kontakt       /kontakt      301!
 
-# TODO: až vzniknou stránky /cenik, /rezervace a /recenze (Fáze 3),
-# přesměruj na ně stranka=cenik, stranka=rezervace a stranka=kniha.
+# Poznámka: ceník i rezervace jsou sekce uvnitř /ubytovani, ne samostatné
+# stránky. Recenze mají kotvu /#recenze na úvodní stránce.
 
 # Fallback pro cokoliv dalšího ze staré struktury
 /cz/index.php                         /             301!
@@ -49,6 +49,8 @@
 /okoli/vylety-autem   /okoli-vylety-autem.html   200
 /aktuality    /aktuality.html    200
 /kontakt      /kontakt.html      200
+/gdpr         /gdpr.html         200
+/cookies      /cookies.html      200
 
 
 # Varianty s .html přesměrovat na hezkou URL (zamezí duplicitnímu obsahu)
@@ -63,6 +65,8 @@
 /okoli-vylety-autem.html   /okoli/vylety-autem   301!
 /aktuality.html    /aktuality    301!
 /kontakt.html      /kontakt      301!
+/gdpr.html         /gdpr         301!
+/cookies.html      /cookies      301!
 
 # =====================================================================
 #  ŽÁDNÝ CATCH-ALL

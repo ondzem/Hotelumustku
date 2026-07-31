@@ -212,14 +212,7 @@
 }
     </script>
 
-    <!-- Google Analytics 4 -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-X62MWWL0FV"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-X62MWWL0FV', { anonymize_ip: true });
-    </script>
+    
   </head>
   <body>
     <div id="app">
@@ -235,7 +228,7 @@
     <div class="nav-left">
       <a href="/ubytovani" class="nav-link">Nabídka pokojů</a>
       <a href="/stravovani" class="nav-link">Stravování</a>
-      <a href="/okoli" class="nav-link">Aktivity</a>
+      <a href="/okoli#aktivity-v-okoli" class="nav-link">Aktivity</a>
     </div>
     
     <a href="/" class="header-logo">
@@ -262,7 +255,7 @@
     <nav class="mobile-menu-nav">
       <a href="/ubytovani" class="mobile-nav-link">Nabídka pokojů</a>
       <a href="/stravovani" class="mobile-nav-link">Stravování</a>
-      <a href="/okoli" class="mobile-nav-link">Aktivity</a>
+      <a href="/okoli#aktivity-v-okoli" class="mobile-nav-link">Aktivity</a>
       <a href="/akce" class="mobile-nav-link">Skupinové akce</a>
       <a href="/aktuality" class="mobile-nav-link" id="mobile-nav-link-aktuality">Aktuality</a>
       <a href="/kontakt" class="mobile-nav-link">Kontakt</a>
@@ -292,7 +285,7 @@
               </p>
 
               <div class="category-hero-buttons-wrap">
-                <a href="/okoli.html" class="btn btn-activities-hero btn-activities-hotel">‹ Zpět na přehled aktivit</a>
+                <a href="/okoli#aktivity-v-okoli" class="btn btn-activities-hero btn-activities-hotel">‹ Zpět na přehled aktivit</a>
               </div>
             </div>
 
@@ -407,7 +400,7 @@
             </div>
 
             <div style="margin-top: 40px; text-align: center;">
-              <a href="/okoli.html" class="btn btn-activities-hero btn-activities-hotel" style="display: inline-flex; align-items: center; justify-content: center;">‹ Zpět na přehled aktivit</a>
+              <a href="/okoli#aktivity-v-okoli" class="btn btn-activities-hero btn-activities-hotel" style="display: inline-flex; align-items: center; justify-content: center;">‹ Zpět na přehled aktivit</a>
             </div>
           </div>
         </section>
@@ -475,8 +468,8 @@
         <div class="footer-col footer-col-legal">
           <h3 class="footer-col-heading">Právní doložky</h3>
           <ul class="footer-links-list">
-            <li><a href="#">Ochrana osobních údajů (GDPR)</a></li>
-            <li><a href="#">Používání cookies (Nastavení)</a></li>
+            <li><a href="/gdpr.html">Ochrana osobních údajů (GDPR)</a></li>
+            <li><a href="/cookies.html" id="footer-cookie-settings-link">Používání cookies (Nastavení)</a></li>
           </ul>
         </div>
       </div>

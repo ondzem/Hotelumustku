@@ -114,11 +114,6 @@
           },
           {
             "@type": "LocationFeatureSpecification",
-            "name": "Bezbariérové pokoje v přízemí",
-            "value": true
-          },
-          {
-            "@type": "LocationFeatureSpecification",
             "name": "Snídaně v ceně",
             "value": true
           },
@@ -174,11 +169,6 @@
           },
           {
             "@type": "LocationFeatureSpecification",
-            "name": "Trampolína",
-            "value": true
-          },
-          {
-            "@type": "LocationFeatureSpecification",
             "name": "Kulečník",
             "value": true
           },
@@ -220,14 +210,7 @@
       }
     </script>
 
-    <!-- Google Analytics 4 -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-X62MWWL0FV"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-X62MWWL0FV', { anonymize_ip: true });
-    </script>
+    
   </head>
   <body>
     <div id="app">
@@ -337,10 +320,10 @@
   <section class="about-section" id="ubytovani">
     <div class="about-inner">
       <div class="about-content">
-        <h2 class="about-title" id="o-nas">Zázemí, do kterého se budete rádi vracet.</h2>
+        <h2 class="about-title" id="o-nas">Klid Jizerských hor, do kterého se budete rádi vracet</h2>
         <div class="about-text">
-          <p>Náš hotel najdete ukrytý v tichém lesním údolí, stranou ruchu měst. Čeká vás komfortní ubytování, poctivá domácí kuchyně a osobní přístup, díky kterému se tu budete cítit jako doma.</p>
-          <p>Ať už přijedete za odpočinkem, nebo za výlety po okolních horách, o pohodlný pobyt se postaráme za vás.</p>
+          <p>Hotel U Můstků najdete ukrytý v tichém údolí nad Desnou. Pod okny šumí splav Bílé Desné, z balkónů dohlédnete na skokanské můstky.</p>
+          <p>Čeká vás poctivá domácí kuchyně a osobní přístup, díky kterému se tu budete cítit jako doma.</p>
         </div>
         <button class="btn btn-about" id="about-more-btn">Nabídka pokojů</button>
       </div>
@@ -1078,61 +1061,7 @@
   </section>
 
   
-  <!-- SEKCE AKTIVITY V OKOLÍ (1:1 REPLIKA DLE SVG PŘEDLOHY) -->
-  <section class="surroundings-section home-surroundings-section" id="aktivity">
-    <div class="surroundings-inner">
-      <h2 class="surroundings-title">Co vše můžete v okolí podniknout?</h2>
-      
-      <div class="surroundings-slider-viewport" id="surroundings-viewport">
-        <div class="surroundings-cards-grid" id="surroundings-track">
-          <!-- Karta 1 -->
-          <div class="surrounding-card">
-            <div class="surrounding-card-img-wrap">
-              <img src="/Uvodni stranka/Rozhledna Stepanka.webp" alt="Rozhledna Štěpánka" loading="lazy" decoding="async">
-            </div>
-            <h3 class="surrounding-card-title">ROZHLEDNA ŠTĚPÁNKA</h3>
-          </div>
-          
-          <!-- Karta 2 -->
-          <div class="surrounding-card">
-            <div class="surrounding-card-img-wrap">
-              <img src="/Uvodni stranka/Vodopady Jizerky.webp" alt="Vodopády na Černé Desné" loading="lazy" decoding="async">
-            </div>
-            <h3 class="surrounding-card-title">VODOPÁDY NA ČERNÉ DESNÉ</h3>
-          </div>
-          
-          <!-- Karta 3 -->
-          <div class="surrounding-card">
-            <div class="surrounding-card-img-wrap">
-              <img src="/Uvodni stranka/Tanvaldsky spicak.webp" alt="Ski Areál Tanvaldský Špičák" loading="lazy" decoding="async">
-            </div>
-            <h3 class="surrounding-card-title">SKI AREÁL TANVALDSKÝ ŠPIČÁK</h3>
-          </div>
-          
-          <!-- Karta 4 -->
-          <div class="surrounding-card">
-            <div class="surrounding-card-img-wrap">
-              <img src="/Uvodni stranka/Liberec zoo.webp" alt="ZOO Liberec" loading="lazy" decoding="async">
-            </div>
-            <h3 class="surrounding-card-title">ZOO LIBEREC</h3>
-          </div>
-        </div>
-      </div>
-      
-      <div class="surroundings-footer">
-        <div class="surroundings-nav-controls">
-          <button class="surroundings-nav-btn" id="surroundings-prev" aria-label="Předchozí aktivity">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#333333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-          </button>
-          <button class="surroundings-nav-btn" id="surroundings-next" aria-label="Další aktivity">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#333333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-          </button>
-        </div>
-        
-        <button class="btn btn-surroundings-more" id="surroundings-more-btn">Zobrazit všechny aktivity</button>
-      </div>
-    </div>
-  </section>
+  
 
   <section class="cta-section" >
     <div class="cta-overlay"></div>
@@ -1193,8 +1122,8 @@
         <div class="footer-col footer-col-legal">
           <h3 class="footer-col-heading">Právní doložky</h3>
           <ul class="footer-links-list">
-            <li><a href="#">Ochrana osobních údajů (GDPR)</a></li>
-            <li><a href="#">Používání cookies (Nastavení)</a></li>
+            <li><a href="/gdpr.html">Ochrana osobních údajů (GDPR)</a></li>
+            <li><a href="/cookies.html" id="footer-cookie-settings-link">Používání cookies (Nastavení)</a></li>
           </ul>
         </div>
       </div>

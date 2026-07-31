@@ -33,8 +33,8 @@ Podstránky pokojů zatím **neexistují** jako HTML (jen fotky v `public/pokoje
 
 ## 2. Cílová skupina (priorita shora dolů)
 
-1. **Aktivní senioři 60+** — hlavní segment. Chtějí ticho, čistotu, bezbariérové pokoje v přízemí, poctivé české jídlo, snadné parkování, rovinatou cestu od vlaku (1,5 km), odvoz zavazadel zdarma. Potřebují velké písmo, jednoduchý jazyk, telefonní číslo na dosah.
-2. **Rodiny s dětmi (i se psem)** — oplocená zahrada, trampolína 3,5 m, dětský koutek, dog-friendly (150 Kč/den).
+1. **Aktivní senioři 60+** — hlavní segment. Chtějí ticho, čistotu, poctivé české jídlo, snadné parkování, rovinatou cestu od vlaku (1,5 km), odvoz zavazadel zdarma. Potřebují velké písmo, jednoduchý jazyk, telefonní číslo na dosah.
+2. **Rodiny s dětmi (i se psem)** — oplocená zahrada, dětský koutek, dog-friendly (150 Kč/den).
 3. **Sportovci** — cyklostezka Járy Cimrmana č. 3019 u hotelu, kolárna/lyžárna pod kamerou, dobíjení elektrokol (15 Kč/den), Tanvaldský Špičák 10 min, Černá Říčka 3 min autem, Jizerská magistrála.
 4. **Skupiny / B2B** — pronájem celého hotelu pro 42 osob, svatby, soustředění (reference SK Kosmonosy divize), firemní akce, optická Wi-Fi.
 
@@ -53,7 +53,16 @@ Podstránky pokojů zatím **neexistují** jako HTML (jen fotky v `public/pokoje
 
 ## 4. Fakta pro texty (nikdy si nevymýšlet jiná)
 
-**Kapacita:** 12 nekuřáckých pokojů, 42 lůžek. 6× Standard v přízemí (bezbariérové, bez balkónu) + 6× Nadstandard v patře (alpský balkón, výhled na splav a můstky), z toho 3 rekonstruované (Zen, A, A1).
+**Kapacita:** 12 nekuřáckých pokojů, 42 lůžek. 6× Standard v přízemí (balkón s výhledem) + 6× Nadstandard v patře (prostorná terasa, výhled na celé údolí), z toho 3 rekonstruované (Zen, A, A1).
+
+**⛔ POZOR — hotel NENÍ bezbariérový.** Do budovy se vchází po schodech. Obě patra jsou nad úrovní terénu — „přízemí" **není** v úrovni parkoviště ani terasy a **není s nimi propojené**. Dokument klienta `Marek - Hotel/komplexni_informace_o_hotelu/02_pokoje_a_cenik.md` tvrdí opak — **je chybný, neřídit se jím**. Ověřeno na místě 31. 7. 2026.
+
+**Jak psát o pokojích:**
+- **Standard (přízemí):** balkón, končit slovem „s výhledem". Nespecifikovat, na co je výhled, a **nikdy nesrovnávat s patrem.**
+- **Nadstandard (patro):** prostorná terasa a **výhled na celé údolí**.
+- **Zakázáno psát:** „bezbariérový", „bez schodů", „přímý přístup na terasu / k parkovišti", „výhled do zeleně", jakékoli srovnání typu horší/lepší výhled.
+
+**⛔ TRAMPOLÍNA UŽ NEEXISTUJE.** Hotel ji odstranil. Podklady klienta i staré weby ji zmiňují — **neplatí to**. Ověřeno 31. 7. 2026.
 
 **Ceník 2026** (za osobu/noc, snídaně v ceně):
 - Standard: 1 os. 830 Kč · 2 os. 740 Kč · 3 os. 720 Kč · 4 os. 700 Kč
@@ -64,7 +73,7 @@ Podstránky pokojů zatím **neexistují** jako HTML (jen fotky v `public/pokoje
 
 **Stravování:** snídaně švédský stůl 8:00–9:00 · večeře polopenzí v 18:00, dvouchodové menu, jen pro ubytované (není veřejná restaurace) · letní zahrádka nad splavem květen–září, Bernard 10°, Bernard 11° polotmavý, Pilsner Urquell 12° · venkovní udírna a kamenné ohniště
 
-**Zázemí:** herna s krbem zdarma (kulečník, ping-pong, fotbálek, šipky), dětský koutek, trampolína 3,5 m, přírodní tůň k otužování, optická Wi-Fi zdarma, uzamykatelná kolárna/lyžárna se servisním koutkem
+**Zázemí:** herna s krbem zdarma (kulečník, ping-pong, fotbálek, šipky), dětský koutek, přírodní tůň k otužování, optická Wi-Fi zdarma, uzamykatelná kolárna/lyžárna se servisním koutkem
 
 **⚠️ Zimní uzavírka:** silnice II/290 v úseku přehrada Souš – Smědava je v zimě (listopad–duben) uzavřena. Navigace ji přesto navrhují. K hotelu vždy **od Tanvaldu a Desné**. Musí být výrazně na Kontaktu i v patičce.
 
@@ -94,7 +103,7 @@ Podstránky pokojů zatím **neexistují** jako HTML (jen fotky v `public/pokoje
 - ⚠️ Žádná jazyková mutace (DE/PL) — přitom příhraniční lokalita
 
 **Cílové dotazy** (dle strategie):
-- Transakční CZ: „rodinné ubytování Desná Jizerské hory", „ubytování s polopenzí Jizerky", „penzion pro sportovní soustředění Jizerky", „dog friendly hotel Jizerské hory", „bezbariérové ubytování Jizerské hory"
+- Transakční CZ: „rodinné ubytování Desná Jizerské hory", „ubytování s polopenzí Jizerky", „penzion pro sportovní soustředění Jizerky", „dog friendly hotel Jizerské hory"
 - Informační CZ: „kam na běžky v Jizerkách", „cyklotrasy pro rodiny s dětmi Desná", „výlet k Protržené přehradě z Desné"
 - DE: „Pension für Senioren Isergebirge", „Fahrradtouren Isergebirge Unterkunft"
 - PL: „noclegi Góry Izerskie z wyżywieniem", „noclegi z psem Góry Izerskie"
@@ -105,9 +114,11 @@ Podstránky pokojů zatím **neexistují** jako HTML (jen fotky v `public/pokoje
 
 - Jazyk: čeština, vykání, teplý a věcný tón bez marketingového nafukování
 - Psát pro seniory: krátké věty, konkrétní čísla, žádné anglicismy ani abstrakce
-- Nikdy neslibovat, co hotel nemá (není veřejná restaurace, není nabíječka pro elektromobily, večeře je jednotné menu bez výběru)
+- Nikdy neslibovat, co hotel nemá (**není bezbariérový — do budovy se jde po schodech**, není veřejná restaurace, není nabíječka pro elektromobily, večeře je jednotné menu bez výběru)
 - Slovo „Restaurace" v navigaci nahrazeno „Stravování" (záměrně — restaurace evokuje veřejnou provozovnu)
 - Cenovou paritu s Booking.com neporušovat: sleva 5 % se komunikuje jako věrnostní benefit za přímou rezervaci, ne jako veřejně nižší cena
+
+**⛔ ŽÁDNÉ NOVÉ FAQ SEKCE.** Zákaz přidávat sekce „Často kladené dotazy" na stránky, kde nejsou. Otázky by jen znovu odpovídaly na to, co už je na stránce výš napsané — je to duplicitní vata. Existující FAQ na `/okoli` a `/ubytovani` zůstávají. *(rozhodnuto Ondřejem 31. 7. 2026)*
 
 ---
 

@@ -9790,12 +9790,17 @@ img[loading="lazy"].img-loaded {
 
 .faq-item {
   border-bottom: 1px solid #e0e0e0;
-  padding: 24px 0;
+  padding: 0;
   transition: background-color 0.2s ease;
+  cursor: pointer;
 }
 
 .faq-item:first-child {
   border-top: 1px solid #e0e0e0;
+}
+
+.faq-item.is-open {
+  padding-bottom: 24px;
 }
 
 .faq-question-btn {
@@ -9805,10 +9810,14 @@ img[loading="lazy"].img-loaded {
   justify-content: space-between;
   background: none;
   border: none;
-  padding: 0;
+  padding: 24px 0;
   cursor: pointer;
   text-align: left;
   font-family: 'Outfit', sans-serif;
+}
+
+.faq-item:hover .faq-action-text {
+  color: #697947;
 }
 
 .faq-question-text {
@@ -11713,5 +11722,461 @@ img[loading="lazy"].img-loaded {
     padding: 16px !important;
     max-width: 95vw !important;
     box-sizing: border-box !important;
+  }
+}
+
+/* =====================================================================
+   COOKIE BANNER & MODAL NASTAVENÍ (SENIOR FRIENDLY & COMPLIANT)
+   ===================================================================== */
+.cookie-banner-wrap {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 99999;
+  background-color: #1c1c19;
+  color: #f5f2eb;
+  border-top: 1px solid #3d3d37;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.4);
+  padding: 20px 0;
+  font-family: 'Outfit', sans-serif;
+  transform: translateY(0);
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.cookie-banner-wrap.is-hidden {
+  transform: translateY(100%);
+  pointer-events: none;
+}
+
+.cookie-banner-inner {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 40px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.cookie-banner-content {
+  flex: 1;
+  min-width: 280px;
+}
+
+.cookie-banner-title {
+  font-size: 19px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.01em;
+}
+
+.cookie-banner-desc {
+  font-size: 15px;
+  line-height: 1.5;
+  color: #dcd8cd;
+  margin: 0;
+}
+
+.cookie-banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-cookie-accept {
+  height: 45px;
+  padding: 0 28px;
+  font-size: 17px;
+  font-weight: 500;
+  border-radius: 1px;
+  background-color: #ece8dd;
+  color: #1c1c19;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  transition: background-color 0.2s ease;
+}
+
+.btn-cookie-accept:hover {
+  background-color: #dcd7c5;
+}
+
+.btn-cookie-reject {
+  height: 45px;
+  padding: 0 24px;
+  font-size: 17px;
+  font-weight: 500;
+  border-radius: 1px;
+  background-color: transparent;
+  color: #ece8dd;
+  border: 1px solid #777368;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-cookie-reject:hover {
+  background-color: rgba(236, 232, 221, 0.1);
+  border-color: #ece8dd;
+}
+
+.btn-cookie-settings-link {
+  background: transparent;
+  border: none;
+  color: #b8b3a5;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0 8px;
+  transition: color 0.2s ease;
+}
+
+.btn-cookie-settings-link:hover {
+  color: #ffffff;
+}
+
+/* MODÁLNÍ OKNO NASTAVENÍ COOKIES (1:1 VIZUÁL SE ZBYTKEM WEBU) */
+.cookie-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  background-color: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.cookie-modal-overlay.is-active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.cookie-modal-container {
+  background-color: #ffffff;
+  color: #1c1c19;
+  width: 100%;
+  max-width: 620px;
+  border-radius: 1px;
+  border: 1px solid #e2ded4;
+  padding: 32px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+  font-family: 'Outfit', sans-serif;
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.cookie-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.cookie-modal-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #1c1c19;
+  margin: 0 0 6px 0;
+}
+
+.cookie-modal-subtitle {
+  font-size: 15px;
+  color: #666660;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.cookie-modal-close {
+  background: transparent;
+  border: none;
+  color: #888880;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 16px;
+  transition: color 0.2s ease;
+}
+
+.cookie-modal-close:hover {
+  color: #1c1c19;
+}
+
+.cookie-option-card {
+  background-color: #fcfbf9;
+  border: 1px solid #eae6dc;
+  padding: 20px;
+  margin-bottom: 16px;
+  border-radius: 1px;
+}
+
+.cookie-option-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.cookie-option-name {
+  font-size: 17px;
+  font-weight: 600;
+  color: #1c1c19;
+}
+
+.cookie-badge-necessary {
+  font-size: 13px;
+  font-weight: 600;
+  background-color: #ece8dd;
+  color: #1c1c19;
+  padding: 4px 12px;
+  border-radius: 12px;
+}
+
+.cookie-option-desc {
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: #555550;
+  margin: 0;
+}
+
+/* Custom Toggle Switch */
+.cookie-switch {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 24px;
+}
+
+.cookie-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.cookie-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: #ccc8be;
+  transition: 0.3s;
+  border-radius: 24px;
+}
+
+.cookie-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+
+input:checked + .cookie-slider {
+  background-color: #1c1c19;
+}
+
+input:checked + .cookie-slider:before {
+  transform: translateX(22px);
+}
+
+.cookie-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.btn-cookie-modal-save {
+  height: 45px;
+  padding: 0 28px;
+  font-size: 17px;
+  font-weight: 500;
+  border-radius: 1px;
+  background-color: #1c1c19;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  transition: background-color 0.2s ease;
+}
+
+.btn-cookie-modal-save:hover {
+  background-color: #333330;
+}
+
+/* STYLY PRO LEGAL STRÁNKY (GDPR & COOKIES — 1:1 SHODA S AKCEMI / AKTUALITAMI) */
+.legal-page-content-section {
+  width: 100%;
+  padding: 80px 0 110px 0;
+  background-color: #f2f2f2;
+  color: #1c1c19;
+  font-family: 'Outfit', sans-serif;
+}
+
+.legal-page-inner {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 32px;
+  box-sizing: border-box;
+}
+
+.legal-article-card {
+  background-color: #ffffff;
+  border: 1px solid #e2ded4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  padding: 40px;
+  border-radius: 1px;
+  margin-bottom: 32px;
+}
+
+.legal-article-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1c1c19;
+  margin: 0 0 16px 0;
+  letter-spacing: -0.01em;
+}
+
+.legal-article-text {
+  font-size: 16px;
+  line-height: 1.7;
+  color: #4a4a46;
+  margin: 0 0 16px 0;
+}
+
+.legal-article-text a {
+  color: #1c1c19;
+  font-weight: 500;
+  text-decoration: underline;
+}
+
+.legal-article-text:last-child {
+  margin-bottom: 0;
+}
+
+.legal-info-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  border: 1px solid #e2ded4;
+}
+
+.legal-info-table th, .legal-info-table td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid #eae6dc;
+  font-size: 15px;
+}
+
+.legal-info-table th {
+  color: #1c1c19;
+  font-weight: 600;
+  background-color: #ece8dd;
+  border-bottom: 2px solid #dcd7c5;
+}
+
+.legal-info-table td {
+  color: #333330;
+}
+
+.legal-info-table tr:nth-child(even) td {
+  background-color: #fcfbf9;
+}
+
+@media (max-width: 767.98px) {
+  .cookie-banner-inner {
+    padding: 0 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .cookie-banner-actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .btn-cookie-accept {
+    height: 36px;
+    padding: 0 20px;
+    font-size: 14.5px;
+    width: 100%;
+  }
+  .btn-cookie-reject {
+    height: 36px;
+    padding: 0 20px;
+    font-size: 14.5px;
+    width: 100%;
+  }
+  .btn-cookie-settings-link {
+    text-align: center;
+    padding: 6px 0;
+  }
+  .cookie-modal-container {
+    padding: 20px;
+  }
+  .cookie-modal-title {
+    font-size: 19px;
+  }
+  .legal-page-inner {
+    padding: 0 20px;
+  }
+  .legal-article-card {
+    padding: 24px;
+  }
+  .btn-cookie-modal-save {
+    height: 36px;
+    padding: 0 20px;
+    font-size: 14.5px;
+    width: 100%;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1028.98px) {
+  .cookie-banner-inner {
+    padding: 0 32px;
+  }
+  .btn-cookie-accept {
+    height: 40px;
+    padding: 0 24px;
+    font-size: 15.5px;
+  }
+  .btn-cookie-reject {
+    height: 40px;
+    padding: 0 24px;
+    font-size: 15.5px;
+  }
+  .btn-cookie-modal-save {
+    height: 40px;
+    padding: 0 24px;
+    font-size: 15.5px;
   }
 }

@@ -18,7 +18,9 @@ export default defineConfig({
         okoli_zima: 'okoli-zima.html',
         okoli_vylety_autem: 'okoli-vylety-autem.html',
         aktuality: 'aktuality.html',
-        kontakt: 'kontakt.html'
+        kontakt: 'kontakt.html',
+        gdpr: 'gdpr.html',
+        cookies: 'cookies.html'
       }
     }
   },

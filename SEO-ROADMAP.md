@@ -1,6 +1,6 @@
 # SEO Roadmapa — Hotel U Můstků
 
-**Poslední aktualizace: 31. 7. 2026 (večer)**
+**Poslední aktualizace: 31. 7. 2026**
 
 Odškrtávej `[ ]` → `[x]`. Co je hotové, je označené ✅.
 
@@ -18,10 +18,10 @@ Odškrtávej `[ ]` → `[x]`. Co je hotové, je označené ✅.
 | 1 — Migrace ze starého webu | 🟡 rozděláno (doména zatím nepřepnutá) |
 | 2 — Technický základ | ✅ hotovo |
 | 3 — Obsah | ✅ hotovo (mimo podstránky pokojů) |
-| 4 — Copywriting | ✅ **hotovo** |
-| 5 — AI / GEO | ✅ hotovo (test v AI až po spuštění) |
+| 4 — Copywriting | ⬜ **další na řadě** |
+| 5 — AI / GEO | 🟡 rozděláno |
 | 6 — Lokální SEO | ⏹️ vyřazeno ze zakázky |
-| 7 — Rychlost a přístupnost | ⬜ **další na řadě** |
+| 7 — Rychlost a přístupnost | ⬜ nezačato |
 | 8 — Měření | 🟡 rozděláno |
 
 ---
@@ -164,39 +164,29 @@ Ve `public/pokoje/` leží fotky ~10 pokojů (Zen, Motýl, Mahagon, Standard P5�
 
 ---
 
-# FÁZE 4 — Copywriting ✅
+# FÁZE 4 — Copywriting ⬜
 
-## 4.0 Oprava faktických chyb ✅
+Nejdůležitější zbývající blok.
 
-Podklady klienta obsahovaly dvě nepravdivá tvrzení, která se stihla dostat do textů i strukturovaných dat. Obojí ověřeno na místě a odstraněno.
+## 4.1 Pravidla
 
-- [x] **Bezbariérovost** — hotel bezbariérový NENÍ, do budovy se jde po schodech. Odstraněno ze všech `amenityFeature`, z `HotelRoom` popisu, z `llms.txt`, z meta descriptions, z viditelných textů i z `src/main.js`.
-- [x] **Trampolína** — hotel ji odstranil. Vymazána ze všech schemat, `llms.txt`, `index.html`, `stravovani.html` i `src/main.js`.
-- [x] Do `SEO-CONTEXT.md` přidána závazná pravidla, jak psát o pokojích, a varování, že `02_pokoje_a_cenik.md` je chybný
+Primární cílovka jsou **senioři 60+**:
+- krátké věty, jedna myšlenka na větu
+- konkrétní čísla místo přídavných jmen („1,5 km po rovině", ne „nedaleko")
+- žádné anglicismy (wellness, buyout, packages)
+- telefonní číslo viditelně na každé stránce
+- odpovídat na obavy dřív, než je host vysloví
 
-## 4.1 Úvodní stránka ✅
+## 4.2 Co přepsat
 
-- [x] Sekce „Zázemí" přepsána — H2 „Klid Jizerských hor, do kterého se budete rádi vracet". Text obsahuje Desnou, splav Bílé Desné i skokanské můstky. Zachován vítající tón; čísla o kapacitě do téhle sekce záměrně nedávána (patří do ceníku a schema).
-- [x] Sekce „Více než jen ubytování" ponechána beze změny — kulečník, šipky a ping-pong sem nepatří
-
-## 4.2 Podstránky ✅
-
-Všech 6 podstránek přepsáno. Meta descriptions mají 143–154 znaků, což je v optimálním pásmu.
-
-| stránka | title | H1 | desc |
-|---|---|---|---|
-| `/ubytovani` | ✅ | ✅ | 147 zn. |
-| `/stravovani` | ✅ | ✅ | 153 zn. |
-| `/akce` | ✅ | ✅ | 151 zn. |
-| `/okoli` | ✅ | ✅ | 153 zn. |
-| `/kontakt` | ✅ | ✅ | 154 zn. |
-| `/aktuality` | ✅ | ✅ | 143 zn. |
-
-- [x] ⛔ **FAQ sekce se NEPŘIDÁVAJÍ.** Ondřej je zkusil nasadit a otázky jen opakovaly to, co už je na stránce zodpovězené — duplicitní vata. Existující FAQ na `/okoli` a `/ubytovani` zůstávají. *(rozhodnuto 31. 7. 2026)*
-
-### Zbývá jediná drobnost
-
-- [ ] `okoli-turistika.html` má `<title>` a popisky převzaté z jednoho výletu (Protržená přehrada) místo z celé kategorie. Ostatní tři stránky výletů to mají správně.
+- [ ] **H1 na podstránkách** — dnes generické bez klíčových slov
+  - `/ubytovani`: „Nabídka pokojů" → „Ubytování v Jizerských horách — pokoje hotelu U Můstků"
+  - `/kontakt`: „Kontakt" → „Kontakt a cesta k hotelu v Desné"
+  - `/akce`: „Skupinové akce" → „Skupinové akce a pronájem celého hotelu v Jizerských horách"
+- [ ] **Meta descriptions** — musí obsahovat cílový dotaz a důvod kliknout (55–160 znaků)
+- [ ] **FAQ sekce** na `/ubytovani`, `/stravovani`, `/akce` — nejsilnější formát pro AI vyhledávače
+- [ ] **Doplnit obsah** tam, kde je ho málo — `/aktuality` má 2 položky, `/kontakt` je krátký
+- [ ] **Odstranit všechna tvrzení o bezbariérovosti** — hotel bezbariérový NENÍ, do budovy se jde po schodech. Zbývá v `src/main.js` a ve viditelném textu `ubytovani.html`.
 
 ## 4.3 Mapa klíčových slov
 
@@ -206,34 +196,28 @@ Všech 6 podstránek přepsáno. Meta descriptions mají 143–154 znaků, což 
 | hotel Desná Jizerské hory | `/` |
 | ubytování s polopenzí Jizerky | `/stravovani` |
 | dog friendly hotel Jizerské hory | `/ubytovani` |
-| ceník ubytování Desná | `/ubytovani` |
+| ceník ubytování Desná | `/ubytovani#cenik` |
 | penzion pro sportovní soustředění Jizerky | `/akce` |
 | svatba v Jizerských horách | `/akce` |
 | výlet k Protržené přehradě | `/okoli/turistika` |
 | kam na běžky v Jizerkách | `/okoli/zima` |
 
-**Pravidlo:** jedno klíčové slovo = jedna stránka.
+**Pravidlo:** jedno klíčové slovo = jedna stránka. Dvě stránky na stejný dotaz si kanibalizují pozice.
 
 ---
 
-# FÁZE 5 — Optimalizace pro AI vyhledávače ✅ (co jde udělat před spuštěním)
+# FÁZE 5 — Optimalizace pro AI vyhledávače 🟡
 
 - [x] `llms.txt` — strukturovaný přehled pro AI
 - [x] `robots.txt` neblokuje GPTBot, ClaudeBot, PerplexityBot, Google-Extended
 - [x] Obsah hlavních stránek je v HTML, ne generovaný JavaScriptem
 - [x] Sjednocený název firmy napříč webem
-- [x] ⛔ **FAQ sekce na dalších stránkách — VYŘAZENO.** Duplicitní vata, viz Fáze 4.2.
-- [x] **NAP konzistence** — na webu sjednoceno. Mimo web (Booking, Firmy.cz, Mapy.cz) **neřešíme** — spadá pod lokální SEO, které není součástí zakázky (Fáze 6). Jediné, co je potřeba: aby název, adresa a telefon na webu seděly s Google Business Profilem — **sedí**.
-
-## Test viditelnosti v AI — až po spuštění domény ⬜
-
-Nemá smysl testovat teď. Web ještě není na `umustku.cz`, AI vyhledávače o něm nevědí. **Zařadit do měsíční kontroly** (Fáze 8) po přepnutí domény.
-
-- [ ] Zeptat se ChatGPT / Perplexity / Google AI Overview na:
+- [ ] **NAP konzistence i mimo web** — stejný název, adresa a telefon na Google Business Profile, Booking.com, Firmy.cz, Mapy.cz
+- [ ] **FAQ sekce na dalších stránkách** (viz 4.2) — formát otázka + přímá odpověď AI přebírá doslova
+- [ ] **Test viditelnosti v AI** — zeptat se ChatGPT / Perplexity / Google AI Overview na:
   - „hotel v Desné v Jizerských horách"
   - „ubytování s polopenzí Jizerky"
-  - „kde se ubytovat u Tanvaldského Špičáku"
-- [ ] Zapsat výchozí stav, opakovat po 1, 3 a 6 měsících
+  - Zapsat výchozí stav, opakovat po 1, 3 a 6 měsících
 
 ---
 
@@ -249,35 +233,22 @@ Google Business Profile existuje, je nárokovaný, má vyplněnou adresu, telefo
 
 ---
 
-# FÁZE 7 — Rychlost a přístupnost ⬜ ← DALŠÍ NA ŘADĚ
+# FÁZE 7 — Rychlost a přístupnost ⬜
 
-Změřeno 31. 7. 2026.
+- [ ] Změřit výchozí stav na **PageSpeed Insights** (mobilní verze!)
+- [ ] **`Mobil - Kontakt.svg` má 17 MB** — kritické, optimalizovat nebo nahradit
+- [ ] Hero video se načítá ze Supabase — ověřit, jestli neblokuje LCP
+- [ ] Doplnit `width` a `height` ke všem `<img>` (zabraňuje posunu layoutu)
+- [ ] `loading="lazy"` na obrázky pod ohybem
+- [ ] Zvážit self-hosting Google Fonts (ušetří ~200 ms)
+- [ ] **Cíl:** LCP < 2,5 s · INP < 200 ms · CLS < 0,1 na mobilu
 
-## 7.1 Velké soubory ✅ (Úspora celkem ~125,8 MB)
+## Přístupnost (pro seniorskou cílovku dvojnásob důležité)
 
-- [x] **Tři hero videa dohromady 87 MB** — soubory nebyly v kódu nikde odkazovány (video se streamuje ze Supabase CDN). Smazána všechna 3 nepoužívaná videa (úspora 87,3 MB).
-- [x] `Mobil - Kontakt.svg` (16,4 MB) v kořeni byl neužívaný zdrojový soubor. Smazán.
-- [x] Všech 10 PNG a JPG nad 500 kB převedeno do WebP a odkazy v kódu sjednoceny (úspora 10,1 MB).
-- [x] Odstraněno 11 nepoužívaných duplicitních složek pokojů (úspora ~12 MB).
-
-## 7.2 Obrázky v HTML
-
-**331 obrázků na webu.**
-
-- [ ] **Chybí `width` a `height` u všech 331** — způsobuje posun layoutu při načítání (CLS). Nejsnáze měřitelná chyba, kterou Google pokutuje.
-- [ ] `loading` má jen 278 z 331 — doplnit `loading="lazy"` u zbylých 53 (kromě hero)
-- [ ] **200 obrázků má obecný nebo příliš krátký `alt`** („Hotel U Můstků", „Kontakt Hotel U Můstků"). Přepsat na popis, co na fotce konkrétně je.
-
-## 7.3 Přístupnost
-
-- [ ] **Tlačítka mají na mobilu 36 px výšky**, doporučené minimum pro dotyk je 44 px. V `src/style.css` na 33 místech. Pro seniorskou cílovku podstatné.
+- [ ] **Alt texty** — dnes obecné („Hotel U Můstků", „Kontakt Hotel U Můstků"). Popsat, co na fotce konkrétně je.
+- [ ] Klikací plochy min. 44×44 px — dnešní tlačítka mají na mobilu **36 px, pod limitem**
 - [ ] Kontrast textu min. 4,5:1
 - [ ] Formuláře mají `<label>`
-
-## 7.4 Měření
-
-- [ ] Změřit výchozí stav na **PageSpeed Insights** (mobilní verze)
-- [ ] **Cíl:** LCP < 2,5 s · INP < 200 ms · CLS < 0,1
 
 ---
 
@@ -293,7 +264,7 @@ Změřeno 31. 7. 2026.
 - [ ] GSC → Výkon: rostou impressions a prokliky? Kde jsme na pozicích 4–15 (tam je největší prostor)?
 - [ ] GSC → Indexování: nejsou nové chyby?
 - [ ] PageSpeed Insights: nezhoršily se Core Web Vitals?
-- [ ] **Test viditelnosti v AI** (viz Fáze 5)
+- [ ] Test v AI vyhledávačích
 - [ ] Odpovědět na nové Google recenze
 
 ## Čtvrtletní
@@ -322,16 +293,8 @@ První viditelné výsledky v GSC: **4–8 týdnů po nasazení domény.** Plný
 
 # CO DĚLAT PŘÍŠTĚ
 
-1. **Fáze 4.2** — opravit `<title>` na `okoli-turistika.html` (2 minuty)
-2. **Fáze 7.1** — velké soubory: 87 MB videí + 16 MB SVG
-3. **Fáze 7.2** — `width`/`height` u 331 obrázků, 200 alt textů
-4. **Fáze 7.3** — zvětšit tlačítka na mobilu ze 36 na 44 px
-5. **Fáze 1.2** — teprve pak přepnout doménu
-6. **Fáze 2.7 + 7.4** — po přepnutí ověřit schema a změřit Core Web Vitals
-
-## Poučení z průběhu
-
-Podklady klienta (`Marek - Hotel/`) obsahují **faktické chyby**. Zatím se našly dvě
-(bezbariérovost, trampolína) a obě se stihly dostat na web, než je Ondřej zachytil.
-**Před psaním textu o čemkoli fyzickém v hotelu si to ověřit u Ondřeje nebo klienta**,
-ne slepě přebírat z dokumentace.
+1. **Fáze 4** — copywriting: H1, meta descriptions, FAQ sekce (největší zbývající blok)
+2. **Fáze 1.1** — doladit kotvy v přesměrování (`stranka=cenik` → `/ubytovani#cenik` atd.)
+3. **Fáze 7** — rychlost, alt texty, 17MB SVG
+4. **Fáze 1.2** — teprve pak přepnout doménu
+5. **Fáze 2.7** — po přepnutí ověřit schema v Rich Results Test
