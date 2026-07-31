@@ -37,7 +37,10 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    </noscript>
 
     <title>Hotel U Můstků | Ubytování v Jizerských horách</title>
 
@@ -216,7 +219,10 @@
     <div id="app">
   <!-- HERO SEKCE -->
   <section class="hero-section" id="uvod">
-    <img class="hero-summer-poster" src="/uvodni_hero_sekce.webp" alt="Hotel U Můstků" fetchpriority="high" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+    <picture style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+        <source media="(max-width: 767px)" srcset="/uvodni_hero_sekce_mobile.webp">
+        <img class="hero-summer-poster" src="/uvodni_hero_sekce.webp" alt="Hotel U Můstků" fetchpriority="high" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+      </picture>
        <video 
         class="hero-video" 
         autoplay 

@@ -21,7 +21,7 @@ Odškrtávej `[ ]` → `[x]`. Co je hotové, je označené ✅.
 | 4 — Copywriting | ✅ **hotovo** |
 | 5 — AI / GEO | ✅ hotovo (test v AI až po spuštění) |
 | 6 — Lokální SEO | ⏹️ vyřazeno ze zakázky |
-| 7 — Rychlost a přístupnost | ⬜ **další na řadě** |
+| 7 — Rychlost a přístupnost | 🟡 soubory hotové, zbývá LCP 6,0 s |
 | 8 — Měření | 🟡 rozděláno |
 
 ---
@@ -249,35 +249,66 @@ Google Business Profile existuje, je nárokovaný, má vyplněnou adresu, telefo
 
 ---
 
-# FÁZE 7 — Rychlost a přístupnost ⬜ ← DALŠÍ NA ŘADĚ
+# FÁZE 7 — Rychlost a přístupnost 🟡
 
-Změřeno 31. 7. 2026.
+## 7.0 Naměřeno — PageSpeed Insights, mobil, 31. 7. 2026
 
-## 7.1 Velké soubory ✅ (Úspora celkem ~125,8 MB)
+| metrika | hodnota | |
+|---|---|---|
+| **SEO** | **100/100** | ✅ cíl splněn |
+| **Accessibility** | **100/100** | ✅ |
+| Best Practices | 96 | ✅ |
+| **CLS** (posun layoutu) | **0** | ✅ |
+| TBT | 10 ms | ✅ |
+| FCP | 2,8 s | 🟡 |
+| Speed Index | 5,2 s | 🟡 |
+| **LCP** | **6,0 s** | 🔴 cíl < 2,5 s |
+| Performance | 70 | 🟡 |
 
-- [x] **Tři hero videa dohromady 87 MB** — soubory nebyly v kódu nikde odkazovány (video se streamuje ze Supabase CDN). Smazána všechna 3 nepoužívaná videa (úspora 87,3 MB).
-- [x] `Mobil - Kontakt.svg` (16,4 MB) v kořeni byl neužívaný zdrojový soubor. Smazán.
-- [x] Všech 10 PNG a JPG nad 500 kB převedeno do WebP a odkazy v kódu sjednoceny (úspora 10,1 MB).
-- [x] Odstraněno 11 nepoužívaných duplicitních složek pokojů (úspora ~12 MB).
+- [x] ⛔ **`width` a `height` k obrázkům se NEPŘIDÁVAJÍ.** CLS je **0** — layout neskáče vůbec, protože obrázky sedí v kontejnerech s pevnou velikostí a `object-fit`. Atributy by nic nezlepšily a znamenaly by 331 zásahů do kódu. *(rozhodnuto po měření 31. 7. 2026)*
 
-## 7.2 Obrázky v HTML
+## 7.1 Velké soubory ✅
 
-**331 obrázků na webu.**
+- [x] Smazána tři nepoužívaná hero videa (87 MB) — hero se načítá ze Supabase
+- [x] Smazán `Mobil - Kontakt.svg` (16,4 MB) z kořene projektu
+- [x] Složky pokojů: 19 → 8, ověřeno MD5 hashem že šlo o identické soubory
+- [x] Smazány prázdné `p6` a `Pokoj Standard P6`
+- [x] Smazány nepoužívané ikony v `public/Icons/Ikony/`
+- [x] Ověřeno: **0 rozbitých odkazů** na obrázky
+- **Ušetřeno zhruba 115 MB.** Největší soubor: 34,9 MB → 0,8 MB
 
-- [ ] **Chybí `width` a `height` u všech 331** — způsobuje posun layoutu při načítání (CLS). Nejsnáze měřitelná chyba, kterou Google pokutuje.
-- [ ] `loading` má jen 278 z 331 — doplnit `loading="lazy"` u zbylých 53 (kromě hero)
-- [ ] **200 obrázků má obecný nebo příliš krátký `alt`** („Hotel U Můstků", „Kontakt Hotel U Můstků"). Přepsat na popis, co na fotce konkrétně je.
+## 7.2 LCP 6,0 s — hlavní zbývající problém 🔴
 
-## 7.3 Přístupnost
+**Příčina nalezena: ikony jsou uložené v rozlišení 1024 × 1024 px.**
 
-- [ ] **Tlačítka mají na mobilu 36 px výšky**, doporučené minimum pro dotyk je 44 px. V `src/style.css` na 33 místech. Pro seniorskou cílovku podstatné.
-- [ ] Kontrast textu min. 4,5:1
-- [ ] Formuláře mají `<label>`
+| ikona | velikost | rozměr |
+|---|---|---|
+| Ikona - polopenze | 294 kB | 1024×1024 |
+| Ikona - ohniste | 265 kB | 1024×1024 |
+| Ikona - spolecenska herna | 244 kB | 1024×1024 |
+| Ikona - venkovni prvky | 242 kB | 1024×1024 |
+| Ikona - venkovni posezeni | 203 kB | 1024×1024 |
+| Otuzovani-u-splavu + duplikát | 2× 119 kB | 1024×1024 |
+| Ikona - turistika a cyklistika | 92 kB | 938×938 |
 
-## 7.4 Měření
+Zobrazují se jako malé ikonky, načítají se v plném rozlišení. **Dohromady 1,6 MB.**
 
-- [ ] Změřit výchozí stav na **PageSpeed Insights** (mobilní verze)
-- [ ] **Cíl:** LCP < 2,5 s · INP < 200 ms · CLS < 0,1
+Úvodní stránka načítá **5,5 MB obrázků** ve 116 souborech, celá stránka 8,6 MB.
+
+- [ ] Zmenšit ikony na dvojnásobek zobrazované velikosti, cíl pod 20 kB na ikonu
+- [ ] Smazat duplikát `Otuzovani u splavu.webp` / `Otuzovani-u-splavu.webp`
+- [ ] Hero obrázky (417–456 kB) — přes `<picture>` servírovat menší verzi na mobil
+- [ ] **Google Fonts blokují vykreslení o 950 ms** — načítat neblokujícím způsobem, zúžit rozsah řezů
+
+## 7.3 Alt texty ⬜ (nízká priorita)
+
+Accessibility skóre je 100, takže formálně je vše v pořádku. Ale 200 obrázků má popisek typu „Hotel U Můstků", což nepomáhá ve vyhledávání obrázků ani nevidomým uživatelům.
+
+- [ ] Přepsat obecné alt texty na popis toho, co na fotce konkrétně je (5–12 slov)
+
+## 7.4 Tlačítka na mobilu ⬜
+
+- [ ] 36 px výšky, doporučené minimum pro dotyk je 44 px. V `src/style.css` na 33 místech. Pro seniorskou cílovku podstatné. **Pozor: kolize s Button Design System v `.agents/AGENTS.md`, kde je 36 px předepsáno — rozhodnout s Ondřejem.**
 
 ---
 
@@ -322,12 +353,16 @@ První viditelné výsledky v GSC: **4–8 týdnů po nasazení domény.** Plný
 
 # CO DĚLAT PŘÍŠTĚ
 
-1. **Fáze 4.2** — opravit `<title>` na `okoli-turistika.html` (2 minuty)
-2. **Fáze 7.1** — velké soubory: 87 MB videí + 16 MB SVG
-3. **Fáze 7.2** — `width`/`height` u 331 obrázků, 200 alt textů
-4. **Fáze 7.3** — zvětšit tlačítka na mobilu ze 36 na 44 px
-5. **Fáze 1.2** — teprve pak přepnout doménu
-6. **Fáze 2.7 + 7.4** — po přepnutí ověřit schema a změřit Core Web Vitals
+1. **Fáze 7.2** — zmenšit ikony z 1024 px, hero přes `<picture>`, odblokovat fonty
+   → cíl: LCP z 6,0 s pod 2,5 s
+2. **Fáze 4.2** — opravit `<title>` na `okoli-turistika.html` (2 minuty)
+3. **Fáze 1.2** — přepnout doménu
+4. **Fáze 2.7** — po přepnutí ověřit schema v Rich Results Test
+5. **Fáze 7.3 + 7.4** — alt texty a tlačítka, až bude čas
+
+**Poznámka:** SEO skóre je už teď 100/100. Zbytek Fáze 7 je o rychlosti,
+ne o SEO jako takovém — ale LCP 6 s je faktor hodnocení a hlavně
+odrazuje návštěvníky.
 
 ## Poučení z průběhu
 
