@@ -929,9 +929,8 @@ const getHomePageHTML = () => {
         muted 
         loop 
         playsinline 
-        preload="auto" 
-        poster="/uvodni_hero_sekce.webp"
-        fetchpriority="high"
+        preload="none" 
+        data-hero-video
         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; background: transparent;"
       >
         <source src="https://jpvnvjcktpxyxrvsdukm.supabase.co/storage/v1/object/public/hotel-videos/hero_final_v5.mp4" type="video/mp4">
@@ -5265,3 +5264,15 @@ refreshActiveBanner().then(() => {
   initCookieManager();
   preloadAllCategoriesBackground();
 });
+
+
+  window.addEventListener('load', () => {
+    const v = document.querySelector('[data-hero-video]');
+    if (!v) return;
+    // Na pomalém připojení nebo v režimu úspory dat video vůbec nenačítat
+    const c = navigator.connection;
+    if (c && (c.saveData || /2g/.test(c.effectiveType || ''))) return;
+    v.preload = 'auto';
+    v.load();
+    v.play().catch(() => {});
+  });

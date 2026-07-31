@@ -17,7 +17,9 @@
     <meta name="theme-color" content="#1c1c19" />
 
     <!-- High-Priority Preloading -->
-    <link rel="preload" href="/uvodni_hero_sekce.webp" as="image" fetchpriority="high">
+    <link rel="preload" as="image" href="/uvodni_hero_sekce.webp"
+          imagesrcset="/uvodni_hero_sekce_mobile.webp 767w, /uvodni_hero_sekce.webp 1535w"
+          imagesizes="100vw" fetchpriority="high">
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
@@ -229,9 +231,8 @@
         muted 
         loop 
         playsinline 
-        preload="auto" 
-        poster="/uvodni_hero_sekce.webp"
-        fetchpriority="high"
+        preload="none" 
+        data-hero-video
         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; background: transparent;"
       >
         <source src="https://jpvnvjcktpxyxrvsdukm.supabase.co/storage/v1/object/public/hotel-videos/hero_final_v5.mp4" type="video/mp4">
