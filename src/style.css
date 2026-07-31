@@ -4983,7 +4983,7 @@ h3 {
   width: 100%;
   height: 90vh;
   min-height: 700px;
-  background-image: url('/nabidka pokojů.webp') !important;
+  background-image: url('/nabidka-pokoju.webp') !important;
   background-size: cover;
   background-position: center;
   overflow: visible;
@@ -5252,7 +5252,7 @@ h3 {
     height: 95vh;
     min-height: 540px;
     max-height: 750px;
-    background-image: url('/nabidka pokojů.webp') !important;
+    background-image: url('/nabidka-pokoju.webp') !important;
     background-size: cover;
     background-position: center;
     overflow: hidden;
@@ -10518,16 +10518,14 @@ img[loading="lazy"].img-loaded {
    SEKCE KONTAKT — STRÁNKA KONTAKT
    ==================================================== */
 
-/* 1. Hero Sekce Kontakt */
 #uvod-kontakt,
 .contact-hero-section {
   position: relative;
   width: 100%;
   height: 90vh;
   min-height: 700px;
-  background-image: url('/Kontakt stránka fotky/Vyhled na mustky.webp') !important;
-  background-size: cover;
-  background-position: center;
+  background-image: none !important;
+  background-color: #1c1c19;
   overflow: visible;
 }
 
@@ -10537,7 +10535,7 @@ img[loading="lazy"].img-loaded {
     height: 95vh !important;
     min-height: 540px !important;
     max-height: 750px !important;
-    background-image: url('/Kontakt stránka fotky/Vyhled na mustky.webp') !important;
+    background-image: none !important;
   }
 }
 
@@ -10830,7 +10828,7 @@ img[loading="lazy"].img-loaded {
   align-items: center;
   justify-content: center;
   text-align: center;
-  background-image: url('/Kontakt stránka fotky/uzaverka silnice.webp');
+  background-image: url('/kontakt/uzaverka-silnice.webp');
   background-size: cover;
   background-position: center 75%;
   color: #ffffff;

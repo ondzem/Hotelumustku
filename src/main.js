@@ -767,7 +767,7 @@ const getCtaHTML = () => `
 
 const getFooterHTML = () => `
   <!-- PATIČKA (SITE FOOTER 1:1 REPLIKA) -->
-  <footer class="site-footer" id="kontakt">
+  <footer class="site-footer" id="site-footer">
     <div class="footer-contour-bg">
       <img src="/Decoration/Dekorace footer.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
     </div>
@@ -981,7 +981,7 @@ const getHomePageHTML = () => {
 const getRoomsPageHTML = () => `
   <!-- HERO SEKCE POKOJŮ -->
   <section class="hero-section rooms-hero-section room-detail-hero" id="uvod-pokoje">
-    <img class="hero-rooms-poster" src="/nabidka pokojů.webp" alt="Nabídka pokojů Hotel u Můstku" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+    <img class="hero-rooms-poster" src="/nabidka-pokoju.webp" alt="Nabídka pokojů Hotel u Můstku" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
     <div class="hero-overlay"></div>
     <div class="hero-inner">
       ${getHeaderHTML()}
@@ -2819,7 +2819,7 @@ const preloadHeroImages = (pageKey) => {
     const img = new Image();
     img.src = src;
   } else if (pageKey === 'contact') {
-    const src = '/Kontakt stránka fotky/Vyhled na mustky.webp';
+    const src = '/kontakt/vyhled-na-mustky.webp';
     const img = new Image();
     img.src = src;
   }
@@ -3454,7 +3454,7 @@ const getContactPageHTML = () => `
   <div class="contact-page-wrapper">
     <!-- 1. HERO SEKCE KONTAKTU -->
     <section class="hero-section rooms-hero-section room-detail-hero contact-hero-section" id="uvod-kontakt">
-      <img class="hero-contact-poster" src="/Kontakt stránka fotky/Vyhled na mustky.webp" alt="Kontakt Hotel u Můstku" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+      <img class="hero-contact-poster" src="/kontakt/vyhled-na-mustky.webp" alt="Kontakt Hotel u Můstku" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
       <div class="hero-overlay"></div>
       <div class="hero-inner">
         ${getHeaderHTML()}
@@ -4621,9 +4621,9 @@ const route = (isInitial = false) => {
     app.innerHTML = getHomePageHTML();
   }
 
-  // Přesun na vrchol při běžné navigaci na NOVOU stránku bez sekčního hashtagu
+  // Přesun na vrchol při běžné navigaci na NOVOU stránku nebo na kontakt
   const isSectionHashOnDining = pageKey === 'dining' && ['#snidane', '#vecere', '#krb-restaurace', '#teraska', '#grilovani', '#oslavy-akce'].includes(cleanHash);
-  if (pageKey === 'booking' || (!isInitial && isNewPage && !window.pendingAutoOpenRoom && hash !== '#pokoje-nabidka' && !isSectionHashOnDining)) {
+  if (pageKey === 'booking' || pageKey === 'contact' || (!isInitial && isNewPage && !window.pendingAutoOpenRoom && hash !== '#pokoje-nabidka' && !isSectionHashOnDining)) {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
     document.documentElement.scrollTop = 0;
