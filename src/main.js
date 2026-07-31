@@ -4740,6 +4740,8 @@ const route = (isInitial = false) => {
     pageKey = 'dining';
   } else if (pathName === '/akce' || pathName === '/skupinove-akce') {
     pageKey = 'events';
+  } else if (pathName === '/okoli-turistika.html' || pathName === '/okoli/turistika' || pathName === '/okoli-cyklistika.html' || pathName === '/okoli/cyklistika' || pathName === '/okoli-zima.html' || pathName === '/okoli/zima' || pathName === '/okoli-vylety-autem.html' || pathName === '/okoli/vylety-autem') {
+    pageKey = 'category-detail';
   } else if (pathName === '/okoli' || pathName === '/aktivity' || pathName === '/vylety') {
     pageKey = 'activities';
   } else if (pathName === '/aktuality' || pathName === '/novinky') {
@@ -4815,14 +4817,22 @@ const route = (isInitial = false) => {
     });
   } else if (pageKey === 'category-detail') {
     let catId = cleanHash.replace('#', '');
+    if (!catId || catId === 'category-detail') {
+      if (pathName.includes('turistik')) catId = 'turistika';
+      else if (pathName.includes('cykl')) catId = 'cyklistika';
+      else if (pathName.includes('zima')) catId = 'zimni-vylety';
+      else if (pathName.includes('aut')) catId = 'vylety-autem';
+    }
     if (catId.includes('turistik')) catId = 'turistika';
     else if (catId.includes('cykl')) catId = 'cyklistika';
-    else if (catId.includes('zimn')) catId = 'zimni-vylety';
+    else if (catId.includes('zimn') || catId.includes('zima')) catId = 'zimni-vylety';
     else if (catId.includes('aut')) catId = 'vylety-autem';
     else catId = 'turistika';
 
     preloadCategoryImages(catId);
-    app.innerHTML = getCategoryPageHTML(catId);
+    if (!isInitial || !app.children.length) {
+      app.innerHTML = getCategoryPageHTML(catId);
+    }
     initDestinationModal();
   } else if (pageKey === 'activities') {
     app.innerHTML = getActivitiesPageHTML();

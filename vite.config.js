@@ -13,6 +13,10 @@ export default defineConfig({
         stravovani: 'stravovani.html',
         akce: 'akce.html',
         okoli: 'okoli.html',
+        okoli_turistika: 'okoli-turistika.html',
+        okoli_cyklistika: 'okoli-cyklistika.html',
+        okoli_zima: 'okoli-zima.html',
+        okoli_vylety_autem: 'okoli-vylety-autem.html',
         aktuality: 'aktuality.html',
         kontakt: 'kontakt.html'
       }

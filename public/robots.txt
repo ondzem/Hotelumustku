@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+
+# AI vyhledávače a jazykové modely mají přístup záměrně povolený —
+# chceme, aby hotel našly a citovaly (ChatGPT, Perplexity, Claude,
+# Google AI Overview, Bing Copilot).
+
+Sitemap: https://umustku.cz/sitemap.xml

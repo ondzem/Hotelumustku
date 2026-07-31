@@ -1,20 +1,73 @@
-/cz/index.php?stranka=uvod       /               301
-/cz/index.php?stranka=ubytovani  /ubytovani      301
-/cz/index.php?stranka=sluzby     /stravovani     301
-/cz/index.php?stranka=vylety     /okoli          301
-/cz/index.php?stranka=kontakt    /kontakt        301
-/cz/index.php?stranka=rezervace  /ubytovani      301
-/cz/index.php?stranka=cenik      /ubytovani      301
-/cz/index.php?stranka=akce       /akce           301
-/cz/index.php?stranka=fotogalerie /              301
+# =====================================================================
+#  301 PŘESMĚROVÁNÍ ZE STARÉHO PHP WEBU
+#  Netlify nematchuje query parametry uvnitř cesty — musí být uvedené
+#  zvlášť za mezerou. Předchozí zápis (/cz/index.php?stranka=uvod) byl
+#  neplatný a všechny staré URL by po napojení domény spadly do 404.
+# =====================================================================
 
-/api/resend/*  https://api.resend.com/:splat  200!
+/cz/index.php   stranka=uvod          /             301!
+/cz/index.php   stranka=novinky       /aktuality    301!
+/cz/index.php   stranka=ubytovani     /ubytovani    301!
+/cz/index.php   stranka=sluzby        /stravovani   301!
+/cz/index.php   stranka=fotogalerie   /ubytovani    301!
+/cz/index.php   stranka=akce          /akce         301!
+/cz/index.php   stranka=cenik         /ubytovani    301!
+/cz/index.php   stranka=rezervace     /ubytovani    301!
+/cz/index.php   stranka=kniha         /             301!
+/cz/index.php   stranka=vylety        /okoli        301!
+/cz/index.php   stranka=mapy          /kontakt      301!
+/cz/index.php   stranka=kontakt       /kontakt      301!
 
-/ubytovani    /ubytovani.html   200
-/stravovani   /stravovani.html  200
-/akce         /akce.html        200
-/okoli        /okoli.html       200
-/aktuality    /aktuality.html   200
-/kontakt      /kontakt.html     200
+# TODO: až vzniknou stránky /cenik, /rezervace a /recenze (Fáze 3),
+# přesměruj na ně stranka=cenik, stranka=rezervace a stranka=kniha.
 
-/*            /index.html       200
+# Fallback pro cokoliv dalšího ze staré struktury
+/cz/index.php                         /             301!
+/cz/*                                 /             301!
+
+# Německá verze starého webu — zatím nemáme mutaci, míří na úvod
+/de/index.php                         /             301!
+/de/*                                 /             301!
+
+# =====================================================================
+#  API PROXY
+# =====================================================================
+
+/api/resend/*   https://api.resend.com/:splat   200!
+
+# =====================================================================
+#  HEZKÉ URL (rewrite, ne přesměrování — URL v adresním řádku zůstává)
+# =====================================================================
+
+/ubytovani    /ubytovani.html    200
+/stravovani   /stravovani.html   200
+/akce         /akce.html         200
+/okoli        /okoli.html        200
+/okoli/turistika      /okoli-turistika.html      200
+/okoli/cyklistika     /okoli-cyklistika.html     200
+/okoli/zima           /okoli-zima.html           200
+/okoli/vylety-autem   /okoli-vylety-autem.html   200
+/aktuality    /aktuality.html    200
+/kontakt      /kontakt.html      200
+
+
+# Varianty s .html přesměrovat na hezkou URL (zamezí duplicitnímu obsahu)
+/index.html        /             301!
+/ubytovani.html    /ubytovani    301!
+/stravovani.html   /stravovani   301!
+/akce.html         /akce         301!
+/okoli.html        /okoli        301!
+/okoli-turistika.html      /okoli/turistika      301!
+/okoli-cyklistika.html     /okoli/cyklistika     301!
+/okoli-zima.html           /okoli/zima           301!
+/okoli-vylety-autem.html   /okoli/vylety-autem   301!
+/aktuality.html    /aktuality    301!
+/kontakt.html      /kontakt      301!
+
+# =====================================================================
+#  ŽÁDNÝ CATCH-ALL
+#  Dřívější pravidlo "/*  /index.html  200" vracelo na KAŽDÉ neexistující
+#  URL homepage se stavem 200 (soft 404). Google to indexoval jako
+#  nekonečné duplicity homepage. Netlify nyní automaticky použije
+#  404.html a vrátí správný stav 404.
+# =====================================================================
