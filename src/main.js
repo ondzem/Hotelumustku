@@ -2,7 +2,7 @@ import './style.css';
 import './booking.css';
 import { BookingSystem } from './components/BookingSystem.js';
 import { AdminDashboard } from './components/AdminDashboard.js';
-import { getStoredRoomPrices, getStoredDisabledRooms, MOCK_ROOMS, saveContactMessage } from './lib/supabaseClient.js';
+import { getStoredRoomPrices, getStoredDisabledRooms, MOCK_ROOMS, saveContactMessage, getStoredNewsItems } from './lib/supabaseClient.js';
 import { sendEmail, generateEmailContactNotification } from './utils/emailService.js';
 
 export function syncDynamicRoomPricesToDOM() {
@@ -231,12 +231,69 @@ export const renderRoomBreakdownItem = (roomId, roomName, priceType, priceAmount
   `;
 };
 
+// Správa a načtení oznamovacího banneru v liště nad navbarem
+let activeBannerCache = null;
+
+export async function refreshActiveBanner() {
+  try {
+    const items = await getStoredNewsItems();
+    activeBannerCache = (items || []).find(item => item.is_active && item.is_banner) || null;
+  } catch (err) {
+    activeBannerCache = null;
+  }
+}
+
+export function getTopAnnouncementBarHTML() {
+  if (!activeBannerCache) return '';
+  
+  const text = activeBannerCache.banner_text || activeBannerCache.title || '';
+  const dateStr = activeBannerCache.updated_at || activeBannerCache.created_at;
+  let formattedDate = '';
+  if (dateStr) {
+    const d = new Date(dateStr);
+    if (!isNaN(d.getTime())) {
+      formattedDate = d.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
+  }
+
+  const imageHTML = activeBannerCache.image_url 
+    ? `<div class="announcement-modal-image"><img src="${activeBannerCache.image_url}" alt="${activeBannerCache.title || ''}" loading="lazy"></div>`
+    : '';
+
+  const paragraphs = (activeBannerCache.content || '').split('\n\n').filter(Boolean);
+  const contentHTML = paragraphs.length > 0 
+    ? paragraphs.map(p => `<p class="announcement-modal-p">${p.replace(/\n/g, '<br>')}</p>`).join('')
+    : `<p class="announcement-modal-p">${text}</p>`;
+
+  return `
+    <!-- POP-UP MODAL PRO DETAIL OZNÁMENÍ -->
+    <div class="announcement-detail-modal" id="announcement-detail-modal" aria-hidden="true" role="dialog">
+      <div class="announcement-modal-overlay" id="announcement-modal-overlay"></div>
+      <div class="announcement-modal-content">
+        <button class="announcement-modal-close" id="btn-close-announcement-modal" aria-label="Zavřít detail oznámení">&times;</button>
+        ${imageHTML}
+        <div class="announcement-modal-body">
+          <div class="announcement-modal-header">
+            <span class="announcement-modal-badge-tag">AKTUÁLNÍ OZNÁMENÍ</span>
+            ${formattedDate ? `<span class="announcement-modal-date">${formattedDate}</span>` : ''}
+          </div>
+          <h2 class="announcement-modal-title">${activeBannerCache.title || text}</h2>
+          <div class="announcement-modal-text">
+            ${contentHTML}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 const getHeaderHTML = () => `
   <!-- Hlavička (Navigace a logo) -->
   <header class="site-header">
     <div class="nav-left">
       <a href="#pokoje" class="nav-link">Nabídka pokojů</a>
       <a href="#stravovani" class="nav-link">Stravování</a>
+      <a href="#aktivity" class="nav-link">Aktivity</a>
     </div>
     
     <a href="#domu" class="header-logo">
@@ -244,8 +301,8 @@ const getHeaderHTML = () => `
     </a>
     
     <div class="nav-right">
-      <a href="#aktivity" class="nav-link">Aktivity</a>
-      <a href="#akce" class="nav-link">Akce</a>
+      <a href="#akce" class="nav-link">Skupinové akce</a>
+      <a href="#aktuality" class="nav-link" id="nav-link-aktuality">Aktuality</a>
       <a href="#kontakt" class="nav-link">Kontakt</a>
     </div>
 
@@ -264,7 +321,8 @@ const getHeaderHTML = () => `
       <a href="#pokoje" class="mobile-nav-link">Nabídka pokojů</a>
       <a href="#stravovani" class="mobile-nav-link">Stravování</a>
       <a href="#aktivity" class="mobile-nav-link">Aktivity</a>
-      <a href="#akce" class="mobile-nav-link">Akce</a>
+      <a href="#akce" class="mobile-nav-link">Skupinové akce</a>
+      <a href="#aktuality" class="mobile-nav-link" id="mobile-nav-link-aktuality">Aktuality</a>
       <a href="#kontakt" class="mobile-nav-link">Kontakt</a>
     </nav>
     <button class="btn btn-booking mobile-menu-booking" id="mobile-menu-booking">Rezervovat pobyt</button>
@@ -638,7 +696,7 @@ const getFeaturesHTML = () => `
           <!-- Výhoda 2 -->
           <div class="feature-item">
             <div class="feature-icon">
-              <img src="/Icons/Ikona - venkovni prvky.webp" alt="Přírodní otužování u splavu" loading="lazy" decoding="async">
+              <img src="/Icons/Otuzovani-u-splavu.webp" alt="Přírodní otužování u splavu" class="feature-icon-otuzovani" loading="lazy" decoding="async">
             </div>
             <p class="feature-text">
               <strong>Přírodní otužování u splavu</strong> pro dokonale svěží restart těla i mysli.
@@ -833,6 +891,7 @@ const getFooterHTML = () => `
       </div>
     </div>
   </footer>
+  ${getTopAnnouncementBarHTML()}
 
   <!-- LIGHTBOX MODAL PRO ZVĚTŠENÍ FOTEK POKOJŮ (PRO SENIORY) -->
   <div class="lightbox-modal" id="lightbox-modal" aria-hidden="true" role="dialog">
@@ -979,7 +1038,7 @@ const getHomePageHTML = () => {
 
 // Render Funkce Pro Stránku "Nabídka Pokojů" (Ubytování)
 const getRoomsPageHTML = () => `
-  <!-- HERO SEKCE POKOJŮ -->
+  <!-- 1. HERO SEKCE POKOJŮ -->
   <section class="hero-section rooms-hero-section room-detail-hero" id="uvod-pokoje">
     <img class="hero-rooms-poster" src="/nabidka-pokoju.webp" alt="Nabídka pokojů Hotel u Můstku" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
     <div class="hero-overlay"></div>
@@ -3160,7 +3219,7 @@ const getEventsPageHTML = () => `
           <!-- Položka 2 -->
           <div class="feature-item">
             <div class="feature-icon">
-              <img src="/Icons/Ikony/Autobus se zavazadly na transparentním pozadí.png" alt="Zajistíme dopravu" loading="lazy" decoding="async">
+              <img src="/Icons/Ikony/Autobus se zavazadly na transparentním pozadím.png" alt="Zajistíme dopravu" loading="lazy" decoding="async">
             </div>
             <p class="feature-text">
               <strong>Zajistíme dopravu:</strong> mikrobusem či autobusem pro celou vaši skupinu.
@@ -3448,6 +3507,99 @@ const getActivitiesPageHTML = () => `
     ${getFooterHTML()}
   </div>
 `;
+
+// Render Funkce Pro Stránku "Aktuality"
+const getNewsPageHTML = async () => {
+  const allItems = await getStoredNewsItems();
+  const activeItems = (allItems || []).filter(item => item.is_active);
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    return isNaN(d.getTime()) ? dateStr : d.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' });
+  };
+
+  return `
+    <div class="news-page-wrapper">
+      <!-- 1. HERO SEKCE AKTUALIT -->
+      <section class="hero-section rooms-hero-section room-detail-hero news-hero-section" id="uvod-aktuality">
+        <img class="hero-news-poster" src="/Fotky Aktivit/Aktulity hero sekce.webp" alt="Aktuality Hotel u Můstku" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+        <div class="hero-overlay"></div>
+        <div class="hero-inner">
+          ${getHeaderHTML()}
+
+          <div class="room-detail-hero-center news-hero-center">
+            <h1 class="hero-title room-detail-hero-title">
+              <span class="desktop-title-text">Aktuality & Novinky</span>
+              <span class="mobile-tablet-title-text">Aktuality & Novinky</span>
+            </h1>
+            <p class="room-detail-hero-subtitle">
+              <span class="desktop-sub-text">Sledujte nejnovější dění, chystané akce a důležitá oznámení z Hotelu u Můstku.</span>
+              <span class="mobile-sub-text">Sledujte nejnovější dění a důležitá oznámení z Hotelu u Můstku.</span>
+            </p>
+            <button class="btn btn-news-hero-btn room-detail-hero-btn" id="btn-goto-news-list">Prohlédnout novinky</button>
+          </div>
+
+          <!-- Spodní odskrolovávací šipka (mobil + tablet) -->
+          <div class="scroll-down-btn mobile-only-scroll-btn" id="scroll-btn-aktuality">
+            <svg width="12" height="14" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M7.29 17.1C7.68 17.49 8.32 17.49 8.71 17.1L15.07 10.74C15.46 10.35 15.46 9.71 15.07 9.32C14.68 8.93 14.05 8.93 13.66 9.32L8 14.98L2.34 9.32C1.95 8.93 1.32 8.93 0.93 9.32C0.54 9.71 0.54 10.35 0.93 10.74L7.29 17.1ZM8 0H7V16.39H8H9V0H8Z" fill="white"/>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. HLAVNÍ SEKCE VÝPISU AKTUALIT -->
+      <section class="news-main-section" id="seznam-aktualit">
+        <div class="news-main-inner">
+          ${activeItems.length === 0 ? `
+            <div class="news-empty-state">
+              <div class="news-empty-icon">📰</div>
+              <h3 class="news-empty-title">Aktuálně nemáme žádné novinky</h3>
+              <p class="news-empty-desc">Sledujte náš web pro nadcházející akce a sezónní oznámení.</p>
+            </div>
+          ` : `
+            <div class="news-cards-list">
+              ${activeItems.map((item, index) => {
+                const hasImage = Boolean(item.image_url);
+                const formattedContent = (item.content || '').replace(/\n/g, '<br>');
+                const isReverse = index % 2 === 1;
+
+                if (hasImage) {
+                  return `
+                    <article class="news-card news-card-with-image ${isReverse ? 'news-card-reverse' : ''}">
+                      <div class="news-card-content">
+                        <div class="news-card-date">🗓️ ${formatDate(item.updated_at)}</div>
+                        <h2 class="news-card-title">${item.title}</h2>
+                        <div class="news-card-text">${formattedContent}</div>
+                      </div>
+                      <div class="news-card-image-wrap">
+                        <img src="${item.image_url}" alt="${item.title}" class="news-card-image" loading="lazy" decoding="async">
+                      </div>
+                    </article>
+                  `;
+                } else {
+                  return `
+                    <article class="news-card news-card-without-image">
+                      <div class="news-card-centered-header">
+                        <div class="news-card-date">🗓️ ${formatDate(item.updated_at)}</div>
+                        <h2 class="news-card-title">${item.title}</h2>
+                      </div>
+                      <div class="news-card-text news-card-text-readable">${formattedContent}</div>
+                    </article>
+                  `;
+                }
+              }).join('')}
+            </div>
+          `}
+        </div>
+      </section>
+
+      ${getCtaHTML()}
+      ${getFooterHTML()}
+    </div>
+  `;
+};
 
 // Render Funkce Pro Stránku "Kontakt"
 const getContactPageHTML = () => `
@@ -4473,6 +4625,38 @@ const initDestinationModal = () => {
     }
   });
 
+  // Globální handler pro boční záložku a pop-up modal oznámení
+  document.addEventListener('click', (e) => {
+    // 1. Otevření pop-up modalu z boční záložky nebo tlačítka
+    if (e.target && (e.target.closest('#announcement-side-tab') || e.target.closest('#btn-open-announcement-modal'))) {
+      e.preventDefault();
+      const annModal = document.getElementById('announcement-detail-modal');
+      if (annModal) {
+        annModal.classList.add('is-active');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    // 2. Zavření pop-up modalu tlačítkem ✕ nebo klikem na pozadí
+    if (e.target && (e.target.closest('#btn-close-announcement-modal') || e.target.closest('#announcement-modal-overlay'))) {
+      const annModal = document.getElementById('announcement-detail-modal');
+      if (annModal) {
+        annModal.classList.remove('is-active');
+        document.body.style.overflow = '';
+      }
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const annModal = document.getElementById('announcement-detail-modal');
+      if (annModal && annModal.classList.contains('is-active')) {
+        annModal.classList.remove('is-active');
+        document.body.style.overflow = '';
+      }
+    }
+  });
+
   document.querySelectorAll('.category-destination-card, .btn-destination-detail').forEach(el => {
     el.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -4516,6 +4700,10 @@ const route = (isInitial = false) => {
     '#recenze', '#hodnoceni'
   ];
 
+  const knownNewsHashes = [
+    '#aktuality', '#novinky', '#banner-detail', '#zpravy', '#oznameni'
+  ];
+
   const knownContactHashes = [
     '#kontakt', '#kontakt-stranka', '#kde-nas-najdete', '#napiste-nam'
   ];
@@ -4550,6 +4738,8 @@ const route = (isInitial = false) => {
     pageKey = 'admin';
   } else if (knownCategoryHashes.includes(cleanHash) || cleanHash.includes('turistik') || cleanHash.includes('cykl') || cleanHash.includes('zimn') || cleanHash.includes('autem')) {
     pageKey = 'category-detail';
+  } else if (knownNewsHashes.includes(cleanHash) || cleanHash.includes('aktualit') || cleanHash.includes('novink')) {
+    pageKey = 'news';
   } else if (knownContactHashes.includes(cleanHash) || cleanHash.includes('kontakt')) {
     pageKey = 'contact';
   } else if (knownActivitiesHashes.includes(cleanHash)) {
@@ -4577,7 +4767,7 @@ const route = (isInitial = false) => {
   const isNewPage = currentViewKey !== pageKey;
   currentViewKey = pageKey;
 
-  if (pageKey === 'ground' || pageKey === 'view' || pageKey === 'dining' || pageKey === 'events' || pageKey === 'activities' || pageKey === 'category-detail' || pageKey === 'contact') {
+  if (pageKey === 'ground' || pageKey === 'view' || pageKey === 'dining' || pageKey === 'events' || pageKey === 'activities' || pageKey === 'category-detail' || pageKey === 'contact' || pageKey === 'news') {
     preloadHeroImages(pageKey);
   }
 
@@ -4589,6 +4779,18 @@ const route = (isInitial = false) => {
   } else if (pageKey === 'admin') {
     app.innerHTML = getAdminPageHTML();
     new AdminDashboard('admin-container').init();
+  } else if (pageKey === 'news') {
+    getNewsPageHTML().then(html => {
+      app.innerHTML = html;
+      initInteractivity();
+      const btnGoto = document.getElementById('btn-goto-news-list');
+      if (btnGoto) {
+        btnGoto.addEventListener('click', () => {
+          const listSec = document.getElementById('seznam-aktualit');
+          if (listSec) listSec.scrollIntoView({ behavior: 'smooth' });
+        });
+      }
+    });
   } else if (pageKey === 'category-detail') {
     let catId = cleanHash.replace('#', '');
     if (catId.includes('turistik')) catId = 'turistika';
@@ -4621,9 +4823,9 @@ const route = (isInitial = false) => {
     app.innerHTML = getHomePageHTML();
   }
 
-  // Přesun na vrchol při běžné navigaci na NOVOU stránku nebo na kontakt
+  // Přesun na vrchol při běžné navigaci na NOVOU stránku nebo na kontakt / aktuality
   const isSectionHashOnDining = pageKey === 'dining' && ['#snidane', '#vecere', '#krb-restaurace', '#teraska', '#grilovani', '#oslavy-akce'].includes(cleanHash);
-  if (pageKey === 'booking' || pageKey === 'contact' || (!isInitial && isNewPage && !window.pendingAutoOpenRoom && hash !== '#pokoje-nabidka' && !isSectionHashOnDining)) {
+  if (pageKey === 'booking' || pageKey === 'contact' || pageKey === 'news' || (!isInitial && isNewPage && !window.pendingAutoOpenRoom && hash !== '#pokoje-nabidka' && !isSectionHashOnDining)) {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
     document.documentElement.scrollTop = 0;
@@ -4691,5 +4893,7 @@ window.addEventListener('hashchange', () => route(false));
 window.addEventListener('DOMContentLoaded', () => route(true));
 
 // Initial trigger
-route(true);
-preloadAllCategoriesBackground();
+refreshActiveBanner().then(() => {
+  route(true);
+  preloadAllCategoriesBackground();
+});

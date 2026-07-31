@@ -483,3 +483,155 @@ export const saveContactMessage = async (messageData) => {
   }
   return { success: true, isMock: true };
 };
+
+// ====================================================
+// POMOCNÉ FUNKCE PRO PROJEKTOVÝ MODUL "AKTUALITY & OZNAMOVACÍ BANNER"
+// ====================================================
+
+// Načtení všech aktualit
+export const getStoredNewsItems = async () => {
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('aktuality')
+        .select('*')
+        .order('updated_at', { ascending: false });
+      if (!error && data) return data;
+    } catch (err) {
+      console.error('Chyba při načítání aktualit ze Supabase:', err);
+    }
+  }
+  return [];
+};
+
+// Uložení / Úprava aktuality (s vymáháním pravidla: MAXIMÁLNĚ 1 AKTIVNÍ BANNER)
+export const saveStoredNewsItem = async (newsPayload) => {
+  if (isSupabaseConfigured && supabase) {
+    try {
+      // 1. Pokud je zapnut is_banner = true, zrušíme banner u všech ostatních
+      if (newsPayload.is_banner) {
+        await supabase
+          .from('aktuality')
+          .update({ is_banner: false })
+          .eq('is_banner', true);
+      }
+
+      const payload = {
+        title: newsPayload.title,
+        content: newsPayload.content || '',
+        banner_text: newsPayload.banner_text || '',
+        is_active: Boolean(newsPayload.is_active),
+        is_banner: Boolean(newsPayload.is_banner),
+        image_url: newsPayload.image_url || null,
+        updated_at: new Date().toISOString()
+      };
+
+      if (newsPayload.id) {
+        const { data, error } = await supabase
+          .from('aktuality')
+          .update(payload)
+          .eq('id', newsPayload.id)
+          .select();
+        if (error) throw error;
+        return { success: true, data: data ? data[0] : null };
+      } else {
+        const { data, error } = await supabase
+          .from('aktuality')
+          .insert([payload])
+          .select();
+        if (error) throw error;
+        return { success: true, data: data ? data[0] : null };
+      }
+    } catch (err) {
+      console.error('Chyba při ukládání aktuality v Supabase:', err);
+      return { success: false, error: err };
+    }
+  }
+  return { success: false, error: 'Supabase not configured' };
+};
+
+// Změna pořadí aktualit (Posun nahoru/dolů)
+export const reorderNewsItem = async (id, direction) => {
+  if (isSupabaseConfigured && supabase && id) {
+    try {
+      const items = await getStoredNewsItems();
+      const index = items.findIndex(item => String(item.id) === String(id));
+      if (index === -1) return { success: false };
+
+      const targetIndex = direction === 'up' ? index - 1 : index + 1;
+      if (targetIndex < 0 || targetIndex >= items.length) return { success: false };
+
+      const currentItem = items[index];
+      const targetItem = items[targetIndex];
+
+      const curTime = new Date(currentItem.updated_at).getTime();
+      const tarTime = new Date(targetItem.updated_at).getTime();
+
+      let newCurTime = tarTime;
+      let newTarTime = curTime;
+      if (newCurTime === newTarTime) {
+        if (direction === 'up') {
+          newCurTime = curTime + 1000;
+          newTarTime = curTime - 1000;
+        } else {
+          newCurTime = curTime - 1000;
+          newTarTime = curTime + 1000;
+        }
+      }
+
+      await supabase.from('aktuality').update({ updated_at: new Date(newCurTime).toISOString() }).eq('id', currentItem.id);
+      await supabase.from('aktuality').update({ updated_at: new Date(newTarTime).toISOString() }).eq('id', targetItem.id);
+
+      return { success: true };
+    } catch (err) {
+      console.error('Chyba při změně pořadí aktuality:', err);
+      return { success: false, error: err };
+    }
+  }
+  return { success: false };
+};
+
+// Smazání aktuality
+export const deleteStoredNewsItem = async (id) => {
+  if (isSupabaseConfigured && supabase && id) {
+    try {
+      const { error } = await supabase
+        .from('aktuality')
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
+      return { success: true };
+    } catch (err) {
+      console.error('Chyba při mazání aktuality v Supabase:', err);
+      return { success: false, error: err };
+    }
+  }
+  return { success: false };
+};
+
+// Nahrání oříznuté fotky aktuality do Supabase Storage bucketu aktuality-images
+export const uploadNewsImage = async (fileOrBlob) => {
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const filename = `news_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.jpg`;
+      const { data, error } = await supabase.storage
+        .from('aktuality-images')
+        .upload(filename, fileOrBlob, {
+          contentType: 'image/jpeg',
+          upsert: true
+        });
+
+      if (error) throw error;
+
+      const { data: publicUrlData } = supabase.storage
+        .from('aktuality-images')
+        .getPublicUrl(filename);
+
+      return { success: true, url: publicUrlData.publicUrl };
+    } catch (err) {
+      console.error('Chyba při nahrávání fotky do aktuality-images storage:', err);
+      return { success: false, error: err };
+    }
+  }
+  return { success: false, error: 'Supabase not configured' };
+};

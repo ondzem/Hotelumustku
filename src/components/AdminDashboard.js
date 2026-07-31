@@ -1,4 +1,4 @@
-import { MOCK_ROOMS, getStoredReservations, updateStoredReservationStatus, deleteStoredReservation, getStoredBlockedDates, saveStoredBlockedDate, deleteStoredBlockedDate, getStoredDiscountCodes, saveStoredDiscountCode, deleteStoredDiscountCode, getStoredRoomPrices, saveStoredRoomPrice, getStoredDisabledRooms, saveStoredDisabledRoom, isSupabaseConfigured, supabase } from '../lib/supabaseClient.js';
+import { MOCK_ROOMS, getStoredReservations, updateStoredReservationStatus, deleteStoredReservation, getStoredBlockedDates, saveStoredBlockedDate, deleteStoredBlockedDate, getStoredDiscountCodes, saveStoredDiscountCode, deleteStoredDiscountCode, getStoredRoomPrices, saveStoredRoomPrice, getStoredDisabledRooms, saveStoredDisabledRoom, getStoredNewsItems, saveStoredNewsItem, deleteStoredNewsItem, reorderNewsItem, uploadNewsImage, isSupabaseConfigured, supabase } from '../lib/supabaseClient.js';
 import { calculateReservationPrice, generateSpaydQrUrl, BANK_ACCOUNT, formatCzechPrice, getVariableSymbol } from '../utils/pricing.js';
 import { sendEmail, generateEmail2ApprovalAndPaymentRequest, generateEmail3FinalConfirmation, generateEmailCancellation, getEmailLogs, sendAllTestEmailsTo } from '../utils/emailService.js';
 
@@ -81,6 +81,12 @@ export class AdminDashboard {
     this.adminToastMessage = '';
     this.showDeleteModal = false;
     this.pendingDeleteReservation = null;
+    this.showNewsModal = false;
+    this.newsItems = [];
+    this.editingNewsItem = null;
+    this.newsForm = { title: '', banner_text: '', content: '', is_active: true, is_banner: false, image_url: '' };
+    this.showCropModal = false;
+    this.cropImageSrc = null;
   }
 
   async init() {
@@ -91,12 +97,21 @@ export class AdminDashboard {
         this.fetchBlockedDates(),
         this.fetchDiscountCodes(),
         this.fetchRoomPrices(),
-        this.fetchDisabledRooms()
+        this.fetchDisabledRooms(),
+        this.fetchNewsItems()
       ]);
     } catch (err) {
       console.error('AdminDashboard init fetch error:', err);
     }
     this.render();
+  }
+
+  async fetchNewsItems() {
+    try {
+      this.newsItems = await getStoredNewsItems();
+    } catch (err) {
+      console.error('fetchNewsItems error:', err);
+    }
   }
 
   async fetchDiscountCodes() {
@@ -824,6 +839,8 @@ export class AdminDashboard {
       this.showRoomPricesModal ||
       this.showRoomMgmtModal ||
       this.showDeleteModal ||
+      this.showNewsModal ||
+      this.showCropModal ||
       this.showDetailDrawerCode
     );
     if (isAnyAdminModalOpen) {
@@ -858,6 +875,9 @@ export class AdminDashboard {
             <p>Správa rezervací a obsluha 30% záloh pro Hotel u Můstku</p>
           </div>
           <div class="admin-top-actions">
+            <button type="button" class="btn btn-specs-secondary btn-admin-news">
+              📰 Správa aktualit ${this.newsItems.length > 0 ? `<span style="background: #2e3524; color: #ffffff; border-radius: 99px; padding: 2px 7px; font-size: 11px; font-weight: 700; margin-left: 4px;">${this.newsItems.length}</span>` : ''}
+            </button>
             <button type="button" class="btn btn-specs-secondary btn-admin-block-dates">
               📅 Blokovat termíny ${this.blockedDates.length > 0 ? `<span style="background: #e67e22; color: #ffffff; border-radius: 99px; padding: 2px 7px; font-size: 11px; font-weight: 700; margin-left: 4px;">${this.blockedDates.length}</span>` : ''}
             </button>
@@ -1393,6 +1413,220 @@ export class AdminDashboard {
                     </div>
                   `;
                 }).join('')}
+              </div>
+            </div>
+          </div>
+        ` : ''}
+
+        ${this.showNewsModal ? `
+          <div class="admin-modal-overlay admin-modal-overlay-block admin-modal-overlay-news">
+            <div class="admin-confirm-modal admin-block-modal" style="max-width: 780px; padding: 0 24px 24px 24px;">
+              <div class="admin-modal-header-sticky">
+                <h3 class="admin-modal-title" style="margin: 0; font-size: 18px; font-weight: 800; color: #1c1c19;">📰 Správa aktualit hotelu</h3>
+                <button type="button" class="btn-close-news-modal" style="background: none; border: none; font-size: 26px; cursor: pointer; color: #777; line-height: 1; padding: 4px 8px;">&times;</button>
+              </div>
+              <p class="admin-modal-desc" style="margin-top: 14px; margin-bottom: 16px; font-size: 13.5px; color: #55554e;">
+                Přidávejte a upravujte novinky zobrazené v sekci a na stránce Aktuality.
+              </p>
+
+              <!-- FORMULÁŘ AKTUALITY -->
+              <div style="background: #fafaf7; border: 1px solid #e8e7de; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid #ece8dd; padding-bottom: 12px;">
+                  <h4 style="margin: 0; font-size: 15.5px; font-weight: 800; color: #1c1c19;">
+                    ${this.editingNewsItem ? '✏️ Úprava aktuality' : '➕ Přidat novou aktualitu'}
+                  </h4>
+                  ${this.editingNewsItem ? `
+                    <button type="button" class="btn-reset-news-form" style="background: #ffffff; border: 1px solid #d8d5c9; border-radius: 4px; padding: 5px 12px; font-size: 12px; font-weight: 700; cursor: pointer; color: #4a5a24;">
+                      + Vytvořit novou místo úpravy
+                    </button>
+                  ` : ''}
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                  <div>
+                    <label style="font-size: 13px; font-weight: 700; color: #1c1c19; display: block; margin-bottom: 6px;">Název aktuality (Povinné) *</label>
+                    <input type="text" id="news-title-input" class="admin-discount-input" placeholder="Napište výstižný název novinky nebo akce..." value="${this.newsForm.title || ''}">
+                  </div>
+
+                  <div>
+                    <label style="font-size: 13px; font-weight: 700; color: #1c1c19; display: block; margin-bottom: 6px;">Text aktuality (Povinné) *</label>
+                    <textarea id="news-content-input" rows="6" class="admin-discount-input" placeholder="Napište obsah novinky, oznamovací zprávu nebo podrobnosti k akci..." style="font-family: inherit; font-size: 14px; padding: 12px; line-height: 1.6; resize: vertical;">${this.newsForm.content || ''}</textarea>
+                  </div>
+
+                  <!-- NAHRÁNÍ A OŘEZ FOTOGRAFIE (NEPOVINNÉ) -->
+                  <div style="background: #ffffff; border: 1px dashed #cccccc; border-radius: 6px; padding: 16px;">
+                    <label style="font-size: 13px; font-weight: 700; color: #1c1c19; display: block; margin-bottom: 8px;">Fotografie aktuality (Volitelné, poměr 16:9)</label>
+                    
+                    ${this.newsForm.image_url ? `
+                      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 12px; background: #fafaf7; padding: 10px; border-radius: 6px; border: 1px solid #e8e7de;">
+                        <img src="${this.newsForm.image_url}" alt="Obrázek" style="width: 120px; height: 68px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd;">
+                        <div>
+                          <span style="font-size: 12px; color: #27ae60; font-weight: 700; display: block; margin-bottom: 6px;">✓ Fotografie nahrána a oříznuta</span>
+                          <button type="button" class="btn-remove-news-photo" style="background: #fff0f0; border: 1px solid #f5c6cb; color: #c62828; border-radius: 4px; padding: 5px 12px; font-size: 12px; font-weight: 600; cursor: pointer;">
+                            🗑️ Odstranit fotku
+                          </button>
+                        </div>
+                      </div>
+                    ` : ''}
+
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                      <input type="file" id="news-photo-file-input" accept="image/*" style="display: none;">
+                      <button type="button" class="btn btn-specs-secondary btn-trigger-photo-upload" style="width: 100%; min-height: 42px; font-size: 13.5px; font-weight: 700; border-radius: 4px; display: flex; align-items: center; justify-content: center; text-align: center; box-sizing: border-box;">
+                        📷 ${this.newsForm.image_url ? 'Změnit fotku' : 'Nahrát fotku (16:9)'}
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- PŘEPÍNAČ PUBLIKOVÁNÍ -->
+                  <div style="background: #ffffff; border: 1px solid #e8e7de; border-radius: 6px; padding: 14px 16px;">
+                    <label style="display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 700; color: #1c1c19; cursor: pointer;">
+                      <input type="checkbox" id="news-is-active-check" ${this.newsForm.is_active ? 'checked' : ''} style="width: 19px; height: 19px; accent-color: #4a5a24;">
+                      Zobrazit na webu (Publikováno)
+                    </label>
+                  </div>
+
+                  <button type="button" class="btn btn-booking-submit btn-save-news-item" style="width: 100%; height: 46px; font-size: 15px; font-weight: 700; border-radius: 4px; margin-top: 4px;">
+                    ${this.editingNewsItem ? 'Uložit změny aktuality' : 'Publikovat novou aktualitu'}
+                  </button>
+                </div>
+              </div>
+
+              <!-- SEZNAM AKTUALIT -->
+              <div>
+                <h4 style="margin: 0 0 14px 0; font-size: 15.5px; font-weight: 800; color: #1c1c19;">Seznam aktualit (${this.newsItems.length})</h4>
+                ${this.newsItems.length === 0 ? `
+                  <p style="font-size: 13.5px; color: #777; text-align: center; margin: 24px 0;">Zatím nebyly vytvořeny žádné aktuality.</p>
+                ` : `
+                  <div style="display: flex; flex-direction: column; gap: 12px; max-height: 380px; overflow-y: auto; padding-right: 4px;">
+                    ${this.newsItems.map((item, idx) => `
+                      <div style="background: #ffffff; border: 1px solid #e0dfd5; border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+                        <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;">
+                          <!-- ŠIPKY PRO ZMĚNU POŘADÍ -->
+                          <div style="display: flex; flex-direction: column; gap: 3px; flex-shrink: 0;">
+                            <button type="button" class="btn-reorder-news-item" data-id="${item.id}" data-dir="up" ${idx === 0 ? 'disabled style="opacity:0.25; cursor:default; background:none; border:1px solid #ddd; border-radius:3px; padding:2px 6px; font-size:10px;"' : 'style="cursor:pointer; background:#fafaf7; border:1px solid #d8d5c9; border-radius:3px; padding:2px 6px; font-size:10px; color:#1c1c19;"'} title="Posunout nahoru">
+                              ▲
+                            </button>
+                            <button type="button" class="btn-reorder-news-item" data-id="${item.id}" data-dir="down" ${idx === this.newsItems.length - 1 ? 'disabled style="opacity:0.25; cursor:default; background:none; border:1px solid #ddd; border-radius:3px; padding:2px 6px; font-size:10px;"' : 'style="cursor:pointer; background:#fafaf7; border:1px solid #d8d5c9; border-radius:3px; padding:2px 6px; font-size:10px; color:#1c1c19;"'} title="Posunout dolů">
+                              ▼
+                            </button>
+                          </div>
+
+                          ${item.image_url ? `
+                            <img src="${item.image_url}" alt="" style="width: 64px; height: 40px; object-fit: cover; border-radius: 4px; flex-shrink: 0;">
+                          ` : `
+                            <div style="width: 64px; height: 40px; background: #f2f2ee; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #888; flex-shrink: 0;">Bez fotky</div>
+                          `}
+                          <div style="min-width: 0; flex: 1;">
+                            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 3px;">
+                              <span style="font-weight: 800; font-size: 14px; color: #1c1c19; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 240px;">${item.title}</span>
+                              ${item.is_active ? `
+                                <span style="font-size: 10.5px; font-weight: 700; color: #27ae60; background: #e8f8f5; padding: 2px 7px; border-radius: 4px;">Publikováno</span>
+                              ` : `
+                                <span style="font-size: 10.5px; font-weight: 700; color: #7f8c8d; background: #f2f4f4; padding: 2px 7px; border-radius: 4px;">Skryto</span>
+                              `}
+                            </div>
+                            <div style="font-size: 12px; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                              ${item.banner_text || item.content}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                          <button type="button" class="btn-edit-news-item" data-id="${item.id}" style="background: none; border: 1px solid #d8d5c9; border-radius: 4px; padding: 5px 10px; font-size: 12px; font-weight: 600; color: #1c1c19; cursor: pointer;">
+                            Upravit
+                          </button>
+                          <button type="button" class="btn-delete-news-item" data-id="${item.id}" style="background: none; border: 1px solid #d8d5c9; border-radius: 4px; padding: 5px 10px; font-size: 12px; font-weight: 600; color: #c62828; cursor: pointer;">
+                            Smazat
+                          </button>
+                        </div>
+                      </div>
+                    `).join('')}
+                  </div>
+                `}
+              </div>
+
+            </div>
+          </div>
+        ` : ''}
+
+        ${this.showCropModal && this.cropImageSrc ? `
+          <div class="admin-modal-overlay admin-modal-overlay-crop" style="z-index: 10050;">
+            <div class="admin-confirm-modal" style="max-width: 860px; width: 95%; padding: 24px; border-radius: 12px; background: #ffffff;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #ece8dd; padding-bottom: 12px;">
+                <h3 class="admin-modal-title" style="margin: 0; font-size: 18px; font-weight: 800; color: #1c1c19;">📷 Ořez a pozicování fotografie (Poměr 16:9)</h3>
+                <button type="button" class="btn-cancel-crop" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #888;">&times;</button>
+              </div>
+
+              <p style="font-size: 13.5px; color: #55554e; margin: 0 0 16px 0;">
+                💡 <strong>Táhněte za rohové body (šipky) pro změnu velikosti výřezu</strong>, nebo posouvejte mřížku uvnitř. Pravá strana okamžitě ukazuje živý náhled.
+              </p>
+
+              <div style="display: grid; grid-template-columns: 1fr 280px; gap: 20px; align-items: start;" class="crop-modal-grid">
+                
+                <!-- LEVÝ SLOUPEC: INTERAKTIVNÍ EDITOČNÍ PLOCHA -->
+                <div>
+                  <div style="position: relative; width: 100%; height: 320px; background: #111110; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; user-select: none; cursor: move; touch-action: none;" id="crop-viewport">
+                    <canvas id="news-crop-canvas" width="560" height="315" style="display: block; max-width: 100%; max-height: 100%; border-radius: 4px;"></canvas>
+                    <div style="position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.65); color: #ffffff; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; pointer-events: none;">
+                      ↕️ Posunujte drag & drop
+                    </div>
+                  </div>
+
+                  <!-- OVLÁDACÍ PRVKY ZOOM -->
+                  <div style="margin-top: 14px; background: #fafaf7; border: 1px solid #e8e7de; border-radius: 8px; padding: 12px 16px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 8px;">
+                      <label style="font-size: 12.5px; font-weight: 700; color: #1c1c19; display: flex; align-items: center; gap: 6px;">
+                        🔍 Přiblížení (Zoom): <span id="crop-zoom-label" style="color: #4a5a24;">100 %</span>
+                      </label>
+                      <button type="button" id="btn-crop-reset" style="background: #ffffff; border: 1px solid #d8d5c9; border-radius: 4px; padding: 3px 10px; font-size: 11.5px; font-weight: 700; color: #4a5a24; cursor: pointer;">
+                        🔄 Vycentrovat
+                      </button>
+                    </div>
+                    <input type="range" id="crop-zoom-slider" min="1" max="3" step="0.05" value="${this.cropState?.zoom || 1}" style="width: 100%; accent-color: #4a5a24; cursor: pointer;">
+                  </div>
+                </div>
+
+                <!-- PRAVÝ SLOUPEC: ŽIVÝ NÁHLED V REÁLNÉM ČASE -->
+                <div>
+                  <label style="font-size: 12.5px; font-weight: 700; color: #1c1c19; display: block; margin-bottom: 8px;">✨ Živý náhled na webu (16:9):</label>
+                  <div style="position: relative; width: 100%; aspect-ratio: 16 / 9; background: #ece8dd; border-radius: 6px; overflow: hidden; border: 2px solid #4a5a24; box-shadow: 0 4px 16px rgba(0,0,0,0.12);">
+                    <canvas id="news-preview-canvas" width="320" height="180" style="width: 100%; height: 100%; object-fit: cover; display: block;"></canvas>
+                  </div>
+                  <p style="font-size: 11.5px; color: #777; margin-top: 8px; line-height: 1.4;">
+                    Takhle bude fotka vypadat u aktuality na hotelovém webu.
+                  </p>
+                </div>
+
+              </div>
+
+              <!-- SPODNÍ TLAČÍTKA -->
+              <div style="margin-top: 20px; display: flex; align-items: center; justify-content: flex-end; gap: 12px; border-top: 1px solid #ece8dd; padding-top: 16px;">
+                <button type="button" class="btn-cancel-crop" style="background: none; border: 1px solid #d8d5c9; border-radius: 4px; padding: 9px 18px; font-size: 13.5px; font-weight: 600; color: #444; cursor: pointer;">Zrušit</button>
+                <button type="button" class="btn btn-booking-submit btn-confirm-crop" style="height: 42px; padding: 0 24px; font-size: 14px; font-weight: 700; border-radius: 4px;">✓ Oříznout a použít fotku</button>
+              </div>
+            </div>
+          </div>
+        ` : ''}
+
+        ${this.showDeleteNewsModal && this.pendingDeleteNewsItem ? `
+          <div class="admin-modal-overlay admin-modal-overlay-delete-news" style="z-index: 10060;">
+            <div class="admin-confirm-modal" style="max-width: 460px; width: 92%; padding: 24px; border-radius: 12px; background: #ffffff;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #ece8dd; padding-bottom: 12px;">
+                <h3 class="admin-modal-title" style="margin: 0; font-size: 18px; font-weight: 800; color: #c62828;">🗑️ Smazat aktualitu?</h3>
+                <button type="button" class="btn-cancel-delete-news" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #888; padding: 0; line-height: 1;">&times;</button>
+              </div>
+
+              <p style="font-size: 14px; color: #444440; line-height: 1.5; margin: 0 0 20px 0;">
+                Opravdu chcete nenávratně smazat aktualitu <strong>„${this.pendingDeleteNewsItem.title}“</strong>? Tato akce vymaže aktualitu ze všech stránek hotelu.
+              </p>
+
+              <div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
+                <button type="button" class="btn-cancel-delete-news" style="background: none; border: 1px solid #d8d5c9; border-radius: 4px; padding: 9px 18px; font-size: 13.5px; font-weight: 600; color: #444; cursor: pointer;">
+                  Zrušit
+                </button>
+                <button type="button" class="btn-confirm-delete-news" style="background: #c62828; border: none; border-radius: 4px; padding: 9px 20px; font-size: 13.5px; font-weight: 700; color: #ffffff; cursor: pointer;">
+                  🗑️ Ano, smazat aktualitu
+                </button>
               </div>
             </div>
           </div>
@@ -1976,5 +2210,559 @@ export class AdminDashboard {
         }
       });
     });
+
+    // ====================================================
+    // HANDLERY PRO SPRÁVU AKTUALIT & 16:9 OŘEZÁVÁTKO
+    // ====================================================
+    const btnAdminNews = this.container.querySelector('.btn-admin-news');
+    if (btnAdminNews) {
+      btnAdminNews.addEventListener('click', () => {
+        this.showNewsModal = true;
+        this.render();
+      });
+    }
+
+    const btnCloseNewsModal = this.container.querySelector('.btn-close-news-modal');
+    if (btnCloseNewsModal) {
+      btnCloseNewsModal.addEventListener('click', () => {
+        this.showNewsModal = false;
+        this.editingNewsItem = null;
+        this.newsForm = { title: '', banner_text: '', content: '', is_active: true, is_banner: false, image_url: '' };
+        this.render();
+      });
+    }
+
+    const newsModalOverlay = this.container.querySelector('.admin-modal-overlay-news');
+    if (newsModalOverlay) {
+      newsModalOverlay.addEventListener('click', (e) => {
+        if (e.target === newsModalOverlay) {
+          this.showNewsModal = false;
+          this.editingNewsItem = null;
+          this.newsForm = { title: '', banner_text: '', content: '', is_active: true, is_banner: false, image_url: '' };
+          this.render();
+        }
+      });
+    }
+
+    const btnResetNewsForm = this.container.querySelector('.btn-reset-news-form');
+    if (btnResetNewsForm) {
+      btnResetNewsForm.addEventListener('click', () => {
+        this.editingNewsItem = null;
+        this.newsForm = { title: '', banner_text: '', content: '', is_active: true, is_banner: false, image_url: '' };
+        this.render();
+      });
+    }
+
+    const newsTitleInput = this.container.querySelector('#news-title-input');
+    const newsBannerTextInput = this.container.querySelector('#news-banner-text-input');
+    const newsContentInput = this.container.querySelector('#news-content-input');
+    const newsIsActiveCheck = this.container.querySelector('#news-is-active-check');
+    const newsIsBannerCheck = this.container.querySelector('#news-is-banner-check');
+
+    if (newsTitleInput) newsTitleInput.addEventListener('input', e => { this.newsForm.title = e.target.value; });
+    if (newsBannerTextInput) newsBannerTextInput.addEventListener('input', e => { this.newsForm.banner_text = e.target.value; });
+    if (newsContentInput) newsContentInput.addEventListener('input', e => { this.newsForm.content = e.target.value; });
+    if (newsIsActiveCheck) newsIsActiveCheck.addEventListener('change', e => { this.newsForm.is_active = e.target.checked; });
+    if (newsIsBannerCheck) newsIsBannerCheck.addEventListener('change', e => { this.newsForm.is_banner = e.target.checked; });
+
+    const btnRemoveNewsPhoto = this.container.querySelector('.btn-remove-news-photo');
+    if (btnRemoveNewsPhoto) {
+      btnRemoveNewsPhoto.addEventListener('click', () => {
+        this.newsForm.image_url = '';
+        this.render();
+      });
+    }
+
+    const btnTriggerPhotoUpload = this.container.querySelector('.btn-trigger-photo-upload');
+    const newsPhotoFileInput = this.container.querySelector('#news-photo-file-input');
+
+    if (btnTriggerPhotoUpload && newsPhotoFileInput) {
+      btnTriggerPhotoUpload.addEventListener('click', () => {
+        newsPhotoFileInput.click();
+      });
+
+      newsPhotoFileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          this.cropImageSrc = evt.target.result;
+          this.showCropModal = true;
+          this.render();
+          this.initCropCanvas();
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    const btnSaveNewsItem = this.container.querySelector('.btn-save-news-item');
+    if (btnSaveNewsItem) {
+      btnSaveNewsItem.addEventListener('click', async () => {
+        const title = (newsTitleInput ? newsTitleInput.value : this.newsForm.title || '').trim();
+        const content = (newsContentInput ? newsContentInput.value : this.newsForm.content || '').trim();
+        const banner_text = (newsBannerTextInput ? newsBannerTextInput.value : this.newsForm.banner_text || '').trim();
+        const is_active = newsIsActiveCheck ? newsIsActiveCheck.checked : this.newsForm.is_active;
+        const is_banner = newsIsBannerCheck ? newsIsBannerCheck.checked : this.newsForm.is_banner;
+
+        if (!title) {
+          alert('Prosím vyplňte nadpis aktuality.');
+          return;
+        }
+        if (!content) {
+          alert('Prosím vyplňte hlavní text aktuality.');
+          return;
+        }
+
+        btnSaveNewsItem.disabled = true;
+        btnSaveNewsItem.textContent = 'Ukládám...';
+
+        const payload = {
+          id: this.editingNewsItem ? this.editingNewsItem.id : null,
+          title,
+          content,
+          banner_text,
+          is_active,
+          is_banner,
+          image_url: this.newsForm.image_url || null
+        };
+
+        const result = await saveStoredNewsItem(payload);
+        if (result.success) {
+          this.showAdminToast(this.editingNewsItem ? '✓ Aktualita byla úspěšně upravena.' : '🎉 Nová aktualita byla úspěšně přidána.');
+          this.editingNewsItem = null;
+          this.newsForm = { title: '', banner_text: '', content: '', is_active: true, is_banner: false, image_url: '' };
+          await this.fetchNewsItems();
+        } else {
+          alert('Chyba při ukládání aktuality.');
+        }
+        this.render();
+      });
+    }
+
+    this.container.querySelectorAll('.btn-edit-news-item').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = btn.dataset.id;
+        const item = this.newsItems.find(n => String(n.id) === String(id));
+        if (item) {
+          this.editingNewsItem = item;
+          this.newsForm = {
+            title: item.title || '',
+            banner_text: item.banner_text || '',
+            content: item.content || '',
+            is_active: Boolean(item.is_active),
+            is_banner: Boolean(item.is_banner),
+            image_url: item.image_url || ''
+          };
+          this.render();
+        }
+      });
+    });
+
+    this.container.querySelectorAll('.btn-reorder-news-item').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const id = btn.dataset.id;
+        const dir = btn.dataset.dir;
+        if (id && dir) {
+          const res = await reorderNewsItem(id, dir);
+          if (res.success) {
+            this.showAdminToast(dir === 'up' ? '▲ Pořadí posunuto nahoru.' : '▼ Pořadí posunuto dolů.');
+            await this.fetchNewsItems();
+            this.render();
+          }
+        }
+      });
+    });
+
+    this.container.querySelectorAll('.btn-delete-news-item').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = btn.dataset.id;
+        const item = (this.newsItems || []).find(n => String(n.id) === String(id));
+        if (item) {
+          this.pendingDeleteNewsItem = item;
+          this.showDeleteNewsModal = true;
+          this.render();
+        }
+      });
+    });
+
+    this.container.querySelectorAll('.btn-cancel-delete-news').forEach(btn => {
+      btn.addEventListener('click', () => {
+        this.showDeleteNewsModal = false;
+        this.pendingDeleteNewsItem = null;
+        this.render();
+      });
+    });
+
+    const deleteNewsModalOverlay = this.container.querySelector('.admin-modal-overlay-delete-news');
+    if (deleteNewsModalOverlay) {
+      deleteNewsModalOverlay.addEventListener('click', (e) => {
+        if (e.target === deleteNewsModalOverlay) {
+          this.showDeleteNewsModal = false;
+          this.pendingDeleteNewsItem = null;
+          this.render();
+        }
+      });
+    }
+
+    const btnConfirmDeleteNews = this.container.querySelector('.btn-confirm-delete-news');
+    if (btnConfirmDeleteNews) {
+      btnConfirmDeleteNews.addEventListener('click', async () => {
+        if (!this.pendingDeleteNewsItem) return;
+        btnConfirmDeleteNews.disabled = true;
+        btnConfirmDeleteNews.textContent = 'Mazám...';
+
+        await deleteStoredNewsItem(this.pendingDeleteNewsItem.id);
+        this.showAdminToast('🗑️ Aktualita byla úspěšně smazána.');
+        this.showDeleteNewsModal = false;
+        this.pendingDeleteNewsItem = null;
+        await this.fetchNewsItems();
+        this.render();
+      });
+    }
+
+    const btnCancelCrop = this.container.querySelector('.btn-cancel-crop');
+    if (btnCancelCrop) {
+      btnCancelCrop.addEventListener('click', () => {
+        this.showCropModal = false;
+        this.cropImageSrc = null;
+        this.render();
+      });
+    }
+
+    const btnConfirmCrop = this.container.querySelector('.btn-confirm-crop');
+    if (btnConfirmCrop) {
+      btnConfirmCrop.addEventListener('click', async () => {
+        const canvas = this.container.querySelector('#news-crop-canvas');
+        if (!canvas || !this.cropLoadedImg || !this.cropBox) return;
+        btnConfirmCrop.disabled = true;
+        btnConfirmCrop.textContent = 'Nahrávám fotku...';
+
+        const exportCanvas = document.createElement('canvas');
+        exportCanvas.width = 1280;
+        exportCanvas.height = 720;
+        const eCtx = exportCanvas.getContext('2d');
+
+        const cw = canvas.width;
+        const ch = canvas.height;
+        const scaleX = this.cropLoadedImg.width / cw;
+        const scaleY = this.cropLoadedImg.height / ch;
+
+        const sx = Math.max(0, this.cropBox.x * scaleX);
+        const sy = Math.max(0, this.cropBox.y * scaleY);
+        const sw = Math.min(this.cropLoadedImg.width - sx, this.cropBox.w * scaleX);
+        const sh = Math.min(this.cropLoadedImg.height - sy, this.cropBox.h * scaleY);
+
+        eCtx.drawImage(this.cropLoadedImg, sx, sy, sw, sh, 0, 0, 1280, 720);
+
+        exportCanvas.toBlob(async (blob) => {
+          if (blob) {
+            const uploadRes = await uploadNewsImage(blob);
+            if (uploadRes.success && uploadRes.url) {
+              this.newsForm.image_url = uploadRes.url;
+              this.showAdminToast('📷 Fotografie 16:9 byla úspěšně nahraná.');
+            } else {
+              this.newsForm.image_url = exportCanvas.toDataURL('image/jpeg', 0.88);
+              this.showAdminToast('📷 Fotografie byla úspěšně zpracována.');
+            }
+          }
+          this.showCropModal = false;
+          this.cropImageSrc = null;
+          this.cropBox = null;
+          this.render();
+        }, 'image/jpeg', 0.90);
+      });
+    }
+  }
+
+  initCropCanvas() {
+    setTimeout(() => {
+      const viewport = this.container.querySelector('#crop-viewport');
+      const canvas = this.container.querySelector('#news-crop-canvas');
+      const previewCanvas = this.container.querySelector('#news-preview-canvas');
+      const zoomSlider = this.container.querySelector('#crop-zoom-slider');
+      const zoomLabel = this.container.querySelector('#crop-zoom-label');
+      const btnReset = this.container.querySelector('#btn-crop-reset');
+
+      if (!canvas || !this.cropImageSrc) return;
+
+      const img = new Image();
+      img.onload = () => {
+        this.cropLoadedImg = img;
+
+        const cw = 560;
+        const ch = 315; // 16:9 ratio
+        canvas.width = cw;
+        canvas.height = ch;
+
+        const targetAspect = 16 / 9;
+        let boxW = cw * 0.85;
+        let boxH = boxW / targetAspect;
+        if (boxH > ch * 0.85) {
+          boxH = ch * 0.85;
+          boxW = boxH * targetAspect;
+        }
+
+        const defaultCenterBox = {
+          x: (cw - boxW) / 2,
+          y: (ch - boxH) / 2,
+          w: boxW,
+          h: boxH
+        };
+
+        this.cropBox = this.cropBox || { ...defaultCenterBox };
+
+        const handleRadius = 14;
+
+        const render = () => {
+          if (!canvas || !this.cropLoadedImg) return;
+          const ctx = canvas.getContext('2d');
+          const pCtx = previewCanvas ? previewCanvas.getContext('2d') : null;
+
+          ctx.clearRect(0, 0, cw, ch);
+
+          // 1. Draw full original image fitted inside canvas
+          ctx.drawImage(img, 0, 0, cw, ch);
+
+          const { x, y, w, h } = this.cropBox;
+
+          // 2. Fill dark overlay OUTSIDE the crop box
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
+          ctx.fillRect(0, 0, cw, Math.max(0, y));
+          ctx.fillRect(0, y + h, cw, Math.max(0, ch - (y + h)));
+          ctx.fillRect(0, y, Math.max(0, x), h);
+          ctx.fillRect(x + w, y, Math.max(0, cw - (x + w)), h);
+
+          // 3. Draw Rule of Thirds Grid Lines inside crop box
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.55)';
+          ctx.lineWidth = 1;
+          ctx.setLineDash([4, 4]);
+
+          ctx.beginPath();
+          ctx.moveTo(x + w / 3, y); ctx.lineTo(x + w / 3, y + h);
+          ctx.moveTo(x + (w / 3) * 2, y); ctx.lineTo(x + (w / 3) * 2, y + h);
+          ctx.moveTo(x, y + h / 3); ctx.lineTo(x + w, y + h / 3);
+          ctx.moveTo(x, y + (h / 3) * 2); ctx.lineTo(x + w, y + (h / 3) * 2);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          // 4. Draw Crop Box Border
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(x, y, w, h);
+
+          // 5. Draw 4 Corner Drag Handles (Figma / Instagram style)
+          const handles = [
+            { id: 'nw', cx: x, cy: y },
+            { id: 'ne', cx: x + w, cy: y },
+            { id: 'sw', cx: x, cy: y + h },
+            { id: 'se', cx: x + w, cy: y + h }
+          ];
+
+          handles.forEach(hnd => {
+            ctx.fillStyle = '#ffffff';
+            ctx.strokeStyle = '#4a5a24';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.arc(hnd.cx, hnd.cy, 8, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#4a5a24';
+            ctx.beginPath();
+            ctx.arc(hnd.cx, hnd.cy, 3, 0, Math.PI * 2);
+            ctx.fill();
+          });
+
+          // 6. Update High-Res Real-Time Live Preview Canvas (16:9)
+          if (pCtx && previewCanvas) {
+            previewCanvas.width = 320;
+            previewCanvas.height = 180;
+            pCtx.clearRect(0, 0, 320, 180);
+
+            const scaleX = img.width / cw;
+            const scaleY = img.height / ch;
+
+            const sx = Math.max(0, x * scaleX);
+            const sy = Math.max(0, y * scaleY);
+            const sw = Math.min(img.width - sx, w * scaleX);
+            const sh = Math.min(img.height - sy, h * scaleY);
+
+            pCtx.drawImage(img, sx, sy, sw, sh, 0, 0, 320, 180);
+          }
+        };
+
+        render();
+
+        const getHandle = (px, py) => {
+          const { x, y, w, h } = this.cropBox;
+          const dist = (hx, hy) => Math.hypot(px - hx, py - hy);
+
+          if (dist(x, y) <= handleRadius + 6) return 'nw';
+          if (dist(x + w, y) <= handleRadius + 6) return 'ne';
+          if (dist(x, y + h) <= handleRadius + 6) return 'sw';
+          if (dist(x + w, y + h) <= handleRadius + 6) return 'se';
+          if (px >= x && px <= x + w && py >= y && py <= y + h) return 'move';
+          return null;
+        };
+
+        let draggingHandle = null;
+        let startX = 0, startY = 0;
+        let dragStartBox = null;
+
+        const getCanvasCoords = (e) => {
+          const rect = canvas.getBoundingClientRect();
+          const clientX = (e.touches && e.touches.length > 0) ? e.touches[0].clientX : e.clientX;
+          const clientY = (e.touches && e.touches.length > 0) ? e.touches[0].clientY : e.clientY;
+          return {
+            x: (clientX - rect.left) * (cw / rect.width),
+            y: (clientY - rect.top) * (ch / rect.height)
+          };
+        };
+
+        const onMouseDown = (e) => {
+          const coords = getCanvasCoords(e);
+          draggingHandle = getHandle(coords.x, coords.y);
+
+          if (draggingHandle) {
+            startX = coords.x;
+            startY = coords.y;
+            dragStartBox = { ...this.cropBox };
+          }
+        };
+
+        const onMouseMove = (e) => {
+          const coords = getCanvasCoords(e);
+
+          if (!draggingHandle) {
+            const hnd = getHandle(coords.x, coords.y);
+            if (hnd === 'nw' || hnd === 'se') canvas.style.cursor = 'nwse-resize';
+            else if (hnd === 'ne' || hnd === 'sw') canvas.style.cursor = 'nesw-resize';
+            else if (hnd === 'move') canvas.style.cursor = 'move';
+            else canvas.style.cursor = 'default';
+            return;
+          }
+
+          const dx = coords.x - startX;
+          const dy = coords.y - startY;
+          const minW = 40;
+
+          if (draggingHandle === 'move') {
+            let newX = dragStartBox.x + dx;
+            let newY = dragStartBox.y + dy;
+            newX = Math.max(0, Math.min(cw - dragStartBox.w, newX));
+            newY = Math.max(0, Math.min(ch - dragStartBox.h, newY));
+            this.cropBox.x = newX;
+            this.cropBox.y = newY;
+          } else if (draggingHandle === 'se') {
+            let newW = Math.max(minW, Math.min(cw - dragStartBox.x, dragStartBox.w + dx));
+            let newH = newW / targetAspect;
+            if (dragStartBox.y + newH > ch) {
+              newH = ch - dragStartBox.y;
+              newW = newH * targetAspect;
+            }
+            this.cropBox.w = newW;
+            this.cropBox.h = newH;
+          } else if (draggingHandle === 'sw') {
+            let newW = Math.max(minW, dragStartBox.w - dx);
+            let newX = dragStartBox.x + (dragStartBox.w - newW);
+            let newH = newW / targetAspect;
+            if (newX < 0) {
+              newX = 0;
+              newW = dragStartBox.x + dragStartBox.w;
+              newH = newW / targetAspect;
+            }
+            if (dragStartBox.y + newH > ch) {
+              newH = ch - dragStartBox.y;
+              newW = newH * targetAspect;
+              newX = dragStartBox.x + dragStartBox.w - newW;
+            }
+            this.cropBox.x = newX;
+            this.cropBox.w = newW;
+            this.cropBox.h = newH;
+          } else if (draggingHandle === 'ne') {
+            let newW = Math.max(minW, Math.min(cw - dragStartBox.x, dragStartBox.w + dx));
+            let newH = newW / targetAspect;
+            let newY = dragStartBox.y + (dragStartBox.h - newH);
+            if (newY < 0) {
+              newY = 0;
+              newH = dragStartBox.y + dragStartBox.h;
+              newW = newH * targetAspect;
+            }
+            this.cropBox.y = newY;
+            this.cropBox.w = newW;
+            this.cropBox.h = newH;
+          } else if (draggingHandle === 'nw') {
+            let newW = Math.max(minW, dragStartBox.w - dx);
+            let newX = dragStartBox.x + (dragStartBox.w - newW);
+            let newH = newW / targetAspect;
+            let newY = dragStartBox.y + (dragStartBox.h - newH);
+            if (newX < 0) {
+              newX = 0;
+              newW = dragStartBox.x + dragStartBox.w;
+              newH = newW / targetAspect;
+              newY = dragStartBox.y + dragStartBox.h - newH;
+            }
+            if (newY < 0) {
+              newY = 0;
+              newH = dragStartBox.y + dragStartBox.h;
+              newW = newH * targetAspect;
+              newX = dragStartBox.x + dragStartBox.w - newW;
+            }
+            this.cropBox.x = newX;
+            this.cropBox.y = newY;
+            this.cropBox.w = newW;
+            this.cropBox.h = newH;
+          }
+
+          render();
+        };
+
+        const onMouseUp = () => {
+          draggingHandle = null;
+        };
+
+        canvas.addEventListener('mousedown', onMouseDown);
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', onMouseUp);
+
+        canvas.addEventListener('touchstart', onMouseDown, { passive: true });
+        window.addEventListener('touchmove', onMouseMove, { passive: true });
+        window.addEventListener('touchend', onMouseUp);
+
+        if (zoomSlider) {
+          zoomSlider.addEventListener('input', (e) => {
+            const factor = parseFloat(e.target.value);
+            const baseW = cw * 0.85;
+            const baseH = baseW / targetAspect;
+            const minW = 40;
+            const newW = Math.max(minW, Math.min(cw, baseW * (1 / factor)));
+            const newH = newW / targetAspect;
+
+            const centerX = this.cropBox.x + this.cropBox.w / 2;
+            const centerY = this.cropBox.y + this.cropBox.h / 2;
+
+            let newX = centerX - newW / 2;
+            let newY = centerY - newH / 2;
+
+            newX = Math.max(0, Math.min(cw - newW, newX));
+            newY = Math.max(0, Math.min(ch - newH, newY));
+
+            this.cropBox = { x: newX, y: newY, w: newW, h: newH };
+            if (zoomLabel) zoomLabel.textContent = `${Math.round(factor * 100)} %`;
+            render();
+          });
+        }
+
+        if (btnReset) {
+          btnReset.addEventListener('click', () => {
+            this.cropBox = { ...defaultCenterBox };
+            if (zoomSlider) zoomSlider.value = 1;
+            if (zoomLabel) zoomLabel.textContent = '100 %';
+            render();
+          });
+        }
+      };
+      img.src = this.cropImageSrc;
+    }, 50);
   }
 }
