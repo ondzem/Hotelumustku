@@ -3635,7 +3635,7 @@ const getContactPageHTML = () => `
         <div class="room-detail-hero-center contact-hero-center">
           <h1 class="hero-title room-detail-hero-title">
             <span class="desktop-title-text">Kontakt a cesta k hotelu v Desné</span>
-            <span class="mobile-tablet-title-text">Neváhejte nás kontaktovat</span>
+            <span class="mobile-tablet-title-text">Kontakt a cesta k hotelu v Desné</span>
           </h1>
           <p class="room-detail-hero-subtitle">
             <span class="desktop-sub-text">Vše na jednom místě — jak nás zastihnout, jak k nám dojedete a kde nás přesně najdete. Rádi vám se vším poradíme.</span>
@@ -4877,7 +4877,7 @@ const route = (isInitial = false) => {
     // Statická právní stránka — ponecháme pre-renderované HTML z gdpr.html nebo cookies.html
     initInteractivity();
   } else if (pageKey === 'news') {
-    if (!isPreRenderedMatch || isNewPage) {
+    if (!isPreRenderedMatch) {
       getNewsPageHTML().then(html => {
         app.innerHTML = html;
         initInteractivity();
@@ -4905,29 +4905,29 @@ const route = (isInitial = false) => {
     else catId = 'turistika';
 
     preloadCategoryImages(catId);
-    if (!isPreRenderedMatch || isNewPage) {
+    if (!isPreRenderedMatch) {
       app.innerHTML = getCategoryPageHTML(catId);
     }
     initDestinationModal();
   } else if (pageKey === 'activities') {
-    if (!isPreRenderedMatch || isNewPage) app.innerHTML = getActivitiesPageHTML();
+    if (!isPreRenderedMatch) app.innerHTML = getActivitiesPageHTML();
   } else if (pageKey === 'events') {
-    if (!isPreRenderedMatch || isNewPage) app.innerHTML = getEventsPageHTML();
+    if (!isPreRenderedMatch) app.innerHTML = getEventsPageHTML();
   } else if (pageKey === 'dining') {
-    if (!isPreRenderedMatch || isNewPage) app.innerHTML = getStravovaniPageHTML();
+    if (!isPreRenderedMatch) app.innerHTML = getStravovaniPageHTML();
   } else if (pageKey === 'ground') {
     app.innerHTML = getRoomGroundFloorHTML();
   } else if (pageKey === 'view') {
     app.innerHTML = getRoomViewFloorHTML();
   } else if (pageKey === 'rooms') {
-    if (!isPreRenderedMatch || isNewPage) app.innerHTML = getRoomsPageHTML();
+    if (!isPreRenderedMatch) app.innerHTML = getRoomsPageHTML();
   } else if (pageKey === 'contact') {
-    if (!isPreRenderedMatch || isNewPage) app.innerHTML = getContactPageHTML();
+    if (!isPreRenderedMatch) app.innerHTML = getContactPageHTML();
     initContactPageInteractivity();
   } else if (pageKey === '404') {
     app.innerHTML = get404PageHTML();
   } else {
-    if (!isPreRenderedMatch || isNewPage) app.innerHTML = getHomePageHTML();
+    if (!isPreRenderedMatch) app.innerHTML = getHomePageHTML();
   }
 
   // Přesun na vrchol při běžné navigaci na NOVOU stránku nebo na kontakt / aktuality

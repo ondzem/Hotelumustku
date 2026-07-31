@@ -235,7 +235,7 @@
 </head>
   <body>
     <div id="app">
-  <div class="dining-page">
+<div class="dining-page">
 
   <!-- 1. HERO SEKCE STRAVOVÁNÍ (1:1 DLE NABÍDKA POKOJŮ HERO SEKCE) -->
   <section class="hero-section dining-hero-section room-detail-hero" id="uvod-stravovani">
@@ -251,7 +251,7 @@
     </div>
     
     <a href="/" class="header-logo">
-      <img src="/Logo/white logo.webp" alt="Hotel U Můstků Logo" loading="eager" fetchpriority="high">
+      <img src="/Logo/white logo.webp" alt="Hotel u Můstku Logo" loading="eager" fetchpriority="high">
     </a>
     
     <div class="nav-right">
@@ -297,9 +297,8 @@
 
       <div class="room-detail-hero-center">
         <h1 class="hero-title room-detail-hero-title">
-            <span class="desktop-title-text">Poctivé stravování a restaurace v Jizerských horách</span>
-            <span class="mobile-tablet-title-text">Poctivé stravování a restaurace v Jizerských horách</span>
-          </h1>
+          <span>Poctivá domácí kuchyně pouze pro naše hosty.</span>
+        </h1>
         <p class="room-detail-hero-subtitle">
           <span>Skvělé ubytování v Jizerských horách a poctivé stravování k sobě neodmyslitelně patří.</span>
         </p>
@@ -359,7 +358,7 @@
   <!-- 4. PANORAMA KRB RESTAURACE -->
   <section class="dining-fireplace-section" id="krb-restaurace">
     <div class="dining-fireplace-img-wrap">
-      <img src="/stravovani/krb_restaurace.webp" alt="Restaurace s krbem v Hotelu U Můstků" loading="lazy" decoding="async">
+      <img src="/stravovani/krb_restaurace.webp" alt="Restaurace s krbem v Hotelu u Můstku" loading="lazy" decoding="async">
     </div>
   </section>
 
@@ -460,10 +459,66 @@
 
   <!-- 8. REUSED SEKTION: OKOLÍ -->
   
-  
+  <!-- SEKCE AKTIVITY V OKOLÍ (1:1 REPLIKA DLE SVG PŘEDLOHY) -->
+  <section class="surroundings-section " id="aktivity">
+    <div class="surroundings-inner">
+      <h2 class="surroundings-title">Co vše můžete v okolí podniknout?</h2>
+      
+      <div class="surroundings-slider-viewport" id="surroundings-viewport">
+        <div class="surroundings-cards-grid" id="surroundings-track">
+          <!-- Karta 1 -->
+          <div class="surrounding-card">
+            <div class="surrounding-card-img-wrap">
+              <img src="/Uvodni stranka/Rozhledna Stepanka.webp" alt="Rozhledna Štěpánka" loading="lazy" decoding="async">
+            </div>
+            <h3 class="surrounding-card-title">ROZHLEDNA ŠTĚPÁNKA</h3>
+          </div>
+          
+          <!-- Karta 2 -->
+          <div class="surrounding-card">
+            <div class="surrounding-card-img-wrap">
+              <img src="/Uvodni stranka/Vodopady Jizerky.webp" alt="Vodopády na Černé Desné" loading="lazy" decoding="async">
+            </div>
+            <h3 class="surrounding-card-title">VODOPÁDY NA ČERNÉ DESNÉ</h3>
+          </div>
+          
+          <!-- Karta 3 -->
+          <div class="surrounding-card">
+            <div class="surrounding-card-img-wrap">
+              <img src="/Uvodni stranka/Tanvaldsky spicak.webp" alt="Ski Areál Tanvaldský Špičák" loading="lazy" decoding="async">
+            </div>
+            <h3 class="surrounding-card-title">SKI AREÁL TANVALDSKÝ ŠPIČÁK</h3>
+          </div>
+          
+          <!-- Karta 4 -->
+          <div class="surrounding-card">
+            <div class="surrounding-card-img-wrap">
+              <img src="/Uvodni stranka/Liberec zoo.webp" alt="ZOO Liberec" loading="lazy" decoding="async">
+            </div>
+            <h3 class="surrounding-card-title">ZOO LIBEREC</h3>
+          </div>
+        </div>
+      </div>
+      
+      <div class="surroundings-footer">
+        <div class="surroundings-nav-controls">
+          <button class="surroundings-nav-btn" id="surroundings-prev" aria-label="Předchozí aktivity">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#333333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <button class="surroundings-nav-btn" id="surroundings-next" aria-label="Další aktivity">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#333333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+        
+        <button class="btn btn-surroundings-more" id="surroundings-more-btn">Zobrazit všechny aktivity</button>
+      </div>
+    </div>
+  </section>
 
 
   <!-- 9. REUSED SEKTION: RECENZE -->
+  
+
   
   <!-- SEKCE RECENZE (1:1 REPLIKA DLE SVG PŘEDLOHY + INTERAKTIVNÍ INFINITY SLIDER) -->
   <section class="reviews-section" id="recenze">
@@ -472,9 +527,10 @@
       
       <div class="reviews-slider-viewport" id="reviews-viewport">
         <div class="reviews-slider-track" id="reviews-track">
+          
             <div class="review-card">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
-              <p class="review-quote">Strávili jsme tady s manželem nádherný víkend. Krásné prostředí, útulný hotel, výborná kuchyně. Úschovna kol a co bylo super — pod terasou nádherný splav, kde jsme se mohli koupat. Posezení na zahrádce u dobrého piva bylo super.</p>
+              <p class="review-quote">Strávili jsme tady s manželem nádherný víkend. Krásné prostředí, útulný hotel, výborná kuchyně, i když vaří jenom jedno menu. Úschovna kol, kde jsme si mohli elektrokola nabít, a co bylo super v těchto vedrech — pod terasou nádherný splav, kde jsme se mohli koupat. Posezení na zahrádce u dobrého piva bylo super. Určitě ještě přijedeme.</p>
               <div class="review-contour-bg">
                 <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
               </div>
@@ -483,10 +539,106 @@
                 <span class="review-date">26. 06. 2026</span>
               </div>
             </div>
-
+          
             <div class="review-card">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
-              <p class="review-quote">Super místo, Silvestr neměl chybu. Perfektní jídlo, snídaně — velký výběr domácích produktů. Posezení v krbové restauraci i na terase nad splavem je kouzelné.</p>
+              <p class="review-quote">Děkujeme za příjemně strávenou dovolenou v útulných, velmi čistých pokojích. Majitelé jsou pohodoví a ochotní, velký výběr domácích produktů ve snídaňovém bufetu, večeře výborné za lidové ceny. Určitě doporučujeme všem, kdo stojí o dovolenou v hezkém, klidném prostředí. Stoprocentní spokojenost, vřele doporučujeme. Děkujeme.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Lenka a Ruda</span>
+                <span class="review-date">24. 08. 2025</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Byli jsme jen na tři dny, ale naprostá spokojenost. Tak čistý pokoj jsme snad ještě nezažili, majitelé vstřícní a jídlo také nemělo chybu. Pokud pojedeme do těchto končin znovu, určitě se ubytujeme opět tady.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Dana N.</span>
+                <span class="review-date">17. 08. 2025</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Spokojenost, doporučuji.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Roman K.</span>
+                <span class="review-date">08. 08. 2025</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Pobyt se nám u vás moc líbil. Milý přístup, krásně čisto, výborné jídlo, pěkné okolí hotelu a večer jsme se nenudili (kulečník, fotbálek, stolní tenis). Děkujeme :-)</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Adam</span>
+                <span class="review-date">18. 02. 2025</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">V současné době můžu pochválit ceny, krásně čisto, příjemný personál, klidné místo. Vřele doporučuji.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Honza</span>
+                <span class="review-date">02. 02. 2025</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Pokud chcete dovolenou v klidném prostředí, tak vřele doporučuji. Na hotelu klid, v noci klid a okolí krásné a klidné. Výborné večeře, sice bez výběru, jedno menu, ale kvalita, se kterou se hned tak nesetkáte. Podotýkám česká kuchyně. Rádi se sem vrátíme.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Jirka</span>
+                <span class="review-date">10. 09. 2024</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Vrátili jsme se po třech letech a můžu říct, že jsem opět mile překvapen. Ceny pořád stejné, výborná kuchyně a pokoje bez sebemenší špíny, prostě super. Díky.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Tomáš</span>
+                <span class="review-date">18. 06. 2024</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Obrovská spokojenost, ceny stejné jako před třemi lety. Pořád krásně čisto, výborné jídlo a ochotný personál. Díky.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Tomáš</span>
+                <span class="review-date">18. 06. 2024</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Super místo, Silvestr neměl chybu. Perfektní jídlo, snídaně — velký výběr. V létě určitě přijedeme. Velice příjemný a ochotný personál. Určitě v létě přijedeme na kola.</p>
               <div class="review-contour-bg">
                 <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
               </div>
@@ -495,10 +647,22 @@
                 <span class="review-date">05. 01. 2024</span>
               </div>
             </div>
-
+          
             <div class="review-card">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
-              <p class="review-quote">Příjemné klidné prostředí s chutnou domácí stravou a personálem ochotným vyhovět všem přáním. Vydatné snídaně i poctivé večeře za skvělé ceny.</p>
+              <p class="review-quote">Na dovolené jsme zde byli už počtvrté a opět stoprocentní spokojenost. Ochotní majitelé, výborná kuchyně, čisté pokoje a hlavně klid a pohoda. Děkujeme za příjemně strávenou dovolenou. Těšíme se na příště.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Jana a Zdeněk</span>
+                <span class="review-date">11. 08. 2023</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Příjemné klidné prostředí s chutnou domácí stravou a personálem ochotným vyhovět specifickým požadavkům. Pokoje útulné a všude čisto. Pobyt byl milým překvapením a můžeme jen doporučit.</p>
               <div class="review-contour-bg">
                 <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
               </div>
@@ -507,10 +671,322 @@
                 <span class="review-date">01. 01. 2023</span>
               </div>
             </div>
-
+          
             <div class="review-card">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
-              <p class="review-quote">S rodinou jsme byli v hotelu U Můstků v Desné, prostě paráda. Domácí strava a příjemní majitelé, kteří pro hosty udělají první poslední. Vřele doporučujeme!</p>
+              <p class="review-quote">Jezdíme pravidelně každý rok už od roku 2015. Dovolená je každý rok lepší a lepší. Skvělá kuchyně, výborné snídaně s domácími jogurty a chlebem, všude čisto, klid a pohoda. Vřele doporučujeme a těšíme se na příští léto. Děkujeme za krásnou dovolenou.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Jana a Jirka</span>
+                <span class="review-date">13. 08. 2022</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Tak jako každý rok, byl ten týden u Vás v hotelu úplný balzám na tělo i duši. Škoda jen, že to vždy tak rychle uteče. Děkujeme a už nyní se těšíme na příští rok.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Jana a Jirka</span>
+                <span class="review-date">02. 09. 2021</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Děkujeme za příjemný pobyt v útulném prostředí a skvělou domácí kuchyni. V létě přijedeme zase.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Jana a Filip</span>
+                <span class="review-date">08. 01. 2020</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Stále stejně super hotel v klidném prostředí s výbornou kuchyní. Užili jsme si to my i děti. Příští rok se chystáme znovu. Děkujeme za nádhernou dovolenou.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Jana a Jirka</span>
+                <span class="review-date">27. 07. 2019</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Vše tak, jak má být. Stoprocentní spokojenost. Děkujeme.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">J. M.</span>
+                <span class="review-date">24. 01. 2019</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Už čtvrtý pobyt a je to čím dál tím lepší. Doporučujeme.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Jana a Jirka</span>
+                <span class="review-date">14. 08. 2018</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Děkujeme vám za příjemně strávenou dovolenou ve vašem klidném, čistém a útulném hotelu s výbornou kuchyní. Moc se nám u vás líbilo. Všem doporučujeme.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">P. a R. T.</span>
+                <span class="review-date">29. 07. 2018</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Klid, čisto, pohodlí, snídaně i večeře super. Přestože se vaří jednotné jídlo, s takovou kvalitou se setkáváme málokde. Doporučujeme.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Jitka a Michal</span>
+                <span class="review-date">10. 03. 2018</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Letos jsme se vrátili už potřetí a určitě ne naposledy. Vřele doporučujeme — dovolená tady nemá chybu. Děkujeme.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Jana a Jirka</span>
+                <span class="review-date">28. 08. 2017</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">S velmi dobrým pocitem odjíždíme z týdenního pobytu v tomto hotelu s velice příjemným a čistým prostředím, výbornou kuchyní a úžasnými majiteli. Velké díky za příjemné prožití letní dovolené a někdy zase na shledanou v hotelu U Můstků.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Aleš D. s rodinou</span>
+                <span class="review-date">19. 08. 2017</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Moc Vám děkujeme za příjemný pobyt, dobré ubytování, výbornou domácí kuchyni a moc příjemné majitele. Určitě všem doporučujeme.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Jiří Č.</span>
+                <span class="review-date">06. 03. 2017</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Einfach, praktisch, super nette Leute und preiswert, super Frühstück und wer wollte exzellentes Abendbrot.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Thomas (DE)</span>
+                <span class="review-date">04. 02. 2017</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Děkujeme za úžasný týdenní pobyt nejen v příjemném hotelu s úžasnými majiteli, ale také za krásná místa v okolí. Hotel U Můstků můžeme všem jen doporučit. Ještě jednou děkujeme.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Majkovi</span>
+                <span class="review-date">11. 09. 2016</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Děkujeme majitelům hotelu za příjemně strávený pobyt a vše, co pro nás dělali. Ještě jednou vřelý dík. Všem vřele doporučujeme.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Novákovi</span>
+                <span class="review-date">01. 09. 2016</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Všem doporučujeme — pěkný hotel a hlavně úžasní majitelé a výborná kuchyně. Letos jsme byli už podruhé, vrátili jsme se po roce a bylo to snad ještě lepší než loni :-) Děkujeme za nádhernou dovolenou.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Jana a Jirka</span>
+                <span class="review-date">31. 07. 2016</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Krásný hotel v krásné krajině, možnost mnoha výletů a procházek, skvělá kuchyně a velice milí a ochotní majitelé. Dovolená se nám moc líbila, ani odjíždět se nám nechtělo. Určitě se ještě někdy vrátíme.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Volfovi</span>
+                <span class="review-date">27. 06. 2016</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">V hotelu jsme strávili týden a vřele ho doporučujeme všem návštěvníkům — levné a skvěle připravené jídlo, velice příjemní a ochotní majitelé.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Sládkovi</span>
+                <span class="review-date">08. 03. 2016</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Zdejší hotel hodnotíme s manželkou — za slušné peníze hodně muziky. Výborné ubytování, služby, kuchyně, čistota a slušní majitelé. Procestovali jsme toho hodně a tento hotel s klidem můžeme doporučit.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Antonín H.</span>
+                <span class="review-date">28. 01. 2016</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Silvestrovský pobyt super. Děkujeme za krásný vstup do nového roku 2016.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Milan</span>
+                <span class="review-date">11. 01. 2016</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Pobyt v hotelu se nám moc líbil. Na pokoji nám nic nechybělo — vše mají promyšleno do detailů. Jídlo bylo moc dobré. Majitelé jsou velmi příjemní a ochotní. Vhodné i pro rodinu s malými dětmi. Byli jsme moc spokojení. Doporučujeme!</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Kamila</span>
+                <span class="review-date">15. 09. 2015</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">V neděli jsme měli oslavu narozenin ve zdejším hotelu. Všichni jsme byli velice mile překvapeni kvalitou a chutí jídla, zároveň příjemným, přitom profesionálním personálem. Vřele doporučujeme.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Jindra</span>
+                <span class="review-date">07. 09. 2015</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">V sobotu jsme se vrátili z týdenní dovolené, vše bylo super! Včetně vynikajícího personálu (tímto jej zdravíme) a domácí kuchyně! Ještě jednou díky za příjemně strávený týden. Vřele všem doporučujeme!</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Jana a Zdeněk</span>
+                <span class="review-date">10. 08. 2015</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Naprosto bezchybný týden dovolené, vše už zde bylo napsáno, naše hodnocení: jednička s hvězdou. Vše super, doporučujeme.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Venca a Barča</span>
+                <span class="review-date">10. 08. 2015</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Příjemný hotel, výborná domácí kuchyně, domácí atmosféra. Dovolenou tady vřele všem doporučujeme. Nádherná dovolená — děkujeme a moc rádi se vrátíme.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Jana a Jirka</span>
+                <span class="review-date">01. 08. 2015</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Klidné prostředí, pohoda. Doporučuji.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Jirka a Jana</span>
+                <span class="review-date">30. 07. 2015</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Příjemně strávený pobyt v hotelu, všem doporučuji a hlavně dobrá kuchyně. Pozdrav provozovatelům.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Erika B.</span>
+                <span class="review-date">24. 03. 2015</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">S rodinou jsme byli v hotelu U Můstků v Desné, prostě paráda. Domácí strava a příjemná obsluha, palec nahoru.</p>
               <div class="review-contour-bg">
                 <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
               </div>
@@ -519,29 +995,123 @@
                 <span class="review-date">24. 03. 2015</span>
               </div>
             </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Na začátku ledna jsme se s rodinou ubytovali v hotelu, kde jsme strávili pět dnů. Byli jsme spokojeni. Doporučuji.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Pavel K.</span>
+                <span class="review-date">19. 01. 2015</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">O prázdninách jsme navštívili s kamarády Jizerské hory a ubytování v hotelu U Můstků bylo super. Určitě pojedeme znovu i v zimě na lyže. Tímto pozdravuji provozovatele.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Honza s přáteli</span>
+                <span class="review-date">09. 09. 2014</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Rodinný hotel v klidném prostředí, výborná domácí kuchyně a příjemní lidé... :-) Parádní dovolená.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Michal a Jitka</span>
+                <span class="review-date">24. 07. 2014</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">S přítelem jsme strávili tři dny a byli jsme velice spokojeni.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Dana</span>
+                <span class="review-date">13. 07. 2014</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Minulý týden jsme se s rodinou ubytovali v hotelu U Můstků a můžu jenom doporučit. Velice příjemní lidé, výborná domácí kuchyně. Všude čisto. Opravdu doporučuji.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Jana V.</span>
+                <span class="review-date">31. 05. 2014</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Přespali jsme sice jenom jednu noc a musím konstatovat, že jsme spokojeni s přístupem a hlavně nádherně čistě uklizenými pokoji. Snídaně formou bufetu bez sebemenších připomínek.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Ilona M.</span>
+                <span class="review-date">16. 04. 2014</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Za profesionální přístup personálu a příjemné prostředí palec nahoru. Mohu všem jen doporučit. Zároveň si přeji, aby takto fungovala všechna podobná zařízení v Desné. Majitelům a personálu přeji plno slušných hostů a hodně elánu do jejich další práce.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Jaroslav K.</span>
+                <span class="review-date">15. 04. 2014</span>
+              </div>
+            </div>
+          
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">Krásné prostředí, příjemná obsluha a výborná domácí kuchyně. Také jsme měli možnost ochutnat domácí uzený bůček a různé dobroty z grilu. Můžu jenom doporučit.</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">Zbyněk V.</span>
+                <span class="review-date">03. 04. 2014</span>
+              </div>
+            </div>
+          
         </div>
       </div>
-
-      <div style="text-align: center; margin-top: 36px;">
-        <a href="/#recenze" class="btn btn-reviews-all" style="display: inline-flex; align-items: center; justify-content: center; height: 45px; padding: 0 28px; font-size: 17px; font-weight: 500; border-radius: 1px; background-color: #1c1c19; color: #ffffff; text-decoration: none;">Přečíst všechna hodnocení hostů</a>
+      
+      <div class="reviews-nav-controls">
+        <button class="review-nav-btn" id="reviews-prev" aria-label="Předchozí recenze">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#333333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <button class="review-nav-btn" id="reviews-next" aria-label="Další recenze">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#333333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
       </div>
     </div>
   </section>
 
 
   <!-- 10. REUSED SEKTION: CTA BANNER -->
-  
-  
-
-  
-  
-
-  
-
   <section class="cta-section">
     <div class="cta-overlay"></div>
     <div class="cta-inner">
-      <h2 class="cta-title">Dopřejte si zasloužený <br>odpočinek v Jizerských horách</h2>
+      <h2 class="cta-title">Dopřejte si zasloužený<br>odpočinek v Jizerských horách</h2>
       <button class="btn btn-booking btn-cta">Rezervovat pobyt</button>
     </div>
   </section>
@@ -556,7 +1126,7 @@
 
     <div class="footer-inner">
       <div class="footer-mobile-logo">
-        <img src="/Logo/white logo.webp" alt="Hotel U Můstků" loading="lazy" decoding="async">
+        <img src="/Logo/white logo.webp" alt="Hotel U Můstku" loading="lazy" decoding="async">
       </div>
 
       <div class="footer-columns-grid">
@@ -587,11 +1157,11 @@
         <div class="footer-col footer-col-links">
           <h3 class="footer-col-heading">Rychlé odkazy</h3>
           <ul class="footer-links-list">
-            <li><a href="#pokoje">Nabídka pokojů</a></li>
-            <li><a href="#stravovani">Stravování</a></li>
-            <li><a href="#oslavy-akce">Akce</a></li>
-            <li><a href="#aktivity">Aktivity</a></li>
-            <li><a href="#kontakt">Kontakt</a></li>
+            <li><a href="/ubytovani.html">Nabídka pokojů</a></li>
+            <li><a href="/stravovani.html">Stravování</a></li>
+            <li><a href="/akce.html">Akce</a></li>
+            <li><a href="/okoli.html">Aktivity</a></li>
+            <li><a href="/kontakt.html">Kontakt</a></li>
           </ul>
         </div>
 
@@ -609,7 +1179,7 @@
       <div class="footer-bottom-row">
         <div class="footer-copyright secret-admin-trigger" title="Vstup pro recepci" style="cursor: pointer;">© 2026 All Rights Reserved.</div>
         <div class="footer-logo-wrap btn-scroll-top" title="Zpět nahoru">
-          <img src="/Logo/white logo.webp" alt="Hotel U Můstků" loading="lazy" decoding="async">
+          <img src="/Logo/white logo.webp" alt="Hotel U Můstku" loading="lazy" decoding="async">
         </div>
         <div class="footer-author">Vytvořil <a href="https://ozeman.cz" target="_blank" rel="noopener">ozeman.cz</a></div>
       </div>

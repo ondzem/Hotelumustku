@@ -219,12 +219,9 @@
   </head>
   <body>
     <div id="app">
-  <!-- HERO SEKCE -->
+<!-- HERO SEKCE -->
   <section class="hero-section" id="uvod">
-    <picture style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
-        <source media="(max-width: 767px)" srcset="/uvodni_hero_sekce_mobile.webp">
-        <img class="hero-summer-poster" src="/uvodni_hero_sekce.webp" alt="Hotel U Můstků" fetchpriority="high" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
-      </picture>
+    <img class="hero-summer-poster" src="/uvodni_hero_sekce.webp" alt="Hotel u Můstku" fetchpriority="high" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
        <video 
         class="hero-video" 
         autoplay 
@@ -249,7 +246,7 @@
     </div>
     
     <a href="/" class="header-logo">
-      <img src="/Logo/white logo.webp" alt="Hotel U Můstků Logo" loading="eager" fetchpriority="high">
+      <img src="/Logo/white logo.webp" alt="Hotel u Můstku Logo" loading="eager" fetchpriority="high">
     </a>
     
     <div class="nav-right">
@@ -340,7 +337,7 @@
       </div>
 
       <div class="about-img-bottom">
-        <img src="/Uvodni stranka/Pohled na hotel ze z predni strany.webp" alt="Hotel U Můstků budova" loading="lazy" decoding="async">
+        <img src="/Uvodni stranka/Pohled na hotel ze z predni strany.webp" alt="Hotel u Můstku budova" loading="lazy" decoding="async">
       </div>
 
       <div class="about-shadow-decor">
@@ -365,7 +362,7 @@
   </section>
 
   <section class="panoramic-section" id="galerie">
-    <img src="/Uvodni stranka/Fotka Zahrady a Terasy.webp" alt="Zahrada a terasa Hotelu U Můstků" class="panoramic-img" loading="lazy" decoding="async">
+    <img src="/Uvodni stranka/Fotka Zahrady a Terasy.webp" alt="Zahrada a terasa Hotelu u Můstku" class="panoramic-img" loading="lazy" decoding="async">
   </section>
   
   <!-- SEKCE CO DALŠÍHO NABÍZÍME / UPSELL (1:1 REPLIKA DLE SVG PŘEDLOHY) -->
@@ -377,7 +374,7 @@
         <!-- Karta 1: Stravování (Vlevo) -->
         <div class="service-card service-card-left">
           <div class="service-img-wrap">
-            <img src="/Uvodni stranka/stravovani.webp" alt="Stravování v Hotelu U Můstků" loading="lazy" decoding="async">
+            <img src="/Uvodni stranka/stravovani.webp" alt="Stravování v Hotelu u Můstku" loading="lazy" decoding="async">
           </div>
           <div class="service-card-body">
             <h3 class="service-card-title">Stravování</h3>
@@ -389,7 +386,7 @@
         <!-- Karta 2: Skupinové Akce (Vpravo - posunutá dolů) -->
         <div class="service-card service-card-right">
           <div class="service-img-wrap">
-            <img src="/Uvodni stranka/skupinove_akce_zelena_profesionalni_uprava.webp" alt="Skupinové akce v Hotelu U Můstků" loading="lazy" decoding="async">
+            <img src="/Uvodni stranka/skupinove_akce_zelena_profesionalni_uprava.webp" alt="Skupinové akce v Hotelu u Můstku" loading="lazy" decoding="async">
           </div>
           <div class="service-card-body">
             <h3 class="service-card-title">Skupinové Akce</h3>
@@ -1068,12 +1065,66 @@
   </section>
 
   
-  
+  <!-- SEKCE AKTIVITY V OKOLÍ (1:1 REPLIKA DLE SVG PŘEDLOHY) -->
+  <section class="surroundings-section home-surroundings-section" id="aktivity">
+    <div class="surroundings-inner">
+      <h2 class="surroundings-title">Co vše můžete v okolí podniknout?</h2>
+      
+      <div class="surroundings-slider-viewport" id="surroundings-viewport">
+        <div class="surroundings-cards-grid" id="surroundings-track">
+          <!-- Karta 1 -->
+          <div class="surrounding-card">
+            <div class="surrounding-card-img-wrap">
+              <img src="/Uvodni stranka/Rozhledna Stepanka.webp" alt="Rozhledna Štěpánka" loading="lazy" decoding="async">
+            </div>
+            <h3 class="surrounding-card-title">ROZHLEDNA ŠTĚPÁNKA</h3>
+          </div>
+          
+          <!-- Karta 2 -->
+          <div class="surrounding-card">
+            <div class="surrounding-card-img-wrap">
+              <img src="/Uvodni stranka/Vodopady Jizerky.webp" alt="Vodopády na Černé Desné" loading="lazy" decoding="async">
+            </div>
+            <h3 class="surrounding-card-title">VODOPÁDY NA ČERNÉ DESNÉ</h3>
+          </div>
+          
+          <!-- Karta 3 -->
+          <div class="surrounding-card">
+            <div class="surrounding-card-img-wrap">
+              <img src="/Uvodni stranka/Tanvaldsky spicak.webp" alt="Ski Areál Tanvaldský Špičák" loading="lazy" decoding="async">
+            </div>
+            <h3 class="surrounding-card-title">SKI AREÁL TANVALDSKÝ ŠPIČÁK</h3>
+          </div>
+          
+          <!-- Karta 4 -->
+          <div class="surrounding-card">
+            <div class="surrounding-card-img-wrap">
+              <img src="/Uvodni stranka/Liberec zoo.webp" alt="ZOO Liberec" loading="lazy" decoding="async">
+            </div>
+            <h3 class="surrounding-card-title">ZOO LIBEREC</h3>
+          </div>
+        </div>
+      </div>
+      
+      <div class="surroundings-footer">
+        <div class="surroundings-nav-controls">
+          <button class="surroundings-nav-btn" id="surroundings-prev" aria-label="Předchozí aktivity">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#333333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <button class="surroundings-nav-btn" id="surroundings-next" aria-label="Další aktivity">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#333333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+        
+        <button class="btn btn-surroundings-more" id="surroundings-more-btn">Zobrazit všechny aktivity</button>
+      </div>
+    </div>
+  </section>
 
   <section class="cta-section" >
     <div class="cta-overlay"></div>
     <div class="cta-inner">
-      <h2 class="cta-title">Dopřejte si zasloužený <br>odpočinek v Jizerských horách</h2>
+      <h2 class="cta-title">Dopřejte si zasloužený<br>odpočinek v Jizerských horách</h2>
       <button class="btn btn-cta" id="cta-booking-btn">Rezervovat pobyt</button>
     </div>
   </section>
@@ -1086,7 +1137,7 @@
 
     <div class="footer-inner">
       <div class="footer-mobile-logo">
-        <img src="/Logo/white logo.webp" alt="Hotel U Můstků" loading="lazy" decoding="async">
+        <img src="/Logo/white logo.webp" alt="Hotel U Můstku" loading="lazy" decoding="async">
       </div>
 
       <div class="footer-columns-grid">
@@ -1117,11 +1168,11 @@
         <div class="footer-col footer-col-links">
           <h3 class="footer-col-heading">Rychlé odkazy</h3>
           <ul class="footer-links-list">
-            <li><a href="#pokoje">Nabídka pokojů</a></li>
-            <li><a href="#stravovani">Stravování</a></li>
-            <li><a href="#oslavy-akce">Akce</a></li>
-            <li><a href="#aktivity">Aktivity</a></li>
-            <li><a href="#kontakt">Kontakt</a></li>
+            <li><a href="/ubytovani.html">Nabídka pokojů</a></li>
+            <li><a href="/stravovani.html">Stravování</a></li>
+            <li><a href="/akce.html">Akce</a></li>
+            <li><a href="/okoli.html">Aktivity</a></li>
+            <li><a href="/kontakt.html">Kontakt</a></li>
           </ul>
         </div>
 
@@ -1139,7 +1190,7 @@
       <div class="footer-bottom-row">
         <div class="footer-copyright secret-admin-trigger" title="Vstup pro recepci" style="cursor: pointer;">© 2026 All Rights Reserved.</div>
         <div class="footer-logo-wrap btn-scroll-top" title="Zpět nahoru">
-          <img src="/Logo/white logo.webp" alt="Hotel U Můstků" loading="lazy" decoding="async">
+          <img src="/Logo/white logo.webp" alt="Hotel U Můstku" loading="lazy" decoding="async">
         </div>
         <div class="footer-author">Vytvořil <a href="https://ozeman.cz" target="_blank" rel="noopener">ozeman.cz</a></div>
       </div>
@@ -1168,7 +1219,6 @@
       </button>
     </div>
   </div>
-
 </div>
     <script type="module" src="/src/main.js"></script>
   </body>
