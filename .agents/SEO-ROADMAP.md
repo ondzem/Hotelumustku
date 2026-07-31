@@ -277,28 +277,15 @@ Google Business Profile existuje, je nárokovaný, má vyplněnou adresu, telefo
 - [x] Ověřeno: **0 rozbitých odkazů** na obrázky
 - **Ušetřeno zhruba 115 MB.** Největší soubor: 34,9 MB → 0,8 MB
 
-## 7.2 LCP 6,0 s — hlavní zbývající problém 🔴
+## 7.2 LCP Optimalizace ✅ (Vyřešeno 31. 7. 2026)
 
-**Příčina nalezena: ikony jsou uložené v rozlišení 1024 × 1024 px.**
-
-| ikona | velikost | rozměr |
-|---|---|---|
-| Ikona - polopenze | 294 kB | 1024×1024 |
-| Ikona - ohniste | 265 kB | 1024×1024 |
-| Ikona - spolecenska herna | 244 kB | 1024×1024 |
-| Ikona - venkovni prvky | 242 kB | 1024×1024 |
-| Ikona - venkovni posezeni | 203 kB | 1024×1024 |
-| Otuzovani-u-splavu + duplikát | 2× 119 kB | 1024×1024 |
-| Ikona - turistika a cyklistika | 92 kB | 938×938 |
-
-Zobrazují se jako malé ikonky, načítají se v plném rozlišení. **Dohromady 1,6 MB.**
-
-Úvodní stránka načítá **5,5 MB obrázků** ve 116 souborech, celá stránka 8,6 MB.
-
-- [ ] Zmenšit ikony na dvojnásobek zobrazované velikosti, cíl pod 20 kB na ikonu
-- [ ] Smazat duplikát `Otuzovani u splavu.webp` / `Otuzovani-u-splavu.webp`
-- [ ] Hero obrázky (417–456 kB) — přes `<picture>` servírovat menší verzi na mobil
-- [ ] **Google Fonts blokují vykreslení o 950 ms** — načítat neblokujícím způsobem, zúžit rozsah řezů
+- [x] Stránka vykresluje okamžitě statické HTML, `refreshActiveBanner()` ze Supabase neblokuje render
+- [x] Odstraněn duplicitní `DOMContentLoaded` re-render
+- [x] Hero poster na mobilu servíruje 54 kB mobilní verzi `<picture>` v `index.html` i `src/main.js`
+- [x] Zmenšeny ikony z 1024 px na 240 px Retina (z 300 kB na <20 kB na ikonu)
+- [x] Neblokující načítání Google Fonts (`media="print" onload="..."`)
+- [x] Doplněn Supabase `<link rel="preconnect">` do všech 13 HTML souborů (úspora 310 ms)
+- [x] Zmenšeny a zkomprimovány klíčové obrázky na úvodní stránce (`uvodni_hero_sekce.webp` 417→143 kB, `white logo.webp` 53→8 kB, `list_shadow.webp`, fotky z 280 na 150 kB)
 
 ## 7.3 Alt texty ⬜ (nízká priorita)
 

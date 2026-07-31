@@ -330,11 +330,11 @@ const getHeaderHTML = () => `
     <!-- Spodní přepínání Léto / Zima v mobilním menu -->
     <div class="mobile-season-toggle">
       <div class="control-item">
-        <img src="/Icons/sun_icon.png" alt="Slunce" class="control-icon">
+        <img src="/Icons/sun_icon.webp" alt="Slunce" class="control-icon">
         <span>Léto</span>
       </div>
       <div class="control-item">
-        <img src="/Icons/snowflake_icon.png" alt="Vločka" class="control-icon">
+        <img src="/Icons/snowflake_icon.webp" alt="Vločka" class="control-icon">
         <span>Zima</span>
       </div>
     </div>
@@ -922,7 +922,10 @@ const getHomePageHTML = () => {
 
   const heroMedia = isWinter
     ? `<img class="hero-winter-img" src="/Zimni rezim/Zima - hotel.webp" alt="Hotel u Můstku v zimě" fetchpriority="high" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">`
-    : `<img class="hero-summer-poster" src="/uvodni_hero_sekce.webp" alt="Hotel u Můstku" fetchpriority="high" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+    : `<picture style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+        <source media="(max-width: 767px)" srcset="/uvodni_hero_sekce_mobile.webp">
+        <img class="hero-summer-poster" src="/uvodni_hero_sekce.webp" alt="Hotel U Můstků" fetchpriority="high" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+      </picture>
        <video 
         class="hero-video" 
         autoplay 
@@ -972,11 +975,11 @@ const getHomePageHTML = () => {
       <!-- Spodní levé info (Léto / Zima) -->
       <div class="bottom-left-controls">
         <div class="control-item ${!isWinter ? 'is-active' : ''}">
-          <img src="/Icons/sun_icon.png" alt="Slunce" class="control-icon">
+          <img src="/Icons/sun_icon.webp" alt="Slunce" class="control-icon">
           <span>Léto</span>
         </div>
         <div class="control-item ${isWinter ? 'is-active' : ''}">
-          <img src="/Icons/snowflake_icon.png" alt="Vločka" class="control-icon">
+          <img src="/Icons/snowflake_icon.webp" alt="Vločka" class="control-icon">
           <span>Zima</span>
         </div>
       </div>
@@ -1011,7 +1014,7 @@ const getHomePageHTML = () => {
       </div>
 
       <div class="about-shadow-decor">
-        <img src="/Decoration/list_shadow.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
+        <img src="/Decoration/list_shadow.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
       </div>
     </div>
   </section>
@@ -2845,6 +2848,11 @@ const preloadCategoryImages = (catId) => {
 
 // Preload Všech Kategorií na pozadí v době nečinnosti prohlížeče
 const preloadAllCategoriesBackground = () => {
+  const c = navigator.connection;
+  if (c && (c.saveData || /2g|3g/.test(c.effectiveType || ''))) return;
+  const pathName = window.location.pathname.toLowerCase().replace(/\/$/, '');
+  if (!pathName || pathName === '' || pathName === '/index.html' || currentViewKey === 'home') return;
+
   const doPreload = () => {
     Object.keys(CATEGORIES_DATA).forEach((catId) => preloadCategoryImages(catId));
   };
@@ -3146,7 +3154,7 @@ const getEventsPageHTML = () => `
       </div>
 
       <div class="about-shadow-decor">
-        <img src="/Decoration/list_shadow.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
+        <img src="/Decoration/list_shadow.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
       </div>
     </div>
   </section>
@@ -5253,26 +5261,24 @@ const initCookieManager = () => {
 
 window.addEventListener('popstate', () => route(false));
 window.addEventListener('hashchange', () => route(false));
-window.addEventListener('DOMContentLoaded', () => {
-  route(true);
-  initCookieManager();
+
+// Immediate render on initial load without waiting for Supabase
+route(true);
+initCookieManager();
+
+refreshActiveBanner().then(() => {
+  // banner se doplní do už vykreslené stránky
 });
 
-// Initial trigger
-refreshActiveBanner().then(() => {
-  route(true);
-  initCookieManager();
+window.addEventListener('load', () => {
+  const v = document.querySelector('[data-hero-video]');
+  if (v) {
+    const c = navigator.connection;
+    if (!(c && (c.saveData || /2g/.test(c.effectiveType || '')))) {
+      v.preload = 'auto';
+      v.load();
+      v.play().catch(() => {});
+    }
+  }
   preloadAllCategoriesBackground();
 });
-
-
-  window.addEventListener('load', () => {
-    const v = document.querySelector('[data-hero-video]');
-    if (!v) return;
-    // Na pomalém připojení nebo v režimu úspory dat video vůbec nenačítat
-    const c = navigator.connection;
-    if (c && (c.saveData || /2g/.test(c.effectiveType || ''))) return;
-    v.preload = 'auto';
-    v.load();
-    v.play().catch(() => {});
-  });
