@@ -11064,9 +11064,19 @@ img[loading="lazy"].img-loaded {
     padding: 95px 0 135px 0 !important;
   }
 
-  .contact-directions-inner,
-  .contact-map-inner {
+  .contact-directions-inner {
     padding: 0 32px;
+  }
+
+  .contact-map-inner {
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .contact-map-wrapper {
+    border-radius: 0 !important;
+    box-shadow: none !important;
   }
 
   .directions-grid {
@@ -11116,9 +11126,14 @@ img[loading="lazy"].img-loaded {
   }
 
   .contact-main-inner,
-  .contact-directions-inner,
-  .contact-map-inner {
+  .contact-directions-inner {
     padding: 0 20px;
+  }
+
+  .contact-map-inner {
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
   }
 
   .contact-directions-section {
@@ -11192,7 +11207,8 @@ img[loading="lazy"].img-loaded {
   }
 
   .contact-map-wrapper {
-    height: 360px;
+    height: 480px !important;
+    border-radius: 0 !important;
   }
 
   .btn-open-google-maps {
