@@ -667,7 +667,7 @@ const getFeaturesHTML = () => `
               <img src="/Icons/Ikona - ohniste.webp" alt="Zahrada s ohništěm" loading="lazy" decoding="async">
             </div>
             <p class="feature-text">
-              <strong>Oplocená zahrada s ohništěm</strong> a grilem pro příjemné večery.
+              <strong>Zahrada s ohništěm</strong> a grilem pro příjemné večery.
             </p>
           </div>
 
