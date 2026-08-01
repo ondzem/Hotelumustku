@@ -12782,11 +12782,39 @@ input:checked + .cookie-slider:before {
   color: #666660;
 }
 
+.option-right-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.status-dot.dot-available {
+  background-color: #557223;
+  box-shadow: 0 0 0 2px rgba(85, 114, 35, 0.25);
+}
+
+.status-dot.dot-occupied {
+  background-color: #D32F2F;
+}
+
+.status-dot.dot-blocked {
+  background-color: #888880;
+}
+
 .option-checkmark {
   font-size: 16px;
   font-weight: 800;
   color: #4A5A24;
-  margin-left: auto;
   flex-shrink: 0;
 }
 
@@ -12807,6 +12835,12 @@ input:checked + .cookie-slider:before {
     align-items: flex-start;
     gap: 4px;
   }
+  .option-right-status {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  }
 }
+
 
 

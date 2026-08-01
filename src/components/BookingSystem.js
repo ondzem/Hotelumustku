@@ -1245,7 +1245,9 @@ export class BookingSystem {
                       <div class="trigger-info">
                         <div class="trigger-header-line">
                           <span class="trigger-room-name">${room.name}</span>
-                          <span class="room-status-pill status-available" style="font-size: 11.5px; padding: 2px 8px;">🟢 Volno</span>
+                          <span class="room-status-pill status-available" style="font-size: 11px; padding: 2px 7px;">
+                            <span class="status-dot dot-available"></span>Volno
+                          </span>
                         </div>
                         <span class="trigger-price-text">${formatCzechPrice(pricing.totalPrice)} za ${nights} ${nights === 1 ? 'noc' : (nights < 5 ? 'noci' : 'nocí')}</span>
                       </div>
@@ -1267,7 +1269,8 @@ export class BookingSystem {
                       const isSelected = r.id === (room ? room.id : '');
                       const isAvailable = item.isAvailable;
                       const statusClass = isAvailable ? 'status-available' : (item.isDisabled ? 'status-blocked' : 'status-occupied');
-                      const statusBadgeText = isAvailable ? '🟢 Volno pro vybraný termín' : (item.isDisabled ? '🔒 Dočasně zablokováno' : '🔴 V tomto termínu obsazeno');
+                      const statusDotClass = isAvailable ? 'dot-available' : (item.isDisabled ? 'dot-blocked' : 'dot-occupied');
+                      const statusBadgeText = isAvailable ? 'Volno' : (item.isDisabled ? 'Nedostupné' : 'Obsazeno');
                       
                       return `
                         <div class="custom-dropdown-option ${isSelected ? 'is-selected' : ''} ${!isAvailable ? 'is-disabled' : ''}" 
@@ -1285,11 +1288,15 @@ export class BookingSystem {
                             </div>
                             <div class="option-sub-row">
                               <span class="option-price-tag">${formatCzechPrice(p.totalPrice)} <small>/ ${nights} ${nights === 1 ? 'noc' : (nights < 5 ? 'noci' : 'nocí')}</small></span>
-                              <span class="room-status-pill ${statusClass}">${statusBadgeText}</span>
                             </div>
                           </div>
 
-                          ${isSelected ? '<span class="option-checkmark">✓</span>' : ''}
+                          <div class="option-right-status">
+                            <span class="room-status-pill ${statusClass}">
+                              <span class="status-dot ${statusDotClass}"></span>${statusBadgeText}
+                            </span>
+                            ${isSelected ? '<span class="option-checkmark">✓</span>' : ''}
+                          </div>
                         </div>
                       `;
                     }).join('')}
@@ -1303,7 +1310,9 @@ export class BookingSystem {
                   <div class="preview-info-wrap">
                     <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px;">
                       <span class="preview-badge">${room.floor === 'prizemi' ? 'Přízemí' : '1. Patro (Výhled na můstky)'}</span>
-                      <span class="room-status-pill status-available" style="font-size: 11.5px; padding: 2px 8px;">🟢 Volno v tomto termínu</span>
+                      <span class="room-status-pill status-available" style="font-size: 11px; padding: 2px 8px;">
+                        <span class="status-dot dot-available"></span>Volno v tomto termínu
+                      </span>
                     </div>
                     <h4 class="preview-room-title">${room.name}</h4>
                     <p class="preview-desc">Kapacita: až ${room.capacity + (room.extraBeds || 0)} osoby • Včetně bufetové snídaně a Wi-Fi zdarma</p>
