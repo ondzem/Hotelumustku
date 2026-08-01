@@ -2,6 +2,7 @@ import { MOCK_ROOMS, getStoredReservations, updateStoredReservationStatus, delet
 import { calculateReservationPrice, generateSpaydQrUrl, BANK_ACCOUNT, formatCzechPrice, getVariableSymbol } from '../utils/pricing.js';
 import { sendEmail, generateEmail2ApprovalAndPaymentRequest, generateEmail3FinalConfirmation, generateEmailCancellation, getEmailLogs, sendAllTestEmailsTo } from '../utils/emailService.js';
 import { checkAndProcessExpiredUnpaidReservations } from '../utils/reservationExpiryService.js';
+import { printReservationSheet } from '../utils/printReservationService.js';
 
 function formatCzechDateStr(dateStr) {
   if (!dateStr) return '';
@@ -800,6 +801,9 @@ export class AdminDashboard {
 
       this.showAdminToast(`❌ Rezervace ${reservation.code} byla stornována. E-mail o zamítnutí s nabídkou náhradního termínu byl odeslán hostu.`);
 
+    } else if (targetAction === 'print_reservation') {
+      printReservationSheet(reservation);
+      return;
     } else if (targetAction === 'delete') {
       this.pendingDeleteReservation = reservation;
       this.showDeleteModal = true;
@@ -1041,6 +1045,12 @@ export class AdminDashboard {
                       </button>
                     ` : ''}
 
+                    ${r.status === 'confirmed' ? `
+                      <button type="button" class="res-btn-print-primary btn-admin-action" data-id="${r.id || r.code}" data-act="print_reservation" style="background-color: #1c1c19 !important; color: #ece8dd !important; border: 1px solid #1c1c19 !important; font-weight: 700 !important; width: 100% !important; padding: 9px 14px !important; border-radius: 2px !important; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;">
+                        🖨️ Vytisknout rezervaci
+                      </button>
+                    ` : ''}
+
                     <div class="res-secondary-btn-row">
                       <button type="button" class="res-btn-secondary btn-details-toggle" data-id="${r.id || r.code}">
                         ${isExpanded ? 'Skrýt podrobnosti' : 'Podrobnosti'}
@@ -1138,8 +1148,11 @@ export class AdminDashboard {
                       </div>
                     </div>
 
-                    <!-- VYMAZÁNÍ REZERVAČNÍHO ZÁZNAMU -->
-                    <div class="drawer-delete-bar">
+                    <!-- TISK A VYMAZÁNÍ REZERVAČNÍHO ZÁZNAMU -->
+                    <div class="drawer-delete-bar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                      <button type="button" class="btn-drawer-print-clean btn-admin-action" data-id="${r.id || r.code}" data-act="print_reservation" style="background: #ece8dd; color: #1c1c19; border: 1px solid #dcd7c5; padding: 7px 16px; font-weight: 600; font-size: 13px; border-radius: 2px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                        🖨️ Vytisknout rezervační list (PDF)
+                      </button>
                       <button type="button" class="btn-drawer-delete-clean btn-admin-action" data-id="${r.id || r.code}" data-act="delete">
                         Vymazat rezervaci z databáze
                       </button>
