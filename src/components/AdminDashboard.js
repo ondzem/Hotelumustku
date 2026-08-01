@@ -1,6 +1,7 @@
 import { MOCK_ROOMS, getStoredReservations, updateStoredReservationStatus, deleteStoredReservation, getStoredBlockedDates, saveStoredBlockedDate, deleteStoredBlockedDate, getStoredDiscountCodes, saveStoredDiscountCode, deleteStoredDiscountCode, getStoredRoomPrices, saveStoredRoomPrice, getStoredCustomRoomNames, saveStoredCustomRoomName, getStoredDisabledRooms, saveStoredDisabledRoom, getStoredNewsItems, saveStoredNewsItem, deleteStoredNewsItem, reorderNewsItem, uploadNewsImage, isSupabaseConfigured, supabase, getStoredReviews, updateStoredReviewStatus } from '../lib/supabaseClient.js';
 import { calculateReservationPrice, generateSpaydQrUrl, BANK_ACCOUNT, formatCzechPrice, getVariableSymbol } from '../utils/pricing.js';
 import { sendEmail, generateEmail2ApprovalAndPaymentRequest, generateEmail3FinalConfirmation, generateEmailCancellation, getEmailLogs, sendAllTestEmailsTo } from '../utils/emailService.js';
+import { checkAndProcessExpiredUnpaidReservations } from '../utils/reservationExpiryService.js';
 
 function formatCzechDateStr(dateStr) {
   if (!dateStr) return '';
@@ -446,6 +447,12 @@ export class AdminDashboard {
   }
 
   async fetchReservations() {
+    try {
+      await checkAndProcessExpiredUnpaidReservations();
+    } catch (e) {
+      console.error('Error checking expired reservations:', e);
+    }
+
     if (isSupabaseConfigured && supabase) {
       try {
         const { data, error } = await supabase.from('reservations').select('*').order('created_at', { ascending: false });
@@ -708,8 +715,17 @@ export class AdminDashboard {
     if (targetAction === 'approve_and_request_deposit') {
       // Phase 1 -> Phase 2: Approve & Request 30% Deposit with QR Code
       const newStatus = 'awaiting_deposit';
+      const sentTimeStr = new Date().toISOString();
+      reservation.payment_instructions_sent_at = sentTimeStr;
+      reservation.approved_at = sentTimeStr;
       if (isSupabaseConfigured && supabase) {
-        try { await supabase.from('reservations').update({ status: newStatus }).eq('id', id); } catch (e) {}
+        try {
+          await supabase.from('reservations').update({
+            status: newStatus,
+            payment_instructions_sent_at: sentTimeStr,
+            approved_at: sentTimeStr
+          }).eq('id', id);
+        } catch (e) {}
       }
       updateStoredReservationStatus(id, newStatus);
       reservation.status = newStatus;

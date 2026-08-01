@@ -528,6 +528,45 @@ export function generateEmailCancellation({ reservation, room, reasonNote }) {
   `;
   return { subject: `Informace k vaší žádosti o rezervaci ${reservation.code} — Hotel u Můstku`, html };
 }
+
+// E-MAIL 5 (Automatický): Zákazníkovi při vypršení 3denní lhůty na úhradu zálohy
+export function generateEmailPaymentExpired({ reservation, room }) {
+  const html = `
+    ${getEmailHeader('Informace k vaší žádosti o rezervaci')}
+    <p style="color: #1a1a1a !important;">Vážený/á <strong>${reservation.guest_name}</strong>,</p>
+    <p style="color: #333333 !important;">ozýváme se vám ohledně vaší žádosti o rezervaci <strong>${reservation.code}</strong> na pobyt v termínu <strong>${reservation.date_from} až ${reservation.date_to}</strong> v Hotelu u Můstku.</p>
+
+    <div style="background-color: #fff8f8 !important; border: 1px solid #f5c6cb !important; border-radius: 12px !important; padding: 18px 22px !important; margin: 24px 0 !important; color: #721c24 !important;">
+      <strong style="color: #721c24 !important;">⚠️ Důvod uvolnění předběžné rezervace:</strong><br>
+      <span style="font-size: 14.5px; color: #491217; line-height: 1.5; display: block; margin-top: 6px;">
+        Ve stanovené lhůtě 3 kalendářních dnů od zaslání platebních podkladů s QR kódem nebyly na účet hotelu připsány finanční prostředky 30% zálohy. Z tohoto důvodu byla vaše předběžná blokace termínu automaticky zrušena a termín byl uvolněn pro ostatní zájemce.
+      </span>
+    </div>
+
+    <div style="background-color: #F9FAF7 !important; border: 1px solid #E7E5DC !important; border-radius: 12px !important; padding: 20px 24px !important; margin: 24px 0 !important;">
+      <h4 style="margin: 0 0 12px 0 !important; font-size: 16px !important; font-weight: 700 !important; color: #4A5A24 !important;">💡 Co dělat dál? Máte o pobyt stále zájem?</h4>
+      <p style="margin: 0 0 14px 0 !important; font-size: 14.5px !important; color: #333333 !important; line-height: 1.6 !important;">
+        Pokud byla platba odeslána na poslední chvíli nebo máte o pobyt v našem hotelu stále zájem, rádi s vámi možnost ubytování prověříme:
+      </p>
+      <ul style="margin: 0 !important; padding-left: 20px !important; font-size: 14.5px !important; color: #2C2C28 !important; line-height: 1.6 !important;">
+        <li style="margin-bottom: 8px !important;"><strong>Osobní domluva na recepci:</strong> Zavolejte nám na <strong>+420 777 666 273</strong> nebo napište na <strong>info@hotelumustku.cz</strong>. Pokud je pokoj stále volný, rezervaci vám rádi obnovíme.</li>
+        <li style="margin-bottom: 8px !important;"><strong>Vytvořit novou rezervaci:</strong> Můžete si kdykoliv vybrat nový termín na našem webu <a href="https://umustku.cz/#rezervace" style="color: #697947 !important; font-weight: 700 !important;">umustku.cz</a>.</li>
+      </ul>
+    </div>
+
+    <table class="info-table" style="background-color: #ffffff !important;">
+      <tr><td style="color: #555555 !important;">Kód žádosti:</td><td style="color: #1a1a1a !important;"><strong>${reservation.code}</strong></td></tr>
+      <tr><td style="color: #555555 !important;">Požadovaný pokoj:</td><td style="color: #1a1a1a !important;">${room ? room.name : (reservation.room_name || 'Vybraný pokoj')}</td></tr>
+      <tr><td style="color: #555555 !important;">Požadovaný termín:</td><td style="color: #1a1a1a !important;">${reservation.date_from} až ${reservation.date_to}</td></tr>
+      <tr><td style="color: #555555 !important;">Stav žádosti:</td><td><strong style="color: #d9534f !important;">Zrušeno – vypršení lhůty pro úhradu zálohy (3 dny)</strong></td></tr>
+    </table>
+
+    <p style="font-size:13.5px; color:#666666 !important; text-align: center !important; margin-top: 24px !important;">Těšíme se na vaši návštěvu při jiné příležitosti.</p>
+    ${getEmailFooter()}
+  `;
+  return { subject: `Informace k vaší žádosti o rezervaci ${reservation.code} — Vypršení lhůty pro úhradu zálohy | Hotel u Můstku`, html };
+}
+
 export function sendAllTestEmailsTo(recipientEmail = 'ondra.zeman05@gmail.com') {
   const mockReservation = {
     id: 'res-test-1',

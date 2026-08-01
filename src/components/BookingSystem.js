@@ -1,6 +1,7 @@
 import { MOCK_ROOMS, isSupabaseConfigured, supabase, getStoredReservations, saveStoredReservation, getStoredBlockedDates, getStoredDiscountCodes, getStoredRoomPrices, getStoredDisabledRooms, getDeviceRedeemedDiscountCodes, markDiscountCodeRedeemedOnDevice, incrementDiscountCodeUsage } from '../lib/supabaseClient.js';
 import { calculateReservationPrice, generateReservationCode, generateManageToken, BANK_ACCOUNT, BANK_NAME, formatCzechPrice, validateSystemDateIntegrity, isWinterSeason } from '../utils/pricing.js';
 import { sendEmail, generateEmail1RequestReceived, generateEmail1ReceptionNotification } from '../utils/emailService.js';
+import { checkAndProcessExpiredUnpaidReservations } from '../utils/reservationExpiryService.js';
 
 function getTodayDateString() {
   const d = new Date();
@@ -363,9 +364,18 @@ export class BookingSystem {
   }
 
   async fetchActiveReservations() {
+    try {
+      await checkAndProcessExpiredUnpaidReservations();
+    } catch (e) {
+      console.error('Error running expiry check in BookingSystem:', e);
+    }
+
     if (isSupabaseConfigured && supabase) {
       try {
-        const { data, error } = await supabase.from('reservations').select('*').neq('status', 'cancelled');
+        const { data, error } = await supabase
+          .from('reservations')
+          .select('*')
+          .not('status', 'in', '("cancelled","cancelled_unpaid","stornováno")');
         if (!error && data) {
           this.activeReservations = data;
           return;
@@ -375,7 +385,7 @@ export class BookingSystem {
       }
     }
     const stored = getStoredReservations();
-    this.activeReservations = stored.filter(r => r.status !== 'cancelled' && r.status !== 'stornováno');
+    this.activeReservations = stored.filter(r => !r.status.startsWith('cancelled') && r.status !== 'stornováno');
   }
 
   async fetchBlockedDates() {
@@ -404,7 +414,7 @@ export class BookingSystem {
 
     if (!this.activeReservations || this.activeReservations.length === 0) return false;
     return this.activeReservations.some(r => {
-      if (r.room_id !== roomId || r.status === 'cancelled' || r.status === 'stornováno') return false;
+      if (r.room_id !== roomId || (r.status && (r.status.startsWith('cancelled') || r.status === 'stornováno'))) return false;
       return dateStr >= r.date_from && dateStr < r.date_to;
     });
   }
@@ -422,7 +432,7 @@ export class BookingSystem {
 
     if (!this.activeReservations || this.activeReservations.length === 0) return null;
     return this.activeReservations.find(r => {
-      if (r.room_id !== roomId || r.status === 'cancelled' || r.status === 'stornováno') return false;
+      if (r.room_id !== roomId || (r.status && (r.status.startsWith('cancelled') || r.status === 'stornováno'))) return false;
       return r.date_from < dateTo && r.date_to > dateFrom;
     });
   }
