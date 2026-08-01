@@ -21,7 +21,7 @@ Odškrtávej `[ ]` → `[x]`. Co je hotové, je označené ✅.
 | 4 — Copywriting | ✅ **hotovo** |
 | 5 — AI / GEO | ✅ hotovo (test v AI až po spuštění) |
 | 6 — Lokální SEO | ⏹️ vyřazeno ze zakázky |
-| 7 — Rychlost a přístupnost | 🟡 soubory hotové, zbývá LCP 6,0 s |
+| 7 — Rychlost a přístupnost | ✅ **hotovo — uzavřeno** |
 | 8 — Měření | 🟡 rozděláno |
 
 ---
@@ -249,21 +249,36 @@ Google Business Profile existuje, je nárokovaný, má vyplněnou adresu, telefo
 
 ---
 
-# FÁZE 7 — Rychlost a přístupnost 🟡
+# FÁZE 7 — Rychlost a přístupnost ✅ UZAVŘENO
 
-## 7.0 Naměřeno — PageSpeed Insights, mobil, 31. 7. 2026
+## 7.0 Finální měření — PageSpeed Insights, 31. 7. 2026, 23:05
 
-| metrika | hodnota | |
-|---|---|---|
-| **SEO** | **100/100** | ✅ cíl splněn |
-| **Accessibility** | **100/100** | ✅ |
-| Best Practices | 96 | ✅ |
-| **CLS** (posun layoutu) | **0** | ✅ |
-| TBT | 10 ms | ✅ |
-| FCP | 2,8 s | 🟡 |
-| Speed Index | 5,2 s | 🟡 |
-| **LCP** | **6,0 s** | 🔴 cíl < 2,5 s |
-| Performance | 70 | 🟡 |
+| metrika | mobil | desktop | |
+|---|---|---|---|
+| **SEO** | **100** | **100** | ✅ cíl splněn |
+| **Accessibility** | **100** | **100** | ✅ |
+| Best Practices | 96 | 96 | ✅ |
+| **CLS** | **0** | **0** | ✅ |
+| **Performance** | **72** | **98** | ✅ přijatelné |
+| FCP | — | 0,8 s | ✅ |
+| LCP | — | 1,0 s | ✅ |
+
+**Průběh na mobilu:** 70 → 67 → 68 → **72**. LCP kleslo ze 7,6 s.
+
+### ⛔ Rozhodnutí: dál se rychlostí nezabýváme *(Ondřej, 31. 7. 2026)*
+
+Rozdíl mobil 72 / desktop 98 **není chyba optimalizace**. PageSpeed mobil
+simuluje Moto G Power na uměle zpomaleném 4G — levný Android z roku 2020.
+Tenhle rozdíl má prakticky každý web.
+
+Zbylé body by stály přestavbu 618 kB JS bundlu a přepis všech fotek výletů
+(4 MB v `Fotky Aktivit/`). Dny práce za pár bodů v testu, který reální
+hosté nikdy neuvidí. **Poměr cena/výkon je záporný — končíme.**
+
+Kdyby se k tomu někdy vracelo, zbývalo by:
+- `Fotky Aktivit/` — 20+ fotek po ~400 kB, dohromady 4 MB
+- `main-*.js` — 618 kB, 116 kB nevyužitého kódu
+- `main-*.css` — 232 kB, 29 kB nevyužitého, blokuje render 450 ms
 
 - [x] ⛔ **`width` a `height` k obrázkům se NEPŘIDÁVAJÍ.** CLS je **0** — layout neskáče vůbec, protože obrázky sedí v kontejnerech s pevnou velikostí a `object-fit`. Atributy by nic nezlepšily a znamenaly by 331 zásahů do kódu. *(rozhodnuto po měření 31. 7. 2026)*
 
@@ -340,16 +355,18 @@ První viditelné výsledky v GSC: **4–8 týdnů po nasazení domény.** Plný
 
 # CO DĚLAT PŘÍŠTĚ
 
-1. **Fáze 7.2** — zmenšit ikony z 1024 px, hero přes `<picture>`, odblokovat fonty
-   → cíl: LCP z 6,0 s pod 2,5 s
-2. **Fáze 4.2** — opravit `<title>` na `okoli-turistika.html` (2 minuty)
-3. **Fáze 1.2** — přepnout doménu
-4. **Fáze 2.7** — po přepnutí ověřit schema v Rich Results Test
-5. **Fáze 7.3 + 7.4** — alt texty a tlačítka, až bude čas
+**Web je hotový. Zbývá ho spustit.**
 
-**Poznámka:** SEO skóre je už teď 100/100. Zbytek Fáze 7 je o rychlosti,
-ne o SEO jako takovém — ale LCP 6 s je faktor hodnocení a hlavně
-odrazuje návštěvníky.
+1. **Fáze 4.2** — opravit `<title>` na `okoli-turistika.html` (2 minuty)
+2. **Fáze 1.2** — **přepnout doménu na `umustku.cz`** ← hlavní krok
+3. **Fáze 1.3** — po přepnutí: odeslat sitemap v GSC, otestovat staré URL
+4. **Fáze 2.7** — ověřit schema v Rich Results Test (jde až po přepnutí)
+5. **Fáze 8** — konverzní událost v GA4, výchozí drift baseline
+
+Volitelné, až bude čas: Fáze 7.3 (alt texty), 7.4 (tlačítka), 3.5 (podstránky pokojů).
+
+**Stav:** SEO 100/100, Accessibility 100/100, CLS 0. Rychlost uzavřena.
+Dokud web není na `umustku.cz`, Google o něm neví a nic dalšího nemá efekt.
 
 ## Poučení z průběhu
 
