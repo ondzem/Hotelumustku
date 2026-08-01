@@ -1449,7 +1449,7 @@ export class BookingSystem {
                   <input type="checkbox" id="addon-dog" ${this.state.hasDog ? 'checked' : ''}>
                   <span class="addon-text">
                     <strong>Pobyt s pejskem</strong> (+150 Kč / noc pro celý pokoj)
-                    <small>Váš čtyřnohý mazlíček je u nás vítán (poplatek za celý pokoj).</small>
+                    <small>⚠️ Pouze po předchozí domluvě s recepcí. Uveďte prosím rasu a velikost pejska do poznámky v 2. kroku rezervace.</small>
                   </span>
                 </label>
 
@@ -1911,7 +1911,12 @@ export class BookingSystem {
 
                 <div class="form-field">
                   <label for="guest-note" class="form-label">Poznámka / Speciální přání pro celý pobyt <span class="optional-tag">(Volitelné / Nepovinné)</span></label>
-                  <textarea id="guest-note" class="form-textarea" rows="3" placeholder="Předpokládaný čas příjezdu, dieta či jiná přání...">${this.state.guestNote}</textarea>
+                  ${this.state.hasDog ? `
+                    <div style="background: #fff8e1; border: 1px solid #ffe082; padding: 10px 14px; border-radius: 2px; margin-bottom: 10px; font-size: 13.5px; color: #5d4037; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                      <span>🐶</span> <span><strong>Pobyt s pejskem:</strong> Napište nám prosím do poznámky rasu a velikost pejska pro schválení recepcí.</span>
+                    </div>
+                  ` : ''}
+                  <textarea id="guest-note" class="form-textarea" rows="3" placeholder="${this.state.hasDog ? 'Dopňte prosím rasu a velikost pejska, případně předpokládaný čas příjezdu...' : 'Předpokládaný čas příjezdu, dieta či jiná přání...'}">${this.state.guestNote}</textarea>
                 </div>
               </div>
             </div>
