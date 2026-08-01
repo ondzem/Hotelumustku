@@ -430,7 +430,7 @@ export class BookingSystem {
       const errBanner = this.container.querySelector('.booking-error-alert') ||
         this.container.querySelector('.booking-alert-error') ||
         this.container.querySelector('.form-field.has-error') ||
-        this.container.querySelector('#date-from-btn') ||
+        this.container.querySelector('#date-range-btn') ||
         this.container.querySelector('.booking-card');
       if (errBanner) {
         errBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -980,10 +980,10 @@ export class BookingSystem {
     const room = this.getSelectedRoom();
     const roomIdForCal = room ? room.id : 'all';
 
-    const effectiveFrom = this.state.tempDateFrom || this.state.dateFrom;
-    const effectiveTo = this.state.tempDateTo || this.state.dateTo;
+    const effectiveFrom = this.state.tempDateFrom;
+    const effectiveTo = this.state.tempDateTo;
 
-    const baseForMonth = effectiveFrom || getTodayDateString();
+    const baseForMonth = effectiveFrom || this.state.dateFrom || getTodayDateString();
 
     if (!this.state.calYearMonth) {
       const [y, m] = baseForMonth.split('-').map(Number);
@@ -1042,19 +1042,27 @@ export class BookingSystem {
     return `
       <div class="cal-modal-overlay" id="cal-modal-overlay">
         <div class="cal-modal-card">
-          <div class="cal-modal-header">
-            <button type="button" class="cal-nav-btn" id="cal-prev-month" aria-label="Předchozí měsíc">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="15 18 9 12 15 6"></polyline>
-              </svg>
-            </button>
-            <h4 class="cal-month-title">${monthNames[month - 1]} ${year}</h4>
-            <button type="button" class="cal-nav-btn" id="cal-next-month" aria-label="Následující měsíc">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="9 18 15 12 9 6"></polyline>
-              </svg>
-            </button>
-            <button type="button" class="cal-close-btn" id="cal-close-btn" aria-label="Zavřít">&times;</button>
+          <div class="cal-modal-header" style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <button type="button" class="cal-nav-btn" id="cal-prev-month" aria-label="Předchozí měsíc">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+              </button>
+              <h4 class="cal-month-title">${monthNames[month - 1]} ${year}</h4>
+              <button type="button" class="cal-nav-btn" id="cal-next-month" aria-label="Následující měsíc">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <button type="button" id="cal-reset-btn" class="btn-cal-reset-link" style="font-size: 12.5px; font-weight: 600; color: #888880; background: none; border: none; cursor: pointer; text-decoration: underline; padding: 4px 6px;">
+                Vynulovat výběr
+              </button>
+              <button type="button" class="cal-close-btn" id="cal-close-btn" aria-label="Zavřít">&times;</button>
+            </div>
           </div>
 
           <div class="cal-week-days">
@@ -1078,7 +1086,7 @@ export class BookingSystem {
               <button type="button" class="btn btn-confirm-cal-dates" id="cal-confirm-dates-btn" style="height: 42px; padding: 0 24px; font-size: 15px; font-weight: 600; color: #FFFFFF; background-color: #4A5A24; border: none; border-radius: 2px; cursor: pointer; width: 100%; display: inline-flex; align-items: center; justify-content: center; transition: background 0.15s ease;">
                 Potvrdit termín pobytu
               </button>
-            ` : `
+            ` : (effectiveFrom ? `
               <div class="cal-range-summary" style="display: flex; flex-direction: column; gap: 2px;">
                 <span class="cal-summary-label" style="font-size: 14px; font-weight: 700; color: #4A5A24;">
                   Příjezd: ${formatCzechDateStr(effectiveFrom)}
@@ -1087,7 +1095,13 @@ export class BookingSystem {
                   Nyní klikněte v kalendáři na datum odjezdu (Check-out)
                 </span>
               </div>
-            `}
+            ` : `
+              <div class="cal-range-summary" style="display: flex; flex-direction: column; gap: 2px;">
+                <span class="cal-summary-label" style="font-size: 14px; font-weight: 700; color: #666660;">
+                  Klikněte v kalendáři na datum příjezdu (Check-in)
+                </span>
+              </div>
+            `)}
           </div>
         </div>
       </div>
@@ -1231,39 +1245,30 @@ export class BookingSystem {
         <div class="booking-grid">
           <div class="booking-left-col">
             
-            <!-- 1. TERMÍN POBYTU (NAHOŘE JAKO PRVNÍ) -->
+            <!-- 1. TERMÍN POBYTU (SJEDNOCENÉ TLAČÍTKO PRO CELÝ TERMÍN POBYTU) -->
             <div class="booking-card card-step-1">
               <h3 class="card-title">1. Termín pobytu <span class="required-badge">* Povinné</span></h3>
               
-              <div class="dates-grid">
-                <div class="form-field">
-                  <label for="date-from-btn" class="form-label">Datum příjezdu (Check-in od 15:00):</label>
-                  <button type="button" id="date-from-btn" class="custom-date-btn" data-field="dateFrom">
-                    <span class="custom-date-text">${formattedFrom}</span>
-                    <svg class="custom-date-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#697947" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <div class="form-field">
+                <label for="date-range-btn" class="form-label">Vybraný termín pobytu (Příjezd od 15:00 & Odjezd do 10:00):</label>
+                <button type="button" id="date-range-btn" class="custom-date-btn unified-date-range-btn">
+                  <div class="date-range-btn-inner">
+                    <svg class="custom-date-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#697947" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                       <line x1="16" y1="2" x2="16" y2="6"></line>
                       <line x1="8" y1="2" x2="8" y2="6"></line>
                       <line x1="3" y1="10" x2="21" y2="10"></line>
                     </svg>
-                  </button>
-                </div>
-                <div class="form-field">
-                  <label for="date-to-btn" class="form-label">Datum odjezdu (Check-out do 10:00):</label>
-                  <button type="button" id="date-to-btn" class="custom-date-btn" data-field="dateTo">
-                    <span class="custom-date-text">${formattedTo}</span>
-                    <svg class="custom-date-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#697947" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                      <line x1="16" y1="2" x2="16" y2="6"></line>
-                      <line x1="8" y1="2" x2="8" y2="6"></line>
-                      <line x1="3" y1="10" x2="21" y2="10"></line>
-                    </svg>
-                  </button>
-                </div>
+                    <div class="date-range-text-group">
+                      <span class="date-range-main">${formattedFrom} – ${formattedTo}</span>
+                      <span class="date-range-nights">(${nights} ${nights === 1 ? 'noc' : (nights < 5 ? 'noci' : 'nocí')})</span>
+                    </div>
+                  </div>
+                  <span class="date-range-action-text">Změnit termín pobytu v kalendáři &rarr;</span>
+                </button>
               </div>
               
-              <div class="terms-card-bottom-row">
-                <p class="nights-counter">Délka pobytu: <strong>${nights} ${nights === 1 ? 'noc' : (nights < 5 ? 'noci' : 'nocí')}</strong></p>
+              <div class="terms-card-bottom-row" style="margin-top: 14px;">
                 <button type="button" class="btn-terms-link" id="btn-open-terms-modal">
                   <span>Podmínky ubytování a storno</span>
                   <span class="link-arrow">&rarr;</span>
@@ -2204,7 +2209,7 @@ export class BookingSystem {
         document.addEventListener('click', this._boundClickOutside);
       }
 
-      const openCalModal = (field) => {
+      const openCalModal = () => {
         this.state.tempDateFrom = this.state.dateFrom;
         this.state.tempDateTo = this.state.dateTo;
         this.state.selectingStep = 1;
@@ -2214,18 +2219,11 @@ export class BookingSystem {
         this.render();
       };
 
-      const btnDateFrom = document.getElementById('date-from-btn');
-      const btnDateTo = document.getElementById('date-to-btn');
-      if (btnDateFrom) {
-        btnDateFrom.addEventListener('click', (e) => {
+      const btnDateRange = document.getElementById('date-range-btn');
+      if (btnDateRange) {
+        btnDateRange.addEventListener('click', (e) => {
           e.preventDefault();
-          openCalModal('dateFrom');
-        });
-      }
-      if (btnDateTo) {
-        btnDateTo.addEventListener('click', (e) => {
-          e.preventDefault();
-          openCalModal('dateTo');
+          openCalModal();
         });
       }
 
@@ -2492,6 +2490,17 @@ export class BookingSystem {
       const btnCloseCal = document.getElementById('cal-close-btn');
       if (btnCloseCal) btnCloseCal.addEventListener('click', closeCal);
 
+      const btnResetCal = document.getElementById('cal-reset-btn');
+      if (btnResetCal) {
+        btnResetCal.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.state.tempDateFrom = null;
+          this.state.tempDateTo = null;
+          this.state.selectingStep = 1;
+          this.render();
+        });
+      }
+
       calOverlay.addEventListener('click', (e) => {
         if (e.target === calOverlay) closeCal();
       });
@@ -2543,11 +2552,20 @@ export class BookingSystem {
           e.preventDefault();
           const selectedDate = dayBtn.dataset.date;
 
-          if (this.state.selectingStep === 1 || !this.state.tempDateFrom || selectedDate <= this.state.tempDateFrom) {
+          // If a full range was already selected, 3rd click automatically resets and sets new arrival date!
+          if (this.state.tempDateFrom && this.state.tempDateTo) {
             this.state.tempDateFrom = selectedDate;
             this.state.tempDateTo = null;
             this.state.selectingStep = 2;
-          } else if (this.state.selectingStep === 2 && selectedDate > this.state.tempDateFrom) {
+          }
+          // Else if picking step 1 or no arrival date set
+          else if (this.state.selectingStep === 1 || !this.state.tempDateFrom || selectedDate <= this.state.tempDateFrom) {
+            this.state.tempDateFrom = selectedDate;
+            this.state.tempDateTo = null;
+            this.state.selectingStep = 2;
+          }
+          // Else picking step 2 (departure)
+          else if (this.state.selectingStep === 2 && selectedDate > this.state.tempDateFrom) {
             this.state.tempDateTo = selectedDate;
             this.state.selectingStep = 1;
           }

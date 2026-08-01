@@ -12844,3 +12844,83 @@ input:checked + .cookie-slider:before {
 
 
 
+
+
+/* IČ provozovatele v patičce — povinný údaj dle § 435 občanského zákoníku */
+.footer-business-id {
+  opacity: 0.72;
+  font-size: 0.92em;
+  margin-top: 4px;
+}
+
+/* ==========================================================================
+   UNIFIED DATE RANGE BUTTON STYLES
+   ========================================================================== */
+.unified-date-range-btn {
+  width: 100%;
+  min-height: 52px;
+  background: #FFFFFF;
+  border: 1px solid #C8C6B9;
+  border-radius: 4px;
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.unified-date-range-btn:hover {
+  border-color: #697947;
+  background: #FAF9F5;
+}
+
+.date-range-btn-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.date-range-text-group {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.date-range-main {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1C1C19;
+}
+
+.date-range-nights {
+  font-size: 14px;
+  font-weight: 600;
+  color: #697947;
+}
+
+.date-range-action-text {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #697947;
+  white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+  .unified-date-range-btn {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 12px 14px;
+  }
+  .date-range-main {
+    font-size: 15px;
+  }
+  .date-range-action-text {
+    font-size: 12.5px;
+  }
+}
+
