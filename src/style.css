@@ -8035,6 +8035,90 @@ img[loading="lazy"].img-loaded {
     padding: 0 20px !important;
     font-size: 14.5px !important;
   }
+
+  /* Mobilní zvětšení dotykové plochy tlačítek a odkazů na 44px bez změny vzhledu */
+  .btn,
+  .hero-btn,
+  .room-detail-hero-btn,
+  .btn-about,
+  .btn-promo,
+  .btn-surroundings-more,
+  .btn-cta,
+  .btn-dining-read-more,
+  .btn-events-read-more,
+  .btn-dining-not-guest,
+  .btn-dining-more,
+  .btn-service-more,
+  .btn-events-cta,
+  .btn-rooms-offer,
+  .btn-rooms-mobile-cta,
+  .btn-contact-submit,
+  .btn-contact-hero-btn,
+  .btn-news-hero-btn,
+  .btn-activities-hero,
+  .btn-room-primary,
+  .btn-room-secondary,
+  .btn-room-reserve,
+  .btn-specs-primary,
+  .btn-specs-secondary,
+  .btn-breakdown-cta,
+  .btn-terms-cta,
+  .btn-booking-submit,
+  .btn-cookie-accept,
+  .btn-cookie-reject,
+  .btn-cookie-modal-save,
+  .btn-open-cookie-settings,
+  .mobile-nav-link {
+    position: relative;
+  }
+
+  .btn::after,
+  .hero-btn::after,
+  .room-detail-hero-btn::after,
+  .btn-about::after,
+  .btn-promo::after,
+  .btn-surroundings-more::after,
+  .btn-cta::after,
+  .btn-dining-read-more::after,
+  .btn-events-read-more::after,
+  .btn-dining-not-guest::after,
+  .btn-dining-more::after,
+  .btn-service-more::after,
+  .btn-events-cta::after,
+  .btn-rooms-offer::after,
+  .btn-rooms-mobile-cta::after,
+  .btn-contact-submit::after,
+  .btn-contact-hero-btn::after,
+  .btn-news-hero-btn::after,
+  .btn-activities-hero::after,
+  .btn-room-primary::after,
+  .btn-room-secondary::after,
+  .btn-room-reserve::after,
+  .btn-specs-primary::after,
+  .btn-specs-secondary::after,
+  .btn-breakdown-cta::after,
+  .btn-terms-cta::after,
+  .btn-booking-submit::after,
+  .btn-cookie-accept::after,
+  .btn-cookie-reject::after,
+  .btn-cookie-modal-save::after,
+  .btn-open-cookie-settings::after {
+    content: '';
+    position: absolute;
+    top: -4px;
+    bottom: -4px;
+    left: 0;
+    right: 0;
+  }
+
+  .mobile-nav-link::after {
+    content: '';
+    position: absolute;
+    top: -8px;
+    bottom: -8px;
+    left: -12px;
+    right: -12px;
+  }
 }
 
 @media (min-width: 768px) and (max-width: 1028px) {

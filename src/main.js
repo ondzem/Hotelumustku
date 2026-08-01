@@ -329,12 +329,12 @@ const getHeaderHTML = () => `
 
     <!-- Spodní přepínání Léto / Zima v mobilním menu -->
     <div class="mobile-season-toggle">
-      <div class="control-item">
-        <img src="/Icons/sun_icon.webp" alt="Slunce" class="control-icon">
+      <div class="control-item" aria-label="Přepnout na letní zobrazení">
+        <img src="/Icons/sun_icon.webp" alt="" class="control-icon">
         <span>Léto</span>
       </div>
-      <div class="control-item">
-        <img src="/Icons/snowflake_icon.webp" alt="Vločka" class="control-icon">
+      <div class="control-item" aria-label="Přepnout na zimní zobrazení">
+        <img src="/Icons/snowflake_icon.webp" alt="" class="control-icon">
         <span>Zima</span>
       </div>
     </div>
@@ -832,7 +832,7 @@ const getFooterHTML = () => `
 
     <div class="footer-inner">
       <div class="footer-mobile-logo">
-        <img src="/Logo/white logo.webp" alt="Hotel U Můstku" loading="lazy" decoding="async">
+        <img src="/Logo/white logo.webp" alt="Logo Hotelu U Můstků Desná" loading="lazy" decoding="async">
       </div>
 
       <div class="footer-columns-grid">
@@ -885,7 +885,7 @@ const getFooterHTML = () => `
       <div class="footer-bottom-row">
         <div class="footer-copyright secret-admin-trigger" title="Vstup pro recepci" style="cursor: pointer;">© 2026 All Rights Reserved.</div>
         <div class="footer-logo-wrap btn-scroll-top" title="Zpět nahoru">
-          <img src="/Logo/white logo.webp" alt="Hotel U Můstku" loading="lazy" decoding="async">
+          <img src="/Logo/white logo.webp" alt="Logo Hotelu U Můstků Desná" loading="lazy" decoding="async">
         </div>
         <div class="footer-author">Vytvořil <a href="https://ozeman.cz" target="_blank" rel="noopener">ozeman.cz</a></div>
       </div>
@@ -924,7 +924,7 @@ const getHomePageHTML = () => {
     ? `<img class="hero-winter-img" src="/Zimni rezim/Zima - hotel.webp" alt="Hotel u Můstku v zimě" fetchpriority="high" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">`
     : `<picture style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
         <source media="(max-width: 767px)" srcset="/uvodni_hero_sekce_mobile.webp">
-        <img class="hero-summer-poster" src="/uvodni_hero_sekce.webp" alt="Hotel U Můstků" fetchpriority="high" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+        <img class="hero-summer-poster" src="/uvodni_hero_sekce.webp" alt="Pohled na budovu Hotelu U Můstků se skokanskými můstky v pozadí" fetchpriority="high" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
       </picture>
        <video 
         class="hero-video" 
@@ -974,12 +974,12 @@ const getHomePageHTML = () => {
 
       <!-- Spodní levé info (Léto / Zima) -->
       <div class="bottom-left-controls">
-        <div class="control-item ${!isWinter ? 'is-active' : ''}">
-          <img src="/Icons/sun_icon.webp" alt="Slunce" class="control-icon">
+        <div class="control-item ${!isWinter ? 'is-active' : ''}" aria-label="Přepnout na letní zobrazení">
+          <img src="/Icons/sun_icon.webp" alt="" class="control-icon">
           <span>Léto</span>
         </div>
-        <div class="control-item ${isWinter ? 'is-active' : ''}">
-          <img src="/Icons/snowflake_icon.webp" alt="Vločka" class="control-icon">
+        <div class="control-item ${isWinter ? 'is-active' : ''}" aria-label="Přepnout na zimní zobrazení">
+          <img src="/Icons/snowflake_icon.webp" alt="" class="control-icon">
           <span>Zima</span>
         </div>
       </div>
@@ -2607,11 +2607,23 @@ const initInteractivity = () => {
   let currentPhotosList = [];
   let currentPhotoIndex = 0;
 
+  const updateLightboxContent = () => {
+    if (!lightboxImg || currentPhotosList.length === 0) return;
+    const item = currentPhotosList[currentPhotoIndex];
+    if (typeof item === 'string') {
+      lightboxImg.src = item;
+      lightboxImg.alt = 'Zvětšený náhled fotky pokoje';
+    } else {
+      lightboxImg.src = item.src;
+      lightboxImg.alt = item.alt || 'Zvětšený náhled fotky pokoje';
+    }
+  };
+
   const openLightbox = (photos, startIndex) => {
     currentPhotosList = photos;
     currentPhotoIndex = startIndex;
     if (lightboxImg && currentPhotosList.length > 0) {
-      lightboxImg.src = currentPhotosList[currentPhotoIndex];
+      updateLightboxContent();
       lightboxModal.classList.add('is-active');
       lightboxModal.setAttribute('aria-hidden', 'false');
       document.body.style.overflow = 'hidden';
@@ -2640,7 +2652,7 @@ const initInteractivity = () => {
       e.stopPropagation();
       if (currentPhotosList.length === 0) return;
       currentPhotoIndex = (currentPhotoIndex + 1) % currentPhotosList.length;
-      if (lightboxImg) lightboxImg.src = currentPhotosList[currentPhotoIndex];
+      updateLightboxContent();
     });
   }
 
@@ -2649,7 +2661,7 @@ const initInteractivity = () => {
       e.stopPropagation();
       if (currentPhotosList.length === 0) return;
       currentPhotoIndex = (currentPhotoIndex - 1 + currentPhotosList.length) % currentPhotosList.length;
-      if (lightboxImg) lightboxImg.src = currentPhotosList[currentPhotoIndex];
+      updateLightboxContent();
     });
   }
 
@@ -2661,11 +2673,17 @@ const initInteractivity = () => {
       e.stopPropagation();
       const track = img.closest('.room-carousel-track');
       if (track) {
-        const allImgsInTrack = Array.from(track.querySelectorAll('img')).map(i => i.src);
-        const clickedIdx = allImgsInTrack.indexOf(img.src);
+        const allImgsInTrack = Array.from(track.querySelectorAll('img')).map(i => ({
+          src: i.src,
+          alt: i.alt || i.getAttribute('alt') || 'Detailní náhled fotky pokoje'
+        }));
+        const clickedIdx = allImgsInTrack.findIndex(item => item.src === img.src);
         openLightbox(allImgsInTrack, clickedIdx !== -1 ? clickedIdx : 0);
       } else {
-        openLightbox([img.src], 0);
+        openLightbox([{
+          src: img.src,
+          alt: img.alt || img.getAttribute('alt') || 'Detailní náhled fotky pokoje'
+        }], 0);
       }
     });
   });
@@ -3233,7 +3251,7 @@ const getEventsPageHTML = () => `
           <!-- Položka 2 -->
           <div class="feature-item">
             <div class="feature-icon">
-              <img src="/Icons/Ikony/Autobus se zavazadly na transparentním pozadím.png" alt="Zajistíme dopravu" loading="lazy" decoding="async">
+              <img src="/Icons/Ikony/Autobus se zavazadly na transparentním pozadí.webp" alt="Zajistíme dopravu" loading="lazy" decoding="async">
             </div>
             <p class="feature-text">
               <strong>Zajistíme dopravu:</strong> mikrobusem či autobusem pro celou vaši skupinu.

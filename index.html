@@ -222,7 +222,10 @@
     <div id="app">
 <!-- HERO SEKCE -->
   <section class="hero-section" id="uvod">
-    <img class="hero-summer-poster" src="/uvodni_hero_sekce.webp" alt="Hotel u Můstku" fetchpriority="high" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+    <picture style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+        <source media="(max-width: 767px)" srcset="/uvodni_hero_sekce_mobile.webp">
+        <img class="hero-summer-poster" src="/uvodni_hero_sekce.webp" alt="Pohled na budovu Hotelu U Můstků se skokanskými můstky v pozadí" fetchpriority="high" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+      </picture>
        <video 
         class="hero-video" 
         autoplay 
@@ -279,12 +282,12 @@
 
     <!-- Spodní přepínání Léto / Zima v mobilním menu -->
     <div class="mobile-season-toggle">
-      <div class="control-item">
-        <img src="/Icons/sun_icon.webp" alt="Slunce" class="control-icon">
+      <div class="control-item" aria-label="Přepnout na letní zobrazení">
+        <img src="/Icons/sun_icon.webp" alt="" class="control-icon">
         <span>Léto</span>
       </div>
-      <div class="control-item">
-        <img src="/Icons/snowflake_icon.webp" alt="Vločka" class="control-icon">
+      <div class="control-item" aria-label="Přepnout na zimní zobrazení">
+        <img src="/Icons/snowflake_icon.webp" alt="" class="control-icon">
         <span>Zima</span>
       </div>
     </div>
@@ -302,12 +305,12 @@
 
       <!-- Spodní levé info (Léto / Zima) -->
       <div class="bottom-left-controls">
-        <div class="control-item is-active">
-          <img src="/Icons/sun_icon.webp" alt="Slunce" class="control-icon">
+        <div class="control-item is-active" aria-label="Přepnout na letní zobrazení">
+          <img src="/Icons/sun_icon.webp" alt="" class="control-icon">
           <span>Léto</span>
         </div>
-        <div class="control-item ">
-          <img src="/Icons/snowflake_icon.webp" alt="Vločka" class="control-icon">
+        <div class="control-item " aria-label="Přepnout na zimní zobrazení">
+          <img src="/Icons/snowflake_icon.webp" alt="" class="control-icon">
           <span>Zima</span>
         </div>
       </div>
@@ -1138,7 +1141,7 @@
 
     <div class="footer-inner">
       <div class="footer-mobile-logo">
-        <img src="/Logo/white logo.webp" alt="Hotel U Můstku" loading="lazy" decoding="async">
+        <img src="/Logo/white logo.webp" alt="Logo Hotelu U Můstků Desná" loading="lazy" decoding="async">
       </div>
 
       <div class="footer-columns-grid">
@@ -1191,7 +1194,7 @@
       <div class="footer-bottom-row">
         <div class="footer-copyright secret-admin-trigger" title="Vstup pro recepci" style="cursor: pointer;">© 2026 All Rights Reserved.</div>
         <div class="footer-logo-wrap btn-scroll-top" title="Zpět nahoru">
-          <img src="/Logo/white logo.webp" alt="Hotel U Můstku" loading="lazy" decoding="async">
+          <img src="/Logo/white logo.webp" alt="Logo Hotelu U Můstků Desná" loading="lazy" decoding="async">
         </div>
         <div class="footer-author">Vytvořil <a href="https://ozeman.cz" target="_blank" rel="noopener">ozeman.cz</a></div>
       </div>

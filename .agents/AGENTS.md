@@ -14,7 +14,9 @@ Všechna tlačítka napříč celým webem (Hero, Zázemí/O nás, Sleva sekce, 
 * **Typografie**:
   * Font-size: `14.5px` (Mobil < 768px), `15.5px` (Tablet 768px-1028px), `17px` (1440px), `18px` (1750px+), `19.5px` (2200px+)
   * Font-weight: `500` (Medium)
-  * Radius: `1px` (`border-radius: 1px`)
+### Dotyková plocha na mobilu (nesmazat)
+Tlačítka zůstávají vizuálně 36 px vysoká, ale na mobilu (max-width: 767px) mají přes pseudo-element ::after neviditelně zvětšenou dotykovou plochu na 44 px (top: -4px; bottom: -4px). Je to kvůli cílové skupině 60+ a doporučení Google i Apple na minimálně 44 px pro dotyk.
+Pravidlo je v src/style.css kolem řádku 8039. NEODSTRAŇOVAT.
 
 ### 2. Konzistentní boční padding (Postranní odsazení)
 * Šířka všech tlačítek se vypočítává z délky textu + stejného bočního paddingu:

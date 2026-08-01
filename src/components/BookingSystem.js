@@ -797,6 +797,20 @@ export class BookingSystem {
 
     saveStoredReservation(reservationData);
 
+    // Konverzní událost pro GA4 — jen pokud návštěvník povolil analytiku
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', 'rezervace_odeslana', {
+        value: pricing.totalPrice,
+        currency: 'CZK',
+        nights: this.state.nights,
+        adults: this.state.adults,
+        children: this.state.children,
+        room_type: room?.name || 'neurceno',
+        half_board: this.state.hasHalfBoard,
+        with_dog: this.state.hasDog
+      });
+    }
+
     if (!this.appliedDiscount && (this.discountCodeInput || '').trim()) {
       await this.applyDiscountCode(this.discountCodeInput.trim());
     }
