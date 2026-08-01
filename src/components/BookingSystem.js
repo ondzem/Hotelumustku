@@ -126,7 +126,7 @@ export class BookingSystem {
   }
 
   syncGuestsArray() {
-    const totalCount = this.state.adults + this.state.children;
+    const totalCount = this.state.adults;
     while (this.state.guests.length < totalCount) {
       this.state.guests.push({
         name: '',
@@ -148,12 +148,11 @@ export class BookingSystem {
   async init(initialRoomId) {
     if (initialRoomId && this.roomsList.some(r => r.id === initialRoomId)) {
       this.state.selectedRoomId = initialRoomId;
-      this.currentStep = 2;
     }
     this.syncGuestsArray();
 
     if (!window.history.state || !window.history.state.bookingStep) {
-      window.history.replaceState({ bookingStep: this.currentStep }, '', window.location.hash || '#rezervace');
+      window.history.replaceState({ bookingStep: 1 }, '', window.location.hash || '#rezervace');
     }
 
     if (!this.popstateListenerAttached) {
@@ -665,7 +664,7 @@ export class BookingSystem {
       nights,
       persons: this.state.adults,
       adults: this.state.adults,
-      children: this.state.children,
+      children: 0,
       dateFrom: this.state.dateFrom,
       dateTo: this.state.dateTo,
       hasDog: this.state.hasDog,
@@ -684,13 +683,11 @@ export class BookingSystem {
     e.preventDefault();
     if (this.state.isSubmitting) return;
 
-    // Honeypot spam check
     if (this.state.honeypot) {
       console.warn('Spam detected via honeypot.');
       return;
     }
 
-    // Sync DOM inputs directly to state
     const g0NameEl = this.container.querySelector('#guest-0-name');
     const g0EmailEl = this.container.querySelector('#guest-0-email');
     const g0PhoneEl = this.container.querySelector('#guest-0-phone');
@@ -700,7 +697,6 @@ export class BookingSystem {
 
     this.syncGuestsArray();
 
-    // Sync all guest fields from DOM inputs
     this.state.guests.forEach((g, idx) => {
       const nameEl = this.container.querySelector(`#guest-${idx}-name`);
       const birthEl = this.container.querySelector(`#guest-${idx}-birthdate`);
@@ -719,7 +715,6 @@ export class BookingSystem {
       if (countryEl && countryEl.value) g.country = countryEl.value.trim();
     });
 
-    // Validate Host 1
     if (!this.state.guestName || !this.state.guestName.trim() || isDummyName(this.state.guestName)) {
       this.showFieldError('guest-0-name', 'Prosíme, vyplňte vaše platné Jméno a Příjmení.');
       return;
@@ -741,7 +736,6 @@ export class BookingSystem {
       return;
     }
 
-    // Validate additional guests
     for (let i = 1; i < this.state.guests.length; i++) {
       const nameEl = this.container.querySelector(`#guest-${i}-name`);
       if (nameEl && nameEl.value) this.state.guests[i].name = nameEl.value.trim();
@@ -760,12 +754,11 @@ export class BookingSystem {
 
     const room = this.getSelectedRoom();
     if (!room) {
-      this.state.errorMessage = 'Prosíme vyberte si nejprve pokoj v Kroku 2.';
-      this.setStep(2);
+      this.state.errorMessage = 'Prosíme vyberte si nejprve pokoj v Kroku 1.';
+      this.setStep(1);
       return;
     }
 
-    // Nastavení stavu načítání a vizuální reakce tlačítka
     this.state.isSubmitting = true;
     const submitBtn = this.container.querySelector('.btn-confirm-booking');
     if (submitBtn) {
@@ -777,7 +770,6 @@ export class BookingSystem {
       `;
     }
 
-    // Re-verify availability to prevent double-booking
     await this.fetchActiveReservations();
     const overlap = this.checkReservationOverlap(room.id, this.state.dateFrom, this.state.dateTo);
     if (overlap) {
@@ -829,7 +821,7 @@ export class BookingSystem {
         country: g.country || 'Česká republika'
       })),
       adults_count: this.state.adults,
-      children_count: this.state.children,
+      children_count: 0,
       has_dog: this.state.hasDog,
       has_ebike: this.state.hasEbike,
       ebike_count: pricing.ebikeCount,
@@ -855,14 +847,13 @@ export class BookingSystem {
 
     saveStoredReservation(reservationData);
 
-    // Konverzní událost pro GA4
     if (typeof window.gtag === 'function') {
       window.gtag('event', 'rezervace_odeslana', {
         value: pricing.totalPrice,
         currency: 'CZK',
         nights: this.calculateNights(),
         adults: this.state.adults,
-        children: this.state.children,
+        children: 0,
         room_type: room?.name || 'neurceno',
         half_board: this.state.hasHalfBoard,
         with_dog: this.state.hasDog
@@ -878,7 +869,6 @@ export class BookingSystem {
       markDiscountCodeRedeemedOnDevice(this.appliedDiscount.code);
     }
 
-    // Send Phase 1 emails (Guest & Reception)
     try {
       const email1Guest = generateEmail1RequestReceived({ reservation: reservationData, room, pricing });
       await sendEmail({
@@ -903,7 +893,7 @@ export class BookingSystem {
 
     this.state.confirmedReservation = reservationData;
     this.state.isSubmitting = false;
-    this.setStep(4);
+    this.setStep(3);
   }
 
   render() {
@@ -931,39 +921,37 @@ export class BookingSystem {
     let contentHtml = '';
 
     if (this.currentStep === 1) {
-      contentHtml = this.renderStep1(pricing, nights);
+      contentHtml = this.renderStep1(room, pricing, nights);
     } else if (this.currentStep === 2) {
-      contentHtml = this.renderStep2(pricing, nights);
+      contentHtml = this.renderStep2Form(room, pricing, nights);
     } else if (this.currentStep === 3) {
-      contentHtml = this.renderStep3Form(room, pricing, nights);
-    } else if (this.currentStep === 4) {
-      contentHtml = this.renderStep4Confirmation(room, pricing);
+      contentHtml = this.renderStep3Confirmation(room, pricing);
     }
 
     this.container.innerHTML = `
       <div class="booking-wizard-wrapper">
         <div class="booking-stepper">
-          <button type="button" class="step-item ${this.currentStep === 1 ? 'active' : ''} ${this.currentStep > 1 ? 'completed' : ''} btn-step-nav" data-target-step="1" title="Krok 1: Termín & Hosté">
+          <button type="button" class="step-item ${this.currentStep === 1 ? 'active' : ''} ${this.currentStep > 1 ? 'completed' : ''} btn-step-nav" data-target-step="1" title="Krok 1: Termín & Výběr pokoje">
             <span class="step-number">1</span>
             <span class="step-label">
-              <span class="label-full">Termín & Hosté</span>
-              <span class="label-short">Termín</span>
-            </span>
-          </button>
-          <div class="step-divider"></div>
-          <button type="button" class="step-item ${this.currentStep === 2 ? 'active' : ''} ${this.currentStep > 2 ? 'completed' : ''} ${this.currentStep < 2 ? 'disabled' : 'btn-step-nav'}" data-target-step="2" title="Krok 2: Výběr pokoje">
-            <span class="step-number">2</span>
-            <span class="step-label">
-              <span class="label-full">Výběr pokoje</span>
+              <span class="label-full">Termín & Pokoj</span>
               <span class="label-short">Pokoj</span>
             </span>
           </button>
           <div class="step-divider"></div>
-          <button type="button" class="step-item ${this.currentStep === 3 ? 'active' : ''} ${this.currentStep > 3 ? 'completed' : ''} ${this.currentStep < 3 ? 'disabled' : 'btn-step-nav'}" data-target-step="3" title="Krok 3: Údaje hosta">
+          <button type="button" class="step-item ${this.currentStep === 2 ? 'active' : ''} ${this.currentStep > 2 ? 'completed' : ''} ${this.currentStep < 2 ? 'disabled' : 'btn-step-nav'}" data-target-step="2" title="Krok 2: Údaje hosta">
+            <span class="step-number">2</span>
+            <span class="step-label">
+              <span class="label-full">Údaje hosta</span>
+              <span class="label-short">Údaje</span>
+            </span>
+          </button>
+          <div class="step-divider"></div>
+          <button type="button" class="step-item ${this.currentStep === 3 ? 'active' : ''}" disabled>
             <span class="step-number">3</span>
             <span class="step-label">
-              <span class="label-full">Údaje & Potvrzení</span>
-              <span class="label-short">Údaje</span>
+              <span class="label-full">Potvrzení & Platba</span>
+              <span class="label-short">Platba</span>
             </span>
           </button>
         </div>
@@ -1154,15 +1142,55 @@ export class BookingSystem {
     `;
   }
 
-  renderStep1(pricing, nights) {
+  renderStep1(room, pricing, nights) {
     const formattedFrom = formatCzechDateStr(this.state.dateFrom);
     const formattedTo = formatCzechDateStr(this.state.dateTo);
+
+    // Prepare availability statuses for all rooms for selected date range
+    const roomItems = this.roomsList.map(r => {
+      const isOccupied = Boolean(this.checkReservationOverlap(r.id, this.state.dateFrom, this.state.dateTo));
+      const isDisabled = Boolean(r.isDisabled || (this.disabledRooms && this.disabledRooms.some(d => d.room_id === r.id && d.is_disabled)));
+      const isAvailable = !isOccupied && !isDisabled;
+
+      const customPriceObj = (this.roomPrices || []).find(p => p.room_id === r.id);
+      const customBaseRate = customPriceObj ? (customPriceObj.base_price || customPriceObj.weekday_price) : (r.weekdayPrice || r.basePrice);
+      const customWeekdayRate = customPriceObj ? (customPriceObj.weekday_price || customPriceObj.base_price) : r.weekdayPrice;
+      const customWeekendRate = customPriceObj ? (customPriceObj.weekend_price || customPriceObj.base_price) : r.weekendPrice;
+
+      const roomPricing = calculateReservationPrice({
+        roomType: r.type,
+        nights,
+        persons: this.state.adults,
+        adults: this.state.adults,
+        children: 0,
+        dateFrom: this.state.dateFrom,
+        dateTo: this.state.dateTo,
+        hasDog: this.state.hasDog,
+        hasEbike: this.state.hasEbike,
+        ebikeCount: this.state.ebikeCount,
+        hasHalfBoard: this.state.hasHalfBoard,
+        halfBoardCount: this.state.halfBoardCount,
+        customBaseRate,
+        customWeekdayRate,
+        customWeekendRate,
+        discountObj: this.appliedDiscount,
+      });
+
+      return {
+        room: r,
+        isAvailable,
+        isOccupied,
+        isDisabled,
+        pricing: roomPricing
+      };
+    });
 
     return `
       <div class="booking-step-content">
         <div class="booking-grid">
-          <!-- Levý sloupec: Výběr termínu, počtu osob a doplňků -->
           <div class="booking-left-col">
+            
+            <!-- 1. TERMÍN POBYTU (NAHOŘE JAKO PRVNÍ) -->
             <div class="booking-card card-step-1">
               <h3 class="card-title">1. Termín pobytu <span class="required-badge">* Povinné</span></h3>
               
@@ -1202,30 +1230,70 @@ export class BookingSystem {
               </div>
             </div>
 
+            <!-- 2. VÝBĚR POKOJE K REZERVACI (PŘÍMO POD TERMÍNEM S REÁLNOU DOSTUPNOSTÍ S KONTROLOU VŠECH POKOJŮ) -->
+            <div class="booking-card card-step-2-rooms">
+              <h3 class="card-title">2. Výběr pokoje k rezervaci <span class="required-badge">* Povinné</span></h3>
+              
+              <div class="room-selector-group">
+                <label for="room-select" class="form-label">Vyberte si pokoj ze zoznamu:</label>
+                <select id="room-select" class="form-select">
+                  <option value="" ${!this.state.selectedRoomId ? 'selected disabled' : ''}>-- Vyberte si pokoj pro tento termín --</option>
+                  ${roomItems.map(item => {
+                    const r = item.room;
+                    const p = item.pricing;
+                    const isSel = r.id === (room ? room.id : '');
+                    const statusText = item.isAvailable ? '🟢 Volno pro vybraný termín' : (item.isDisabled ? '🔒 Dočasně zablokováno' : '🔴 V tomto termínu obsazeno');
+                    
+                    return `
+                      <option value="${r.id}" ${isSel ? 'selected' : ''} ${!item.isAvailable ? 'disabled style="color:#888; background:#eee;"' : ''}>
+                        ${r.name} (${formatCzechPrice(p.totalPrice)} / ${nights} ${nights === 1 ? 'noc' : 'noci'}) [${statusText}]
+                      </option>
+                    `;
+                  }).join('')}
+                </select>
+              </div>
+
+              ${room ? `
+                <div class="room-mini-preview" style="margin-top: 16px;">
+                  <img src="${room.image || '/hezky pokoj 1.webp'}" alt="${room.name}" class="preview-room-thumb" loading="eager" decoding="async" fetchpriority="high">
+                  <div class="preview-info-wrap">
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px;">
+                      <span class="preview-badge">${room.floor === 'prizemi' ? 'Přízemí' : '1. Patro (Výhled na můstky)'}</span>
+                      <span class="room-status-pill status-available" style="font-size: 11.5px; padding: 2px 8px;">🟢 Volno v tomto termínu</span>
+                    </div>
+                    <h4 class="preview-room-title">${room.name}</h4>
+                    <p class="preview-desc">Kapacita: až ${room.capacity + (room.extraBeds || 0)} osoby • Včetně bufetové snídaně a Wi-Fi zdarma</p>
+                  </div>
+                  <button type="button" class="btn btn-view-room-details" id="btn-view-room-details" data-room-id="${room.id}">
+                    <span>Zobrazit fotky pokoje</span>
+                  </button>
+                </div>
+              ` : `
+                <div class="room-select-prompt" style="background: #FAF9F5; border: 1.5px dashed #C8C6B9; border-radius: 4px; padding: 18px 20px; text-align: left; margin-top: 14px;">
+                  <h4 style="margin: 0 0 4px 0; font-size: 15.5px; font-weight: 700; color: #1C1C19;">Zatím jste nevybrali žádný pokoj</h4>
+                  <p style="margin: 0; font-size: 13.5px; color: #666666;">Pro zobrazení informací a výpočet přesné ceny si prosím vyberte pokoj v rozbalovací nabídce výše.</p>
+                </div>
+              `}
+            </div>
+
+            <!-- 3. POČET OSOB (UBYTOVANÍ HOSTÉ - JEDINÉ POČÍTALO) -->
             <div class="booking-card">
-              <h3 class="card-title">2. Počet hostů <span class="required-badge">* Povinné</span></h3>
+              <h3 class="card-title">3. Počet ubytovaných osob <span class="required-badge">* Povinné</span></h3>
               <div class="guests-picker-grid">
                 <div class="guest-counter-item">
-                  <span class="counter-label">Dospělí (18+ let):</span>
+                  <span class="counter-label">Osoby (ubytovaní hosté):</span>
                   <div class="counter-controls">
                     <button type="button" class="btn-counter btn-counter-minus" data-target="adults">-</button>
                     <span class="counter-value">${this.state.adults || 2}</span>
                     <button type="button" class="btn-counter btn-counter-plus" data-target="adults">+</button>
                   </div>
                 </div>
-                <div class="guest-counter-item" style="margin-top: 14px;">
-                  <span class="counter-label">Děti (0–17 let):</span>
-                  <div class="counter-controls">
-                    <button type="button" class="btn-counter btn-counter-minus" data-target="children">-</button>
-                    <span class="counter-value">${this.state.children || 0}</span>
-                    <button type="button" class="btn-counter btn-counter-plus" data-target="children">+</button>
-                  </div>
-                </div>
               </div>
             </div>
 
+            <!-- 4. DOPLŇKOVÉ SLUŽBY -->
             <div class="booking-card">
-              <h3 class="card-title">3. Doplňkové služby <span class="optional-badge">Volitelné</span></h3>
+              <h3 class="card-title">4. Doplňkové služby <span class="optional-badge">Volitelné</span></h3>
               <div class="checkbox-addons-list">
                 <div class="checkbox-addon-group">
                   <label class="checkbox-addon-item">
@@ -1276,27 +1344,45 @@ export class BookingSystem {
                 </div>
               </div>
             </div>
+
           </div>
 
-          <!-- Pravý sloupec: Přehled termínu & Tlačítko k dostupným pokojům -->
+          <!-- PRAVÝ SLOUPEC: Živý přehled ceny & Tlačítko k údajům hosta -->
           <div class="booking-right-col">
             <div class="summary-sticky-card">
-              <h3 class="summary-title">Vybraný termín & Hosté</h3>
+              <h3 class="summary-title">Přehled ceny pobytu</h3>
               
               <div class="recap-clean-list">
+                <div class="recap-clean-item">
+                  <span class="recap-clean-label">Vybraný pokoj:</span>
+                  <span class="recap-clean-val"><strong>${room ? room.name : 'Vyberte si pokoj v ponuke'}</strong></span>
+                </div>
+
                 <div class="recap-clean-item">
                   <span class="recap-clean-label">Termín pobytu:</span>
                   <div class="recap-clean-val-group">
                     <span class="recap-clean-val"><strong>${formattedFrom} – ${formattedTo}</strong></span>
-                    <span class="recap-sub-val">(${nights} ${nights === 1 ? 'noc' : (nights >= 2 && nights <= 4 ? 'noci' : 'nocí')})</span>
+                    <span class="recap-sub-val">(${nights} ${nights === 1 ? 'noc' : (nights >= 2 && nights <= 4 ? 'noci' : 'nocí')}${pricing.nightBreakdownLabel ? ` • ${pricing.nightBreakdownLabel}` : ''})</span>
                   </div>
                 </div>
 
                 <div class="recap-clean-item">
                   <span class="recap-clean-label">Počet hostů:</span>
-                  <span class="recap-clean-val"><strong>${this.state.adults} dospělí ${this.state.children > 0 ? `, ${this.state.children} dětí` : ''}</strong></span>
+                  <span class="recap-clean-val"><strong>${this.state.adults} ${this.state.adults === 1 ? 'osoba' : (this.state.adults < 5 ? 'osoby' : 'osob')}</strong></span>
                 </div>
               </div>
+
+              ${pricing.discountAmount > 0 ? `
+                <div class="summary-total-divider"></div>
+                <div class="summary-rows">
+                  <div class="summary-row" style="color: #2e7d32; font-weight: 700;">
+                    <div class="row-info">
+                      <span class="row-label">✓ ${pricing.discountLabel}</span>
+                    </div>
+                    <span class="row-price">-${pricing.formattedDiscountAmount}</span>
+                  </div>
+                </div>
+              ` : ''}
 
               <!-- PROMO CODE INPUT BOX -->
               <div class="promo-code-box" style="margin-top: 16px; padding-top: 14px; border-top: 1px dashed #e0dfd5;">
@@ -1311,14 +1397,96 @@ export class BookingSystem {
                 ${this.discountSuccessMsg ? `<div style="color: #2e7d32; font-size: 12.5px; font-weight: 700; margin-top: 8px; display: flex; align-items: center; gap: 4px;">✓ ${this.discountSuccessMsg}</div>` : ''}
               </div>
 
-              <div class="summary-perks" style="margin-top: 20px;">
+              ${(pricing.singleNightSurchargeTotal > 0 || pricing.hasHalfBoard || pricing.hasDog || pricing.hasEbike || pricing.cityTax > 0) ? `
+                <div class="summary-total-divider"></div>
+                <div class="summary-rows">
+                  ${pricing.singleNightSurchargeTotal > 0 ? `
+                    <div class="summary-row surcharge">
+                      <div class="row-info">
+                        <span class="row-label">
+                          ${pricing.surchargeReason === 'single_occupancy'
+                            ? 'Příplatek za neobsazené lůžko'
+                            : (pricing.surchargeReason === 'both' ? 'Příplatek za 1 noc & 1 osobu' : 'Příplatek za 1 noc')}
+                        </span>
+                        <span class="row-details">(+${pricing.singleNightRatePerPerson} Kč / ${pricing.surchargeReason === 'single_occupancy' ? 'noc' : 'osoba'})</span>
+                      </div>
+                      <span class="row-price">+${pricing.singleNightSurchargeTotal} Kč</span>
+                    </div>
+                  ` : ''}
+
+                  ${pricing.hasHalfBoard ? `
+                    <div class="summary-row">
+                      <div class="row-info">
+                        <span class="row-label">Dokoupená polopenze</span>
+                        <span class="row-details">(+195 Kč/os/noc • ${pricing.halfBoardCount}x os, ${nights}x noc)</span>
+                      </div>
+                      <span class="row-price">+${pricing.halfBoardPriceTotal} Kč</span>
+                    </div>
+                  ` : ''}
+
+                  ${pricing.hasDog ? `
+                    <div class="summary-row">
+                      <div class="row-info">
+                        <span class="row-label">Pobyt s pejskem</span>
+                        <span class="row-details">(+150 Kč/noc za pokoj • ${nights}x noc)</span>
+                      </div>
+                      <span class="row-price">+${pricing.dogPriceTotal} Kč</span>
+                    </div>
+                  ` : ''}
+
+                  ${pricing.hasEbike ? `
+                    <div class="summary-row">
+                      <div class="row-info">
+                        <span class="row-label">Nabíjení elektrokola</span>
+                        <span class="row-details">(+15 Kč/den • ${pricing.ebikeCount}x ks, ${nights}x noc)</span>
+                      </div>
+                      <span class="row-price">+${pricing.ebikePriceTotal} Kč</span>
+                    </div>
+                  ` : ''}
+                </div>
+              ` : ''}
+
+              <div class="summary-total-divider"></div>
+
+              <div class="summary-clean-deposit">
+                <div class="deposit-clean-row zero-deposit">
+                  <div class="deposit-clean-info">
+                    <span class="deposit-clean-title">Dnes při odeslání neplatíte nic</span>
+                    <small class="deposit-clean-sub">(Podání žádosti o rezervaci je zdarma)</small>
+                  </div>
+                  <span class="deposit-clean-amount badge-zero-pay">0 Kč</span>
+                </div>
+
+                <div class="deposit-clean-row main-deposit">
+                  <div class="deposit-clean-info">
+                    <span class="deposit-clean-title">1. Záloha po schválení recepcí</span>
+                    <small class="deposit-clean-sub">(30 % záloha z celkové ceny pobytu)</small>
+                  </div>
+                  <span class="deposit-clean-amount">${formatCzechPrice(pricing.depositPriceTotal)}</span>
+                </div>
+
+                <div class="deposit-clean-row remaining-deposit">
+                  <div class="deposit-clean-info">
+                    <span class="deposit-clean-title">2. Doplatek při příjezdu</span>
+                    <small class="deposit-clean-sub">(70 % doplatek na místě na recepci)</small>
+                  </div>
+                  <span class="deposit-clean-amount">${formatCzechPrice(pricing.remainingPriceTotal)}</span>
+                </div>
+              </div>
+
+              <div class="summary-total-row">
+                <span>Celková cena pobytu s DPH:</span>
+                <span class="total-price-amount">${formatCzechPrice(pricing.totalPrice)}</span>
+              </div>
+
+              <div class="summary-perks">
                 <span>✓ Snídaně formou bufetu v ceně</span>
                 <span>✓ Parkování u hotelu ZDARMA</span>
                 <span>✓ Wi-Fi připojené zdarma</span>
               </div>
 
               <button type="button" class="btn btn-booking-submit btn-next-step-1">
-                Zobrazit dostupné pokoje →
+                Pokračovat k údajům hosta →
               </button>
             </div>
           </div>
@@ -1327,147 +1495,7 @@ export class BookingSystem {
     `;
   }
 
-  renderStep2(pricing, nights) {
-    const formattedFrom = formatCzechDateStr(this.state.dateFrom);
-    const formattedTo = formatCzechDateStr(this.state.dateTo);
-
-    const roomItems = this.roomsList.map(r => {
-      const isOccupied = Boolean(this.checkReservationOverlap(r.id, this.state.dateFrom, this.state.dateTo));
-      const isDisabled = Boolean(r.isDisabled || (this.disabledRooms && this.disabledRooms.some(d => d.room_id === r.id && d.is_disabled)));
-      const isAvailable = !isOccupied && !isDisabled;
-
-      const customPriceObj = (this.roomPrices || []).find(p => p.room_id === r.id);
-      const customBaseRate = customPriceObj ? (customPriceObj.base_price || customPriceObj.weekday_price) : (r.weekdayPrice || r.basePrice);
-      const customWeekdayRate = customPriceObj ? (customPriceObj.weekday_price || customPriceObj.base_price) : r.weekdayPrice;
-      const customWeekendRate = customPriceObj ? (customPriceObj.weekend_price || customPriceObj.base_price) : r.weekendPrice;
-
-      const roomPricing = calculateReservationPrice({
-        roomType: r.type,
-        nights,
-        persons: this.state.adults,
-        adults: this.state.adults,
-        children: this.state.children,
-        dateFrom: this.state.dateFrom,
-        dateTo: this.state.dateTo,
-        hasDog: this.state.hasDog,
-        hasEbike: this.state.hasEbike,
-        ebikeCount: this.state.ebikeCount,
-        hasHalfBoard: this.state.hasHalfBoard,
-        halfBoardCount: this.state.halfBoardCount,
-        customBaseRate,
-        customWeekdayRate,
-        customWeekendRate,
-        discountObj: this.appliedDiscount,
-      });
-
-      const isSelected = r.id === this.state.selectedRoomId;
-
-      return {
-        room: r,
-        isAvailable,
-        isOccupied,
-        isDisabled,
-        pricing: roomPricing,
-        isSelected
-      };
-    });
-
-    const availableCount = roomItems.filter(item => item.isAvailable).length;
-
-    return `
-      <div class="booking-step-content">
-        <!-- HORNÍ SUMMARY BAR -->
-        <div class="step2-summary-bar">
-          <div class="summary-bar-info">
-            <span class="summary-bar-dates">🗓️ Vybraný termín: <strong>${formattedFrom} – ${formattedTo}</strong> (${nights} ${nights === 1 ? 'noc' : (nights < 5 ? 'noci' : 'nocí')})</span>
-            <span class="summary-bar-guests">👥 <strong>${this.state.adults} dospělí ${this.state.children > 0 ? `, ${this.state.children} dětí` : ''}</strong></span>
-          </div>
-          <button type="button" class="btn btn-specs-secondary btn-back-to-step1">
-            ✏️ Změnit termín a hosty
-          </button>
-        </div>
-
-        <div class="step2-title-group" style="margin-bottom: 24px;">
-          <h3 class="card-title" style="margin: 0 0 6px 0; font-size: 22px; font-weight: 800; color: #1c1c19;">
-            Dostupné pokoje pro váš termín (${availableCount} volných)
-          </h3>
-          <p style="margin: 0; font-size: 14.5px; color: #55554e;">
-            Vyberte si vyhovující pokoj. Uvedené ceny jsou konečné za celý pobyt včetně DPH, snídaně a vybraných doplňků.
-          </p>
-        </div>
-
-        <!-- MŘÍŽKA POKOJŮ DLE BOOKING.COM STYLE -->
-        <div class="rooms-booking-grid">
-          ${roomItems.map(item => {
-            const r = item.room;
-            const p = item.pricing;
-
-            return `
-              <div class="room-booking-card ${item.isAvailable ? 'is-available' : 'is-unavailable'} ${item.isSelected ? 'is-selected-card' : ''}">
-                <div class="room-booking-img-wrap">
-                  <img src="${r.image || '/hezky pokoj 1.webp'}" alt="${r.name}" class="room-booking-img" loading="eager" decoding="async">
-                  <span class="room-floor-tag">
-                    ${r.floor === 'prizemi' ? 'Přízemí' : '1. Patro (Výhled na můstky)'}
-                  </span>
-                </div>
-
-                <div class="room-booking-content">
-                  <div class="room-booking-header">
-                    <h4 class="room-booking-name">${r.name}</h4>
-                    ${item.isAvailable ? `
-                      <span class="room-status-pill status-available">
-                        🟢 Volno v tomto termínu
-                      </span>
-                    ` : (item.isDisabled ? `
-                      <span class="room-status-pill status-blocked">
-                        🔒 Dočasně zablokováno recepcí
-                      </span>
-                    ` : `
-                      <span class="room-status-pill status-occupied">
-                        🔴 V tomto termínu obsazeno
-                      </span>
-                    `)}
-                  </div>
-
-                  <p class="room-booking-desc">
-                    Kapacita: až ${r.capacity + (r.extraBeds || 0)} osoby • Včetně bufetové snídaně a Wi-Fi zdarma
-                  </p>
-
-                  <div class="room-booking-footer">
-                    <div class="room-price-wrap">
-                      ${item.isAvailable ? `
-                        <span class="price-label">Celková cena za ${nights} ${nights === 1 ? 'noc' : (nights < 5 ? 'noci' : 'nocí')}:</span>
-                        <div class="price-val">
-                          <strong>${formatCzechPrice(p.totalPrice)}</strong>
-                          <small>s DPH</small>
-                        </div>
-                      ` : `
-                        <span class="price-unavailable-text">Nedostupné pro tento termín</span>
-                      `}
-                    </div>
-
-                    <div class="room-action-wrap">
-                      ${item.isAvailable ? `
-                        <button type="button" class="btn btn-specs-primary btn-select-room-card" data-room-id="${r.id}">
-                          ${item.isSelected ? '✓ Vybráno (Pokračovat →)' : 'Vybrat tento pokoj →'}
-                        </button>
-                      ` : `
-                        <button type="button" class="btn btn-specs-secondary" disabled style="opacity: 0.55; cursor: not-allowed;">
-                          Obsazeno
-                        </button>
-                      `}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            `;
-          }).join('')}
-        </div>
-      </div>
-    `;
-  }
-
-  renderStep3Form(room, pricing, nights) {
+  renderStep2Form(room, pricing, nights) {
     if (!room) {
       const firstAvail = this.roomsList.find(r => !r.isDisabled);
       if (firstAvail) this.state.selectedRoomId = firstAvail.id;
@@ -1576,13 +1604,13 @@ export class BookingSystem {
 
     return `
       <div class="booking-step-content">
-        <form id="booking-form-step3" class="booking-form" novalidate>
+        <form id="booking-form-step2" class="booking-form" novalidate>
           <div class="booking-grid">
             <div class="booking-left-col">
               <div class="booking-card card-step-2">
                 <div class="booking-back-inside">
-                  <button type="button" class="btn-back-link btn-back-step-2">
-                    ← Zpět k výběru pokoje
+                  <button type="button" class="btn-back-link btn-back-step-1">
+                    ← Zpět k výběru pokoje a termínu
                   </button>
                 </div>
 
@@ -1746,7 +1774,7 @@ export class BookingSystem {
 
                   <div class="recap-clean-item">
                     <span class="recap-clean-label">Počet hostů:</span>
-                    <span class="recap-clean-val"><strong>${this.state.adults} dospělí ${this.state.children > 0 ? `, ${this.state.children} dětí` : ''}</strong></span>
+                    <span class="recap-clean-val"><strong>${this.state.adults} ${this.state.adults === 1 ? 'osoba' : (this.state.adults < 5 ? 'osoby' : 'osob')}</strong></span>
                   </div>
                 </div>
 
@@ -1865,7 +1893,7 @@ export class BookingSystem {
     `;
   }
 
-  renderStep4Confirmation(room, pricing) {
+  renderStep3Confirmation(room, pricing) {
     const res = this.state.confirmedReservation || {};
     const formattedFrom = formatCzechDateStr(this.state.dateFrom);
     const formattedTo = formatCzechDateStr(this.state.dateTo);
@@ -1949,7 +1977,7 @@ export class BookingSystem {
 
                   <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 20px; padding: 14px 0; border-top: 1px solid #EFEEE7;">
                     <dt style="color: #55554E; font-size: 15px;">Počet osob</dt>
-                    <dd style="margin: 0; font-weight: 700; text-align: right; color: #1C1C19; font-size: 15px;">${this.state.adults} dospělí ${this.state.children > 0 ? `, ${this.state.children} dětí` : ''}</dd>
+                    <dd style="margin: 0; font-weight: 700; text-align: right; color: #1C1C19; font-size: 15px;">${this.state.adults} ${this.state.adults === 1 ? 'osoba' : (this.state.adults < 5 ? 'osoby' : 'osob')}</dd>
                   </div>
 
                   <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 20px; padding: 18px 0 14px; margin-top: 10px; border-top: 2px solid #E7E5DC;">
@@ -2019,6 +2047,14 @@ export class BookingSystem {
     });
 
     if (this.currentStep === 1) {
+      const roomSelect = document.getElementById('room-select');
+      if (roomSelect) {
+        roomSelect.addEventListener('change', (e) => {
+          this.state.selectedRoomId = e.target.value;
+          this.render();
+        });
+      }
+
       const btnDateFrom = document.getElementById('date-from-btn');
       const btnDateTo = document.getElementById('date-to-btn');
       if (btnDateFrom) {
@@ -2051,6 +2087,19 @@ export class BookingSystem {
         });
       }
 
+      const btnViewRoom = this.container.querySelector('#btn-view-room-details');
+      if (btnViewRoom) {
+        btnViewRoom.addEventListener('click', (e) => {
+          e.preventDefault();
+          const room = this.getSelectedRoom();
+          if (room) {
+            const targetHash = room.floor === 'prizemi' ? '#pokoje-prizemi' : '#pokoje-vyhled';
+            window.pendingAutoOpenRoom = room.id;
+            window.location.hash = targetHash;
+          }
+        });
+      }
+
       this.container.querySelectorAll('.btn-counter').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.preventDefault();
@@ -2061,10 +2110,8 @@ export class BookingSystem {
             if (this.state.halfBoardCount > this.state.adults) {
               this.state.halfBoardCount = this.state.adults;
             }
-          } else if (target === 'children') {
-            this.state.children = isPlus ? Math.min(3, this.state.children + 1) : Math.max(0, this.state.children - 1);
           } else if (target === 'halfBoardCount') {
-            const maxHB = (this.state.adults || 2) + (this.state.children || 0);
+            const maxHB = this.state.adults || 2;
             const currentHB = this.state.halfBoardCount ?? maxHB;
             this.state.halfBoardCount = isPlus ? Math.min(maxHB, currentHB + 1) : Math.max(1, currentHB - 1);
           } else if (target === 'ebikeCount') {
@@ -2083,7 +2130,7 @@ export class BookingSystem {
         addonHalfBoard.addEventListener('change', (e) => {
           this.state.hasHalfBoard = e.target.checked;
           if (this.state.hasHalfBoard && !this.state.halfBoardCount) {
-            this.state.halfBoardCount = this.state.adults + this.state.children;
+            this.state.halfBoardCount = this.state.adults;
           }
           this.render();
         });
@@ -2137,6 +2184,12 @@ export class BookingSystem {
       const btnNext = this.container.querySelector('.btn-next-step-1');
       if (btnNext) {
         btnNext.addEventListener('click', () => {
+          if (!this.state.selectedRoomId) {
+            this.state.errorMessage = 'Prosíme, vyberte si nejprve pokoj v rozbalovací nabídce v bodu 2.';
+            this.render();
+            this.scrollToErrorMessage();
+            return;
+          }
           const start = new Date(this.state.dateFrom);
           const end = new Date(this.state.dateTo);
           if (isNaN(start.getTime()) || isNaN(end.getTime()) || end <= start) {
@@ -2145,11 +2198,20 @@ export class BookingSystem {
             this.scrollToErrorMessage();
             return;
           }
+
+          const overlap = this.checkReservationOverlap(this.state.selectedRoomId, this.state.dateFrom, this.state.dateTo);
+          if (overlap) {
+            this.state.errorMessage = 'Vybraný pokoj je ve vašem termínu již zarezervovaný. Prosíme zvolte jiný pokoj nebo upravte termín.';
+            this.render();
+            this.scrollToErrorMessage();
+            return;
+          }
+
           this.setStep(2);
         });
       }
     } else if (this.currentStep === 2) {
-      const btnBackStep1 = this.container.querySelector('.btn-back-to-step1');
+      const btnBackStep1 = this.container.querySelector('.btn-back-step-1');
       if (btnBackStep1) {
         btnBackStep1.addEventListener('click', (e) => {
           e.preventDefault();
@@ -2157,26 +2219,7 @@ export class BookingSystem {
         });
       }
 
-      this.container.querySelectorAll('.btn-select-room-card').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.preventDefault();
-          const roomId = btn.dataset.roomId;
-          if (roomId) {
-            this.state.selectedRoomId = roomId;
-            this.setStep(3);
-          }
-        });
-      });
-    } else if (this.currentStep === 3) {
-      const btnBackStep2 = this.container.querySelector('.btn-back-step-2');
-      if (btnBackStep2) {
-        btnBackStep2.addEventListener('click', (e) => {
-          e.preventDefault();
-          this.setStep(2);
-        });
-      }
-
-      const form = document.getElementById('booking-form-step3');
+      const form = document.getElementById('booking-form-step2');
       if (form) {
         form.addEventListener('submit', (e) => this.handleFinalBookingSubmit(e));
       }
@@ -2250,7 +2293,7 @@ export class BookingSystem {
       });
 
       this.setupAddressAutocomplete();
-    } else if (this.currentStep === 4) {
+    } else if (this.currentStep === 3) {
       const btnNewBooking = this.container.querySelector('.btn-new-booking');
       const btnGoHome = this.container.querySelector('.btn-go-home');
 
