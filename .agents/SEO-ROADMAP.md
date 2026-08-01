@@ -31,12 +31,12 @@ doménou, nebo rutina.
 | 0 — Přístupy a měření | ✅ hotovo |
 | 1 — Migrace ze starého webu | 🟡 rozděláno (doména zatím nepřepnutá) |
 | 2 — Technický základ | ✅ hotovo |
-| 3 — Obsah | ✅ hotovo (mimo podstránky pokojů) |
+| 3 — Obsah | ✅ hotovo (podstránky pokojů zamítnuty) |
 | 4 — Copywriting | ✅ **hotovo** |
 | 5 — AI / GEO | ✅ hotovo (test v AI až po spuštění) |
 | 6 — Lokální SEO | ⏹️ vyřazeno ze zakázky |
 | 7 — Rychlost a přístupnost | ✅ **hotovo — uzavřeno** |
-| 8 — Měření | 🟡 rozděláno |
+| 8 — Měření | 🟡 kód hotový, zbývá označit událost v GA4 |
 
 ---
 
@@ -117,12 +117,10 @@ doménou, nebo rutina.
 
 **Záměrně nepřidáno:** `AggregateRating`. Google vyžaduje doložitelný zdroj hodnocení, recenze z knihy návštěv se nepočítají. Přidat až po nasbírání Google recenzí (Fáze 6).
 
-## 2.7 Kontrola ⬜
+## 2.7 Kontrola 🟡
 
-Jde udělat až po nasazení na doménu.
-
-- [ ] Všechny stránky přes **Google Rich Results Test** — 0 chyb
-- [ ] Všechny stránky přes **Schema Markup Validator** — 0 chyb
+- [x] **11 stránek přes Google Rich Results Test na Netlify adrese — bez chyb** *(Ondřej, 1. 8. 2026)*
+- [ ] 🔒 Zopakovat na ostré doméně po přepnutí — **BLOKOVÁNO**
 
 ## 2.8 Sjednocení názvu ✅
 
@@ -361,8 +359,14 @@ Kolize s Button Design System vyřešena kompromisem: **tlačítka zůstala vizu
 
 - [x] Google Search Console nastavená
 - [x] GA4 nastavená a propojená s GSC
-- [x] V GA4 nastvena konverzní událost `rezervace_odeslana` v `src/components/BookingSystem.js` *(1. 8. 2026)*
-- [ ] Zachytit výchozí stav po přepnutí domény: `/seo drift baseline https://umustku.cz`
+- [x] **Kód konverzní události hotový** — `gtag('event', 'rezervace_odeslana', {...})` v `src/components/BookingSystem.js` ř. 800–812, správně podmíněný `typeof window.gtag === 'function'` *(1. 8. 2026)*
+- [ ] **Otestovat** — projít rezervaci na Netlify **s přijatými cookies**, ověřit v GA4 → Reports → Realtime
+- [ ] **Označit jako klíčovou událost** — po ~24 h v GA4 → Admin → Data display → Events → přepínač „Mark as key event"
+- [ ] 🔒 Zachytit výchozí stav: `/seo drift baseline https://umustku.cz` — **BLOKOVÁNO doménou**
+
+> ⚠️ Samotný kód nestačí. Dokud událost neoznačíš jako klíčovou,
+> GA4 ji sice zaznamená, ale nebude ji počítat jako konverzi
+> a neuvidíš, kolik rezervací přišlo z Googlu.
 
 ## 🔁 Pravidelná údržba — NENÍ TO CHECKLIST
 

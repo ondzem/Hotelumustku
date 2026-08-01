@@ -2864,23 +2864,6 @@ const preloadCategoryImages = (catId) => {
   }
 };
 
-// Preload Všech Kategorií na pozadí v době nečinnosti prohlížeče
-const preloadAllCategoriesBackground = () => {
-  const c = navigator.connection;
-  if (c && (c.saveData || /2g|3g/.test(c.effectiveType || ''))) return;
-  const pathName = window.location.pathname.toLowerCase().replace(/\/$/, '');
-  if (!pathName || pathName === '' || pathName === '/index.html' || currentViewKey === 'home') return;
-
-  const doPreload = () => {
-    Object.keys(CATEGORIES_DATA).forEach((catId) => preloadCategoryImages(catId));
-  };
-  if ('requestIdleCallback' in window) {
-    requestIdleCallback(doPreload, { timeout: 2000 });
-  } else {
-    setTimeout(doPreload, 1000);
-  }
-};
-
 // Pre-warming fotek při najetí nebo dotyku na karty kategorií
 const initCategoryHoverPreload = () => {
   document.querySelectorAll('a[href^="#turistik"], a[href^="#cykl"], a[href^="#zimn"], a[href^="#aut"], .activity-card-link').forEach(link => {
@@ -5298,5 +5281,4 @@ window.addEventListener('load', () => {
       v.play().catch(() => {});
     }
   }
-  preloadAllCategoriesBackground();
 });
