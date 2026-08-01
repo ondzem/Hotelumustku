@@ -89,6 +89,7 @@ const INITIAL_MOCK_RESERVATIONS = [
 
 export const getStoredReservations = () => {
   try {
+    if (typeof localStorage === 'undefined') return INITIAL_MOCK_RESERVATIONS;
     const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
     if (raw) {
       return JSON.parse(raw);
@@ -100,14 +101,69 @@ export const getStoredReservations = () => {
   }
 };
 
+const ALLOWED_SUPABASE_COLUMNS = new Set([
+  'id', 'code', 'manage_token', 'room_id', 'room_name', 'date_from', 'date_to',
+  'adults_count', 'children_count', 'guest_name', 'guest_email', 'guest_phone',
+  'guest_note', 'guest_street', 'guest_city', 'guest_zip', 'guest_country', 'guests',
+  'has_dog', 'has_ebike', 'ebike_count', 'has_half_board', 'half_board_count',
+  'total_price', 'deposit_price', 'remaining_price', 'accommodation_price',
+  'city_tax', 'addons_price', 'status', 'created_at'
+]);
+
+export function sanitizeReservationForSupabase(raw) {
+  if (!raw) return {};
+  const sanitized = {};
+  for (const key of Object.keys(raw)) {
+    if (ALLOWED_SUPABASE_COLUMNS.has(key) && raw[key] !== undefined) {
+      sanitized[key] = raw[key];
+    }
+  }
+  if (!sanitized.id) {
+    sanitized.id = raw.code || ('res-' + Date.now());
+  }
+
+  // Preserve winter parking inside guests list if present
+  let guestsArr = Array.isArray(raw.guests) ? [...raw.guests] : [];
+  if (raw.has_winter_parking || raw.parking_cars_count) {
+    let metaIdx = guestsArr.findIndex(g => g && g._winter_parking !== undefined);
+    const winterMeta = {
+      has_winter_parking: Boolean(raw.has_winter_parking),
+      parking_cars_count: parseInt(raw.parking_cars_count || 1),
+      winter_parking_price_total: parseInt(raw.winter_parking_price_total || 0)
+    };
+    if (metaIdx >= 0) {
+      guestsArr[metaIdx] = { ...guestsArr[metaIdx], _winter_parking: winterMeta };
+    } else {
+      guestsArr.push({ _winter_parking: winterMeta });
+    }
+  }
+  sanitized.guests = guestsArr;
+  return sanitized;
+}
+
 export const saveStoredReservation = (reservation) => {
   const current = getStoredReservations();
-  current.unshift(reservation);
+  const existingIdx = current.findIndex(r => (r.id && reservation.id && String(r.id) === String(reservation.id)) || (r.code && reservation.code && String(r.code) === String(reservation.code)));
+  if (existingIdx >= 0) {
+    current[existingIdx] = { ...current[existingIdx], ...reservation };
+  } else {
+    current.unshift(reservation);
+  }
   try {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(current));
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(current));
+    }
   } catch (err) {
     console.error('Failed to save reservation locally:', err);
   }
+
+  if (isSupabaseConfigured && supabase) {
+    const payload = sanitizeReservationForSupabase(reservation);
+    supabase.from('reservations').upsert([payload]).then(({ error }) => {
+      if (error) console.error('Supabase async upsert reservation error:', error);
+    }).catch(err => console.error('Supabase async upsert exception:', err));
+  }
+
   return reservation;
 };
 

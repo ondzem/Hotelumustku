@@ -454,18 +454,40 @@ export class AdminDashboard {
       console.error('Error checking expired reservations:', e);
     }
 
+    let supabaseData = [];
     if (isSupabaseConfigured && supabase) {
       try {
         const { data, error } = await supabase.from('reservations').select('*').order('created_at', { ascending: false });
         if (!error && data) {
-          this.reservations = data;
-          return;
+          supabaseData = data.map(r => {
+            let winterMeta = null;
+            if (Array.isArray(r.guests)) {
+              const metaObj = r.guests.find(g => g && g._winter_parking !== undefined);
+              if (metaObj) winterMeta = metaObj._winter_parking;
+            }
+            return {
+              ...r,
+              has_winter_parking: r.has_winter_parking !== undefined ? r.has_winter_parking : (winterMeta ? winterMeta.has_winter_parking : false),
+              parking_cars_count: r.parking_cars_count || (winterMeta ? winterMeta.parking_cars_count : 1),
+              winter_parking_price_total: r.winter_parking_price_total || (winterMeta ? winterMeta.winter_parking_price_total : 0)
+            };
+          });
         }
       } catch (err) {
         console.error('Supabase admin fetch failed:', err);
       }
     }
-    this.reservations = getStoredReservations();
+
+    const localData = getStoredReservations();
+    const combined = [...supabaseData];
+    for (const localR of localData) {
+      const existsInSupabase = combined.some(s => (s.id && localR.id && String(s.id) === String(localR.id)) || (s.code && localR.code && String(s.code) === String(localR.code)));
+      if (!existsInSupabase) {
+        combined.push(localR);
+      }
+    }
+
+    this.reservations = combined;
   }
 
   async fetchBlockedDates() {

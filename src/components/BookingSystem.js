@@ -1,4 +1,4 @@
-import { MOCK_ROOMS, isSupabaseConfigured, supabase, getStoredReservations, saveStoredReservation, getStoredBlockedDates, getStoredDiscountCodes, getStoredRoomPrices, getStoredDisabledRooms, getDeviceRedeemedDiscountCodes, markDiscountCodeRedeemedOnDevice, incrementDiscountCodeUsage } from '../lib/supabaseClient.js';
+import { MOCK_ROOMS, isSupabaseConfigured, supabase, getStoredReservations, saveStoredReservation, sanitizeReservationForSupabase, getStoredBlockedDates, getStoredDiscountCodes, getStoredRoomPrices, getStoredDisabledRooms, getDeviceRedeemedDiscountCodes, markDiscountCodeRedeemedOnDevice, incrementDiscountCodeUsage } from '../lib/supabaseClient.js';
 import { calculateReservationPrice, generateReservationCode, generateManageToken, BANK_ACCOUNT, BANK_NAME, formatCzechPrice, validateSystemDateIntegrity, isWinterSeason } from '../utils/pricing.js';
 import { sendEmail, generateEmail1RequestReceived, generateEmail1ReceptionNotification } from '../utils/emailService.js';
 import { checkAndProcessExpiredUnpaidReservations } from '../utils/reservationExpiryService.js';
@@ -872,9 +872,15 @@ export class BookingSystem {
 
     if (isSupabaseConfigured && supabase) {
       try {
-        await supabase.from('reservations').insert([reservationData]);
+        const payload = sanitizeReservationForSupabase(reservationData);
+        const { error } = await supabase.from('reservations').insert([payload]);
+        if (error) {
+          console.error('Failed to insert reservation into Supabase:', error);
+        } else {
+          console.log('✅ Reservation inserted into Supabase:', code);
+        }
       } catch (err) {
-        console.error('Failed to insert reservation into Supabase:', err);
+        console.error('Exception inserting reservation into Supabase:', err);
       }
     }
 
