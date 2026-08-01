@@ -88,6 +88,7 @@ export class BookingSystem {
     this.currentStep = 1;
     this.state = {
       selectedRoomId: '',
+      isCustomDropdownOpen: false,
       dateFrom: getTomorrowDateString(),
       dateTo: getDayAfterTomorrowDateString(),
       adults: 2,
@@ -1230,27 +1231,70 @@ export class BookingSystem {
               </div>
             </div>
 
-            <!-- 2. VÝBĚR POKOJE K REZERVACI (PŘÍMO POD TERMÍNEM S REÁLNOU DOSTUPNOSTÍ S KONTROLOU VŠECH POKOJŮ) -->
+            <!-- 2. VÝBĚR POKOJE K REZERVACI (PREMIUM CUSTOM DROPDOWN SYSTEM) -->
             <div class="booking-card card-step-2-rooms">
               <h3 class="card-title">2. Výběr pokoje k rezervaci <span class="required-badge">* Povinné</span></h3>
               
-              <div class="room-selector-group">
-                <label for="room-select" class="form-label">Vyberte si pokoj ze zoznamu:</label>
-                <select id="room-select" class="form-select">
-                  <option value="" ${!this.state.selectedRoomId ? 'selected disabled' : ''}>-- Vyberte si pokoj pro tento termín --</option>
-                  ${roomItems.map(item => {
-                    const r = item.room;
-                    const p = item.pricing;
-                    const isSel = r.id === (room ? room.id : '');
-                    const statusText = item.isAvailable ? '🟢 Volno pro vybraný termín' : (item.isDisabled ? '🔒 Dočasně zablokováno' : '🔴 V tomto termínu obsazeno');
-                    
-                    return `
-                      <option value="${r.id}" ${isSel ? 'selected' : ''} ${!item.isAvailable ? 'disabled style="color:#888; background:#eee;"' : ''}>
-                        ${r.name} (${formatCzechPrice(p.totalPrice)} / ${nights} ${nights === 1 ? 'noc' : 'noci'}) [${statusText}]
-                      </option>
-                    `;
-                  }).join('')}
-                </select>
+              <div class="custom-room-dropdown ${this.state.isCustomDropdownOpen ? 'is-open' : ''}" id="custom-room-dropdown">
+                <label for="custom-dropdown-trigger" class="form-label">Vyberte si pokoj ze seznamu:</label>
+                
+                <button type="button" id="custom-dropdown-trigger" class="dropdown-trigger-btn ${room ? 'has-selection' : ''}" aria-expanded="${this.state.isCustomDropdownOpen ? 'true' : 'false'}" aria-haspopup="listbox">
+                  ${room ? `
+                    <div class="trigger-room-content">
+                      <img src="${room.image || '/hezky pokoj 1.webp'}" alt="${room.name}" class="trigger-thumb" loading="eager">
+                      <div class="trigger-info">
+                        <div class="trigger-header-line">
+                          <span class="trigger-room-name">${room.name}</span>
+                          <span class="room-status-pill status-available" style="font-size: 11.5px; padding: 2px 8px;">🟢 Volno</span>
+                        </div>
+                        <span class="trigger-price-text">${formatCzechPrice(pricing.totalPrice)} za ${nights} ${nights === 1 ? 'noc' : (nights < 5 ? 'noci' : 'nocí')}</span>
+                      </div>
+                    </div>
+                  ` : `
+                    <span class="trigger-placeholder">-- Vyberte si pokoj pro tento termín --</span>
+                  `}
+                  <span class="trigger-chevron">${this.state.isCustomDropdownOpen ? '▲' : '▼'}</span>
+                </button>
+
+                <div class="dropdown-options-panel ${this.state.isCustomDropdownOpen ? 'is-visible' : ''}" role="listbox" id="custom-dropdown-options">
+                  <div class="dropdown-panel-header">
+                    <span>Dostupnost pokojů pro termín ${formattedFrom} – ${formattedTo}</span>
+                  </div>
+                  <div class="dropdown-options-list">
+                    ${roomItems.map(item => {
+                      const r = item.room;
+                      const p = item.pricing;
+                      const isSelected = r.id === (room ? room.id : '');
+                      const isAvailable = item.isAvailable;
+                      const statusClass = isAvailable ? 'status-available' : (item.isDisabled ? 'status-blocked' : 'status-occupied');
+                      const statusBadgeText = isAvailable ? '🟢 Volno pro vybraný termín' : (item.isDisabled ? '🔒 Dočasně zablokováno' : '🔴 V tomto termínu obsazeno');
+                      
+                      return `
+                        <div class="custom-dropdown-option ${isSelected ? 'is-selected' : ''} ${!isAvailable ? 'is-disabled' : ''}" 
+                             role="option" 
+                             aria-selected="${isSelected ? 'true' : 'false'}"
+                             data-room-id="${r.id}" 
+                             ${!isAvailable ? 'aria-disabled="true"' : 'tabindex="0"'}>
+                          
+                          <img src="${r.image || '/hezky pokoj 1.webp'}" alt="${r.name}" class="option-thumb" loading="lazy">
+                          
+                          <div class="option-main-info">
+                            <div class="option-title-row">
+                              <span class="option-room-name">${r.name}</span>
+                              <span class="option-floor-tag">${r.floor === 'prizemi' ? 'Přízemí' : '1. Patro'}</span>
+                            </div>
+                            <div class="option-sub-row">
+                              <span class="option-price-tag">${formatCzechPrice(p.totalPrice)} <small>/ ${nights} ${nights === 1 ? 'noc' : (nights < 5 ? 'noci' : 'nocí')}</small></span>
+                              <span class="room-status-pill ${statusClass}">${statusBadgeText}</span>
+                            </div>
+                          </div>
+
+                          ${isSelected ? '<span class="option-checkmark">✓</span>' : ''}
+                        </div>
+                      `;
+                    }).join('')}
+                  </div>
+                </div>
               </div>
 
               ${room ? `
@@ -1271,7 +1315,7 @@ export class BookingSystem {
               ` : `
                 <div class="room-select-prompt" style="background: #FAF9F5; border: 1.5px dashed #C8C6B9; border-radius: 4px; padding: 18px 20px; text-align: left; margin-top: 14px;">
                   <h4 style="margin: 0 0 4px 0; font-size: 15.5px; font-weight: 700; color: #1C1C19;">Zatím jste nevybrali žádný pokoj</h4>
-                  <p style="margin: 0; font-size: 13.5px; color: #666666;">Pro zobrazení informací a výpočet přesné ceny si prosím vyberte pokoj v rozbalovací nabídce výše.</p>
+                  <p style="margin: 0; font-size: 13.5px; color: #666666;">Pro zobrazení informací a výpočet přesné ceny klikněte na tlačítko výběru pokoje výše.</p>
                 </div>
               `}
             </div>
@@ -1355,7 +1399,7 @@ export class BookingSystem {
               <div class="recap-clean-list">
                 <div class="recap-clean-item">
                   <span class="recap-clean-label">Vybraný pokoj:</span>
-                  <span class="recap-clean-val"><strong>${room ? room.name : 'Vyberte si pokoj v ponuke'}</strong></span>
+                  <span class="recap-clean-val"><strong>${room ? room.name : 'Vyberte si pokoj ze seznamu'}</strong></span>
                 </div>
 
                 <div class="recap-clean-item">
@@ -2047,12 +2091,53 @@ export class BookingSystem {
     });
 
     if (this.currentStep === 1) {
-      const roomSelect = document.getElementById('room-select');
-      if (roomSelect) {
-        roomSelect.addEventListener('change', (e) => {
-          this.state.selectedRoomId = e.target.value;
-          this.render();
+      const dropdownWrap = document.getElementById('custom-room-dropdown');
+      const dropdownTrigger = document.getElementById('custom-dropdown-trigger');
+      const optionsPanel = document.getElementById('custom-dropdown-options');
+
+      if (dropdownTrigger && optionsPanel) {
+        dropdownTrigger.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          this.state.isCustomDropdownOpen = !this.state.isCustomDropdownOpen;
+          if (this.state.isCustomDropdownOpen) {
+            dropdownWrap.classList.add('is-open');
+            optionsPanel.classList.add('is-visible');
+            dropdownTrigger.setAttribute('aria-expanded', 'true');
+          } else {
+            dropdownWrap.classList.remove('is-open');
+            optionsPanel.classList.remove('is-visible');
+            dropdownTrigger.setAttribute('aria-expanded', 'false');
+          }
         });
+
+        optionsPanel.querySelectorAll('.custom-dropdown-option').forEach(optionEl => {
+          optionEl.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (optionEl.classList.contains('is-disabled')) return;
+            const roomId = optionEl.dataset.roomId;
+            if (roomId) {
+              this.state.selectedRoomId = roomId;
+              this.state.isCustomDropdownOpen = false;
+              this.render();
+            }
+          });
+        });
+
+        // Click outside handler
+        const clickOutsideHandler = (e) => {
+          if (this.state.isCustomDropdownOpen && dropdownWrap && !dropdownWrap.contains(e.target)) {
+            this.state.isCustomDropdownOpen = false;
+            dropdownWrap.classList.remove('is-open');
+            optionsPanel.classList.remove('is-visible');
+            dropdownTrigger.setAttribute('aria-expanded', 'false');
+          }
+        };
+
+        document.removeEventListener('click', this._boundClickOutside);
+        this._boundClickOutside = clickOutsideHandler;
+        document.addEventListener('click', this._boundClickOutside);
       }
 
       const btnDateFrom = document.getElementById('date-from-btn');
@@ -2185,7 +2270,7 @@ export class BookingSystem {
       if (btnNext) {
         btnNext.addEventListener('click', () => {
           if (!this.state.selectedRoomId) {
-            this.state.errorMessage = 'Prosíme, vyberte si nejprve pokoj v rozbalovací nabídce v bodu 2.';
+            this.state.errorMessage = 'Prosíme, vyberte si nejprve pokoj v rozevírací nabídce v bodu 2.';
             this.render();
             this.scrollToErrorMessage();
             return;
