@@ -717,6 +717,18 @@ export class BookingSystem {
       }
     }
 
+    // Nastavení stavu načítání a okamžitá vizuální reakce tlačítka (kolečko/spinner)
+    this.state.isSubmitting = true;
+    const submitBtn = this.container.querySelector('.btn-confirm-booking');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.classList.add('is-loading');
+      submitBtn.innerHTML = `
+        <span class="btn-spinner" aria-hidden="true"></span>
+        <span>Odesílám žádost...</span>
+      `;
+    }
+
     const room = this.getSelectedRoom();
 
     // Re-verify availability to prevent double-booking
@@ -1120,7 +1132,7 @@ export class BookingSystem {
 
               ${room ? `
                 <div class="room-mini-preview">
-                  <img src="${room.image || '/hezky pokoj 1.webp'}" alt="${room.name}" class="preview-room-thumb" loading="lazy" decoding="async">
+                  <img src="${room.image || '/hezky pokoj 1.webp'}" alt="${room.name}" class="preview-room-thumb" loading="eager" decoding="async" fetchpriority="high">
                   <div class="preview-info-wrap">
                     <span class="preview-badge">${room.floor === 'prizemi' ? 'Přízemí' : '1. Patro (Výhled na můstky)'}</span>
                     <h4 class="preview-room-title">${room.name}</h4>
@@ -1791,8 +1803,11 @@ export class BookingSystem {
                   <span>✓ Wi-Fi ZDARMA</span>
                 </div>
 
-                <button type="submit" class="btn btn-booking-submit btn-confirm-booking" ${this.state.isSubmitting ? 'disabled' : ''}>
-                  ${this.state.isSubmitting ? 'Odesílám žádost...' : 'Odeslat žádost o rezervaci →'}
+                <button type="submit" class="btn btn-booking-submit btn-confirm-booking ${this.state.isSubmitting ? 'is-loading' : ''}" ${this.state.isSubmitting ? 'disabled' : ''}>
+                  ${this.state.isSubmitting ? `
+                    <span class="btn-spinner" aria-hidden="true"></span>
+                    <span>Odesílám žádost...</span>
+                  ` : 'Odeslat žádost o rezervaci →'}
                 </button>
 
                 <p class="terms-inline-notice" style="margin-top: 14px; font-size: 13px; color: #666666; text-align: center; line-height: 1.5;">

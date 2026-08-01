@@ -8028,6 +8028,34 @@ img[loading="lazy"].img-loaded {
   border-color: #ffffff !important;
 }
 
+/* Animované načítací kolečko pro tlačítko rezervace */
+.btn-confirm-booking.is-loading,
+.btn-booking-submit.is-loading {
+  opacity: 0.88 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+}
+
+.btn-spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: btnSpinnerRotate 0.75s linear infinite;
+  box-sizing: border-box;
+}
+
+@keyframes btnSpinnerRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 @media (max-width: 767.98px) {
   .btn-dining-read-more,
   .btn-dining-not-guest {
