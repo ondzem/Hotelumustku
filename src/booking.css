@@ -1689,7 +1689,12 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   max-width: 100%;
 }
 
-.admin-top-actions button {
+.admin-top-actions button,
+.admin-top-actions .btn,
+.admin-top-actions .btn-admin-logout {
+  width: auto !important;
+  flex: 0 0 auto !important;
+  max-width: none !important;
   white-space: nowrap;
   box-sizing: border-box;
 }
@@ -3734,7 +3739,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 /* Small Desktop & Laptops (1028px - 1349.98px) */
 @media (min-width: 1028px) and (max-width: 1349.98px) {
-  .btn, .btn-primary, .btn-secondary, .btn-booking-submit {
+  .btn, .btn-primary, .btn-secondary {
     height: 42px !important;
     font-size: 15.5px !important;
     padding: 0 20px !important;
@@ -3758,15 +3763,21 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     flex-wrap: wrap;
     align-items: center;
     gap: 10px;
+    justify-content: flex-start;
   }
 
   .admin-top-actions button,
-  .admin-top-actions .btn {
+  .admin-top-actions .btn,
+  .admin-top-actions .btn-admin-logout {
+    width: auto !important;
+    flex: 0 0 auto !important;
+    max-width: none !important;
     height: 40px !important;
     padding: 0 16px !important;
     font-size: 14.5px !important;
     font-weight: 500 !important;
     border-radius: 1px !important;
+    white-space: nowrap !important;
   }
 }
 
@@ -3788,26 +3799,27 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   }
 
   .admin-top-actions {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 10px;
     width: 100%;
-    justify-content: flex-start;
   }
 
   .admin-top-actions button,
-  .admin-top-actions .btn {
-    flex: 1 1 calc(33.333% - 10px);
-    min-width: 140px;
-    max-width: calc(50% - 5px);
+  .admin-top-actions .btn,
+  .admin-top-actions .btn-admin-logout {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: none !important;
     height: 40px !important;
-    padding: 0 14px !important;
+    padding: 0 12px !important;
     font-size: 14px !important;
     font-weight: 500 !important;
     border-radius: 1px !important;
     justify-content: center;
     text-align: center;
     box-sizing: border-box;
+    white-space: nowrap !important;
   }
 
   .res-card-grid {
