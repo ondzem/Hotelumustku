@@ -29,14 +29,21 @@ export function isWeekendNight(dateInput) {
 }
 
 /**
- * Helper to check if a reservation stay falls within the Winter Season (1. 11. - 30. 4.)
- * Jizerské hory (Desná) winter snow & maintenance period: November (11), December (12), January (1), February (2), March (3), April (4)
+ * Helper to check if a reservation stay falls within the Winter Season (1. 11. - 15. 4.)
+ * Jizerské hory (Desná) winter snow & maintenance period: Nov (11), Dec (12), Jan (1), Feb (2), Mar (3), and first half of Apr (4 <= 15)
  */
 export function isWinterSeason(dateFromInput, dateToInput) {
   const checkDate = dateFromInput ? new Date(dateFromInput) : new Date();
   if (isNaN(checkDate.getTime())) return false;
   const month = checkDate.getMonth() + 1; // 1-12
-  return month === 11 || month === 12 || month === 1 || month === 2 || month === 3 || month === 4;
+  const day = checkDate.getDate();
+  if (month === 11 || month === 12 || month === 1 || month === 2 || month === 3) {
+    return true;
+  }
+  if (month === 4 && day <= 15) {
+    return true;
+  }
+  return false;
 }
 
 /**

@@ -1479,7 +1479,7 @@ export class BookingSystem {
                       <input type="checkbox" id="addon-winter-parking" ${this.state.hasWinterParking ? 'checked' : ''}>
                       <span class="addon-text">
                         <strong>Zimní parkování u hotelu</strong> (+50 Kč / auto / noc)
-                        <small>Příspěvek na pravidelnou zimní údržbu, odhrnování sněhu a údržbu příjezdové dráhy v zimním období (1. 11. – 30. 4.).</small>
+                        <small>Příspěvek na pravidelnou zimní údržbu, odhrnování sněhu a údržbu příjezdové dráhy v zimním období (1. 11. – 15. 4.).</small>
                       </span>
                     </label>
                     ${this.state.hasWinterParking ? `
