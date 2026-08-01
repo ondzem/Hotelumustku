@@ -930,7 +930,7 @@ const getFooterHTML = () => `
             <div class="footer-address-text">
               <span>Údolní 368</span>
               <span>468 61 Desná v Jizerských horách 1</span>
-              <span class="footer-business-id">Lenka Bellingerová · IČ: 74349074</span>
+              <span class="footer-business-id">Lenka Bellingerová · IČ: 74349074 · plátce DPH</span>
             </div>
           </div>
         </div>
@@ -3981,7 +3981,8 @@ export const getGdprPageHTML = () => `
               <p class="legal-article-text">
                 <strong>Lenka Bellingerová</strong><br>
                 IČ: 74349074, zapsána v živnostenském rejstříku (Živnostenský úřad Poděbrady)<br>
-                Sídlo a adresa provozovny: Údolní 368, Desná v Jizerských horách 1, 468 61<br>
+                Sídlo: Budovcova 1148/80, Poděbrady III, 290 01 Poděbrady<br>
+                Provozovna, kam se na nás obracejte: Hotel U Můstků, Údolní 368, Desná v Jizerských horách 1, 468 61<br>
                 Telefon: <a href="tel:+420777666273" style="color: #1c1c19; text-decoration: underline;">+420 777 666 273</a><br>
                 E-mail: <a href="mailto:hotel@umustku.cz" style="color: #1c1c19; text-decoration: underline;">hotel@umustku.cz</a>
               </p>
@@ -4223,13 +4224,15 @@ export const getPodminkyPageHTML = () => `
               <h2 class="legal-article-title">1. Kdo vám ubytování poskytuje</h2>
               <p class="legal-article-text">
                 <strong>Lenka Bellingerová</strong> — provozovatelka Hotelu U Můstků<br>
-                IČ: 74349074, zapsána v živnostenském rejstříku (Živnostenský úřad Poděbrady)<br>
-                Sídlo a adresa provozovny: Údolní 368, Desná v Jizerských horách 1, 468 61<br>
+                IČ: 74349074, plátce DPH<br>
+                Zapsána v živnostenském rejstříku (Živnostenský úřad Poděbrady), podniká od 1. 2. 2007<br>
+                Sídlo: Budovcova 1148/80, Poděbrady III, 290 01 Poděbrady<br>
+                Provozovna: Hotel U Můstků, Údolní 368, Desná v Jizerských horách 1, 468 61<br>
                 Telefon: <a href="tel:+420777666273" style="color: #1c1c19; text-decoration: underline;">+420 777 666 273</a><br>
                 E-mail: <a href="mailto:hotel@umustku.cz" style="color: #1c1c19; text-decoration: underline;">hotel@umustku.cz</a><br>
                 Bankovní spojení: 293470312/0300 (ČSOB)
               </p>
-              <p class="legal-article-text">Ubytovatel není plátcem DPH. Všechny ceny uvedené na webu jsou konečné.</p>
+              <p class="legal-article-text">Ubytovatel je plátcem DPH. <strong>Všechny ceny uvedené na webu i v tomto dokumentu jsou konečné a včetně DPH</strong> v zákonné sazbě. Daňové identifikační číslo uvádíme na vystavených daňových dokladech.</p>
               <p class="legal-article-text">V textu níže označujeme provozovatelku jako <strong>„ubytovatele“</strong> a vás jako <strong>„hosta“</strong>.</p>
             </div>
 
@@ -4247,7 +4250,7 @@ export const getPodminkyPageHTML = () => `
 
             <div class="legal-article-card">
               <h2 class="legal-article-title">3. Ceny a co je v nich zahrnuto</h2>
-              <p class="legal-article-text">Ceny jsou uvedeny za osobu a noc. Snídaně formou švédského stolu, parkování na hlídaném parkovišti, Wi-Fi, využití společenské herny i <strong>místní poplatek z pobytu</strong> jsou v ceně zahrnuty.</p>
+              <p class="legal-article-text">Ceny jsou uvedeny za osobu a noc a jsou <strong>konečné včetně DPH</strong>. Snídaně formou švédského stolu, parkování na oploceném parkovišti, Wi-Fi, využití společenské herny i <strong>místní poplatek z pobytu</strong> jsou v ceně zahrnuty.</p>
               <table class="legal-info-table">
                 <thead>
                   <tr>

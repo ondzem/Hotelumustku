@@ -10,7 +10,21 @@ Statický Vite web (7 HTML stránek, vanilla JS, Supabase pro rezervace + Resend
 
 - Doména: `umustku.cz` (nahrazuje starý PHP web + Wix prezentaci)
 - Majitelé: **Lenka & Jan Bellingerovi**, provozují od 2015, bydlí přímo v budově
-- IČ: 74349074 (Lenka Bellingerová, ŽÚ Poděbrady)
+
+### Fakturační údaje — ověřeno v ARES 1. 8. 2026
+
+| | |
+|---|---|
+| Podnikatel | Lenka Bellingerová (fyzická osoba) |
+| IČ | 74349074 |
+| **Sídlo** | **Budovcova 1148/80, Poděbrady III, 290 01 Poděbrady** |
+| Provozovna | Hotel U Můstků, Údolní 368, Desná v Jizerských horách 1, 468 61 |
+| DPH | **je plátcem DPH** — ceny na webu jsou včetně DPH |
+| DIČ | `CZ7357111014` — **nezveřejňovat na webu**, obsahuje rodné číslo. Patří jen na daňové doklady. |
+| Živnostenský rejstřík | ŽÚ Poděbrady, podniká od 1. 2. 2007 |
+
+⚠️ **Sídlo NENÍ v Desné.** Dřívější dokumenty uváděly Desnou jako sídlo i provozovnu — chybně.
+Pro § 435 občanského zákoníku se uvádí **sídlo**, adresa provozovny je doplňková.
 - Tel: +420 777 666 273 · E-mail: hotel@umustku.cz
 - GPS: 50°45'43,73"N, 15°18'10,74"E
 

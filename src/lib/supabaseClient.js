@@ -718,6 +718,15 @@ export function formatGDPRName(nameStr) {
 
 let inMemoryReviews = [...DEFAULT_REVIEWS];
 
+const safeSetLocalStorage = (key, value) => {
+  if (typeof localStorage === 'undefined') return;
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (e) {
+    // Silently handle QuotaExceededError or storage restrictions
+  }
+};
+
 export const getStoredReviews = async () => {
   let localReviews = inMemoryReviews;
   if (typeof localStorage !== 'undefined') {
@@ -726,11 +735,9 @@ export const getStoredReviews = async () => {
       if (raw) {
         localReviews = JSON.parse(raw);
         inMemoryReviews = localReviews;
-      } else {
-        localStorage.setItem(REVIEWS_LOCAL_KEY, JSON.stringify(DEFAULT_REVIEWS));
       }
     } catch (e) {
-      console.warn('Failed to parse local reviews:', e);
+      // Fallback to inMemoryReviews if JSON parse fails
     }
   }
 
@@ -777,13 +784,7 @@ export const saveStoredReview = async (reviewPayload) => {
   }
 
   // Always save to localStorage
-  if (typeof localStorage !== 'undefined') {
-    try {
-      localStorage.setItem(REVIEWS_LOCAL_KEY, JSON.stringify(inMemoryReviews));
-    } catch (e) {
-      console.error('Failed to save review to localStorage:', e);
-    }
-  }
+  safeSetLocalStorage(REVIEWS_LOCAL_KEY, inMemoryReviews);
 
   // Save to Supabase if available
   if (isSupabaseConfigured && supabase) {
@@ -812,13 +813,7 @@ export const updateStoredReviewStatus = async (reviewId, status) => {
   }
 
   // Update localStorage
-  if (typeof localStorage !== 'undefined') {
-    try {
-      localStorage.setItem(REVIEWS_LOCAL_KEY, JSON.stringify(inMemoryReviews));
-    } catch (e) {
-      console.error('Failed to update review status in localStorage:', e);
-    }
-  }
+  safeSetLocalStorage(REVIEWS_LOCAL_KEY, inMemoryReviews);
 
   // Update Supabase
   if (isSupabaseConfigured && supabase) {
