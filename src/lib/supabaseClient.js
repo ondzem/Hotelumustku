@@ -125,10 +125,19 @@ export const updateStoredReservationStatus = (id, newStatus) => {
     current[0].status = newStatus;
   }
   try {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(current));
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(current));
+    }
   } catch (err) {
     console.error('Failed to update reservation status locally:', err);
   }
+
+  if (isSupabaseConfigured && supabase && id) {
+    supabase.from('reservations').update({ status: newStatus }).or(`id.eq.${id},code.eq.${id}`).then(({ error }) => {
+      if (error) console.error('Supabase update status error:', error);
+    }).catch(err => console.error('Supabase update status exception:', err));
+  }
+
   return target || current[0];
 };
 
@@ -142,10 +151,19 @@ export const deleteStoredReservation = (targetIdOrCode) => {
     return rId !== targetStr && rCode !== targetStr;
   });
   try {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(filtered));
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(filtered));
+    }
   } catch (err) {
     console.error('Failed to delete reservation locally:', err);
   }
+
+  if (isSupabaseConfigured && supabase && targetStr) {
+    supabase.from('reservations').delete().or(`id.eq.${targetStr},code.eq.${targetStr}`).then(({ error }) => {
+      if (error) console.error('Supabase delete reservation error:', error);
+    }).catch(err => console.error('Supabase delete reservation exception:', err));
+  }
+
   return filtered;
 };
 

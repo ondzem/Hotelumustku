@@ -454,12 +454,11 @@ export class AdminDashboard {
       console.error('Error checking expired reservations:', e);
     }
 
-    let supabaseData = [];
     if (isSupabaseConfigured && supabase) {
       try {
         const { data, error } = await supabase.from('reservations').select('*').order('created_at', { ascending: false });
         if (!error && data) {
-          supabaseData = data.map(r => {
+          this.reservations = data.map(r => {
             let winterMeta = null;
             if (Array.isArray(r.guests)) {
               const metaObj = r.guests.find(g => g && g._winter_parking !== undefined);
@@ -472,22 +471,22 @@ export class AdminDashboard {
               winter_parking_price_total: r.winter_parking_price_total || (winterMeta ? winterMeta.winter_parking_price_total : 0)
             };
           });
+
+          // Sync clean list into localStorage so browser wipes out any stale orphan items
+          try {
+            if (typeof localStorage !== 'undefined') {
+              localStorage.setItem('hotel_umustku_reservations_v1', JSON.stringify(this.reservations));
+            }
+          } catch {}
+          return;
         }
       } catch (err) {
         console.error('Supabase admin fetch failed:', err);
       }
     }
 
-    const localData = getStoredReservations();
-    const combined = [...supabaseData];
-    for (const localR of localData) {
-      const existsInSupabase = combined.some(s => (s.id && localR.id && String(s.id) === String(localR.id)) || (s.code && localR.code && String(s.code) === String(localR.code)));
-      if (!existsInSupabase) {
-        combined.push(localR);
-      }
-    }
-
-    this.reservations = combined;
+    // Only used as fallback if Supabase is offline / unconfigured
+    this.reservations = getStoredReservations();
   }
 
   async fetchBlockedDates() {
