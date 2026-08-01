@@ -3,6 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function() {
+        var p = window.location.pathname;
+        if (p !== '/' && p !== '/index.html' && p !== '') {
+          document.documentElement.classList.add('is-route-loading');
+        }
+      })();
+    </script>
     <meta name="description" content="Hotel U Můstků - Objevte klidné ubytování v Jizerských horách v Desné. Útulné pokoje, poctivá domácí polopenze a ideální zázemí pro horskou dovolenou." />
     <link rel="canonical" href="https://umustku.cz/" />
     <meta name="author" content="Hotel U Můstků" />

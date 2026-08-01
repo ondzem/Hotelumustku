@@ -2016,6 +2016,18 @@ window.getInitialSeasonMode = getInitialSeasonMode;
 window.setSeasonMode = setSeasonMode;
 window.scheduleInactiveSeasonPreload = scheduleInactiveSeasonPreload;
 
+// Pomocná SPA navigace bez reloaded problikávání
+export function navigateTo(targetUrl) {
+  if (!targetUrl) return;
+  const cleanUrl = targetUrl.replace(/\.html$/, '');
+  const currentPathWithHash = window.location.pathname + window.location.search + window.location.hash;
+  if (currentPathWithHash === cleanUrl) return;
+
+  history.pushState(null, '', cleanUrl);
+  route(false);
+}
+window.navigateTo = navigateTo;
+
 // Inicializace událostí a interaktivity po vykreslení
 const initInteractivity = () => {
   // Aplikace sezónního režimu (Léto / Zima)
@@ -2356,7 +2368,7 @@ const initInteractivity = () => {
   if (roomsBtn) {
     roomsBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      window.location.href = '/ubytovani.html';
+      navigateTo('/ubytovani');
     });
   }
 
@@ -2364,7 +2376,7 @@ const initInteractivity = () => {
   if (aboutMoreBtn) {
     aboutMoreBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      window.location.href = '/ubytovani.html';
+      navigateTo('/ubytovani');
     });
   }
 
@@ -2573,7 +2585,7 @@ const initInteractivity = () => {
       if (targetSec) {
         targetSec.scrollIntoView({ behavior: 'smooth' });
       } else {
-        window.location.href = '/ubytovani#rozdeleni-pokoju';
+        navigateTo('/ubytovani#rozdeleni-pokoju');
       }
     });
   }
@@ -2705,7 +2717,7 @@ const initInteractivity = () => {
   if (serviceRestaurantBtn) {
     serviceRestaurantBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      window.location.href = '/stravovani.html';
+      navigateTo('/stravovani');
     });
   }
 
@@ -2713,7 +2725,31 @@ const initInteractivity = () => {
   if (serviceEventsBtn) {
     serviceEventsBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      window.location.href = '/akce.html';
+      navigateTo('/akce');
+    });
+  }
+
+  const diningEventsCtaBtn = document.getElementById('dining-events-cta-btn');
+  if (diningEventsCtaBtn) {
+    diningEventsCtaBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      navigateTo('/akce');
+    });
+  }
+
+  const eventsInquiryBtn = document.getElementById('btn-events-inquiry');
+  if (eventsInquiryBtn) {
+    eventsInquiryBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      navigateTo('/kontakt#form-sekce');
+    });
+  }
+
+  const eventsAboutCtaBtn = document.getElementById('events-about-cta-btn');
+  if (eventsAboutCtaBtn) {
+    eventsAboutCtaBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      navigateTo('/kontakt#form-sekce');
     });
   }
 
@@ -2721,7 +2757,7 @@ const initInteractivity = () => {
   if (surroundingsMoreBtn) {
     surroundingsMoreBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      window.location.href = '/okoli.html';
+      navigateTo('/okoli');
     });
   }
 
@@ -2732,17 +2768,17 @@ const initInteractivity = () => {
       e.preventDefault();
       e.stopPropagation();
       const href = btn.getAttribute('href') || '';
-      if (href.includes('turistika')) window.location.href = '/okoli-turistika.html';
-      else if (href.includes('cyklistika')) window.location.href = '/okoli-cyklistika.html';
-      else if (href.includes('zima')) window.location.href = '/okoli-zima.html';
-      else if (href.includes('autem')) window.location.href = '/okoli-vylety-autem.html';
-      else if (href.startsWith('/')) window.location.href = href;
+      if (href.includes('turistika')) navigateTo('/okoli/turistika');
+      else if (href.includes('cyklistika')) navigateTo('/okoli/cyklistika');
+      else if (href.includes('zima')) navigateTo('/okoli/zima');
+      else if (href.includes('autem')) navigateTo('/okoli/vylety-autem');
+      else if (href.startsWith('/')) navigateTo(href.replace(/\.html$/, ''));
       else if (href.startsWith('#')) {
         const clean = href.replace('#', '');
-        if (clean === 'turistika') window.location.href = '/okoli-turistika.html';
-        else if (clean === 'cyklistika') window.location.href = '/okoli-cyklistika.html';
-        else if (clean === 'zimni-vylety' || clean === 'zima') window.location.href = '/okoli-zima.html';
-        else if (clean === 'vylety-autem' || clean === 'autem') window.location.href = '/okoli-vylety-autem.html';
+        if (clean === 'turistika') navigateTo('/okoli/turistika');
+        else if (clean === 'cyklistika') navigateTo('/okoli/cyklistika');
+        else if (clean === 'zimni-vylety' || clean === 'zima') navigateTo('/okoli/zima');
+        else if (clean === 'vylety-autem' || clean === 'autem') navigateTo('/okoli/vylety-autem');
       }
     });
   });
@@ -2751,7 +2787,7 @@ const initInteractivity = () => {
   diningBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
-      window.location.href = '/stravovani.html';
+      navigateTo('/stravovani');
     });
   });
 
@@ -3086,7 +3122,7 @@ const getStravovaniPageHTML = () => `
         <p class="dining-events-p3">Postaráme se o rodinnou atmosféru a hladký průběh vaší akce v klidném údolí Jizerských hor.</p>
       </div>
       <div class="dining-events-action">
-        <a href="#kontakt" class="btn btn-about btn-events-cta" id="dining-events-cta-btn">Zjistit více</a>
+        <a href="/akce" class="btn btn-about btn-events-cta" id="dining-events-cta-btn">Zjistit více</a>
       </div>
     </div>
   </section>
@@ -3135,7 +3171,7 @@ const getEventsPageHTML = () => `
 
         <div class="events-hero-buttons-wrap">
           <a href="#celay-hotel" class="btn btn-events-read-more room-detail-hero-btn" id="btn-events-read-more">Přečíst více</a>
-          <a href="#kontakt" class="btn btn-events-inquiry" id="btn-events-inquiry">Nezávazná poptávka</a>
+          <a href="/kontakt#form-sekce" class="btn btn-events-inquiry" id="btn-events-inquiry">Nezávazná poptávka</a>
         </div>
       </div>
 
@@ -3157,7 +3193,7 @@ const getEventsPageHTML = () => `
           <p>Plánujete skupinovou akci? Po předchozí dohodě pro vás zajistíme kompletní pronájem celého hotelu — ubytování, společenské prostory i pohoštění na jednom místě.</p>
           <p>Postaráme se o rodinnou atmosféru a hladký průběh celé akce v klidném údolí Jizerských hor, stranou ruchu a s naprostým soukromím pro skupiny až do 42 osob.</p>
         </div>
-        <a href="#kontakt" class="btn btn-about btn-events-about-cta" id="events-about-cta-btn">Nezávazně poptat termín</a>
+        <a href="/kontakt#form-sekce" class="btn btn-about btn-events-about-cta" id="events-about-cta-btn">Nezávazně poptat termín</a>
       </div>
       
       <div class="about-img-top">
@@ -3874,6 +3910,16 @@ const getContactPageHTML = () => `
 
 // Interaktivita Stránky Kontakt
 const initContactPageInteractivity = () => {
+  const currentHash = window.location.hash.toLowerCase();
+  if (currentHash === '#form-sekce' || currentHash === '#napiste-nam' || currentHash === '#kontakt-form' || currentHash === '#poptavka') {
+    setTimeout(() => {
+      const formSec = document.getElementById('form-sekce') || document.getElementById('contact-page-form');
+      if (formSec) {
+        formSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 120);
+  }
+
   const heroBtn = document.getElementById('btn-goto-contact-form');
   if (heroBtn) {
     heroBtn.addEventListener('click', (e) => {
@@ -4885,8 +4931,27 @@ const route = (isInitial = false) => {
     preloadHeroImages(pageKey);
   }
 
-  // Pouze pokud na úvodním načtení BEZ hashtagu existují static deti, přeskočíme přepsání
-  const isPreRenderedMatch = isInitial && app.children && app.children.length > 0 && !hash;
+  // Ověření, zda domovský HTML v #app odpovídá cílové stránce pageKey
+  let isPreRenderedMatch = false;
+  if (isInitial && app && app.children && app.children.length > 0 && !hash) {
+    if (pageKey === 'home' && app.querySelector('.hero-section:not(.news-hero-section):not(.contact-hero-section):not(.dining-hero-section):not(.events-hero-section):not(.activities-hero-section):not(.rooms-hero-section)')) {
+      isPreRenderedMatch = true;
+    } else if (pageKey === 'category-detail' && app.querySelector('.surrounding-detail-hero, .category-detail-section, .category-hero-section')) {
+      isPreRenderedMatch = true;
+    } else if (pageKey === 'rooms' && app.querySelector('.rooms-hero-section, #sekce-pokoje')) {
+      isPreRenderedMatch = true;
+    } else if (pageKey === 'dining' && app.querySelector('.dining-hero-section, #sekce-stravovani')) {
+      isPreRenderedMatch = true;
+    } else if (pageKey === 'events' && app.querySelector('.events-hero-section, #sekce-akce')) {
+      isPreRenderedMatch = true;
+    } else if (pageKey === 'activities' && app.querySelector('.activities-hero-section, #sekce-aktivity')) {
+      isPreRenderedMatch = true;
+    } else if (pageKey === 'contact' && app.querySelector('.contact-hero-section, #sekce-kontakt')) {
+      isPreRenderedMatch = true;
+    } else if (pageKey === 'news' && app.querySelector('.news-hero-section, #seznam-aktualit')) {
+      isPreRenderedMatch = true;
+    }
+  }
 
   if (pageKey === 'booking') {
     app.innerHTML = getBookingPageHTML();
@@ -4955,7 +5020,8 @@ const route = (isInitial = false) => {
 
   // Přesun na vrchol při běžné navigaci na NOVOU stránku nebo na kontakt / aktuality
   const isSectionHashOnDining = pageKey === 'dining' && ['#snidane', '#vecere', '#krb-restaurace', '#teraska', '#grilovani', '#oslavy-akce'].includes(cleanHash);
-  if (pageKey === 'booking' || pageKey === 'contact' || pageKey === 'news' || (!isInitial && isNewPage && !window.pendingAutoOpenRoom && hash !== '#pokoje-nabidka' && !isSectionHashOnDining)) {
+  const isContactFormHash = pageKey === 'contact' && ['#form-sekce', '#napiste-nam', '#kontakt-form', '#poptavka'].includes(cleanHash);
+  if (!isContactFormHash && (pageKey === 'booking' || pageKey === 'contact' || pageKey === 'news' || (!isInitial && isNewPage && !window.pendingAutoOpenRoom && hash !== '#pokoje-nabidka' && !isSectionHashOnDining))) {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
     document.documentElement.scrollTop = 0;
@@ -5000,6 +5066,9 @@ const route = (isInitial = false) => {
       }, 100);
     });
   }
+
+  // Odstranění třídy is-route-loading po dokončení vykreslení cesty
+  document.documentElement.classList.remove('is-route-loading');
 };
 
 // Globální obsluha prokliků na odkazy a kategorie
@@ -5009,11 +5078,13 @@ document.addEventListener('click', (e) => {
   const href = link.getAttribute('href');
   if (!href) return;
 
-  if (href.startsWith('http://') || href.startsWith('https://') || href.startsWith('tel:') || href.startsWith('mailto:')) return;
+  if (href.startsWith('http://') || href.startsWith('https://') || href.startsWith('tel:') || href.startsWith('mailto:') || link.hasAttribute('download') || link.target === '_blank') return;
 
-  // Real HTML files / path links -> allow native browser navigation
-  if (href.includes('.html') || (href.startsWith('/') && !href.startsWith('/#'))) {
-    return; // Do NOT prevent default! Let browser open the page!
+  // Real HTML files / path links -> SPA plynulá navigace bez probliknutí
+  if (href.startsWith('/') && !href.startsWith('/#')) {
+    e.preventDefault();
+    navigateTo(href);
+    return;
   }
 
   // Handle hash links
@@ -5022,52 +5093,52 @@ document.addEventListener('click', (e) => {
 
     if (clean === '#turistika' || clean === '#turistika-stranka') {
       e.preventDefault();
-      window.location.href = '/okoli-turistika.html';
+      navigateTo('/okoli/turistika');
       return;
     }
     if (clean === '#cyklistika' || clean === '#cyklistika-stranka') {
       e.preventDefault();
-      window.location.href = '/okoli-cyklistika.html';
+      navigateTo('/okoli/cyklistika');
       return;
     }
     if (clean === '#zimni-vylety' || clean === '#zimni' || clean === '#zima') {
       e.preventDefault();
-      window.location.href = '/okoli-zima.html';
+      navigateTo('/okoli/zima');
       return;
     }
     if (clean === '#vylety-autem' || clean === '#autem') {
       e.preventDefault();
-      window.location.href = '/okoli-vylety-autem.html';
+      navigateTo('/okoli/vylety-autem');
       return;
     }
     if (clean === '#pokoje' || clean === '#nabidka-pokoju') {
       e.preventDefault();
-      window.location.href = '/ubytovani.html';
+      navigateTo('/ubytovani');
       return;
     }
     if (clean === '#stravovani' || clean === '#sluzby') {
       e.preventDefault();
-      window.location.href = '/stravovani.html';
+      navigateTo('/stravovani');
       return;
     }
     if (clean === '#akce') {
       e.preventDefault();
-      window.location.href = '/akce.html';
+      navigateTo('/akce');
       return;
     }
     if (clean === '#aktivity' || clean === '#okoli') {
       e.preventDefault();
-      window.location.href = '/okoli.html';
+      navigateTo('/okoli');
       return;
     }
     if (clean === '#kontakt') {
       e.preventDefault();
-      window.location.href = '/kontakt.html';
+      navigateTo('/kontakt');
       return;
     }
     if (clean === '#aktuality') {
       e.preventDefault();
-      window.location.href = '/aktuality.html';
+      navigateTo('/aktuality');
       return;
     }
     if (clean === '#pokoj-prizemi' || clean === '#pokoje-prizemi' || clean === '#prizemi') {

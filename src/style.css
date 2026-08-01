@@ -67,9 +67,6 @@ body {
 html.modal-open,
 body.modal-open {
   overflow: hidden !important;
-  height: 100vh !important;
-  max-height: 100vh !important;
-  touch-action: none !important;
   overscroll-behavior: none !important;
 }
 
@@ -8153,6 +8150,12 @@ img[loading="lazy"].img-loaded {
     left: -12px;
     right: -12px;
   }
+}
+
+/* Zamezení problikávání úvodní stránky při přímém načtení podstránek */
+html.is-route-loading #app {
+  opacity: 0 !important;
+  visibility: hidden !important;
 }
 
 @media (min-width: 768px) and (max-width: 1028px) {
