@@ -658,16 +658,7 @@ const getReviewsHTML = () => `
   <!-- SEKCE RECENZE (1:1 REPLIKA DLE SVG PŘEDLOHY + INTERAKTIVNÍ INFINITY SLIDER + NAPSAT RECENZI) -->
   <section class="reviews-section" id="recenze">
     <div class="reviews-inner">
-      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
-        <h2 class="reviews-title" style="margin: 0;">Co o nás říkají sami hosté?</h2>
-        <button type="button" class="btn btn-add-review" id="btn-open-review-modal">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 20h9"></path>
-            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-          </svg>
-          <span>Napsat recenzi</span>
-        </button>
-      </div>
+      <h2 class="reviews-title" style="margin-bottom: 24px;">Co o nás říkají sami hosté?</h2>
       
       <div class="reviews-slider-viewport" id="reviews-viewport">
         <div class="reviews-slider-track" id="reviews-track">
@@ -688,11 +679,21 @@ const getReviewsHTML = () => `
       </div>
       
       <div class="reviews-nav-controls">
-        <button class="review-nav-btn" id="reviews-prev" aria-label="Předchozí recenze">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#333333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-        </button>
-        <button class="review-nav-btn" id="reviews-next" aria-label="Další recenze">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#333333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        <div class="reviews-nav-arrows">
+          <button class="review-nav-btn" id="reviews-prev" aria-label="Předchozí recenze">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#333333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <button class="review-nav-btn" id="reviews-next" aria-label="Další recenze">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#333333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+
+        <button type="button" class="btn btn-add-review" id="btn-open-review-modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+          </svg>
+          <span>Napsat recenzi</span>
         </button>
       </div>
     </div>
@@ -727,23 +728,13 @@ const getReviewsHTML = () => `
             </small>
           </div>
 
-          <div class="form-field" style="margin-top: 16px;">
-            <label class="form-label">Vaše hodnocení pobytu <span class="required" style="color: #c62828;">*</span></label>
-            <div class="star-rating-picker" id="star-rating-picker" data-rating="5">
-              <button type="button" class="star-btn active" data-value="1" aria-label="1 hvězdička">★</button>
-              <button type="button" class="star-btn active" data-value="2" aria-label="2 hvězdičky">★</button>
-              <button type="button" class="star-btn active" data-value="3" aria-label="3 hvězdičky">★</button>
-              <button type="button" class="star-btn active" data-value="4" aria-label="4 hvězdičky">★</button>
-              <button type="button" class="star-btn active" data-value="5" aria-label="5 hvězdiček">★</button>
-            </div>
-            <span class="rating-text-label" id="rating-text-label" style="font-size: 13.5px; font-weight: 600; color: #697947; margin-top: 4px; display: block;">
-              5 z 5 hvězdiček (Vynikající)
-            </span>
-          </div>
-
           <div class="form-field" id="field-wrap-review-text" style="margin-top: 16px;">
             <label for="review-text-input" class="form-label">Text vaší recenze <span class="required" style="color: #c62828;">*</span></label>
-            <textarea id="review-text-input" class="form-textarea" rows="4" placeholder="Napište, jak se vám u nás líbilo, jak vám chutnala snídaně či jak hodnotíte čistotu a personál..." required></textarea>
+            <textarea id="review-text-input" class="form-textarea" rows="4" maxlength="500" placeholder="Napište, jak se vám u nás líbilo, jak vám chutnala snídaně či jak hodnotíte čistotu a personál..." required></textarea>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 12.5px; color: #666660;">
+              <span id="review-text-hint">Minimálně 15 znaků, maximálně 500 znaků (cca 80 slov).</span>
+              <span id="review-text-count" style="font-weight: 600;">0 / 500</span>
+            </div>
           </div>
         </div>
 
@@ -2391,30 +2382,20 @@ const initInteractivity = () => {
   const cancelModalBtn = document.getElementById('btn-cancel-review-modal');
   const modalOverlay = document.getElementById('add-review-modal-overlay');
   const reviewForm = document.getElementById('add-review-form');
-  const starPicker = document.getElementById('star-rating-picker');
-  const ratingTextLabel = document.getElementById('rating-text-label');
+  const reviewTextInput = document.getElementById('review-text-input');
+  const reviewTextCount = document.getElementById('review-text-count');
 
-  const ratingLabels = {
-    1: '1 z 5 hvězdiček (Špatné)',
-    2: '2 z 5 hvězdiček (Průměrné)',
-    3: '3 z 5 hvězdiček (Dobré)',
-    4: '4 z 5 hvězdiček (Velmi dobré)',
-    5: '5 z 5 hvězdiček (Vynikající)'
-  };
-
-  if (starPicker) {
-    starPicker.querySelectorAll('.star-btn').forEach(starBtn => {
-      starBtn.addEventListener('click', () => {
-        const val = parseInt(starBtn.dataset.value, 10) || 5;
-        starPicker.dataset.rating = val;
-        starPicker.querySelectorAll('.star-btn').forEach(btn => {
-          const btnVal = parseInt(btn.dataset.value, 10);
-          btn.classList.toggle('active', btnVal <= val);
-        });
-        if (ratingTextLabel) {
-          ratingTextLabel.textContent = ratingLabels[val] || `${val} z 5 hvězdiček`;
-        }
-      });
+  if (reviewTextInput && reviewTextCount) {
+    reviewTextInput.addEventListener('input', () => {
+      const len = reviewTextInput.value.length;
+      reviewTextCount.textContent = `${len} / 500`;
+      if (len > 500) {
+        reviewTextCount.style.color = '#c62828';
+      } else if (len < 15 && len > 0) {
+        reviewTextCount.style.color = '#d84315';
+      } else {
+        reviewTextCount.style.color = '#4A5A24';
+      }
     });
   }
 
@@ -2429,15 +2410,14 @@ const initInteractivity = () => {
       modalOverlay.setAttribute('aria-hidden', 'true');
       document.body.style.overflow = '';
       if (reviewForm) reviewForm.reset();
+      if (reviewTextCount) {
+        reviewTextCount.textContent = '0 / 500';
+        reviewTextCount.style.color = '#666660';
+      }
       const alertArea = document.getElementById('review-modal-alert-area');
       if (alertArea) alertArea.innerHTML = '';
       const submitBtn = document.getElementById('btn-submit-review');
       if (submitBtn) submitBtn.disabled = false;
-      if (starPicker) {
-        starPicker.dataset.rating = '5';
-        starPicker.querySelectorAll('.star-btn').forEach(btn => btn.classList.add('active'));
-        if (ratingTextLabel) ratingTextLabel.textContent = ratingLabels[5];
-      }
     }
   };
 
@@ -2459,7 +2439,6 @@ const initInteractivity = () => {
 
       const nameInput = document.getElementById('review-fullname-input');
       const textInput = document.getElementById('review-text-input');
-      const rating = parseInt(starPicker ? starPicker.dataset.rating : '5', 10) || 5;
 
       const fullName = (nameInput ? nameInput.value : '').trim();
       const text = (textInput ? textInput.value : '').trim();
@@ -2469,6 +2448,28 @@ const initInteractivity = () => {
           alertArea.innerHTML = `
             <div style="background-color: #fbe9e7; color: #c62828; padding: 12px 16px; border-radius: 4px; font-size: 14px; margin-bottom: 16px;">
               ⚠️ Prosíme vyplňte vaše jméno a text recenze.
+            </div>
+          `;
+        }
+        return;
+      }
+
+      if (text.length < 15) {
+        if (alertArea) {
+          alertArea.innerHTML = `
+            <div style="background-color: #fbe9e7; color: #c62828; padding: 12px 16px; border-radius: 4px; font-size: 14px; margin-bottom: 16px;">
+              ⚠️ Text recenze musí mít alespoň 15 znaků.
+            </div>
+          `;
+        }
+        return;
+      }
+
+      if (text.length > 500) {
+        if (alertArea) {
+          alertArea.innerHTML = `
+            <div style="background-color: #fbe9e7; color: #c62828; padding: 12px 16px; border-radius: 4px; font-size: 14px; margin-bottom: 16px;">
+              ⚠️ Text recenze je příliš dlouhý. Maximální povolená délka je 500 znaků (cca 80 slov).
             </div>
           `;
         }
