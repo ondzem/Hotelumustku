@@ -413,7 +413,7 @@ export function generateEmail2ApprovalAndPaymentRequest({ reservation, room, pri
     <p style="color: #333333 !important;">s radostí vám oznamujeme, že vaši žádost o rezervaci pokoje <strong>${room.name}</strong> v termínu <strong>${reservation.date_from} až ${reservation.date_to}</strong> recepce schválila!</p>
 
     <div class="alert-box-success" style="background-color: #f2f8f2 !important; color: #1a1a1a !important;">
-      <strong style="color: #27ae60 !important;">✅ Pokoj je pro vás rezervován.</strong> Pro dokončení závazné rezervace prosíme o úhradu 30% zálohy do 3 pracovních dnů.
+      <strong style="color: #27ae60 !important;">✅ Pokoj je pro vás rezervován.</strong> Pro dokončení závazné rezervace prosíme o úhradu 30% zálohy <strong style="color: #1a1a1a !important; background-color: #dceada !important; padding: 2px 7px !important; border-radius: 3px !important; border: 1px solid #b2d8b2 !important; font-weight: 800 !important;">do 3 pracovních dnů</strong>.
     </div>
 
     <div class="qr-section" style="background-color: #f9faf7 !important;">
@@ -428,8 +428,13 @@ export function generateEmail2ApprovalAndPaymentRequest({ reservation, room, pri
       <tr><td style="color: #555555 !important;">Variabilní symbol:</td><td style="color: #1a1a1a !important;"><strong>${vsClean}</strong></td></tr>
       <tr><td style="color: #555555 !important;">Částka zálohy (30 %):</td><td><strong style="color:#697947 !important;">${formatCzechPrice(pricing.depositPriceTotal)}</strong></td></tr>
       <tr><td style="color: #555555 !important;">Doplatek při příjezdu (70 %):</td><td style="color: #1a1a1a !important;">${formatCzechPrice(pricing.remainingPriceTotal)}</td></tr>
-      <tr><td style="color: #555555 !important;">Splatnost:</td><td style="color: #1a1a1a !important;">Do 3 pracovních dnů</td></tr>
+      <tr><td style="color: #555555 !important;">Splatnost zálohy:</td><td><strong style="color: #d9534f !important; font-size: 15px !important; font-weight: 800 !important; text-decoration: underline !important;">Do 3 pracovních dnů</strong></td></tr>
     </table>
+
+    <div style="margin: 20px 0 16px 0; background-color: #f9faf7 !important; border: 1px solid #e7e5dc !important; border-left: 4px solid #697947 !important; border-radius: 6px !important; padding: 14px 18px !important; font-size: 14px !important; color: #2c2c28 !important; line-height: 1.55 !important;">
+      🧾 <strong>Informace k faktuře a daňovému dokladu:</strong><br>
+      Faktura (daňový doklad) na celkovou částku pobytu i s potvrzením přijaté zálohy vám bude vystavena a předána na recepci při vašem příjezdu na hotel.
+    </div>
 
     <p style="font-size:13.5px; color:#666666 !important;">Po připsání zálohy na náš účet vám ihned zašleme finální potvrzení rezervace.</p>
     ${getEmailFooter()}
@@ -471,6 +476,10 @@ export function generateEmail3FinalConfirmation({ reservation, room, pricing }) 
         <tr>
           <td style="padding: 6px 0 !important; width: 28px !important; vertical-align: top !important;">⏰</td>
           <td style="padding: 6px 0 !important;"><strong style="color: #1A1A1A !important;">Check-out (Odjezd):</strong> do 10:00 hod.</td>
+        </tr>
+        <tr>
+          <td style="padding: 6px 0 !important; width: 28px !important; vertical-align: top !important;">🧾</td>
+          <td style="padding: 6px 0 !important;"><strong style="color: #1A1A1A !important;">Faktura / Daňový doklad:</strong> Bude vám vystaven a předán na recepci při příjezdu na hotel.</td>
         </tr>
         <tr>
           <td style="padding: 6px 0 !important; width: 28px !important; vertical-align: top !important;">☕</td>
