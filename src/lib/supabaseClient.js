@@ -387,6 +387,59 @@ export const saveStoredRoomPrice = (priceItem) => {
   return priceItem;
 };
 
+// Local Storage Key for Custom Room Names
+const CUSTOM_ROOM_NAMES_STORAGE_KEY = 'hotel_umustku_custom_room_names_v1';
+
+export const getStoredCustomRoomNames = () => {
+  try {
+    const raw = localStorage.getItem(CUSTOM_ROOM_NAMES_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+};
+
+export const saveStoredCustomRoomName = (roomItem) => {
+  const current = getStoredCustomRoomNames();
+  const existingIdx = current.findIndex(p => p.room_id === roomItem.room_id);
+  if (existingIdx >= 0) {
+    current[existingIdx] = { ...current[existingIdx], ...roomItem };
+  } else {
+    current.push(roomItem);
+  }
+  try {
+    localStorage.setItem(CUSTOM_ROOM_NAMES_STORAGE_KEY, JSON.stringify(current));
+  } catch (err) {
+    console.error('Failed to save custom room name locally:', err);
+  }
+
+  if (roomItem && roomItem.room_id && (roomItem.room_name || roomItem.name)) {
+    const rm = MOCK_ROOMS.find(r => r.id === roomItem.room_id);
+    if (rm) {
+      rm.name = roomItem.room_name || roomItem.name;
+    }
+  }
+  return roomItem;
+};
+
+export const initStoredCustomRoomNamesInMock = () => {
+  try {
+    const stored = getStoredCustomRoomNames();
+    (stored || []).forEach(p => {
+      if (p.room_id && (p.room_name || p.name)) {
+        const rm = MOCK_ROOMS.find(r => r.id === p.room_id);
+        if (rm) {
+          rm.name = p.room_name || p.name;
+        }
+      }
+    });
+  } catch (err) {
+    console.error('initStoredCustomRoomNamesInMock failed:', err);
+  }
+};
+
+initStoredCustomRoomNamesInMock();
+
 export const initStoredRoomPricesInMock = () => {
   try {
     const stored = getStoredRoomPrices();
@@ -401,6 +454,7 @@ export const initStoredRoomPricesInMock = () => {
           if (!isNaN(priceVal) && priceVal > 0) rm.basePrice = priceVal;
           if (!isNaN(weekdayVal) && weekdayVal > 0) rm.weekdayPrice = weekdayVal;
           if (!isNaN(weekendVal) && weekendVal > 0) rm.weekendPrice = weekendVal;
+          if (p.room_name || p.custom_name) rm.name = p.room_name || p.custom_name;
         }
       }
     });

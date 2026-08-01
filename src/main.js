@@ -5,6 +5,20 @@ import { AdminDashboard } from './components/AdminDashboard.js';
 import { getStoredRoomPrices, getStoredDisabledRooms, MOCK_ROOMS, saveContactMessage, getStoredNewsItems } from './lib/supabaseClient.js';
 import { sendEmail, generateEmailContactNotification } from './utils/emailService.js';
 
+export function syncCustomRoomNamesToDOM() {
+  const roomItems = document.querySelectorAll('.room-breakdown-item[data-room]');
+  roomItems.forEach(item => {
+    const roomId = item.dataset.room;
+    const nameEl = item.querySelector('.room-breakdown-name strong');
+    if (!nameEl || !roomId) return;
+    const rmObj = MOCK_ROOMS.find(r => r.id === roomId);
+    if (rmObj && rmObj.name) {
+      nameEl.textContent = rmObj.name;
+    }
+  });
+}
+window.syncCustomRoomNamesToDOM = syncCustomRoomNamesToDOM;
+
 export function syncDynamicRoomPricesToDOM() {
   const roomPrices = getStoredRoomPrices();
   const roomItems = document.querySelectorAll('.room-breakdown-item[data-room]');
@@ -176,7 +190,9 @@ export const ROOM_GALLERIES = {
   ]
 };
 
-export const renderRoomBreakdownItem = (roomId, roomName, priceType, priceAmount) => {
+export const renderRoomBreakdownItem = (roomId, defaultRoomName, priceType, priceAmount) => {
+  const rmObj = MOCK_ROOMS.find(r => r.id === roomId);
+  const roomName = (rmObj && rmObj.name) ? rmObj.name : defaultRoomName;
   const photos = ROOM_GALLERIES[roomId] || ['/hezky pokoj 1.webp'];
   const slidesHtml = photos.map((src, idx) => `
     <div class="room-carousel-slide">
@@ -5044,6 +5060,7 @@ const route = (isInitial = false) => {
   }
 
   initInteractivity();
+  syncCustomRoomNamesToDOM();
   syncDynamicRoomPricesToDOM();
   syncDisabledRoomsToDOM();
 

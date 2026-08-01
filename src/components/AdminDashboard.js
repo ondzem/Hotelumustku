@@ -1,4 +1,4 @@
-import { MOCK_ROOMS, getStoredReservations, updateStoredReservationStatus, deleteStoredReservation, getStoredBlockedDates, saveStoredBlockedDate, deleteStoredBlockedDate, getStoredDiscountCodes, saveStoredDiscountCode, deleteStoredDiscountCode, getStoredRoomPrices, saveStoredRoomPrice, getStoredDisabledRooms, saveStoredDisabledRoom, getStoredNewsItems, saveStoredNewsItem, deleteStoredNewsItem, reorderNewsItem, uploadNewsImage, isSupabaseConfigured, supabase } from '../lib/supabaseClient.js';
+import { MOCK_ROOMS, getStoredReservations, updateStoredReservationStatus, deleteStoredReservation, getStoredBlockedDates, saveStoredBlockedDate, deleteStoredBlockedDate, getStoredDiscountCodes, saveStoredDiscountCode, deleteStoredDiscountCode, getStoredRoomPrices, saveStoredRoomPrice, getStoredCustomRoomNames, saveStoredCustomRoomName, getStoredDisabledRooms, saveStoredDisabledRoom, getStoredNewsItems, saveStoredNewsItem, deleteStoredNewsItem, reorderNewsItem, uploadNewsImage, isSupabaseConfigured, supabase } from '../lib/supabaseClient.js';
 import { calculateReservationPrice, generateSpaydQrUrl, BANK_ACCOUNT, formatCzechPrice, getVariableSymbol } from '../utils/pricing.js';
 import { sendEmail, generateEmail2ApprovalAndPaymentRequest, generateEmail3FinalConfirmation, generateEmailCancellation, getEmailLogs, sendAllTestEmailsTo } from '../utils/emailService.js';
 
@@ -290,62 +290,79 @@ export class AdminDashboard {
     });
   }
 
-  async updateRoomPrice(roomId, newWeekdayPrice, newWeekendPrice) {
+  async updateRoomNameAndPrice(roomId, newName, newWeekdayPrice, newWeekendPrice) {
     const weekdayNum = Number(newWeekdayPrice);
     const weekendNum = Number(newWeekendPrice || newWeekdayPrice);
-    if (!roomId || isNaN(weekdayNum) || weekdayNum <= 0) return;
+    if (!roomId) return;
 
-    const fullPayload = {
-      room_id: roomId,
-      base_price: weekdayNum,
-      weekday_price: weekdayNum,
-      weekend_price: weekendNum,
-      updated_at: new Date().toISOString()
-    };
-
-    // 1. Immediately update local storage & memory state
-    saveStoredRoomPrice(fullPayload);
-    const existingIdx = (this.roomPrices || []).findIndex(p => p.room_id === roomId);
-    if (existingIdx >= 0) {
-      this.roomPrices[existingIdx] = { ...this.roomPrices[existingIdx], ...fullPayload };
-    } else {
-      this.roomPrices.push(fullPayload);
-    }
+    const trimmedName = newName ? String(newName).trim() : '';
 
     const rm = MOCK_ROOMS.find(r => r.id === roomId);
-    if (rm) {
-      rm.basePrice = weekdayNum;
-      rm.weekdayPrice = weekdayNum;
-      rm.weekendPrice = weekendNum;
+    if (rm && trimmedName) {
+      rm.name = trimmedName;
+      saveStoredCustomRoomName({ room_id: roomId, room_name: trimmedName, name: trimmedName });
     }
 
-    if (typeof window !== 'undefined' && typeof window.syncDynamicRoomPricesToDOM === 'function') {
-      window.syncDynamicRoomPricesToDOM();
+    if (!isNaN(weekdayNum) && weekdayNum > 0) {
+      const fullPayload = {
+        room_id: roomId,
+        room_name: trimmedName || (rm ? rm.name : ''),
+        base_price: weekdayNum,
+        weekday_price: weekdayNum,
+        weekend_price: weekendNum,
+        updated_at: new Date().toISOString()
+      };
+
+      saveStoredRoomPrice(fullPayload);
+      const existingIdx = (this.roomPrices || []).findIndex(p => p.room_id === roomId);
+      if (existingIdx >= 0) {
+        this.roomPrices[existingIdx] = { ...this.roomPrices[existingIdx], ...fullPayload };
+      } else {
+        this.roomPrices.push(fullPayload);
+      }
+
+      if (rm) {
+        rm.basePrice = weekdayNum;
+        rm.weekdayPrice = weekdayNum;
+        rm.weekendPrice = weekendNum;
+      }
+    }
+
+    if (typeof window !== 'undefined') {
+      if (typeof window.syncCustomRoomNamesToDOM === 'function') {
+        window.syncCustomRoomNamesToDOM();
+      }
+      if (typeof window.syncDynamicRoomPricesToDOM === 'function') {
+        window.syncDynamicRoomPricesToDOM();
+      }
     }
 
     const roomName = rm ? rm.name : 'Pokoj';
-    this.showAdminToast(`✅ Ceny pro ${roomName} byly upraveny (Týden: ${formatCzechPrice(weekdayNum)}, Víkend: ${formatCzechPrice(weekendNum)}).`);
+    this.showAdminToast(`✅ Název a ceny pro "${roomName}" byly úspěšně uloženy.`);
+    this.render();
 
-    // 2. Save to Supabase asynchronously with fallback if columns don't exist yet in remote schema
     if (isSupabaseConfigured && supabase) {
       try {
+        const fullPayload = {
+          room_id: roomId,
+          room_name: roomName,
+          base_price: !isNaN(weekdayNum) && weekdayNum > 0 ? weekdayNum : (rm ? rm.basePrice : 830),
+          weekday_price: !isNaN(weekdayNum) && weekdayNum > 0 ? weekdayNum : (rm ? rm.weekdayPrice : 830),
+          weekend_price: !isNaN(weekendNum) && weekendNum > 0 ? weekendNum : (rm ? rm.weekendPrice : 890),
+          updated_at: new Date().toISOString()
+        };
         const { error: fullError } = await supabase.from('room_prices').upsert([fullPayload], { onConflict: 'room_id' });
         if (fullError) {
-          console.warn('Full payload upsert returned error (attempting fallback base_price only):', fullError.message);
-          const baseOnlyPayload = {
-            room_id: roomId,
-            base_price: weekdayNum,
-            updated_at: new Date().toISOString()
-          };
-          const { error: baseError } = await supabase.from('room_prices').upsert([baseOnlyPayload], { onConflict: 'room_id' });
-          if (baseError) {
-            console.error('Supabase updateRoomPrice base fallback error:', baseError.message);
-          }
+          console.warn('Upsert room_prices fullPayload returned error:', fullError.message);
         }
       } catch (err) {
-        console.error('Supabase updateRoomPrice failed:', err);
+        console.error('Supabase updateRoomNameAndPrice failed:', err);
       }
     }
+  }
+
+  async updateRoomPrice(roomId, newWeekdayPrice, newWeekendPrice) {
+    return this.updateRoomNameAndPrice(roomId, '', newWeekdayPrice, newWeekendPrice);
   }
 
   async fetchDisabledRooms() {
@@ -1324,9 +1341,12 @@ export class AdminDashboard {
                   const currentWeekendPrice = customP ? (customP.weekend_price || customP.base_price || customP.basePrice) : (rm.weekendPrice || rm.basePrice);
                   return `
                     <div class="room-price-card" data-roomid="${rm.id}" style="background: #ffffff; border: 1px solid #e0dfd5; border-radius: 8px; padding: 14px 16px;">
-                      <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px;">
-                        <div style="font-weight: 800; font-size: 15px; color: #1c1c19;">${rm.name}</div>
-                        <span style="font-size: 12px; font-weight: 700; background: #eef2e6; color: #4a5a24; padding: 3px 8px; border-radius: 3px; text-transform: uppercase;">${rm.type}</span>
+                      <div style="margin-bottom: 10px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 4px;">
+                          <label style="display: block; font-size: 12px; font-weight: 700; color: #1c1c19;">🏷️ Název pokoje:</label>
+                          <span style="font-size: 11px; font-weight: 700; background: #eef2e6; color: #4a5a24; padding: 2px 6px; border-radius: 3px; text-transform: uppercase;">${rm.type}</span>
+                        </div>
+                        <input type="text" class="form-input room-name-input" data-roomid="${rm.id}" value="${rm.name}" placeholder="Název pokoje..." style="width: 100%; height: 38px; font-size: 14px; font-weight: 700; padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; box-sizing: border-box;">
                       </div>
 
                       <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; align-items: flex-end;">
@@ -1980,10 +2000,16 @@ export class AdminDashboard {
     this.container.querySelectorAll('.btn-save-room-price').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const roomId = e.currentTarget.dataset.roomid;
+        const nameInput = this.container.querySelector(`.room-name-input[data-roomid="${roomId}"]`);
         const weekdayInput = this.container.querySelector(`.room-weekday-price-input[data-roomid="${roomId}"]`);
         const weekendInput = this.container.querySelector(`.room-weekend-price-input[data-roomid="${roomId}"]`);
-        if (weekdayInput && weekendInput) {
-          this.updateRoomPrice(roomId, weekdayInput.value, weekendInput.value);
+        if (roomId) {
+          this.updateRoomNameAndPrice(
+            roomId,
+            nameInput ? nameInput.value : '',
+            weekdayInput ? weekdayInput.value : '',
+            weekendInput ? weekendInput.value : ''
+          );
         }
       });
     });
