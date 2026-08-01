@@ -3310,10 +3310,10 @@ const getEventsPageHTML = () => `
           <!-- Položka 3 -->
           <div class="feature-item">
             <div class="feature-icon">
-              <img src="/Icons/Ikony/Obývací scéna s transparentním pozadím.webp" alt="Pořádání akcí a oslav" loading="lazy" decoding="async">
+              <img src="/Icons/Ikony/parking-monitoring-illustration-transparent.webp" alt="Parkování pod dohledem kamerového záznamu" loading="lazy" decoding="async">
             </div>
             <p class="feature-text">
-              <strong>Pořádání akcí a oslav</strong> bez rušení ostatních hostů.
+              <strong>Parkování pod dohledem kamerového záznamu.</strong>
             </p>
           </div>
         </div>
@@ -3346,7 +3346,7 @@ const getEventsPageHTML = () => `
           <!-- Položka 6 -->
           <div class="feature-item">
             <div class="feature-icon">
-              <img src="/Icons/Ikona - turistika a cyklistika.webp" alt="Živá hudba" loading="lazy" decoding="async">
+              <img src="/Icons/Ikony/Výsledný obrázek s transparentním pozadím.webp" alt="Živá hudba" loading="lazy" decoding="async">
             </div>
             <p class="feature-text">
               <strong>Živá hudba:</strong> venkovní párty a zábava pod širým nebem.
