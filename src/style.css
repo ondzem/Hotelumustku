@@ -12866,7 +12866,7 @@ input:checked + .cookie-slider:before {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
   cursor: pointer;
   box-sizing: border-box;
   transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
@@ -12877,29 +12877,41 @@ input:checked + .cookie-slider:before {
   background: #FAF9F5;
 }
 
+.unified-date-range-btn:focus-visible {
+  outline: 2px solid #697947;
+  outline-offset: 2px;
+}
+
 .date-range-btn-inner {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
 }
 
 .date-range-text-group {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 8px;
   flex-wrap: wrap;
 }
 
 .date-range-main {
-  font-size: 16px;
+  font-size: 15.5px;
   font-weight: 700;
   color: #1C1C19;
+  letter-spacing: -0.01em;
 }
 
-.date-range-nights {
-  font-size: 14px;
-  font-weight: 600;
-  color: #697947;
+.date-range-nights-pill {
+  font-size: 12px;
+  font-weight: 700;
+  color: #4A5A24;
+  background: #EDF2E4;
+  padding: 2px 8px;
+  border-radius: 3px;
+  white-space: nowrap;
 }
 
 .date-range-action-text {
@@ -12907,20 +12919,48 @@ input:checked + .cookie-slider:before {
   font-weight: 600;
   color: #697947;
   white-space: nowrap;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.action-text-short {
+  display: none;
 }
 
 @media (max-width: 767px) {
   .unified-date-range-btn {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-    padding: 12px 14px;
+    min-height: 46px;
+    padding: 10px 14px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
   }
   .date-range-main {
-    font-size: 15px;
+    font-size: 14px;
+  }
+  .action-text-full {
+    display: none;
+  }
+  .action-text-short {
+    display: inline;
   }
   .date-range-action-text {
-    font-size: 12.5px;
+    font-size: 13px;
+  }
+}
+
+@media (min-width: 1750px) {
+  .unified-date-range-btn {
+    min-height: 56px;
+    padding: 14px 22px;
+  }
+  .date-range-main {
+    font-size: 17px;
+  }
+  .date-range-action-text {
+    font-size: 15px;
   }
 }
 

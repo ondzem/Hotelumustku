@@ -1261,10 +1261,10 @@ export class BookingSystem {
                     </svg>
                     <div class="date-range-text-group">
                       <span class="date-range-main">${formattedFrom} – ${formattedTo}</span>
-                      <span class="date-range-nights">(${nights} ${nights === 1 ? 'noc' : (nights < 5 ? 'noci' : 'nocí')})</span>
+                      <span class="date-range-nights-pill">${nights} ${nights === 1 ? 'noc' : (nights < 5 ? 'noci' : 'nocí')}</span>
                     </div>
                   </div>
-                  <span class="date-range-action-text">Změnit termín pobytu v kalendáři &rarr;</span>
+                  <span class="date-range-action-text"><span class="action-text-full">Změnit termín v kalendáři</span><span class="action-text-short">Změnit</span> &rarr;</span>
                 </button>
               </div>
               

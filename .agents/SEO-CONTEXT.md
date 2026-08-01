@@ -67,9 +67,15 @@ Podstránky pokojů zatím **neexistují** jako HTML (jen fotky v `public/pokoje
 **Ceník 2026** (za osobu/noc, snídaně v ceně):
 - Standard: 1 os. 830 Kč · 2 os. 740 Kč · 3 os. 720 Kč · 4 os. 700 Kč
 - Kat. A / A1 / Zen: 890 Kč
-- Polopenze +195 Kč/os./den · Pes 150 Kč/den · Elektrokolo 15 Kč/den · Pobyt na 1 noc +200 Kč/os. · Parkování zdarma · Poplatek obci v ceně
+- Polopenze +195 Kč/os./den · Pes 150 Kč/den · Elektrokolo 15 Kč/den · Parkování zdarma · Poplatek obci v ceně
+- **Příplatek za pobyt na 1 noc nebo samostatné obsazení pokoje:** Standard a Turistický +200 Kč/os./noc · Nadstandard (A, A1, Zen) **+300 Kč/os./noc**
+  *(dřívější údaj „+200 pro všechny" byl chybný — ověřeno 1. 8. 2026)*
 
-**Storno:** 21+ dní zdarma · 21–14 dní 40 % · 14–7 dní 60 % · pod 7 dní 100 %
+**Storno:** více než 3 dny před příjezdem **zdarma** · méně než 3 dny nebo nedojezd **100 %**
+*(Ověřeno u Ondřeje 1. 8. 2026. Dřívější údaj 21/14/7 dní byl chybný a byl na webu na třech místech — v FAQ schematu na `/ubytovani`, v `llms.txt` a v tomto dokumentu. Závazná je verze z modalu v rezervačním formuláři.)*
+
+**Check-in / check-out:** příjezd od **15:00**, odjezd do **10:00**. Jiný čas po domluvě.
+*(Schema na 11 stránkách mělo chybně 14:00 — opraveno 1. 8. 2026.)*
 
 **Stravování:** snídaně švédský stůl 8:00–9:00 · večeře polopenzí v 18:00, dvouchodové menu, jen pro ubytované (není veřejná restaurace) · letní zahrádka nad splavem květen–září, Bernard 10°, Bernard 11° polotmavý, Pilsner Urquell 12° · venkovní udírna a kamenné ohniště
 
