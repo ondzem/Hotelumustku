@@ -1078,7 +1078,7 @@ const getRoomsPageHTML = () => `
         </div>
         <div class="room-card-content">
           <h2 class="room-card-title">Pokoje přízemí</h2>
-          <p class="room-card-desc">Útulně a moderně zařízené pokoje Standard v přízemí hotelu nabízejí příjemný pobyt s vlastním balkónem a výhledem.</p>
+          <p class="room-card-desc">Útulně zařízené pokoje Standard v přízemí hotelu nabízejí příjemný pobyt s vlastním balkónem a výhledem.</p>
           <div class="room-card-buttons">
             <button class="btn btn-booking btn-room-primary" id="btn-goto-prizemi">Prohlédnout nabídku</button>
           </div>
@@ -1181,7 +1181,7 @@ const getRoomGroundFloorHTML = () => `
           <span class="mobile-tablet-title-text">Vyberte si svůj pokoj v přízemí</span>
         </h1>
         <p class="room-detail-hero-subtitle">
-          <span class="desktop-sub-text">Útulně a moderně zařízené pokoje Standard v přízemí hotelu nabízejí příjemný pobyt s vlastním balkónem a výhledem.</span>
+          <span class="desktop-sub-text">Útulně zařízené pokoje Standard v přízemí hotelu nabízejí příjemný pobyt s vlastním balkónem a výhledem.</span>
           <span class="mobile-sub-text">Příjemný pobyt v přízemí hotelu s vlastním balkónem a výhledem</span>
         </p>
         <button class="btn btn-booking room-detail-hero-btn" id="btn-specs-rooms">Zjistit detaily</button>
