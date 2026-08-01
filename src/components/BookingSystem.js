@@ -1231,7 +1231,7 @@ export class BookingSystem {
               </div>
             </div>
 
-            <!-- 2. VÝBĚR POKOJE K REZERVACI (PREMIUM CUSTOM DROPDOWN SYSTEM) -->
+            <!-- 2. VÝBĚR POKOJE K REZERVACI (STREAMLINED CUSTOM DROPDOWN SYSTEM) -->
             <div class="booking-card card-step-2-rooms">
               <h3 class="card-title">2. Výběr pokoje k rezervaci <span class="required-badge">* Povinné</span></h3>
               
@@ -1241,7 +1241,6 @@ export class BookingSystem {
                 <button type="button" id="custom-dropdown-trigger" class="dropdown-trigger-btn ${room ? 'has-selection' : ''}" aria-expanded="${this.state.isCustomDropdownOpen ? 'true' : 'false'}" aria-haspopup="listbox">
                   ${room ? `
                     <div class="trigger-room-content">
-                      <img src="${room.image || '/hezky pokoj 1.webp'}" alt="${room.name}" class="trigger-thumb" loading="eager">
                       <div class="trigger-info">
                         <div class="trigger-header-line">
                           <span class="trigger-room-name">${room.name}</span>
@@ -1278,8 +1277,6 @@ export class BookingSystem {
                              aria-selected="${isSelected ? 'true' : 'false'}"
                              data-room-id="${r.id}" 
                              ${!isAvailable ? 'aria-disabled="true"' : 'tabindex="0"'}>
-                          
-                          <img src="${r.image || '/hezky pokoj 1.webp'}" alt="${r.name}" class="option-thumb" loading="lazy">
                           
                           <div class="option-main-info">
                             <div class="option-title-row">
