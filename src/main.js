@@ -3552,7 +3552,7 @@ const getNewsPageHTML = async () => {
     <div class="news-page-wrapper">
       <!-- 1. HERO SEKCE AKTUALIT -->
       <section class="hero-section rooms-hero-section room-detail-hero news-hero-section" id="uvod-aktuality">
-        <img class="hero-news-poster" src="/Fotky Aktivit/Aktulity hero sekce.webp" alt="Aktuality Hotel u Můstku" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+        <img class="hero-news-poster" src="/Fotky Aktivit/Aktulity hero sekce.webp" alt="Aktuality Hotel u Můstku" fetchpriority="high" loading="eager" decoding="async" fetchpriority="high" loading="eager" decoding="async" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
         <div class="hero-overlay"></div>
         <div class="hero-inner">
           ${getHeaderHTML()}
@@ -3635,7 +3635,7 @@ const getContactPageHTML = () => `
   <div class="contact-page-wrapper">
     <!-- 1. HERO SEKCE KONTAKTU -->
     <section class="hero-section rooms-hero-section room-detail-hero contact-hero-section" id="uvod-kontakt">
-      <img class="hero-contact-poster" src="/kontakt/vyhled-na-mustky.webp" alt="Kontakt Hotel u Můstku" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+      <img class="hero-contact-poster" src="/kontakt/vyhled-na-mustky.webp" alt="Kontakt Hotel u Můstku" fetchpriority="high" loading="eager" decoding="async" fetchpriority="high" loading="eager" decoding="async" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
       <div class="hero-overlay"></div>
       <div class="hero-inner">
         ${getHeaderHTML()}
