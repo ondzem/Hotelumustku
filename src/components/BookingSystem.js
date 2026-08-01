@@ -92,6 +92,9 @@ export class BookingSystem {
       preselectedFromExternal: false,
       dateFrom: getTomorrowDateString(),
       dateTo: getDayAfterTomorrowDateString(),
+      tempDateFrom: null,
+      tempDateTo: null,
+      selectingStep: 1, // 1 = picking arrival, 2 = picking departure
       adults: 2,
       children: 0,
       hasDog: false,
@@ -976,11 +979,14 @@ export class BookingSystem {
 
     const room = this.getSelectedRoom();
     const roomIdForCal = room ? room.id : 'all';
-    const targetField = this.state.activeDateField || 'dateFrom';
-    const currentDateStr = this.state[targetField] || getTodayDateString();
+
+    const effectiveFrom = this.state.tempDateFrom || this.state.dateFrom;
+    const effectiveTo = this.state.tempDateTo || this.state.dateTo;
+
+    const baseForMonth = effectiveFrom || getTodayDateString();
 
     if (!this.state.calYearMonth) {
-      const [y, m] = currentDateStr.split('-').map(Number);
+      const [y, m] = baseForMonth.split('-').map(Number);
       this.state.calYearMonth = { year: y, month: m };
     }
 
@@ -1004,17 +1010,16 @@ export class BookingSystem {
       const dayStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       const isPast = dayStr < todayStr;
       const isOccupied = this.isDateOccupied(dayStr, roomIdForCal);
-      const isSelected = dayStr === this.state[targetField];
-      const isFrom = dayStr === this.state.dateFrom;
-      const isTo = dayStr === this.state.dateTo;
-      const isInRange = dayStr > this.state.dateFrom && dayStr < this.state.dateTo;
+
+      const isFrom = dayStr === effectiveFrom;
+      const isTo = dayStr === effectiveTo;
+      const isInRange = effectiveFrom && effectiveTo && dayStr > effectiveFrom && dayStr < effectiveTo;
 
       let dayClass = 'cal-day';
       if (isPast) dayClass += ' is-disabled';
       if (isOccupied) dayClass += ' is-occupied';
-      if (isSelected) dayClass += ' is-selected';
-      if (isFrom) dayClass += ' is-from';
-      if (isTo) dayClass += ' is-to';
+      if (isFrom) dayClass += ' is-from is-selected';
+      if (isTo) dayClass += ' is-to is-selected';
       if (isInRange) dayClass += ' in-range';
 
       const isDisabled = isPast;
@@ -1024,6 +1029,14 @@ export class BookingSystem {
           ${day}
         </button>
       `;
+    }
+
+    let tempNights = 1;
+    if (effectiveFrom && effectiveTo) {
+      const start = new Date(effectiveFrom);
+      const end = new Date(effectiveTo);
+      const diffTime = end - start;
+      tempNights = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
     }
 
     return `
@@ -1052,8 +1065,29 @@ export class BookingSystem {
             ${daysHtml}
           </div>
 
-          <div class="cal-modal-footer">
-            <span class="cal-hint-text">Vyberte ${targetField === 'dateFrom' ? 'datum příjezdu (Check-in)' : 'datum odjezdu (Check-out)'}</span>
+          <div class="cal-modal-footer" style="padding: 16px; border-top: 1px solid #E7E5DC; display: flex; flex-direction: column; gap: 12px;">
+            ${effectiveFrom && effectiveTo ? `
+              <div class="cal-range-summary" style="display: flex; flex-direction: column; gap: 2px;">
+                <span class="cal-summary-label" style="font-size: 14px; font-weight: 700; color: #1C1C19;">
+                  Příjezd: ${formatCzechDateStr(effectiveFrom)} &nbsp;|&nbsp; Odjezd: ${formatCzechDateStr(effectiveTo)}
+                </span>
+                <span class="cal-summary-sub" style="font-size: 13px; color: #666660; font-weight: 500;">
+                  Celková délka pobytu: <strong>${tempNights} ${tempNights === 1 ? 'noc' : (tempNights < 5 ? 'noci' : 'nocí')}</strong>
+                </span>
+              </div>
+              <button type="button" class="btn btn-confirm-cal-dates" id="cal-confirm-dates-btn" style="height: 42px; padding: 0 24px; font-size: 15px; font-weight: 600; color: #FFFFFF; background-color: #4A5A24; border: none; border-radius: 2px; cursor: pointer; width: 100%; display: inline-flex; align-items: center; justify-content: center; transition: background 0.15s ease;">
+                Potvrdit termín pobytu
+              </button>
+            ` : `
+              <div class="cal-range-summary" style="display: flex; flex-direction: column; gap: 2px;">
+                <span class="cal-summary-label" style="font-size: 14px; font-weight: 700; color: #4A5A24;">
+                  Příjezd: ${formatCzechDateStr(effectiveFrom)}
+                </span>
+                <span class="cal-summary-sub" style="font-size: 13px; color: #666660; font-weight: 500;">
+                  Nyní klikněte v kalendáři na datum odjezdu (Check-out)
+                </span>
+              </div>
+            `}
           </div>
         </div>
       </div>
@@ -2170,26 +2204,28 @@ export class BookingSystem {
         document.addEventListener('click', this._boundClickOutside);
       }
 
+      const openCalModal = (field) => {
+        this.state.tempDateFrom = this.state.dateFrom;
+        this.state.tempDateTo = this.state.dateTo;
+        this.state.selectingStep = 1;
+        this.state.showCalendarModal = true;
+        const [y, m] = (this.state.dateFrom || getTodayDateString()).split('-').map(Number);
+        this.state.calYearMonth = { year: y, month: m };
+        this.render();
+      };
+
       const btnDateFrom = document.getElementById('date-from-btn');
       const btnDateTo = document.getElementById('date-to-btn');
       if (btnDateFrom) {
         btnDateFrom.addEventListener('click', (e) => {
           e.preventDefault();
-          this.state.activeDateField = 'dateFrom';
-          this.state.showCalendarModal = true;
-          const [y, m] = (this.state.dateFrom || getTodayDateString()).split('-').map(Number);
-          this.state.calYearMonth = { year: y, month: m };
-          this.render();
+          openCalModal('dateFrom');
         });
       }
       if (btnDateTo) {
         btnDateTo.addEventListener('click', (e) => {
           e.preventDefault();
-          this.state.activeDateField = 'dateTo';
-          this.state.showCalendarModal = true;
-          const [y, m] = (this.state.dateTo || getTodayDateString()).split('-').map(Number);
-          this.state.calYearMonth = { year: y, month: m };
-          this.render();
+          openCalModal('dateTo');
         });
       }
 
@@ -2485,31 +2521,37 @@ export class BookingSystem {
         });
       }
 
+      const btnConfirmCal = document.getElementById('cal-confirm-dates-btn');
+      if (btnConfirmCal) {
+        btnConfirmCal.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (this.state.tempDateFrom && this.state.tempDateTo) {
+            this.state.dateFrom = this.state.tempDateFrom;
+            this.state.dateTo = this.state.tempDateTo;
+          }
+          this.state.showCalendarModal = false;
+          this.render();
+          const card1 = this.container.querySelector('.card-step-1');
+          if (card1) {
+            card1.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+        });
+      }
+
       calOverlay.querySelectorAll('.cal-day:not(.is-disabled)').forEach(dayBtn => {
         dayBtn.addEventListener('click', (e) => {
           e.preventDefault();
           const selectedDate = dayBtn.dataset.date;
-          const activeField = this.state.activeDateField || 'dateFrom';
 
-          if (activeField === 'dateFrom') {
-            this.state.dateFrom = selectedDate;
-            if (this.state.dateTo && this.state.dateTo <= selectedDate) {
-              const nextDay = new Date(selectedDate);
-              nextDay.setDate(nextDay.getDate() + 1);
-              const y = nextDay.getFullYear();
-              const m = String(nextDay.getMonth() + 1).padStart(2, '0');
-              const da = String(nextDay.getDate()).padStart(2, '0');
-              this.state.dateTo = `${y}-${m}-${da}`;
-            }
-          } else {
-            if (selectedDate <= this.state.dateFrom) {
-              this.state.dateFrom = selectedDate;
-            } else {
-              this.state.dateTo = selectedDate;
-            }
+          if (this.state.selectingStep === 1 || !this.state.tempDateFrom || selectedDate <= this.state.tempDateFrom) {
+            this.state.tempDateFrom = selectedDate;
+            this.state.tempDateTo = null;
+            this.state.selectingStep = 2;
+          } else if (this.state.selectingStep === 2 && selectedDate > this.state.tempDateFrom) {
+            this.state.tempDateTo = selectedDate;
+            this.state.selectingStep = 1;
           }
 
-          this.state.showCalendarModal = false;
           this.render();
         });
       });
