@@ -2467,6 +2467,15 @@ export class BookingSystem {
       }
     }
 
+    const termsOverlay = document.getElementById('terms-modal-overlay');
+    if (termsOverlay) {
+      termsOverlay.addEventListener('click', (e) => {
+        if (e.target === termsOverlay) {
+          termsOverlay.classList.remove('is-open');
+        }
+      });
+    }
+
     const modalCloseBtns = [
       document.getElementById('btn-close-terms-modal'),
       document.getElementById('btn-close-modal-footer')
@@ -2474,8 +2483,7 @@ export class BookingSystem {
     modalCloseBtns.forEach(btn => {
       if (btn) {
         btn.addEventListener('click', () => {
-          const modal = document.getElementById('terms-modal-overlay');
-          if (modal) modal.classList.remove('is-open');
+          if (termsOverlay) termsOverlay.classList.remove('is-open');
         });
       }
     });
