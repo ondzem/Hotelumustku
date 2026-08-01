@@ -1237,24 +1237,20 @@ export class BookingSystem {
               </div>
             </div>
 
-            <!-- 2. VÝBĚR POKOJE K REZERVACI (S UPOZORNĚNÍM PŘI PŘEDVÝBĚRU Z NABÍDKY) -->
+            <!-- 2. VÝBĚR POKOJE K REZERVACI (ČISTÁ TYPOGRAFICKÁ INFORMACE BEZ RÁMEČKU A POZADÍ) -->
             <div class="booking-card card-step-2-rooms">
               <h3 class="card-title">2. Výběr pokoje k rezervaci <span class="required-badge">* Povinné</span></h3>
               
               ${this.state.preselectedFromExternal && room ? `
                 ${isAvailableSelected ? `
-                  <div class="booking-notice-alert" style="margin-bottom: 16px; background: #EDF2E4; border: 1px solid #C5D6AB; border-radius: 4px; padding: 14px 16px; color: #3B4A1D; font-size: 14px; line-height: 1.5; display: flex; align-items: flex-start; gap: 10px;">
-                    <span style="font-size: 18px; line-height: 1;">💡</span>
-                    <div>
-                      Z nabídky jste si vybrali <strong>${room.name}</strong> pro termín <strong>${formattedFrom} – ${formattedTo}</strong>. Pokud vám tento termín vyhovuje, můžete pokračovat v rezervaci níže. Přejete-li si změnit termín, upravte jej v bodu 1 nahoře.
-                    </div>
+                  <div style="margin: 8px 0 14px 0; font-size: 13.5px; color: #4A5A24; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                    <span class="status-dot dot-available"></span>
+                    Vybrali jste <strong>${room.name}</strong> pro termín <strong>${formattedFrom} – ${formattedTo}</strong>. Přejete-li si jiný termín, upravte jej v bodu 1.
                   </div>
                 ` : `
-                  <div class="booking-warning-alert" style="margin-bottom: 16px; background: #FFF8E7; border: 1px solid #FFE0B2; border-radius: 4px; padding: 14px 16px; color: #8D5B00; font-size: 14px; line-height: 1.5; display: flex; align-items: flex-start; gap: 10px;">
-                    <span style="font-size: 18px; line-height: 1;">⚠️</span>
-                    <div>
-                      Vybraný pokoj <strong>${room.name}</strong> je v termínu <strong>${formattedFrom} – ${formattedTo}</strong> <strong>${isOccupiedSelected ? 'obsazený' : 'nedostupný'}</strong>. Prosíme zvolte jiný termín pobytu v bodu 1 nahoře, nebo si níže v seznamu vyberte jiný volný pokoj.
-                    </div>
+                  <div style="margin: 8px 0 14px 0; font-size: 13.5px; color: #C62828; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                    <span class="status-dot dot-occupied"></span>
+                    Pokoj <strong>${room.name}</strong> je v termínu <strong>${formattedFrom} – ${formattedTo}</strong> ${isOccupiedSelected ? 'obsazený' : 'nedostupný'}. Upravte prosím termín v bodu 1 nebo zvolte jiný pokoj.
                   </div>
                 `}
               ` : ''}
