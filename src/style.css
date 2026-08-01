@@ -106,10 +106,14 @@ a {
   width: 100%;
   height: 95vh;
   min-height: 760px;
-  background-image: url('/uvodni_hero_sekce.webp');
+  background-color: #1c1c19;
   background-size: cover;
   background-position: center;
   overflow: hidden;
+}
+
+.home-hero-section {
+  background-image: url('/uvodni_hero_sekce.webp');
 }
 
 /* Video na pozadí */
@@ -9586,6 +9590,13 @@ html.is-route-loading #app {
 /* ==========================================================================
    STRÁNKA AKTIVITY (#aktivity / #okoli) (1:1 DLE SVG PŘEDLOHY)
    ========================================================================== */
+
+.category-hero-section,
+.news-hero-section,
+.contact-hero-section {
+  background-image: none !important;
+  background-color: #1c1c19 !important;
+}
 
 /* 1. HERO SEKCE AKTIVITY */
 .activities-hero-section {

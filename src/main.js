@@ -957,7 +957,7 @@ const getHomePageHTML = () => {
 
   return `
   <!-- HERO SEKCE -->
-  <section class="hero-section" id="uvod">
+  <section class="hero-section home-hero-section" id="uvod">
     ${heroMedia}
     <div class="hero-overlay"></div>
     <div class="hero-inner">
@@ -2945,11 +2945,27 @@ const preloadHeroImages = (pageKey) => {
     const img = new Image();
     img.src = src;
   } else if (pageKey === 'dining') {
-    const src = isMobile ? '/mobile_fotka_z_okna.webp' : '/stravovani 1.webp';
+    const src = '/Uvodni stranka/stravovani.webp';
+    const img = new Image();
+    img.src = src;
+  } else if (pageKey === 'events') {
+    const src = '/akce/hero_akce.webp';
+    const img = new Image();
+    img.src = src;
+  } else if (pageKey === 'activities') {
+    const src = '/Aktivity v hotelu/vyhled na krajinu desktop.webp';
+    const img = new Image();
+    img.src = src;
+  } else if (pageKey === 'rooms') {
+    const src = '/nabidka-pokoju.webp';
     const img = new Image();
     img.src = src;
   } else if (pageKey === 'contact') {
-    const src = '/kontakt/vyhled-na-mustky.webp';
+    const src = '/vyhled-na-mustky.webp';
+    const img = new Image();
+    img.src = src;
+  } else if (pageKey === 'news') {
+    const src = '/Aktuality hero sekce.webp';
     const img = new Image();
     img.src = src;
   }
