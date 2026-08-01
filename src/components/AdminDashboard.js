@@ -343,17 +343,14 @@ export class AdminDashboard {
 
     if (isSupabaseConfigured && supabase) {
       try {
-        const fullPayload = {
+        const validPayload = {
           room_id: roomId,
-          room_name: roomName,
           base_price: !isNaN(weekdayNum) && weekdayNum > 0 ? weekdayNum : (rm ? rm.basePrice : 830),
-          weekday_price: !isNaN(weekdayNum) && weekdayNum > 0 ? weekdayNum : (rm ? rm.weekdayPrice : 830),
-          weekend_price: !isNaN(weekendNum) && weekendNum > 0 ? weekendNum : (rm ? rm.weekendPrice : 890),
           updated_at: new Date().toISOString()
         };
-        const { error: fullError } = await supabase.from('room_prices').upsert([fullPayload], { onConflict: 'room_id' });
-        if (fullError) {
-          console.warn('Upsert room_prices fullPayload returned error:', fullError.message);
+        const { error: upsertError } = await supabase.from('room_prices').upsert([validPayload], { onConflict: 'room_id' });
+        if (upsertError) {
+          console.warn('Upsert room_prices returned error:', upsertError.message);
         }
       } catch (err) {
         console.error('Supabase updateRoomNameAndPrice failed:', err);
@@ -902,7 +899,7 @@ export class AdminDashboard {
               🏷️ Slevové kódy ${this.discountCodes.length > 0 ? `<span style="background: #4a5a24; color: #ffffff; border-radius: 99px; padding: 2px 7px; font-size: 11px; font-weight: 700; margin-left: 4px;">${this.discountCodes.length}</span>` : ''}
             </button>
             <button type="button" class="btn btn-specs-secondary btn-admin-prices">
-              💰 Ceník pokojů
+              ⚙️ Správa pokojů
             </button>
             <button type="button" class="btn btn-booking-submit btn-admin-logout">🚪 Odhlásit se</button>
           </div>
