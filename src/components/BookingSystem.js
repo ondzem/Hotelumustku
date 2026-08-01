@@ -1242,17 +1242,19 @@ export class BookingSystem {
               <h3 class="card-title">2. Výběr pokoje k rezervaci <span class="required-badge">* Povinné</span></h3>
               
               ${this.state.preselectedFromExternal && room ? `
-                ${isAvailableSelected ? `
-                  <div style="margin: 8px 0 14px 0; font-size: 13.5px; color: #4A5A24; font-weight: 600; display: flex; align-items: center; gap: 6px;">
-                    <span class="status-dot dot-available"></span>
-                    Vybrali jste <strong>${room.name}</strong> pro termín <strong>${formattedFrom} – ${formattedTo}</strong>. Přejete-li si jiný termín, upravte jej v bodu 1.
-                  </div>
-                ` : `
-                  <div style="margin: 8px 0 14px 0; font-size: 13.5px; color: #C62828; font-weight: 600; display: flex; align-items: center; gap: 6px;">
-                    <span class="status-dot dot-occupied"></span>
-                    Pokoj <strong>${room.name}</strong> je v termínu <strong>${formattedFrom} – ${formattedTo}</strong> ${isOccupiedSelected ? 'obsazený' : 'nedostupný'}. Upravte prosím termín v bodu 1 nebo zvolte jiný pokoj.
-                  </div>
-                `}
+                <div style="padding: 12px 0; margin: 14px 0 18px 0; border-top: 1px solid #E5E3D9; border-bottom: 1px solid #E5E3D9;">
+                  ${isAvailableSelected ? `
+                    <div style="font-size: 14px; color: #4A5A24; font-weight: 600; display: flex; align-items: center; gap: 8px; line-height: 1.4;">
+                      <span class="status-dot dot-available"></span>
+                      <span>Vybrali jste <strong>${room.name}</strong> pro termín <strong>${formattedFrom} – ${formattedTo}</strong>. Přejete-li si jiný termín, upravte jej v bodu 1.</span>
+                    </div>
+                  ` : `
+                    <div style="font-size: 14px; color: #C62828; font-weight: 600; display: flex; align-items: center; gap: 8px; line-height: 1.4;">
+                      <span class="status-dot dot-occupied"></span>
+                      <span>Pokoj <strong>${room.name}</strong> je v termínu <strong>${formattedFrom} – ${formattedTo}</strong> ${isOccupiedSelected ? 'obsazený' : 'nedostupný'}. Upravte prosím termín v bodu 1 nebo zvolte jiný pokoj.</span>
+                    </div>
+                  `}
+                </div>
               ` : ''}
 
               <div class="custom-room-dropdown ${this.state.isCustomDropdownOpen ? 'is-open' : ''}" id="custom-room-dropdown">
