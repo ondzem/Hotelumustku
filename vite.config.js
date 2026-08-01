@@ -20,7 +20,8 @@ export default defineConfig({
         aktuality: 'aktuality.html',
         kontakt: 'kontakt.html',
         gdpr: 'gdpr.html',
-        cookies: 'cookies.html'
+        cookies: 'cookies.html',
+        podminky: 'podminky.html'
       }
     }
   },

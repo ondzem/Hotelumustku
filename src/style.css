@@ -12326,3 +12326,224 @@ input:checked + .cookie-slider:before {
     font-size: 15.5px;
   }
 }
+
+/* ==========================================================================
+   DATE-FIRST BOOKING SYSTEM (BOOKING.COM STYLE UX) STYLES
+   ========================================================================== */
+.step2-summary-bar {
+  background: #FAF9F5;
+  border: 1px solid #E2DED4;
+  border-radius: 4px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.summary-bar-info {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 15px;
+  color: #1C1C19;
+}
+
+.summary-bar-dates strong,
+.summary-bar-guests strong {
+  color: #1C1C19;
+}
+
+.btn-back-to-step1 {
+  height: 36px;
+  padding: 0 18px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 1px;
+}
+
+.rooms-booking-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-bottom: 32px;
+}
+
+.room-booking-card {
+  background: #FFFFFF;
+  border: 1px solid #E2DED4;
+  border-radius: 4px;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 24px;
+  align-items: center;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.room-booking-card.is-available:hover {
+  border-color: #697947;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.room-booking-card.is-selected-card {
+  border: 2px solid #697947;
+  background: #FCFDFB;
+}
+
+.room-booking-card.is-unavailable {
+  opacity: 0.78;
+  background: #FAF9F8;
+}
+
+.room-booking-img-wrap {
+  position: relative;
+  width: 100%;
+  height: 150px;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.room-booking-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.room-floor-tag {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(28, 28, 25, 0.85);
+  color: #FFFFFF;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 2px;
+}
+
+.room-booking-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.room-booking-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.room-booking-name {
+  font-size: 19px;
+  font-weight: 700;
+  color: #1C1C19;
+  margin: 0;
+}
+
+.room-status-pill {
+  font-size: 13px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.room-status-pill.status-available {
+  background: #EDF2E4;
+  color: #4A5A24;
+}
+
+.room-status-pill.status-occupied {
+  background: #FDF2F2;
+  color: #C62828;
+}
+
+.room-status-pill.status-blocked {
+  background: #F4F3EE;
+  color: #666660;
+}
+
+.room-booking-desc {
+  font-size: 14px;
+  color: #55554E;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.room-booking-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 6px;
+  padding-top: 14px;
+  border-top: 1px solid #EFECE6;
+}
+
+.room-price-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.price-label {
+  font-size: 12.5px;
+  color: #666660;
+  font-weight: 600;
+}
+
+.price-val {
+  font-size: 22px;
+  font-weight: 800;
+  color: #1C1C19;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.price-val small {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #666660;
+}
+
+.price-unavailable-text {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #C62828;
+}
+
+@media (max-width: 767px) {
+  .room-booking-card {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 16px;
+  }
+  .room-booking-img-wrap {
+    height: 170px;
+  }
+  .room-booking-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .room-action-wrap .btn {
+    width: 100%;
+  }
+  .step2-summary-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .btn-back-to-step1 {
+    width: 100%;
+  }
+}
+

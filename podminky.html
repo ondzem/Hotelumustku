@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Obchodní podmínky, storno podmínky a ubytovací řád Hotelu U Můstků v Desné v Jizerských horách. Ceny, platba, příjezd a pravidla pobytu." />
+    <meta name="robots" content="noindex, follow" />
+    <link rel="canonical" href="https://umustku.cz/podminky" />
+    <meta name="author" content="Hotel U Můstků" />
+
+    <!-- Favicon & PWA Icons -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=5" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=5" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png?v=5" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png?v=5" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=5" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#1c1c19" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://jpvnvjcktpxyxrvsdukm.supabase.co" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    </noscript>
+
+    <title>Obchodní podmínky a ubytovací řád | Hotel U Můstků</title>
+    <link rel="stylesheet" href="/src/style.css">
+  </head>
+  <body>
+    <div id="app">
+      <div class="legal-page">
+        <!-- HERO SEKCE -->
+        <section class="hero-section room-detail-hero" id="uvod-podminky">
+          <img src="/uvodni_hero_sekce.webp" alt="Hotel U Můstků - Obchodní podmínky" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; filter: brightness(0.75);">
+          <div class="hero-overlay"></div>
+          <div class="hero-inner">
+            
+  <!-- Hlavička (Navigace a logo) -->
+  <header class="site-header">
+    <div class="nav-left">
+      <a href="/ubytovani" class="nav-link">Nabídka pokojů</a>
+      <a href="/stravovani" class="nav-link">Stravování</a>
+      <a href="/okoli" class="nav-link">Aktivity</a>
+    </div>
+    
+    <a href="/" class="header-logo">
+      <img src="/Logo/white logo.webp" alt="Hotel u Můstku Logo" loading="eager" fetchpriority="high">
+    </a>
+    
+    <div class="nav-right">
+      <a href="/akce" class="nav-link">Skupinové akce</a>
+      <a href="/aktuality" class="nav-link" id="nav-link-aktuality">Aktuality</a>
+      <a href="/kontakt" class="nav-link">Kontakt</a>
+    </div>
+
+    <!-- Mobilní tlačítko menu (Hamburger) -->
+    <button class="mobile-menu-btn" id="mobile-menu-toggle" aria-label="Otevřít menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </header>
+
+  <!-- Mobilní navigace (Drawer Overlay) -->
+  <div class="mobile-menu-overlay" id="mobile-menu-overlay">
+    <button class="mobile-menu-close" id="mobile-menu-close" aria-label="Zavřít menu">&times;</button>
+    <nav class="mobile-menu-nav">
+      <a href="/ubytovani" class="mobile-nav-link">Nabídka pokojů</a>
+      <a href="/stravovani" class="mobile-nav-link">Stravování</a>
+      <a href="/okoli" class="mobile-nav-link">Aktivity</a>
+      <a href="/akce" class="mobile-nav-link">Skupinové akce</a>
+      <a href="/aktuality" class="mobile-nav-link" id="mobile-nav-link-aktuality">Aktuality</a>
+      <a href="/kontakt" class="mobile-nav-link">Kontakt</a>
+    </nav>
+    <button class="btn btn-booking mobile-menu-booking" id="mobile-menu-booking">Rezervovat pobyt</button>
+
+    <!-- Spodní přepínání Léto / Zima v mobilním menu -->
+    <div class="mobile-season-toggle">
+      <div class="control-item" aria-label="Přepnout na letní zobrazení">
+        <img src="/Icons/sun_icon.png" alt="" class="control-icon">
+        <span>Léto</span>
+      </div>
+      <div class="control-item" aria-label="Přepnout na zimní zobrazení">
+        <img src="/Icons/snowflake_icon.png" alt="" class="control-icon">
+        <span>Zima</span>
+      </div>
+    </div>
+  </div>
+
+
+            <div class="room-detail-hero-center">
+              <h1 class="hero-title room-detail-hero-title">
+                <span>Obchodní podmínky a ubytovací řád</span>
+              </h1>
+              <p class="room-detail-hero-subtitle">
+                <span>Podmínky rezervace, ceny, storno poplatky a pravidla pobytu v Hotelu U Můstků.</span>
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- OBSAHOVÁ SEKCE -->
+        <section class="legal-page-content-section">
+          <div class="legal-page-inner">
+            <div class="legal-article-card">
+              <p class="legal-article-text" style="margin-bottom: 0;">Účinné od 1. srpna 2026. Tyto podmínky upravují vztah mezi vámi a Hotelem U Můstků při rezervaci a poskytnutí ubytování. Jsou nedílnou součástí smlouvy o ubytování, kterou spolu uzavíráme podle § 2326 a následujících zákona č. 89/2012 Sb., občanský zákoník. Zároveň jimi plníme informační povinnost podle § 1811 a § 1820 občanského zákoníku.</p>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">1. Kdo vám ubytování poskytuje</h2>
+              <p class="legal-article-text">
+                <strong>Lenka Bellingerová</strong> — provozovatelka Hotelu U Můstků<br>
+                IČ: 74349074, zapsána v živnostenském rejstříku (Živnostenský úřad Poděbrady)<br>
+                Sídlo a adresa provozovny: Údolní 368, Desná v Jizerských horách 1, 468 61<br>
+                Telefon: <a href="tel:+420777666273" style="color: #1c1c19; text-decoration: underline;">+420 777 666 273</a><br>
+                E-mail: <a href="mailto:hotel@umustku.cz" style="color: #1c1c19; text-decoration: underline;">hotel@umustku.cz</a><br>
+                Bankovní spojení: 293470312/0300 (ČSOB)
+              </p>
+              <p class="legal-article-text">Ubytovatel není plátcem DPH. Všechny ceny uvedené na webu jsou konečné.</p>
+              <p class="legal-article-text">V textu níže označujeme provozovatelku jako <strong>„ubytovatele“</strong> a vás jako <strong>„hosta“</strong>.</p>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">2. Jak rezervace vzniká</h2>
+              <p class="legal-article-text">Rezervace probíhá ve třech krocích. Teprve po posledním z nich je závazná.</p>
+              <ul style="line-height: 1.7; color: #4a4a46; padding-left: 20px;">
+                <li><strong>Krok 1 — odešlete žádost.</strong> Vyplníte rezervační formulář na webu, zavoláte nebo napíšete e-mail. Obratem vám přijde e-mail s potvrzením, že jsme žádost přijali. <strong>Tento e-mail ještě není potvrzením rezervace</strong> — pouze vám sděluje, že se jí zabýváme.</li>
+                <li><strong>Krok 2 — potvrdíme dostupnost a vyzveme k záloze.</strong> Ověříme, že je termín volný, a pošleme vám e-mail s pokyny k úhradě zálohy včetně QR kódu pro rychlou platbu.</li>
+                <li><strong>Krok 3 — uhradíte zálohu.</strong> Jakmile záloha dorazí na náš účet, pošleme vám finální potvrzení. <strong>Tímto okamžikem je smlouva o ubytování uzavřena</strong> a pokoj je pro vás závazně blokován.</li>
+              </ul>
+              <p class="legal-article-text">Do odeslání finálního potvrzení si ubytovatel vyhrazuje právo rezervaci nepřijmout — například když je termín mezitím obsazen nebo když nelze ověřit vaše kontaktní údaje. V takovém případě vás bez zbytečného odkladu informujeme a případnou uhrazenou částku vám vrátíme v plné výši.</p>
+              <p class="legal-article-text">Před odesláním formuláře si můžete zadané údaje zkontrolovat a opravit. Zjistíte-li v potvrzení chybu, ozvěte se nám — opravíme ji.</p>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">3. Ceny a co je v nich zahrnuto</h2>
+              <p class="legal-article-text">Ceny jsou uvedeny za osobu a noc. Snídaně formou švédského stolu, parkování na hlídaném parkovišti, Wi-Fi, využití společenské herny i <strong>místní poplatek z pobytu</strong> jsou v ceně zahrnuty.</p>
+              <table class="legal-info-table">
+                <thead>
+                  <tr>
+                    <th>Položka</th>
+                    <th>Cena</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Pokoj Standard — 1 osoba</td>
+                    <td>830 Kč / osoba / noc</td>
+                  </tr>
+                  <tr>
+                    <td>Pokoj Standard — 2 osoby</td>
+                    <td>740 Kč / osoba / noc</td>
+                  </tr>
+                  <tr>
+                    <td>Pokoj Standard — 3 osoby</td>
+                    <td>720 Kč / osoba / noc</td>
+                  </tr>
+                  <tr>
+                    <td>Pokoj Standard — 4 osoby</td>
+                    <td>700 Kč / osoba / noc</td>
+                  </tr>
+                  <tr>
+                    <td>Pokoj Nadstandard (kategorie A, A1, Zen)</td>
+                    <td>890 Kč / osoba / noc</td>
+                  </tr>
+                  <tr>
+                    <td>Polopenze — večeře</td>
+                    <td>+ 195 Kč / osoba / den</td>
+                  </tr>
+                  <tr>
+                    <td>Pobyt na jednu jedinou noc</td>
+                    <td>+ 200 Kč / osoba</td>
+                  </tr>
+                  <tr>
+                    <td>Pes</td>
+                    <td>150 Kč / den</td>
+                  </tr>
+                  <tr>
+                    <td>Dobíjení elektrokola</td>
+                    <td>15 Kč / den</td>
+                  </tr>
+                  <tr>
+                    <td>Parkování na oploceném parkovišti</td>
+                    <td>Zdarma</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="legal-article-text" style="margin-top: 16px;">Závazná je vždy ta cena, kterou máte uvedenou ve finálním potvrzení rezervace. Ubytovatel může ceník do budoucna změnit, na již potvrzené rezervace to však nemá žádný vliv.</p>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">4. Platba</h2>
+              <ul style="line-height: 1.7; color: #4a4a46; padding-left: 20px;">
+                <li><strong>Záloha 30 %</strong> z celkové ceny pobytu je splatná do <strong>3 pracovních dnů</strong> od doručení výzvy k platbě. Uhradíte ji bankovním převodem nebo naskenováním QR kódu z e-mailu.</li>
+                <li>Neuhradíte-li zálohu včas, rezervace zaniká a termín uvolňujeme dalším zájemcům. Ozvěte se nám prosím předem, pokud potřebujete více času — obvykle se domluvíme.</li>
+                <li><strong>Doplatek</strong> uhradíte na místě při příjezdu nebo v průběhu pobytu, v hotovosti nebo převodem po dohodě.</li>
+                <li>Ubytovatel nepoužívá žádnou online platební bránu. <strong>Platební kartu na webu nikdy nezadáváte</strong> a nikdy vás o její údaje e-mailem nežádáme.</li>
+                <li>Doklad o zaplacení obdržíte při odjezdu nebo e-mailem.</li>
+              </ul>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">5. Zrušení pobytu a storno poplatky</h2>
+              <p class="legal-article-text">Zrušit pobyt můžete kdykoli — písemně e-mailem nebo telefonicky. Rozhodující je den, kdy nám oznámení dojde. Storno poplatek se počítá z celkové ceny pobytu.</p>
+              <table class="legal-info-table">
+                <thead>
+                  <tr>
+                    <th>Kdy pobyt zrušíte</th>
+                    <th>Storno poplatek</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Více než 21 dní před příjezdem</td>
+                    <td><strong>Zdarma</strong> — zálohu vracíme v plné výši</td>
+                  </tr>
+                  <tr>
+                    <td>21 až 14 dní před příjezdem</td>
+                    <td>40 % z celkové ceny</td>
+                  </tr>
+                  <tr>
+                    <td>14 až 7 dní před příjezdem</td>
+                    <td>60 % z celkové ceny</td>
+                  </tr>
+                  <tr>
+                    <td>Méně než 7 dní před příjezdem nebo nedojezd</td>
+                    <td>100 % z celkové ceny</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="legal-article-text" style="margin-top: 16px;">Případný přeplatek vracíme na účet, ze kterého záloha přišla, nejpozději do 14 dnů od zrušení pobytu.</p>
+              <p class="legal-article-text">Zkrátíte-li pobyt po příjezdu nebo odjedete-li dříve, cena za sjednané noci se nevrací.</p>
+              <p class="legal-article-text"><strong>Vážné životní situace řešíme lidsky.</strong> Pokud vám do pobytu vstoupí nemoc, úraz nebo úmrtí v rodině, ozvěte se nám. Nemáme na to nárok podle podmínek, ale vždy hledáme řešení — nejčastěji přesun termínu.</p>
+              <p class="legal-article-text">Pokud by ubytovatel z vážných provozních důvodů nemohl pobyt poskytnout, nabídne vám náhradní termín nebo srovnatelné ubytování. Nepřijmete-li ani jedno, vrátíme vám celou uhrazenou částku do 14 dnů.</p>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">6. Právo na odstoupení od smlouvy do 14 dnů se neuplatní</h2>
+              <p class="legal-article-text">Na tuto informaci máme zákonnou povinnost vás upozornit, proto ji uvádíme zvlášť.</p>
+              <p class="legal-article-text">U ubytování sjednaného na konkrétní termín <strong>nemáte právo odstoupit od smlouvy do 14 dnů</strong>, které jinak spotřebiteli u smluv uzavřených na dálku náleží. Vyplývá to z <strong>§ 1837 písm. j) občanského zákoníku</strong>, který z tohoto práva vyjímá smlouvy o ubytování, dopravě, stravování a využití volného času, má-li být plněno v určeném termínu.</p>
+              <p class="legal-article-text">Důvodem je omezená kapacita ubytovacích zařízení — uvolněný pokoj už na poslední chvíli obvykle nelze znovu prodat.</p>
+              <p class="legal-article-text">Zrušit pobyt samozřejmě můžete kdykoli, řídí se to však storno podmínkami v článku 5.</p>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">7. Příjezd, odjezd a průběh pobytu</h2>
+              <ul style="line-height: 1.7; color: #4a4a46; padding-left: 20px;">
+                <li><strong>Příjezd (check-in):</strong> od 14:00. Přijedete-li dříve, rádi vám uschováme zavazadla.</li>
+                <li><strong>Odjezd (check-out):</strong> do 10:00 v den odjezdu.</li>
+                <li>Jiný čas příjezdu nebo odjezdu je možný po předchozí domluvě. Dejte nám prosím vědět, ať na vás počkáme.</li>
+                <li>Při příjezdu předložíte <strong>doklad totožnosti</strong> všech ubytovaných osob. Bez něj vás nesmíme ubytovat — ukládá nám to zákon o místních poplatcích a u cizinců zákon o pobytu cizinců.</li>
+                <li>Zapůjčené klíče vracíte při odjezdu. Za jejich ztrátu účtujeme náklady na výměnu zámku.</li>
+              </ul>
+              <p class="legal-article-text"><strong>Bezbariérovost:</strong> do budovy se vstupuje po schodech a hotel <strong>není bezbariérový</strong>. Pokud má někdo z vás sníženou pohyblivost, zavolejte nám prosím ještě před rezervací, ať společně posoudíme, zda je pro vás pobyt vhodný.</p>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">8. Stravování</h2>
+              <ul style="line-height: 1.7; color: #4a4a46; padding-left: 20px;">
+                <li><strong>Snídaně</strong> formou švédského stolu podáváme od 8:00 do 9:00. Jsou v ceně ubytování.</li>
+                <li><strong>Večeře</strong> podáváme v 18:00 hostům, kteří si objednali polopenzi. Jde o jednotné dvouchodové menu bez možnosti výběru z jídelního lístku.</li>
+                <li>Hotel <strong>není veřejnou restaurací</strong> — vaříme výhradně pro ubytované hosty.</li>
+                <li>Máte-li dietní omezení nebo alergii, dejte nám prosím vědět <strong>nejpozději 3 dny před příjezdem</strong>. Běžné úpravy včetně bezlepkové stravy zvládneme, ale potřebujeme čas na nákup surovin.</li>
+                <li>Polopenzi lze doobjednat i na místě, pokud to kapacita kuchyně dovolí.</li>
+              </ul>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">9. Pravidla pobytu</h2>
+              <p class="legal-article-text">Tato pravidla platí pro všechny hosty. Jde o běžnou slušnost, díky které je pobyt příjemný pro každého.</p>
+              <ul style="line-height: 1.7; color: #4a4a46; padding-left: 20px;">
+                <li><strong>Celý hotel je nekuřácký</strong>, včetně pokojů, balkónů a teras. Kouřit lze pouze ve vyhrazeném venkovním prostoru.</li>
+                <li><strong>Noční klid</strong> platí od 22:00 do 7:00.</li>
+                <li><strong>Psi jsou vítáni</strong> za poplatek 150 Kč za den. Musí být nahlášeni už při rezervaci a po hotelu se pohybovat pod vaším dohledem. Odpovídáte za škody, které způsobí, a za úklid po nich.</li>
+                <li>Za děti odpovídají po celou dobu pobytu jejich zákonní zástupci. Týká se to i dětského koutku, zahrady a prostoru u splavu.</li>
+                <li><strong>Řeka Bílá Desná a přírodní tůň</strong> nejsou hlídané koupaliště. Do vody vstupujete na vlastní nebezpečí.</li>
+                <li>Návštěvy neubytovaných osob na pokojích jsou možné jen se souhlasem ubytovatele.</li>
+                <li>Škodu na vybavení uhradíte ve výši nákladů na opravu nebo náhradu. Prosíme, nahlaste nám ji hned — řešíme to v klidu a bez dramat.</li>
+                <li>Ubytovatel může ukončit pobyt bez náhrady, pokud host přes upozornění hrubě porušuje tato pravidla, obtěžuje ostatní hosty nebo poškozuje majetek.</li>
+              </ul>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">10. Odpovědnost za vnesené věci</h2>
+              <p class="legal-article-text">Za věci, které si do hotelu přinesete, odpovídá ubytovatel podle § 2945 a následujících občanského zákoníku.</p>
+              <p class="legal-article-text">Za peníze, klenoty a jiné cennosti odpovídá ubytovatel jen do zákonem stanovené výše, pokud je nepřevzal do úschovy. <strong>Cennosti proto doporučujeme uložit u nás v recepci.</strong></p>
+              <p class="legal-article-text">Škodu je nutné oznámit <strong>bez zbytečného odkladu, nejpozději do 15 dnů</strong> od chvíle, kdy jste se o ní dozvěděli. Později už nárok bohužel zaniká — plyne to přímo ze zákona.</p>
+              <p class="legal-article-text">Parkoviště je oplocené, se závorou a kamerovým systémem. <strong>Nejde však o hlídané parkoviště</strong> ve smyslu smlouvy o úschově a ubytovatel neodpovídá za věci ponechané ve vozidle.</p>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">11. Reklamace</h2>
+              <p class="legal-article-text">Nejste-li s něčím spokojeni, řekněte nám to prosím <strong>hned na místě</strong>. Většinu věcí umíme vyřešit během chvíle — a je to výrazně lepší než zpětná reklamace, u které už nápravu poskytnout nemůžeme.</p>
+              <p class="legal-article-text">Reklamaci můžete uplatnit i písemně na <a href="mailto:hotel@umustku.cz" style="color: #1c1c19; text-decoration: underline;">hotel@umustku.cz</a> nebo na adrese hotelu. Přijetí potvrdíme a vyřídíme ji <strong>nejpozději do 30 dnů</strong>, pokud se nedohodneme na delší lhůtě.</p>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">12. Mimosoudní řešení spotřebitelských sporů</h2>
+              <p class="legal-article-text">Pokud se nepodaří spor vyřešit přímo s námi, máte jako spotřebitel právo obrátit se na orgán mimosoudního řešení sporů. Tím je:</p>
+              <p class="legal-article-text">
+                <strong>Česká obchodní inspekce</strong><br>
+                Ústřední inspektorát – oddělení ADR<br>
+                Gorazdova 1969/24, 120 00 Praha 2<br>
+                Web: <a href="https://adr.coi.cz" target="_blank" rel="noopener" style="color: #1c1c19; text-decoration: underline;">adr.coi.cz</a><br>
+                E-mail: <a href="mailto:adr@coi.cz" style="color: #1c1c19; text-decoration: underline;">adr@coi.cz</a>
+              </p>
+              <p class="legal-article-text">Řízení je pro spotřebitele bezplatné a zahájit ho lze do 1 roku ode dne, kdy jste u nás uplatnili své právo poprvé.</p>
+              <p class="legal-article-text">Dozor nad dodržováním předpisů na ochranu spotřebitele vykonává <strong>Česká obchodní inspekce</strong>, dozor v oblasti hygieny <strong>Krajská hygienická stanice Libereckého kraje</strong> a dozor nad živnostenským podnikáním příslušný <strong>živnostenský úřad</strong>.</p>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">13. Ochrana osobních údajů</h2>
+              <p class="legal-article-text">Jak nakládáme s vašimi údaji, podrobně popisujeme v <a href="/gdpr" style="color: #1c1c19; text-decoration: underline;">zásadách ochrany osobních údajů</a>. Najdete tam i to, jaké údaje o vás musíme ze zákona evidovat a jak dlouho.</p>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">14. Závěrečná ustanovení</h2>
+              <ul style="line-height: 1.7; color: #4a4a46; padding-left: 20px;">
+                <li>Smlouva se uzavírá v českém jazyce a řídí se právem České republiky. Tím nejsou dotčena práva, která vám jako spotřebiteli přiznávají předpisy státu vašeho obvyklého bydliště.</li>
+                <li>Uzavřenou smlouvu i tyto podmínky archivujeme v elektronické podobě. Na požádání vám je zašleme.</li>
+                <li>Ubytovatel může tyto podmínky měnit. Pro vaši rezervaci vždy platí znění účinné ke dni jejího uzavření a to vám také zasíláme v potvrzovacím e-mailu.</li>
+                <li>Je-li některé ustanovení těchto podmínek neplatné, zůstávají ostatní v platnosti.</li>
+                <li>Ustanovení odchylně sjednaná v písemné dohodě mají přednost před těmito podmínkami.</li>
+              </ul>
+            </div>
+
+          </div>
+        </section>
+
+        
+  <!-- CTA SEKCE (1:1 REPLIKA DLE SVG PŘEDLOHY) -->
+  <section class="cta-section">
+    <div class="cta-overlay"></div>
+    <div class="cta-inner">
+      <h2 class="cta-title">Dopřejte si zasloužený<br>odpočinek v Jizerských horách</h2>
+      <button class="btn btn-cta" id="cta-booking-btn">Rezervovat pobyt</button>
+    </div>
+  </section>
+
+        
+  <!-- PATIČKA (SITE FOOTER 1:1 REPLIKA) -->
+  <footer class="site-footer" id="site-footer">
+    <div class="footer-contour-bg">
+      <img src="/Decoration/Dekorace footer.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
+    </div>
+
+    <div class="footer-inner">
+      <div class="footer-mobile-logo">
+        <img src="/Logo/white logo.webp" alt="Logo Hotelu U Můstků Desná" loading="lazy" decoding="async">
+      </div>
+
+      <div class="footer-columns-grid">
+        <!-- Sloupec 1: Kontakty -->
+        <div class="footer-col footer-col-contact">
+          <div class="footer-contact-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            <a href="mailto:hotel@umustku.cz" class="footer-contact-link">hotel@umustku.cz</a>
+          </div>
+          <div class="footer-divider-line"></div>
+
+          <div class="footer-contact-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            <a href="tel:+420777666273" class="footer-contact-link">+420 777 666 273</a>
+          </div>
+          <div class="footer-divider-line"></div>
+
+          <div class="footer-contact-item footer-address-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            <div class="footer-address-text">
+              <span>Údolní 368</span>
+              <span>468 61 Desná v Jizerských horách 1</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sloupec 2: Rychlé odkazy -->
+        <div class="footer-col footer-col-links">
+          <h3 class="footer-col-heading">Rychlé odkazy</h3>
+          <ul class="footer-links-list">
+            <li><a href="/ubytovani.html">Nabídka pokojů</a></li>
+            <li><a href="/stravovani.html">Stravování</a></li>
+            <li><a href="/akce.html">Akce</a></li>
+            <li><a href="/okoli.html">Aktivity</a></li>
+            <li><a href="/kontakt.html">Kontakt</a></li>
+          </ul>
+        </div>
+
+        <!-- Sloupec 3: Právní doložky -->
+        <div class="footer-col footer-col-legal">
+          <h3 class="footer-col-heading">Právní doložky</h3>
+          <ul class="footer-links-list">
+            <li><a href="/gdpr">Ochrana osobních údajů (GDPR)</a></li>
+            <li><a href="/podminky">Obchodní podmínky</a></li>
+            <li><a href="/cookies" id="footer-cookie-settings-link">Používání cookies (Nastavení)</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Spodní lišta -->
+      <div class="footer-bottom-row">
+        <div class="footer-copyright secret-admin-trigger" title="Vstup pro recepci" style="cursor: pointer;">© 2026 All Rights Reserved.</div>
+        <div class="footer-logo-wrap btn-scroll-top" title="Zpět nahoru">
+          <img src="/Logo/white logo.webp" alt="Logo Hotelu U Můstků Desná" loading="lazy" decoding="async">
+        </div>
+        <div class="footer-author">Vytvořil <a href="https://ozeman.cz" target="_blank" rel="noopener">ozeman.cz</a></div>
+      </div>
+    </div>
+  </footer>
+  
+
+  <!-- LIGHTBOX MODAL PRO ZVĚTŠENÍ FOTEK POKOJŮ (PRO SENIORY) -->
+  <div class="lightbox-modal" id="lightbox-modal" aria-hidden="true" role="dialog">
+    <div class="lightbox-overlay" id="lightbox-overlay"></div>
+    <div class="lightbox-content">
+      <button class="lightbox-close-btn" id="lightbox-close" aria-label="Zavřít zobrazení fotky" title="Zavřít fotku (Esc)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+
+      <button class="lightbox-nav-btn lightbox-prev-btn" id="lightbox-prev" aria-label="Předchozí fotka">
+        <svg width="12" height="20" viewBox="0 0 12 20" fill="none"><path d="M10 2L2 10L10 18" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/></svg>
+      </button>
+
+      <div class="lightbox-image-container">
+        <img src="" alt="Zvětšený náhled pokoje" id="lightbox-img" class="lightbox-img">
+      </div>
+
+      <button class="lightbox-nav-btn lightbox-next-btn" id="lightbox-next" aria-label="Další fotka">
+        <svg width="12" height="20" viewBox="0 0 12 20" fill="none"><path d="M2 2L10 10L2 18" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+      </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

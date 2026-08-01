@@ -892,6 +892,7 @@ const getFooterHTML = () => `
           <h3 class="footer-col-heading">Právní doložky</h3>
           <ul class="footer-links-list">
             <li><a href="/gdpr">Ochrana osobních údajů (GDPR)</a></li>
+            <li><a href="/podminky">Obchodní podmínky</a></li>
             <li><a href="/cookies" id="footer-cookie-settings-link">Používání cookies (Nastavení)</a></li>
           </ul>
         </div>
@@ -2984,7 +2985,7 @@ const preloadHeroImages = (pageKey) => {
     const src = '/Aktuality hero sekce.webp';
     const img = new Image();
     img.src = src;
-  } else if (pageKey === 'gdpr' || pageKey === 'cookies') {
+  } else if (pageKey === 'gdpr' || pageKey === 'cookies' || pageKey === 'podminky') {
     const src = '/uvodni_hero_sekce.webp';
     const img = new Image();
     img.src = src;
@@ -3732,7 +3733,7 @@ export const getGdprPageHTML = () => `
             <span>Ochrana osobních údajů (GDPR)</span>
           </h1>
           <p class="room-detail-hero-subtitle">
-            <span>Informace o tom, jak nakládáme s vašimi osobními údajmi při rezervaci ubytování a používání nášho webu.</span>
+            <span>Informace o tom, jak nakládáme s vašimi osobními údaji při rezervaci ubytování a při používání našeho webu.</span>
           </p>
         </div>
       </div>
@@ -3741,77 +3742,471 @@ export const getGdprPageHTML = () => `
     <!-- OBSAHOVÁ SEKCE -->
     <section class="legal-page-content-section">
       <div class="legal-page-inner">
-        
-        <div class="legal-article-card">
-          <h2 class="legal-article-title">1. Správce osobních údajů</h2>
-          <p class="legal-article-text">Správcem osobních údajů zpracovávaných prostřednictvím tohoto webu je provozovatel Hotelu U Můstků:</p>
-          <p class="legal-article-text">
-            <strong>Lenka Bellingerová</strong><br>
-            IČ: 74349074 (Živnostenský úřad Poděbrady)<br>
-            Sídlo a adresa provozovny: Údolní 368, Desná v Jizerských horách 1, 468 61<br>
-            Telefon: <a href="tel:+420777666273" style="color: #1c1c19; text-decoration: underline;">+420 777 666 273</a><br>
-            E-mail: <a href="mailto:hotel@umustku.cz" style="color: #1c1c19; text-decoration: underline;">hotel@umustku.cz</a>
+            <div class="legal-article-card">
+              <p class="legal-article-text" style="margin-bottom: 0;">Účinné od 1. srpna 2026. V těchto zásadách vám srozumitelně popisujeme, jaké údaje o vás zpracováváme, proč to děláme a jaká máte práva. Zpracování se řídí nařízením Evropského parlamentu a Rady (EU) 2016/679 (GDPR) a zákonem č. 110/2019 Sb., o zpracování osobních údajů.</p>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">1. Kdo s vašimi údaji nakládá</h2>
+              <p class="legal-article-text">Správcem osobních údajů je provozovatelka Hotelu U Můstků:</p>
+              <p class="legal-article-text">
+                <strong>Lenka Bellingerová</strong><br>
+                IČ: 74349074, zapsána v živnostenském rejstříku (Živnostenský úřad Poděbrady)<br>
+                Sídlo a adresa provozovny: Údolní 368, Desná v Jizerských horách 1, 468 61<br>
+                Telefon: <a href="tel:+420777666273" style="color: #1c1c19; text-decoration: underline;">+420 777 666 273</a><br>
+                E-mail: <a href="mailto:hotel@umustku.cz" style="color: #1c1c19; text-decoration: underline;">hotel@umustku.cz</a>
+              </p>
+              <p class="legal-article-text">Nemáme povinnost jmenovat pověřence pro ochranu osobních údajů. Se vším, co se týká vašich údajů, se proto obracejte přímo na nás na výše uvedený e-mail nebo telefon.</p>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">2. Jaké údaje zpracováváme, proč a na jakém základě</h2>
+              <p class="legal-article-text">Zpracováváme pouze údaje, které od vás dostaneme přímo — vyplněním formuláře, telefonicky, e-mailem nebo při příjezdu. Údaje o vás nikde nekupujeme ani je nezískáváme z jiných zdrojů.</p>
+
+              <table class="legal-info-table">
+                <thead>
+                  <tr>
+                    <th>Účel zpracování</th>
+                    <th>Zpracovávané údaje</th>
+                    <th>Právní základ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Rezervace a poskytnutí ubytování</strong></td>
+                    <td>Jméno a příjmení, e-mail, telefon, adresa (ulice, město, PSČ, země), termín pobytu, typ pokoje, počet dospělých a dětí, doplňkové služby (polopenze, pes, dobíjení elektrokola), poznámka k rezervaci, celková cena a výše zálohy.</td>
+                    <td>Plnění smlouvy o ubytování<br><span style="opacity: 0.75;">(čl. 6 odst. 1 písm. b) GDPR)</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Zákonná evidence ubytovaných hostů</strong><br><span style="opacity: 0.75;">evidenční kniha, u cizinců domovní kniha</span></td>
+                    <td>Jméno a příjmení, datum narození, adresa trvalého pobytu, číslo a typ dokladu totožnosti, doba ubytování, účel pobytu. U cizinců navíc státní občanství a číslo víza. Údaje se evidují o <strong>všech</strong> ubytovaných osobách, tedy i o spolucestujících a dětech.</td>
+                    <td>Splnění právní povinnosti<br><span style="opacity: 0.75;">(čl. 6 odst. 1 písm. c) GDPR; zákon č. 565/1990 Sb., o místních poplatcích, a zákon č. 326/1999 Sb., o pobytu cizinců)</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Vystavení dokladu a vedení účetnictví</strong></td>
+                    <td>Jméno a příjmení, adresa, popis a cena poskytnutých služeb, údaje o platbě.</td>
+                    <td>Splnění právní povinnosti<br><span style="opacity: 0.75;">(čl. 6 odst. 1 písm. c) GDPR; zákon č. 563/1991 Sb., o účetnictví, a daňové předpisy)</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Odpověď na dotaz z kontaktního formuláře</strong></td>
+                    <td>Jméno a příjmení, e-mail, telefon, obsah zprávy.</td>
+                    <td>Provedení opatření před uzavřením smlouvy na vaši žádost, případně náš oprávněný zájem odpovědět vám<br><span style="opacity: 0.75;">(čl. 6 odst. 1 písm. b) a f) GDPR)</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Zveřejnění vaší recenze</strong><br><span style="opacity: 0.75;">pokud nám ji sami napíšete</span></td>
+                    <td>Jméno nebo jeho zkrácená podoba, text hodnocení, datum pobytu.</td>
+                    <td>Váš souhlas, který můžete kdykoli odvolat<br><span style="opacity: 0.75;">(čl. 6 odst. 1 písm. a) GDPR)</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Kamerový systém na parkovišti</strong></td>
+                    <td>Obrazový záznam osob a vozidel v prostoru oploceného parkoviště. Zvuk se nezaznamenává.</td>
+                    <td>Náš oprávněný zájem na ochraně majetku hostů i hotelu<br><span style="opacity: 0.75;">(čl. 6 odst. 1 písm. f) GDPR)</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Zajištění základního chodu webu</strong></td>
+                    <td>Nezbytné soubory cookies a údaj o vaší volbě v cookie liště, uložený ve vašem prohlížeči.</td>
+                    <td>Náš oprávněný zájem na tom, aby web fungoval a pamatoval si vaše nastavení<br><span style="opacity: 0.75;">(čl. 6 odst. 1 písm. f) GDPR)</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Měření návštěvnosti webu</strong></td>
+                    <td>Anonymizovaná IP adresa, typ zařízení a prohlížeče, navštívené stránky, doba návštěvy, zdroj příchodu.</td>
+                    <td>Váš souhlas udělený v cookie liště, který můžete kdykoli odvolat<br><span style="opacity: 0.75;">(čl. 6 odst. 1 písm. a) GDPR)</span></td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <p class="legal-article-text" style="margin-top: 20px;"><strong>Údaje dětí.</strong> Pokud s vámi cestují děti, evidujeme o nich pouze údaje, které nám ukládá zákon o evidenci ubytovaných. Za správnost těchto údajů odpovídá jejich zákonný zástupce, který rezervaci provádí. Web ani rezervační formulář nejsou určeny k tomu, aby je vyplňovaly děti samostatně.</p>
+
+              <p class="legal-article-text"><strong>Citlivé údaje nezpracováváme.</strong> Nesbíráme žádné údaje o zdravotním stavu, náboženském vyznání, politických názorech ani jiné zvláštní kategorie údajů podle čl. 9 GDPR. Prosíme, neuvádějte je ani do poznámky k rezervaci — pokud potřebujete sdělit něco citlivého, zavolejte nám.</p>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">3. Musíte nám údaje poskytnout?</h2>
+              <p class="legal-article-text">Záleží na tom, o které údaje jde:</p>
+              <ul style="line-height: 1.7; color: #4a4a46; padding-left: 20px;">
+                <li><strong>Údaje pro rezervaci</strong> jsou smluvním požadavkem. Bez jména, kontaktu a termínu vám pobyt nemůžeme zajistit ani potvrdit.</li>
+                <li><strong>Údaje do evidenční a domovní knihy</strong> jsou zákonným požadavkem. Bez nich vás nesmíme ubytovat — nejde o naše rozhodnutí, ukládá nám to zákon.</li>
+                <li><strong>Souhlas s měřením návštěvnosti a se zveřejněním recenze</strong> je zcela dobrovolný. Když ho nedáte nebo ho odvoláte, nemá to na vaši rezervaci ani na pobyt žádný vliv.</li>
+              </ul>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">4. Jak dlouho údaje uchováváme</h2>
+              <p class="legal-article-text">Údaje držíme jen po nezbytně nutnou dobu. Po jejím uplynutí je mažeme nebo skartujeme.</p>
+              <table class="legal-info-table">
+                <thead>
+                  <tr>
+                    <th>Údaje</th>
+                    <th>Doba uchování</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Rezervace a související komunikace</td>
+                    <td>Po dobu pobytu a následně 4 roky od jeho skončení — kvůli možným nárokům z uzavřené smlouvy.</td>
+                  </tr>
+                  <tr>
+                    <td>Evidenční kniha a domovní kniha</td>
+                    <td>6 let od posledního zápisu, jak ukládá zákon.</td>
+                  </tr>
+                  <tr>
+                    <td>Účetní a daňové doklady</td>
+                    <td>Po dobu stanovenou účetními a daňovými předpisy, zpravidla 10 let od konce zdaňovacího období.</td>
+                  </tr>
+                  <tr>
+                    <td>Dotazy z kontaktního formuláře</td>
+                    <td>1 rok od vyřízení dotazu. Pokud z dotazu vznikne rezervace, řídí se dobou uchování rezervace.</td>
+                  </tr>
+                  <tr>
+                    <td>Záznamy z kamerového systému</td>
+                    <td>Nejdéle 7 dní, poté se automaticky přepisují. Déle jen tehdy, pokud by záznam zachytil protiprávní jednání a byl předán policii nebo pojišťovně.</td>
+                  </tr>
+                  <tr>
+                    <td>Zveřejněné recenze</td>
+                    <td>Do odvolání vašeho souhlasu.</td>
+                  </tr>
+                  <tr>
+                    <td>Cookies a údaje z měření návštěvnosti</td>
+                    <td>Podle jednotlivých souborů, nejdéle 14 měsíců. Podrobnosti najdete v <a href="/cookies" style="color: #1c1c19; text-decoration: underline;">zásadách používání cookies</a>.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">5. Komu údaje předáváme</h2>
+              <p class="legal-article-text">Vaše údaje nikdy neprodáváme a nepředáváme je nikomu pro reklamní účely. Předáváme je pouze těm, bez kterých bychom hotel nemohli provozovat, a orgánům, kterým to ukládá zákon.</p>
+
+              <p class="legal-article-text" style="margin-bottom: 8px;"><strong>Technickým partnerům, kteří pro nás data zpracovávají:</strong></p>
+              <ul style="line-height: 1.7; color: #4a4a46; padding-left: 20px;">
+                <li><strong>Supabase Inc.</strong> — zabezpečená databáze rezervací a zpráv. Data jsou uložena na serverech v Evropské unii (Frankfurt, Německo).</li>
+                <li><strong>Resend, Inc.</strong> — rozesílání potvrzovacích e-mailů o rezervaci.</li>
+                <li><strong>Netlify, Inc.</strong> — hosting a provoz těchto webových stránek.</li>
+                <li><strong>Google Ireland Limited</strong> — měření návštěvnosti (Google Analytics). Pouze tehdy, pokud jste k tomu dali souhlas v cookie liště.</li>
+              </ul>
+
+              <p class="legal-article-text" style="margin-bottom: 8px;"><strong>Dalším příjemcům:</strong></p>
+              <ul style="line-height: 1.7; color: #4a4a46; padding-left: 20px;">
+                <li>Naší účetní, která zpracovává doklady a daňovou evidenci.</li>
+                <li><strong>Cizinecké policii</strong> — u zahraničních hostů máme zákonnou povinnost oznámit ubytování do 3 dnů od jeho zahájení.</li>
+                <li><strong>Městskému úřadu Desná</strong> — v souvislosti s odvodem místního poplatku z pobytu.</li>
+                <li>Orgánům veřejné moci (finanční úřad, soud, policie), pokud nás o to požádají v mezích svých pravomocí.</li>
+              </ul>
+              <p class="legal-article-text">Se všemi technickými partnery máme uzavřené smlouvy o zpracování osobních údajů podle čl. 28 GDPR. Zavazují je zpracovávat data jen podle našich pokynů a zajistit jejich zabezpečení.</p>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">6. Předávání údajů mimo Evropskou unii</h2>
+              <p class="legal-article-text">Databáze s vašimi rezervacemi je uložena na serverech v Evropské unii, konkrétně ve Frankfurtu nad Mohanem.</p>
+              <p class="legal-article-text">Někteří naši partneři jsou americké společnosti, a proto může v omezené míře docházet k předání údajů do Spojených států — například při odeslání potvrzovacího e-mailu nebo při technické podpoře. Toto předání je zajištěno <strong>rozhodnutím Evropské komise o odpovídající ochraně</strong> ze dne 10. července 2023 (rámec EU-U.S. Data Privacy Framework), případně standardními smluvními doložkami schválenými Evropskou komisí podle čl. 46 GDPR. Platnost tohoto rozhodnutí potvrdil Tribunál Soudního dvora Evropské unie v září 2025.</p>
+              <p class="legal-article-text">Do jiných zemí mimo Evropskou unii vaše údaje nepředáváme.</p>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">7. Jak vaše údaje chráníme</h2>
+              <p class="legal-article-text">Přijali jsme technická i organizační opatření, aby se k vašim údajům nedostal nikdo nepovolaný:</p>
+              <ul style="line-height: 1.7; color: #4a4a46; padding-left: 20px;">
+                <li>Celý web běží na šifrovaném spojení HTTPS.</li>
+                <li>Přístup do rezervačního systému má jen provozovatelka a pověřené osoby, každá s vlastním heslem.</li>
+                <li>Listinnou evidenční knihu uchováváme v uzamčeném prostoru mimo dosah hostů.</li>
+                <li>K záznamům z kamer má přístup pouze provozovatelka hotelu.</li>
+                <li>Osoby, které s údaji přicházejí do styku, jsou vázány mlčenlivostí.</li>
+              </ul>
+              <p class="legal-article-text">Pokud by i přes tato opatření došlo k porušení zabezpečení, které by pro vás znamenalo vysoké riziko, budeme vás o tom bez zbytečného odkladu informovat a případ nahlásíme Úřadu pro ochranu osobních údajů do 72 hodin.</p>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">8. Automatizované rozhodování neprovádíme</h2>
+              <p class="legal-article-text">O ničem, co se vás týká, nerozhoduje počítač sám. Každou rezervaci posuzuje a schvaluje živý člověk. Neprovádíme profilování ani automatizované rozhodování ve smyslu čl. 22 GDPR.</p>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">9. Jaká máte práva</h2>
+              <p class="legal-article-text">Ve vztahu ke svým osobním údajům máte tato práva:</p>
+              <ul style="line-height: 1.7; color: #4a4a46; padding-left: 20px;">
+                <li><strong>Právo na přístup</strong> — můžete se nás zeptat, jaké údaje o vás máme, a vyžádat si jejich kopii.</li>
+                <li><strong>Právo na opravu</strong> — pokud jsou vaše údaje nepřesné nebo neúplné, opravíme je.</li>
+                <li><strong>Právo na výmaz</strong>, kterému se říká „právo být zapomenut“ — smažeme údaje, které už nepotřebujeme. Netýká se údajů, které nám ukládá uchovávat zákon, typicky evidenční knihy a účetních dokladů.</li>
+                <li><strong>Právo na omezení zpracování</strong> — dokud se nevyjasní vaše námitka nebo správnost údajů, budeme je pouze uchovávat a nic dalšího s nimi dělat nebudeme.</li>
+                <li><strong>Právo na přenositelnost</strong> — údaje, které zpracováváme na základě smlouvy nebo souhlasu, vám vydáme ve strojově čitelném formátu, případně je předáme jinému správci.</li>
+                <li><strong>Právo vznést námitku</strong> proti zpracování, které stavíme na oprávněném zájmu — tedy proti kamerovému systému nebo nezbytným cookies.</li>
+                <li><strong>Právo odvolat souhlas</strong> — u měření návštěvnosti a u zveřejněné recenze kdykoli a bez udání důvodu. Odvolání nemá vliv na zákonnost zpracování před jeho odvoláním.</li>
+                <li><strong>Právo podat stížnost u dozorového úřadu</strong>, pokud máte za to, že s vašimi údaji nakládáme špatně.</li>
+              </ul>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">10. Jak svá práva uplatnit</h2>
+              <p class="legal-article-text">Napište nám na <a href="mailto:hotel@umustku.cz" style="color: #1c1c19; text-decoration: underline;">hotel@umustku.cz</a>, zavolejte na <a href="tel:+420777666273" style="color: #1c1c19; text-decoration: underline;">+420 777 666 273</a> nebo nám pošlete dopis na adresu Údolní 368, Desná v Jizerských horách 1, 468 61.</p>
+              <p class="legal-article-text">Vyřídíme to <strong>do jednoho měsíce</strong>. Pokud by šlo o složitější případ, můžeme lhůtu prodloužit nejvýše o další dva měsíce — vždy vás o tom předem uvědomíme. Vyřízení je zdarma. Zaplatit přiměřený poplatek můžeme požadovat jen u zjevně nedůvodných nebo opakovaných žádostí.</p>
+              <p class="legal-article-text">Abychom údaje nevydali nesprávné osobě, můžeme vás požádat o ověření totožnosti.</p>
+              <p class="legal-article-text" style="margin-bottom: 8px;"><strong>Stížnost můžete podat u dozorového úřadu:</strong></p>
+              <p class="legal-article-text">
+                Úřad pro ochranu osobních údajů<br>
+                Pplk. Sochora 727/27, 170 00 Praha 7 – Holešovice<br>
+                Telefon: +420 234 665 111<br>
+                E-mail: <a href="mailto:posta@uoou.gov.cz" style="color: #1c1c19; text-decoration: underline;">posta@uoou.gov.cz</a><br>
+                Web: <a href="https://uoou.gov.cz" target="_blank" rel="noopener" style="color: #1c1c19; text-decoration: underline;">uoou.gov.cz</a>
+              </p>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">11. Změny těchto zásad</h2>
+              <p class="legal-article-text">Zásady můžeme čas od času upravit — třeba když začneme používat novou službu nebo se změní zákon. Aktuální znění najdete vždy na této stránce a nahoře je uvedeno datum účinnosti. Pokud půjde o podstatnou změnu, upozorníme na ni srozumitelně na webu.</p>
+            </div>
+
+      </div>
+    </section>
+
+    ${getCtaHTML()}
+    ${getFooterHTML()}
+  </div>
+`;
+
+export const getPodminkyPageHTML = () => `
+  <div class="legal-page">
+    <!-- HERO SEKCE -->
+    <section class="hero-section room-detail-hero" id="uvod-podminky">
+      <img src="/uvodni_hero_sekce.webp" alt="Hotel U Můstků - Obchodní podmínky" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; filter: brightness(0.75);">
+      <div class="hero-overlay"></div>
+      <div class="hero-inner">
+        ${getHeaderHTML()}
+
+        <div class="room-detail-hero-center">
+          <h1 class="hero-title room-detail-hero-title">
+            <span>Obchodní podmínky a ubytovací řád</span>
+          </h1>
+          <p class="room-detail-hero-subtitle">
+            <span>Podmínky rezervace, ceny, storno poplatky a pravidla pobytu v Hotelu U Můstků.</span>
           </p>
         </div>
+      </div>
+    </section>
 
-        <div class="legal-article-card">
-          <h2 class="legal-article-title">2. Jaké osobní údaje zpracováváme a proč</h2>
-          <p class="legal-article-text">Vaše osobní údaje zpracováváme výhradně pro účely řádného vyřízení ubytování a zodpovězení vašich dotazů:</p>
-          
-          <table class="legal-info-table">
-            <thead>
-              <tr>
-                <th>Účel zpracování</th>
-                <th>Zpracovávané údaje</th>
-                <th>Právní základ</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>Rezervace ubytování</strong></td>
-                <td>Jméno, příjmení, e-mail, telefonní číslo, adresa, termín pobytu, počet osob.</td>
-                <td>Plnění smlouvy o ubytování a zákonná povinnost (evidence hostů dle zákona č. 565/1990 Sb. a zákona č. 326/1999 Sb.).</td>
-              </tr>
-              <tr>
-                <td><strong>Dotaz z kontaktního formuláře</strong></td>
-                <td>Jméno, e-mail, obsah vaší zprávy.</td>
-                <td>Oprávněný zájem na zodpovězení vašich dotazů a komunikaci s vámi.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+    <!-- OBSAHOVÁ SEKCE -->
+    <section class="legal-page-content-section">
+      <div class="legal-page-inner">
+            <div class="legal-article-card">
+              <p class="legal-article-text" style="margin-bottom: 0;">Účinné od 1. srpna 2026. Tyto podmínky upravují vztah mezi vámi a Hotelem U Můstků při rezervaci a poskytnutí ubytování. Jsou nedílnou součástí smlouvy o ubytování, kterou spolu uzavíráme podle § 2326 a následujících zákona č. 89/2012 Sb., občanský zákoník. Zároveň jimi plníme informační povinnost podle § 1811 a § 1820 občanského zákoníku.</p>
+            </div>
 
-        <div class="legal-article-card">
-          <h2 class="legal-article-title">3. Doba uchování údajů</h2>
-          <p class="legal-article-text">Osobní údaje uchováváme pouze po dobu nezbytně nutnou:</p>
-          <ul style="line-height: 1.7; color: #4a4a46; padding-left: 20px;">
-            <li><strong>Účetní a daňové doklady</strong> (faktury, potvrzení rezervace) uchováváme po dobu 10 let, jak ukládá zákon o účetnictví.</li>
-            <li><strong>Záznamy v domovní knize hostů</strong> uchováváme po dobu 6 let dle zákona o pobytu cizinců.</li>
-            <li><strong>Běžné zprávy z kontaktního formuláře</strong> promazáváme do 6 měsíců od vyřízení komunikace.</li>
-          </ul>
-        </div>
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">1. Kdo vám ubytování poskytuje</h2>
+              <p class="legal-article-text">
+                <strong>Lenka Bellingerová</strong> — provozovatelka Hotelu U Můstků<br>
+                IČ: 74349074, zapsána v živnostenském rejstříku (Živnostenský úřad Poděbrady)<br>
+                Sídlo a adresa provozovny: Údolní 368, Desná v Jizerských horách 1, 468 61<br>
+                Telefon: <a href="tel:+420777666273" style="color: #1c1c19; text-decoration: underline;">+420 777 666 273</a><br>
+                E-mail: <a href="mailto:hotel@umustku.cz" style="color: #1c1c19; text-decoration: underline;">hotel@umustku.cz</a><br>
+                Bankovní spojení: 293470312/0300 (ČSOB)
+              </p>
+              <p class="legal-article-text">Ubytovatel není plátcem DPH. Všechny ceny uvedené na webu jsou konečné.</p>
+              <p class="legal-article-text">V textu níže označujeme provozovatelku jako <strong>„ubytovatele“</strong> a vás jako <strong>„hosta“</strong>.</p>
+            </div>
 
-        <div class="legal-article-card">
-          <h2 class="legal-article-title">4. Komu údaje předáváme (Příjemci údajů)</h2>
-          <p class="legal-article-text">Vaše soukromí si chráníme. Osobní údaje nikdy neprodáváme ani neposkytujeme třetím stranám k marketingovým účelům. Pro zajištění chodu webu a doručení e-mailů využíváme pouze ověřené technické partnery:</p>
-          <ul style="line-height: 1.7; color: #4a4a46; padding-left: 20px;">
-            <li>Poskytovatel zabezpečené databáze rezervací (Supabase Inc.).</li>
-            <li>Poskytovatel e-mailových služeb pro doručení potvrzení rezervace (Resend Inc.).</li>
-            <li>Poskytovatel webového hostingu.</li>
-          </ul>
-        </div>
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">2. Jak rezervace vzniká</h2>
+              <p class="legal-article-text">Rezervace probíhá ve třech krocích. Teprve po posledním z nich je závazná.</p>
+              <ul style="line-height: 1.7; color: #4a4a46; padding-left: 20px;">
+                <li><strong>Krok 1 — odešlete žádost.</strong> Vyplníte rezervační formulář na webu, zavoláte nebo napíšete e-mail. Obratem vám přijde e-mail s potvrzením, že jsme žádost přijali. <strong>Tento e-mail ještě není potvrzením rezervace</strong> — pouze vám sděluje, že se jí zabýváme.</li>
+                <li><strong>Krok 2 — potvrdíme dostupnost a vyzveme k záloze.</strong> Ověříme, že je termín volný, a pošleme vám e-mail s pokyny k úhradě zálohy včetně QR kódu pro rychlou platbu.</li>
+                <li><strong>Krok 3 — uhradíte zálohu.</strong> Jakmile záloha dorazí na náš účet, pošleme vám finální potvrzení. <strong>Tímto okamžikem je smlouva o ubytování uzavřena</strong> a pokoj je pro vás závazně blokován.</li>
+              </ul>
+              <p class="legal-article-text">Do odeslání finálního potvrzení si ubytovatel vyhrazuje právo rezervaci nepřijmout — například když je termín mezitím obsazen nebo když nelze ověřit vaše kontaktní údaje. V takovém případě vás bez zbytečného odkladu informujeme a případnou uhrazenou částku vám vrátíme v plné výši.</p>
+              <p class="legal-article-text">Před odesláním formuláře si můžete zadané údaje zkontrolovat a opravit. Zjistíte-li v potvrzení chybu, ozvěte se nám — opravíme ji.</p>
+            </div>
 
-        <div class="legal-article-card">
-          <h2 class="legal-article-title">5. Vaše práva dle nariadení GDPR</h2>
-          <p class="legal-article-text">V souvislosti se zpracováním osobních údajů máte tato práva:</p>
-          <ul style="line-height: 1.7; color: #4a4a46; padding-left: 20px;">
-            <li><strong>Právo na přístup</strong> k vašim osobním údajům a získání jejich kopie.</li>
-            <li><strong>Právo na opravu</strong> nepřesných nebo neúplných údajů.</li>
-            <li><strong>Právo na výmaz</strong> ("právo být zapomenut"), pokud již údaje nejsou potřeba nebo u nich nevzniká zákonná povinnost uchování.</li>
-            <li><strong>Právo na omezení zpracování</strong> a právo vznést námitku proti zpracování.</li>
-            <li><strong>Právo podat stížnost</strong> u dozorového úřadu: Úřad pro ochranu osobních údajů, Pplk. Sochora 27, 170 00 Praha 7, e-mail: posta@uoou.cz, web: <a href="https://www.uoou.cz" target="_blank" rel="noopener" style="color: #1c1c19; text-decoration: underline;">www.uoou.cz</a>.</li>
-          </ul>
-        </div>
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">3. Ceny a co je v nich zahrnuto</h2>
+              <p class="legal-article-text">Ceny jsou uvedeny za osobu a noc. Snídaně formou švédského stolu, parkování na hlídaném parkovišti, Wi-Fi, využití společenské herny i <strong>místní poplatek z pobytu</strong> jsou v ceně zahrnuty.</p>
+              <table class="legal-info-table">
+                <thead>
+                  <tr>
+                    <th>Položka</th>
+                    <th>Cena</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Pokoj Standard — 1 osoba</td>
+                    <td>830 Kč / osoba / noc</td>
+                  </tr>
+                  <tr>
+                    <td>Pokoj Standard — 2 osoby</td>
+                    <td>740 Kč / osoba / noc</td>
+                  </tr>
+                  <tr>
+                    <td>Pokoj Standard — 3 osoby</td>
+                    <td>720 Kč / osoba / noc</td>
+                  </tr>
+                  <tr>
+                    <td>Pokoj Standard — 4 osoby</td>
+                    <td>700 Kč / osoba / noc</td>
+                  </tr>
+                  <tr>
+                    <td>Pokoj Nadstandard (kategorie A, A1, Zen)</td>
+                    <td>890 Kč / osoba / noc</td>
+                  </tr>
+                  <tr>
+                    <td>Polopenze — večeře</td>
+                    <td>+ 195 Kč / osoba / den</td>
+                  </tr>
+                  <tr>
+                    <td>Pobyt na jednu jedinou noc</td>
+                    <td>+ 200 Kč / osoba</td>
+                  </tr>
+                  <tr>
+                    <td>Pes</td>
+                    <td>150 Kč / den</td>
+                  </tr>
+                  <tr>
+                    <td>Dobíjení elektrokola</td>
+                    <td>15 Kč / den</td>
+                  </tr>
+                  <tr>
+                    <td>Parkování na oploceném parkovišti</td>
+                    <td>Zdarma</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="legal-article-text" style="margin-top: 16px;">Závazná je vždy ta cena, kterou máte uvedenou ve finálním potvrzení rezervace. Ubytovatel může ceník do budoucna změnit, na již potvrzené rezervace to však nemá žádný vliv.</p>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">4. Platba</h2>
+              <ul style="line-height: 1.7; color: #4a4a46; padding-left: 20px;">
+                <li><strong>Záloha 30 %</strong> z celkové ceny pobytu je splatná do <strong>3 pracovních dnů</strong> od doručení výzvy k platbě. Uhradíte ji bankovním převodem nebo naskenováním QR kódu z e-mailu.</li>
+                <li>Neuhradíte-li zálohu včas, rezervace zaniká a termín uvolňujeme dalším zájemcům. Ozvěte se nám prosím předem, pokud potřebujete více času — obvykle se domluvíme.</li>
+                <li><strong>Doplatek</strong> uhradíte na místě při příjezdu nebo v průběhu pobytu, v hotovosti nebo převodem po dohodě.</li>
+                <li>Ubytovatel nepoužívá žádnou online platební bránu. <strong>Platební kartu na webu nikdy nezadáváte</strong> a nikdy vás o její údaje e-mailem nežádáme.</li>
+                <li>Doklad o zaplacení obdržíte při odjezdu nebo e-mailem.</li>
+              </ul>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">5. Zrušení pobytu a storno poplatky</h2>
+              <p class="legal-article-text">Zrušit pobyt můžete kdykoli — písemně e-mailem nebo telefonicky. Rozhodující je den, kdy nám oznámení dojde. Storno poplatek se počítá z celkové ceny pobytu.</p>
+              <table class="legal-info-table">
+                <thead>
+                  <tr>
+                    <th>Kdy pobyt zrušíte</th>
+                    <th>Storno poplatek</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Více než 21 dní před příjezdem</td>
+                    <td><strong>Zdarma</strong> — zálohu vracíme v plné výši</td>
+                  </tr>
+                  <tr>
+                    <td>21 až 14 dní před příjezdem</td>
+                    <td>40 % z celkové ceny</td>
+                  </tr>
+                  <tr>
+                    <td>14 až 7 dní před příjezdem</td>
+                    <td>60 % z celkové ceny</td>
+                  </tr>
+                  <tr>
+                    <td>Méně než 7 dní před příjezdem nebo nedojezd</td>
+                    <td>100 % z celkové ceny</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="legal-article-text" style="margin-top: 16px;">Případný přeplatek vracíme na účet, ze kterého záloha přišla, nejpozději do 14 dnů od zrušení pobytu.</p>
+              <p class="legal-article-text">Zkrátíte-li pobyt po příjezdu nebo odjedete-li dříve, cena za sjednané noci se nevrací.</p>
+              <p class="legal-article-text"><strong>Vážné životní situace řešíme lidsky.</strong> Pokud vám do pobytu vstoupí nemoc, úraz nebo úmrtí v rodině, ozvěte se nám. Nemáme na to nárok podle podmínek, ale vždy hledáme řešení — nejčastěji přesun termínu.</p>
+              <p class="legal-article-text">Pokud by ubytovatel z vážných provozních důvodů nemohl pobyt poskytnout, nabídne vám náhradní termín nebo srovnatelné ubytování. Nepřijmete-li ani jedno, vrátíme vám celou uhrazenou částku do 14 dnů.</p>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">6. Právo na odstoupení od smlouvy do 14 dnů se neuplatní</h2>
+              <p class="legal-article-text">Na tuto informaci máme zákonnou povinnost vás upozornit, proto ji uvádíme zvlášť.</p>
+              <p class="legal-article-text">U ubytování sjednaného na konkrétní termín <strong>nemáte právo odstoupit od smlouvy do 14 dnů</strong>, které jinak spotřebiteli u smluv uzavřených na dálku náleží. Vyplývá to z <strong>§ 1837 písm. j) občanského zákoníku</strong>, který z tohoto práva vyjímá smlouvy o ubytování, dopravě, stravování a využití volného času, má-li být plněno v určeném termínu.</p>
+              <p class="legal-article-text">Důvodem je omezená kapacita ubytovacích zařízení — uvolněný pokoj už na poslední chvíli obvykle nelze znovu prodat.</p>
+              <p class="legal-article-text">Zrušit pobyt samozřejmě můžete kdykoli, řídí se to však storno podmínkami v článku 5.</p>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">7. Příjezd, odjezd a průběh pobytu</h2>
+              <ul style="line-height: 1.7; color: #4a4a46; padding-left: 20px;">
+                <li><strong>Příjezd (check-in):</strong> od 14:00. Přijedete-li dříve, rádi vám uschováme zavazadla.</li>
+                <li><strong>Odjezd (check-out):</strong> do 10:00 v den odjezdu.</li>
+                <li>Jiný čas příjezdu nebo odjezdu je možný po předchozí domluvě. Dejte nám prosím vědět, ať na vás počkáme.</li>
+                <li>Při příjezdu předložíte <strong>doklad totožnosti</strong> všech ubytovaných osob. Bez něj vás nesmíme ubytovat — ukládá nám to zákon o místních poplatcích a u cizinců zákon o pobytu cizinců.</li>
+                <li>Zapůjčené klíče vracíte při odjezdu. Za jejich ztrátu účtujeme náklady na výměnu zámku.</li>
+              </ul>
+              <p class="legal-article-text"><strong>Bezbariérovost:</strong> do budovy se vstupuje po schodech a hotel <strong>není bezbariérový</strong>. Pokud má někdo z vás sníženou pohyblivost, zavolejte nám prosím ještě před rezervací, ať společně posoudíme, zda je pro vás pobyt vhodný.</p>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">8. Stravování</h2>
+              <ul style="line-height: 1.7; color: #4a4a46; padding-left: 20px;">
+                <li><strong>Snídaně</strong> formou švédského stolu podáváme od 8:00 do 9:00. Jsou v ceně ubytování.</li>
+                <li><strong>Večeře</strong> podáváme v 18:00 hostům, kteří si objednali polopenzi. Jde o jednotné dvouchodové menu bez možnosti výběru z jídelního lístku.</li>
+                <li>Hotel <strong>není veřejnou restaurací</strong> — vaříme výhradně pro ubytované hosty.</li>
+                <li>Máte-li dietní omezení nebo alergii, dejte nám prosím vědět <strong>nejpozději 3 dny před příjezdem</strong>. Běžné úpravy včetně bezlepkové stravy zvládneme, ale potřebujeme čas na nákup surovin.</li>
+                <li>Polopenzi lze doobjednat i na místě, pokud to kapacita kuchyně dovolí.</li>
+              </ul>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">9. Pravidla pobytu</h2>
+              <p class="legal-article-text">Tato pravidla platí pro všechny hosty. Jde o běžnou slušnost, díky které je pobyt příjemný pro každého.</p>
+              <ul style="line-height: 1.7; color: #4a4a46; padding-left: 20px;">
+                <li><strong>Celý hotel je nekuřácký</strong>, včetně pokojů, balkónů a teras. Kouřit lze pouze ve vyhrazeném venkovním prostoru.</li>
+                <li><strong>Noční klid</strong> platí od 22:00 do 7:00.</li>
+                <li><strong>Psi jsou vítáni</strong> za poplatek 150 Kč za den. Musí být nahlášeni už při rezervaci a po hotelu se pohybovat pod vaším dohledem. Odpovídáte za škody, které způsobí, a za úklid po nich.</li>
+                <li>Za děti odpovídají po celou dobu pobytu jejich zákonní zástupci. Týká se to i dětského koutku, zahrady a prostoru u splavu.</li>
+                <li><strong>Řeka Bílá Desná a přírodní tůň</strong> nejsou hlídané koupaliště. Do vody vstupujete na vlastní nebezpečí.</li>
+                <li>Návštěvy neubytovaných osob na pokojích jsou možné jen se souhlasem ubytovatele.</li>
+                <li>Škodu na vybavení uhradíte ve výši nákladů na opravu nebo náhradu. Prosíme, nahlaste nám ji hned — řešíme to v klidu a bez dramat.</li>
+                <li>Ubytovatel může ukončit pobyt bez náhrady, pokud host přes upozornění hrubě porušuje tato pravidla, obtěžuje ostatní hosty nebo poškozuje majetek.</li>
+              </ul>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">10. Odpovědnost za vnesené věci</h2>
+              <p class="legal-article-text">Za věci, které si do hotelu přinesete, odpovídá ubytovatel podle § 2945 a následujících občanského zákoníku.</p>
+              <p class="legal-article-text">Za peníze, klenoty a jiné cennosti odpovídá ubytovatel jen do zákonem stanovené výše, pokud je nepřevzal do úschovy. <strong>Cennosti proto doporučujeme uložit u nás v recepci.</strong></p>
+              <p class="legal-article-text">Škodu je nutné oznámit <strong>bez zbytečného odkladu, nejpozději do 15 dnů</strong> od chvíle, kdy jste se o ní dozvěděli. Později už nárok bohužel zaniká — plyne to přímo ze zákona.</p>
+              <p class="legal-article-text">Parkoviště je oplocené, se závorou a kamerovým systémem. <strong>Nejde však o hlídané parkoviště</strong> ve smyslu smlouvy o úschově a ubytovatel neodpovídá za věci ponechané ve vozidle.</p>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">11. Reklamace</h2>
+              <p class="legal-article-text">Nejste-li s něčím spokojeni, řekněte nám to prosím <strong>hned na místě</strong>. Většinu věcí umíme vyřešit během chvíle — a je to výrazně lepší než zpětná reklamace, u které už nápravu poskytnout nemůžeme.</p>
+              <p class="legal-article-text">Reklamaci můžete uplatnit i písemně na <a href="mailto:hotel@umustku.cz" style="color: #1c1c19; text-decoration: underline;">hotel@umustku.cz</a> nebo na adrese hotelu. Přijetí potvrdíme a vyřídíme ji <strong>nejpozději do 30 dnů</strong>, pokud se nedohodneme na delší lhůtě.</p>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">12. Mimosoudní řešení spotřebitelských sporů</h2>
+              <p class="legal-article-text">Pokud se nepodaří spor vyřešit přímo s námi, máte jako spotřebitel právo obrátit se na orgán mimosoudního řešení sporů. Tím je:</p>
+              <p class="legal-article-text">
+                <strong>Česká obchodní inspekce</strong><br>
+                Ústřední inspektorát – oddělení ADR<br>
+                Gorazdova 1969/24, 120 00 Praha 2<br>
+                Web: <a href="https://adr.coi.cz" target="_blank" rel="noopener" style="color: #1c1c19; text-decoration: underline;">adr.coi.cz</a><br>
+                E-mail: <a href="mailto:adr@coi.cz" style="color: #1c1c19; text-decoration: underline;">adr@coi.cz</a>
+              </p>
+              <p class="legal-article-text">Řízení je pro spotřebitele bezplatné a zahájit ho lze do 1 roku ode dne, kdy jste u nás uplatnili své právo poprvé.</p>
+              <p class="legal-article-text">Dozor nad dodržováním předpisů na ochranu spotřebitele vykonává <strong>Česká obchodní inspekce</strong>, dozor v oblasti hygieny <strong>Krajská hygienická stanice Libereckého kraje</strong> a dozor nad živnostenským podnikáním příslušný <strong>živnostenský úřad</strong>.</p>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">13. Ochrana osobních údajů</h2>
+              <p class="legal-article-text">Jak nakládáme s vašimi údaji, podrobně popisujeme v <a href="/gdpr" style="color: #1c1c19; text-decoration: underline;">zásadách ochrany osobních údajů</a>. Najdete tam i to, jaké údaje o vás musíme ze zákona evidovat a jak dlouho.</p>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">14. Závěrečná ustanovení</h2>
+              <ul style="line-height: 1.7; color: #4a4a46; padding-left: 20px;">
+                <li>Smlouva se uzavírá v českém jazyce a řídí se právem České republiky. Tím nejsou dotčena práva, která vám jako spotřebiteli přiznávají předpisy státu vašeho obvyklého bydliště.</li>
+                <li>Uzavřenou smlouvu i tyto podmínky archivujeme v elektronické podobě. Na požádání vám je zašleme.</li>
+                <li>Ubytovatel může tyto podmínky měnit. Pro vaši rezervaci vždy platí znění účinné ke dni jejího uzavření a to vám také zasíláme v potvrzovacím e-mailu.</li>
+                <li>Je-li některé ustanovení těchto podmínek neplatné, zůstávají ostatní v platnosti.</li>
+                <li>Ustanovení odchylně sjednaná v písemné dohodě mají přednost před těmito podmínkami.</li>
+              </ul>
+            </div>
 
       </div>
     </section>
@@ -3844,44 +4239,121 @@ export const getCookiesPageHTML = () => `
     <!-- OBSAHOVÁ SEKCE -->
     <section class="legal-page-content-section">
       <div class="legal-page-inner">
-        
-        <div class="legal-article-card">
-          <h2 class="legal-article-title">1. Co jsou soubory cookies?</h2>
-          <p class="legal-article-text">Cookies jsou malé textové soubory, které webová stránka ukládá ve vašem počítači nebo telefonu při jejím prohlížení. Díky nim si web na určitou dobu zapamatuje vaše kroky a preference, abyste je nemuseli zadávat znovu.</p>
-          <p class="legal-article-text">Respektujeme vaše soukromí — na našem webu nezobrazujeme žádné reklamy a vaše údaje neprodáváme žádným třetím stranám.</p>
-        </div>
-
-        <div class="legal-article-card">
-          <h2 class="legal-article-title">2. Přehled používaných cookies na našem webu</h2>
-          <p class="legal-article-text">Na tomto webu používáme dva typy souborů cookies:</p>
-
-          <div style="margin-top: 20px;">
-            <div class="cookie-option-card" style="margin-bottom: 20px;">
-              <div class="cookie-option-header">
-                <span class="cookie-option-name">Technické (Nutné) cookies</span>
-                <span class="cookie-badge-necessary">Vždy povolené</span>
-              </div>
-              <p class="cookie-option-desc">Tyto cookies jsou nezbytné pro správné fungování webu, odeslání rezervačního formuláře a zapamatování vašeho nastavení soukromí. Nelze je vypnout, protože bez nich by web nemohl správně fungovat.</p>
+            <div class="legal-article-card">
+              <p class="legal-article-text" style="margin-bottom: 0;">Účinné od 1. srpna 2026. Na této stránce najdete úplný seznam toho, co si náš web ukládá do vašeho zařízení, k čemu to slouží a jak dlouho to tam zůstane. Ukládání se řídí § 89 odst. 3 zákona č. 127/2005 Sb., o elektronických komunikacích, a nařízením GDPR.</p>
             </div>
 
-            <div class="cookie-option-card">
-              <div class="cookie-option-header">
-                <span class="cookie-option-name">Analytické cookies (Google Analytics)</span>
-                <span style="font-size: 13px; color: #555550;">Vyžadují váš souhlas</span>
-              </div>
-              <p class="cookie-option-desc">Pomáhají nám anonymně měřit návštěvnost webu (kolik lidí nás navštívilo a které stránky si prohlížejí). Používáme službu Google Analytics (ID: G-X62MWWL0FV) s plnou anonymizací IP adresy. Tyto cookies se spustí <strong>pouze tehdy, pokud dáte souhlas</strong>.</p>
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">1. Co to vlastně je</h2>
+              <p class="legal-article-text">Cookies jsou malé soubory, které web uloží do vašeho prohlížeče. Díky nim si stránka pamatuje, co jste na ní udělali — třeba že jste už odpověděli na otázku ohledně cookies a nemusíme se vás ptát znovu při každém načtení.</p>
+              <p class="legal-article-text">Náš web používá vedle klasických cookies také takzvané <strong>místní úložiště prohlížeče</strong> (localStorage). Funguje podobně, jen data zůstávají uložená ve vašem počítači nebo telefonu a neodesílají se s každým požadavkem na server. Z pohledu zákona i vašeho soukromí platí pro obojí stejná pravidla, a proto obojí najdete v přehledu níže.</p>
+              <p class="legal-article-text"><strong>Bez vašeho souhlasu nespouštíme nic, co by nebylo nezbytné pro fungování webu.</strong> Měřicí kód Google Analytics se do stránky vůbec nenačte, dokud v cookie liště nepotvrdíte souhlas.</p>
             </div>
-          </div>
-        </div>
 
-        <div class="legal-article-card" style="text-align: center;">
-          <h2 class="legal-article-title">3. Jak můžete změnit své nastavení?</h2>
-          <p class="legal-article-text">Svá rozhodnutí můžete kdykoliv změnit. Kliknutím na tlačítko níže znovu otevřete okno s nastavením cookies:</p>
-          
-          <div style="margin-top: 24px; display: flex; justify-content: center;">
-            <button class="btn btn-cookie-modal-save" id="btn-open-cookie-settings-page">Změnit nastavení cookies</button>
-          </div>
-        </div>
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">2. Nezbytné soubory</h2>
+              <p class="legal-article-text">Bez těchto souborů by web nefungoval správně. Neslouží ke sledování, nesbírají o vás žádné údaje pro reklamu a nepředáváme je nikomu dalšímu. Podle zákona k nim nepotřebujeme váš souhlas — proto je v cookie liště nelze vypnout.</p>
+              <table class="legal-info-table">
+                <thead>
+                  <tr>
+                    <th>Název</th>
+                    <th>K čemu slouží</th>
+                    <th>Doba uložení</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>hotel_cookie_consent_v1</strong></td>
+                    <td>Pamatuje si vaši volbu v cookie liště, abychom se vás neptali znovu při každé návštěvě.</td>
+                    <td>Do smazání v prohlížeči</td>
+                  </tr>
+                  <tr>
+                    <td><strong>hotel_season_mode</strong></td>
+                    <td>Pamatuje si, jestli si web prohlížíte v letním, nebo zimním zobrazení.</td>
+                    <td>Do smazání v prohlížeči</td>
+                  </tr>
+                  <tr>
+                    <td><strong>hotel_umustku_reservations_v1</strong></td>
+                    <td>Uchová vaši rozpracovanou a odeslanou rezervaci, abyste si ji mohli znovu zobrazit a nemuseli ji vyplňovat znovu.</td>
+                    <td>Do smazání v prohlížeči</td>
+                  </tr>
+                  <tr>
+                    <td><strong>hotel_umustku_discount_codes_v1</strong><br><strong>hotel_umustku_used_discounts_v1</strong></td>
+                    <td>Eviduje slevové kódy a to, které z nich už byly z tohoto zařízení uplatněny.</td>
+                    <td>Do smazání v prohlížeči</td>
+                  </tr>
+                  <tr>
+                    <td><strong>hotel_umustku_blocked_dates_v1</strong><br><strong>hotel_umustku_room_prices_v1</strong><br><strong>hotel_umustku_disabled_rooms_v1</strong></td>
+                    <td>Ukládají obsazené termíny, ceník a dostupnost pokojů, aby se rezervační formulář načítal rychle a nemusel se pokaždé dotazovat serveru.</td>
+                    <td>Do smazání v prohlížeči</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="legal-article-text" style="margin-top: 16px;">Tyto údaje zpracováváme na základě našeho oprávněného zájmu na tom, aby web fungoval a pamatoval si vaše nastavení (čl. 6 odst. 1 písm. f) GDPR).</p>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">3. Analytické soubory</h2>
+              <p class="legal-article-text">Používáme je jen tehdy, pokud nám k tomu dáte souhlas. Slouží k tomu, abychom věděli, které stránky lidi zajímají a kde se web chová špatně — třeba že se někde návštěvníci často zaseknou. <strong>Nesledujeme jednotlivé osoby a vaši IP adresu máme nastavenou tak, aby se anonymizovala.</strong></p>
+              <table class="legal-info-table">
+                <thead>
+                  <tr>
+                    <th>Název</th>
+                    <th>Kdo jej ukládá</th>
+                    <th>K čemu slouží</th>
+                    <th>Doba uložení</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>_ga</strong></td>
+                    <td>Google Analytics 4</td>
+                    <td>Rozlišuje jednotlivé návštěvníky, aby se stejný člověk nepočítal opakovaně.</td>
+                    <td>2 roky</td>
+                  </tr>
+                  <tr>
+                    <td><strong>_ga_X62MWWL0FV</strong></td>
+                    <td>Google Analytics 4</td>
+                    <td>Udržuje stav návštěvy a měří, jak dlouho na webu zůstáváte.</td>
+                    <td>2 roky</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="legal-article-text" style="margin-top: 16px;">Poskytovatelem je <strong>Google Ireland Limited</strong>, Gordon House, Barrow Street, Dublin 4, Irsko. Údaje mohou být předány do Spojených států — takové předání je zajištěno rozhodnutím Evropské komise o odpovídající ochraně ze dne 10. července 2023 (rámec EU-U.S. Data Privacy Framework). Podrobnosti najdete v <a href="/gdpr" style="color: #1c1c19; text-decoration: underline;">zásadách ochrany osobních údajů</a>.</p>
+              <p class="legal-article-text">Právním základem je váš souhlas (čl. 6 odst. 1 písm. a) GDPR), který můžete kdykoli odvolat tlačítkem na konci této stránky.</p>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">4. Co na webu nenajdete</h2>
+              <p class="legal-article-text">Pro pořádek uvádíme i to, co nepoužíváme:</p>
+              <ul style="line-height: 1.7; color: #4a4a46; padding-left: 20px;">
+                <li><strong>Žádné reklamní ani marketingové cookies.</strong> Nesledujeme vás po internetu a nezobrazujeme vám cílenou reklamu.</li>
+                <li><strong>Žádné sledovací pixely sociálních sítí</strong> — nemáme zde Facebook Pixel ani nic podobného.</li>
+                <li><strong>Žádný prodej dat.</strong> Údaje o vaší návštěvě nikomu neprodáváme ani nepředáváme k reklamním účelům.</li>
+              </ul>
+              <p class="legal-article-text">Web načítá písma ze služby Google Fonts a úvodní video z úložiště Supabase. Při tomto načtení se přenáší vaše IP adresa, což je technicky nutné pro doručení obsahu. Žádné soubory se přitom do vašeho zařízení neukládají.</p>
+            </div>
+
+            <div class="legal-article-card">
+              <h2 class="legal-article-title">5. Jak si cookies smazat v prohlížeči</h2>
+              <p class="legal-article-text">Kromě tlačítka níže můžete uložené soubory kdykoli smazat přímo v nastavení svého prohlížeče. Postup se liší podle toho, co používáte:</p>
+              <ul style="line-height: 1.7; color: #4a4a46; padding-left: 20px;">
+                <li><strong>Chrome:</strong> Nastavení → Ochrana soukromí a zabezpečení → Vymazat údaje o prohlížení</li>
+                <li><strong>Safari:</strong> Nastavení → Safari → Smazat historii a data webů</li>
+                <li><strong>Firefox:</strong> Nastavení → Soukromí a zabezpečení → Cookies a data stránek → Vymazat data</li>
+                <li><strong>Edge:</strong> Nastavení → Soubory cookie a oprávnění webu → Spravovat a odstranit soubory cookie</li>
+              </ul>
+              <p class="legal-article-text">Upozorňujeme, že po smazání nezbytných souborů se vás web znovu zeptá na souhlas s cookies a zapomene vaše nastavení zobrazení i rozpracovanou rezervaci.</p>
+            </div>
+
+            <div class="legal-article-card" style="text-align: center;">
+              <h2 class="legal-article-title">6. Změna nastavení</h2>
+              <p class="legal-article-text">Svou volbu můžete kdykoli změnit nebo souhlas odvolat. Odvolání nemá vliv na zákonnost zpracování, ke kterému došlo před ním. Klikněte na tlačítko a znovu se otevře okno s nastavením:</p>
+
+              <div style="margin-top: 24px; display: flex; justify-content: center;">
+                <button class="btn btn-cookie-modal-save" id="btn-open-cookie-settings-page">Změnit nastavení cookies</button>
+              </div>
+            </div>
 
       </div>
     </section>
@@ -5110,6 +5582,8 @@ const route = (isInitial = false) => {
     pageKey = 'gdpr';
   } else if (pathName === '/cookies' || pathName === '/cookies.html') {
     pageKey = 'cookies';
+  } else if (pathName === '/podminky' || pathName === '/podminky.html') {
+    pageKey = 'podminky';
   }
   // 3. DOKONČENÍ SEKCIONÁLNÍCH HASHŮ
   else if (knownNewsHashes.includes(cleanHash) || cleanHash.includes('aktualit') || cleanHash.includes('novink')) {
@@ -5137,7 +5611,7 @@ const route = (isInitial = false) => {
   const isNewPage = currentViewKey !== pageKey;
   currentViewKey = pageKey;
 
-  if (pageKey === 'ground' || pageKey === 'view' || pageKey === 'dining' || pageKey === 'events' || pageKey === 'activities' || pageKey === 'category-detail' || pageKey === 'contact' || pageKey === 'news' || pageKey === 'gdpr' || pageKey === 'cookies') {
+  if (pageKey === 'ground' || pageKey === 'view' || pageKey === 'dining' || pageKey === 'events' || pageKey === 'activities' || pageKey === 'category-detail' || pageKey === 'contact' || pageKey === 'news' || pageKey === 'gdpr' || pageKey === 'cookies' || pageKey === 'podminky') {
     preloadHeroImages(pageKey);
   }
 
@@ -5164,6 +5638,8 @@ const route = (isInitial = false) => {
       isPreRenderedMatch = true;
     } else if (pageKey === 'cookies' && app.querySelector('#uvod-cookies')) {
       isPreRenderedMatch = true;
+    } else if (pageKey === 'podminky' && app.querySelector('#uvod-podminky')) {
+      isPreRenderedMatch = true;
     }
   }
 
@@ -5180,6 +5656,9 @@ const route = (isInitial = false) => {
     initInteractivity();
   } else if (pageKey === 'cookies') {
     if (!isPreRenderedMatch) app.innerHTML = getCookiesPageHTML();
+    initInteractivity();
+  } else if (pageKey === 'podminky') {
+    if (!isPreRenderedMatch) app.innerHTML = getPodminkyPageHTML();
     initInteractivity();
   } else if (pageKey === 'news') {
     if (!isPreRenderedMatch) {
