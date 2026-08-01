@@ -2,8 +2,8 @@ import './style.css';
 import './booking.css';
 import { BookingSystem } from './components/BookingSystem.js';
 import { AdminDashboard } from './components/AdminDashboard.js';
-import { getStoredRoomPrices, getStoredDisabledRooms, MOCK_ROOMS, saveContactMessage, getStoredNewsItems } from './lib/supabaseClient.js';
-import { sendEmail, generateEmailContactNotification } from './utils/emailService.js';
+import { getStoredRoomPrices, getStoredDisabledRooms, MOCK_ROOMS, saveContactMessage, getStoredNewsItems, getStoredReviews, saveStoredReview, formatGDPRName } from './lib/supabaseClient.js';
+import { sendEmail, generateEmailContactNotification, generateEmailNewReviewNotification } from './utils/emailService.js';
 
 export function syncCustomRoomNamesToDOM() {
   const roomItems = document.querySelectorAll('.room-breakdown-item[data-room]');
@@ -655,10 +655,19 @@ const GUEST_REVIEWS = [
 ];
 
 const getReviewsHTML = () => `
-  <!-- SEKCE RECENZE (1:1 REPLIKA DLE SVG PŘEDLOHY + INTERAKTIVNÍ INFINITY SLIDER) -->
+  <!-- SEKCE RECENZE (1:1 REPLIKA DLE SVG PŘEDLOHY + INTERAKTIVNÍ INFINITY SLIDER + NAPSAT RECENZI) -->
   <section class="reviews-section" id="recenze">
     <div class="reviews-inner">
-      <h2 class="reviews-title">Co o nás říkají sami hosté?</h2>
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
+        <h2 class="reviews-title" style="margin: 0;">Co o nás říkají sami hosté?</h2>
+        <button type="button" class="btn btn-add-review" id="btn-open-review-modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+          </svg>
+          <span>Napsat recenzi</span>
+        </button>
+      </div>
       
       <div class="reviews-slider-viewport" id="reviews-viewport">
         <div class="reviews-slider-track" id="reviews-track">
@@ -670,7 +679,7 @@ const getReviewsHTML = () => `
                 <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
               </div>
               <div class="review-footer">
-                <span class="review-author-name">${r.author}</span>
+                <span class="review-author-name">${r.author || r.author_name}</span>
                 <span class="review-date">${r.date}</span>
               </div>
             </div>
@@ -688,6 +697,65 @@ const getReviewsHTML = () => `
       </div>
     </div>
   </section>
+
+  <!-- MODAL: NAPSAT NOVOU RECENZI -->
+  <div class="review-modal-overlay" id="add-review-modal-overlay" aria-hidden="true">
+    <div class="review-modal-card">
+      <div class="review-modal-header">
+        <h3 class="review-modal-title">Přidat novou recenzi</h3>
+        <button type="button" class="review-modal-close" id="btn-close-review-modal" aria-label="Zavřít">&times;</button>
+      </div>
+
+      <form id="add-review-form" class="review-modal-form" novalidate>
+        <div class="review-modal-body">
+          <p class="review-modal-subtitle">
+            Vaše zkušenost pomůže ostatním hostům. Po odeslání bude recenze schválena recepcí a následně zveřejněna.
+          </p>
+
+          <div id="review-modal-alert-area"></div>
+
+          <!-- Honeypot -->
+          <div style="display:none;" aria-hidden="true">
+            <input type="text" id="hp-review-field" tabindex="-1" autocomplete="off">
+          </div>
+
+          <div class="form-field" id="field-wrap-review-name">
+            <label for="review-fullname-input" class="form-label">Jméno a Příjmení <span class="required" style="color: #c62828;">*</span></label>
+            <input type="text" id="review-fullname-input" class="form-input" placeholder="např. Jan Novák" required>
+            <small class="form-hint" style="font-size: 12.5px; color: #666660; margin-top: 5px; display: block;">
+              🔒 <strong>Ochrana soukromí (GDPR):</strong> Vaše příjmení bude po odeslání automaticky zkráceno na počáteční písmeno (např. <em>Jan N.</em>).
+            </small>
+          </div>
+
+          <div class="form-field" style="margin-top: 16px;">
+            <label class="form-label">Vaše hodnocení pobytu <span class="required" style="color: #c62828;">*</span></label>
+            <div class="star-rating-picker" id="star-rating-picker" data-rating="5">
+              <button type="button" class="star-btn active" data-value="1" aria-label="1 hvězdička">★</button>
+              <button type="button" class="star-btn active" data-value="2" aria-label="2 hvězdičky">★</button>
+              <button type="button" class="star-btn active" data-value="3" aria-label="3 hvězdičky">★</button>
+              <button type="button" class="star-btn active" data-value="4" aria-label="4 hvězdičky">★</button>
+              <button type="button" class="star-btn active" data-value="5" aria-label="5 hvězdiček">★</button>
+            </div>
+            <span class="rating-text-label" id="rating-text-label" style="font-size: 13.5px; font-weight: 600; color: #697947; margin-top: 4px; display: block;">
+              5 z 5 hvězdiček (Vynikající)
+            </span>
+          </div>
+
+          <div class="form-field" id="field-wrap-review-text" style="margin-top: 16px;">
+            <label for="review-text-input" class="form-label">Text vaší recenze <span class="required" style="color: #c62828;">*</span></label>
+            <textarea id="review-text-input" class="form-textarea" rows="4" placeholder="Napište, jak se vám u nás líbilo, jak vám chutnala snídaně či jak hodnotíte čistotu a personál..." required></textarea>
+          </div>
+        </div>
+
+        <div class="review-modal-footer">
+          <button type="button" class="btn btn-specs-secondary" id="btn-cancel-review-modal">Zrušit</button>
+          <button type="submit" class="btn btn-booking-submit" id="btn-submit-review">
+            <span>Odeslat recenzi ke schválení →</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 `;
 
 const getFeaturesHTML = () => `
@@ -2171,28 +2239,53 @@ const initInteractivity = () => {
 
   if (reviewsTrack && reviewsViewport && !reviewsTrack.dataset.initialized) {
     reviewsTrack.dataset.initialized = 'true';
-    const originalCards = Array.from(reviewsTrack.children);
-    const totalOriginal = originalCards.length;
 
-    originalCards.forEach(card => {
-      const cloneEnd = card.cloneNode(true);
-      reviewsTrack.appendChild(cloneEnd);
-    });
-    originalCards.forEach(card => {
-      const cloneStart = card.cloneNode(true);
-      reviewsTrack.insertBefore(cloneStart, reviewsTrack.firstChild);
-    });
+    // Populate approved reviews from storage
+    (async () => {
+      try {
+        const stored = await getStoredReviews();
+        const approved = (stored || []).filter(r => r.status === 'approved');
+        if (approved.length > 0) {
+          reviewsTrack.innerHTML = approved.map(r => `
+            <div class="review-card">
+              <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
+              <p class="review-quote">${r.text}</p>
+              <div class="review-contour-bg">
+                <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              </div>
+              <div class="review-footer">
+                <span class="review-author-name">${r.author_name || r.full_name}</span>
+                <span class="review-date">${r.date || ''}</span>
+              </div>
+            </div>
+          `).join('');
+        }
+      } catch (err) {
+        console.warn('Could not load dynamic reviews:', err);
+      }
 
-    const allCards = Array.from(reviewsTrack.children);
-    let currentIndex = totalOriginal;
+      const originalCards = Array.from(reviewsTrack.children);
+      const totalOriginal = originalCards.length;
 
-    const getCardStep = () => {
-      const firstCard = allCards[0];
-      const cardWidth = firstCard.offsetWidth;
-      const style = window.getComputedStyle(reviewsTrack);
-      const gap = parseFloat(style.gap) || 24;
-      return cardWidth + gap;
-    };
+      originalCards.forEach(card => {
+        const cloneEnd = card.cloneNode(true);
+        reviewsTrack.appendChild(cloneEnd);
+      });
+      originalCards.forEach(card => {
+        const cloneStart = card.cloneNode(true);
+        reviewsTrack.insertBefore(cloneStart, reviewsTrack.firstChild);
+      });
+
+      const allCards = Array.from(reviewsTrack.children);
+      let currentIndex = totalOriginal;
+
+      const getCardStep = () => {
+        const firstCard = allCards[0];
+        const cardWidth = firstCard ? firstCard.offsetWidth : 380;
+        const style = window.getComputedStyle(reviewsTrack);
+        const gap = parseFloat(style.gap) || 24;
+        return cardWidth + gap;
+      };
 
     const updatePosition = (animated = true) => {
       const step = getCardStep();
@@ -2289,7 +2382,141 @@ const initInteractivity = () => {
     reviewsViewport.addEventListener('mouseleave', () => {
       isDragging = false;
     });
+    })();
   }
+
+  // REVIEW MODAL & FORM HANDLERS
+  const openModalBtn = document.getElementById('btn-open-review-modal');
+  const closeModalBtn = document.getElementById('btn-close-review-modal');
+  const cancelModalBtn = document.getElementById('btn-cancel-review-modal');
+  const modalOverlay = document.getElementById('add-review-modal-overlay');
+  const reviewForm = document.getElementById('add-review-form');
+  const starPicker = document.getElementById('star-rating-picker');
+  const ratingTextLabel = document.getElementById('rating-text-label');
+
+  const ratingLabels = {
+    1: '1 z 5 hvězdiček (Špatné)',
+    2: '2 z 5 hvězdiček (Průměrné)',
+    3: '3 z 5 hvězdiček (Dobré)',
+    4: '4 z 5 hvězdiček (Velmi dobré)',
+    5: '5 z 5 hvězdiček (Vynikající)'
+  };
+
+  if (starPicker) {
+    starPicker.querySelectorAll('.star-btn').forEach(starBtn => {
+      starBtn.addEventListener('click', () => {
+        const val = parseInt(starBtn.dataset.value, 10) || 5;
+        starPicker.dataset.rating = val;
+        starPicker.querySelectorAll('.star-btn').forEach(btn => {
+          const btnVal = parseInt(btn.dataset.value, 10);
+          btn.classList.toggle('active', btnVal <= val);
+        });
+        if (ratingTextLabel) {
+          ratingTextLabel.textContent = ratingLabels[val] || `${val} z 5 hvězdiček`;
+        }
+      });
+    });
+  }
+
+  const toggleReviewModal = (show) => {
+    if (!modalOverlay) return;
+    if (show) {
+      modalOverlay.classList.add('is-open');
+      modalOverlay.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    } else {
+      modalOverlay.classList.remove('is-open');
+      modalOverlay.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      if (reviewForm) reviewForm.reset();
+      const alertArea = document.getElementById('review-modal-alert-area');
+      if (alertArea) alertArea.innerHTML = '';
+      const submitBtn = document.getElementById('btn-submit-review');
+      if (submitBtn) submitBtn.disabled = false;
+      if (starPicker) {
+        starPicker.dataset.rating = '5';
+        starPicker.querySelectorAll('.star-btn').forEach(btn => btn.classList.add('active'));
+        if (ratingTextLabel) ratingTextLabel.textContent = ratingLabels[5];
+      }
+    }
+  };
+
+  if (openModalBtn) openModalBtn.addEventListener('click', () => toggleReviewModal(true));
+  if (closeModalBtn) closeModalBtn.addEventListener('click', () => toggleReviewModal(false));
+  if (cancelModalBtn) cancelModalBtn.addEventListener('click', () => toggleReviewModal(false));
+  if (modalOverlay) {
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) toggleReviewModal(false);
+    });
+  }
+
+  if (reviewForm) {
+    reviewForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const alertArea = document.getElementById('review-modal-alert-area');
+      const hpField = document.getElementById('hp-review-field');
+      if (hpField && hpField.value) return; // Anti-spam
+
+      const nameInput = document.getElementById('review-fullname-input');
+      const textInput = document.getElementById('review-text-input');
+      const rating = parseInt(starPicker ? starPicker.dataset.rating : '5', 10) || 5;
+
+      const fullName = (nameInput ? nameInput.value : '').trim();
+      const text = (textInput ? textInput.value : '').trim();
+
+      if (!fullName || !text) {
+        if (alertArea) {
+          alertArea.innerHTML = `
+            <div style="background-color: #fbe9e7; color: #c62828; padding: 12px 16px; border-radius: 4px; font-size: 14px; margin-bottom: 16px;">
+              ⚠️ Prosíme vyplňte vaše jméno a text recenze.
+            </div>
+          `;
+        }
+        return;
+      }
+
+      const gdprName = formatGDPRName(fullName);
+      const submitBtn = document.getElementById('btn-submit-review');
+      if (submitBtn) submitBtn.disabled = true;
+
+      const reviewRecord = {
+        full_name: fullName,
+        author_name: gdprName,
+        rating: rating,
+        text: text,
+        status: 'pending_approval'
+      };
+
+      await saveStoredReview(reviewRecord);
+
+      // Send email notification to admin ondra.zeman05@gmail.com
+      try {
+        const emailTemplate = generateEmailNewReviewNotification({ review: { ...reviewRecord, date: new Date().toLocaleDateString('cs-CZ') } });
+        await sendEmail({
+          to: 'ondra.zeman05@gmail.com',
+          subject: emailTemplate.subject,
+          html: emailTemplate.html,
+          type: 'new_review_notification'
+        });
+      } catch (err) {
+        console.warn('E-mail notification failed:', err);
+      }
+
+      if (alertArea) {
+        alertArea.innerHTML = `
+          <div style="background-color: #edf2e4; color: #4a5a24; border-left: 4px solid #697947; padding: 16px; border-radius: 4px; font-size: 14px; line-height: 1.5; margin-bottom: 16px;">
+            ✅ <strong>Děkujeme! Vaše recenze byla odeslána.</strong><br>
+            Vaše hodnocení pod jménem <strong>${gdprName}</strong> bylo předáno recepci ke schválení. Po schválení se zobrazí mezi ostatními recenzemi.
+          </div>
+        `;
+      }
+
+      setTimeout(() => {
+        toggleReviewModal(false);
+      }, 3500);
+    });
+  }
+
 
   // Univerzální Plynulý Slider Logic (Pro Okolí & Aktivity na všech zařízeních)
   const setupSlider = (trackId, viewportId, prevBtnId, nextBtnId) => {

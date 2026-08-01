@@ -689,3 +689,150 @@ export const uploadNewsImage = async (fileOrBlob) => {
   }
   return { success: false, error: 'Supabase not configured' };
 };
+
+// ====================================================
+// POMOCNÉ FUNKCE PRO PROJEKTOVÝ MODUL "RECENZE HOSTŮ"
+// ====================================================
+
+export const DEFAULT_REVIEWS = [
+  { id: 'rev-seed-1', author_name: 'Honza s přáteli', full_name: 'Honza s přáteli', rating: 5, date: '09. 09. 2014', text: 'O prázdninách jsme navštívili s kamarády Jizerské hory a ubytování v hotelu U Můstků bylo super. Určitě pojedeme znovu i v zimě na lyže. Tímto pozdravuji provozovatele.', status: 'approved', created_at: '2014-09-09T12:00:00Z' },
+  { id: 'rev-seed-2', author_name: 'Michal a Jitka', full_name: 'Michal a Jitka', rating: 5, date: '24. 07. 2014', text: 'Rodinný hotel v klidném prostředí, výborná domácí kuchyně a příjemní lidé... :-) Parádní dovolená.', status: 'approved', created_at: '2014-07-24T12:00:00Z' },
+  { id: 'rev-seed-3', author_name: 'Dana M.', full_name: 'Dana Malá', rating: 5, date: '13. 07. 2014', text: 'S přítelem jsme strávili tři dny a byli jsme velice spokojeni.', status: 'approved', created_at: '2014-07-13T12:00:00Z' },
+  { id: 'rev-seed-4', author_name: 'Jana V.', full_name: 'Jana Veselá', rating: 5, date: '31. 05. 2014', text: 'Minulý týden jsme se s rodinou ubytovali v hotelu U Můstků a můžu jenom doporučit. Velice příjemní lidé, výborná domácí kuchyně. Všude čisto. Opravdu doporučit.', status: 'approved', created_at: '2014-05-31T12:00:00Z' },
+  { id: 'rev-seed-5', author_name: 'Ilona M.', full_name: 'Ilona Marešová', rating: 5, date: '16. 04. 2014', text: 'Přespali jsme sice jenom jednu noc a musím konstatovat, že jsme spokojeni s přístupem a hlavně nádherně čistě uklizenými pokoji. Snídaně formou bufetu bez sebemenších připomínek.', status: 'approved', created_at: '2014-04-16T12:00:00Z' },
+  { id: 'rev-seed-6', author_name: 'Jaroslav K.', full_name: 'Jaroslav Kučera', rating: 5, date: '15. 04. 2014', text: 'Za profesionální přístup personálu a příjemné prostředí palec nahoru. Mohu všem jen doporučit. Zároveň si přeji, aby takto fungovala všechna podobná zařízení v Desné. Majitelům a personálu přeji plno slušných hostů a hodně elánu do jejich další práce.', status: 'approved', created_at: '2014-04-15T12:00:00Z' },
+  { id: 'rev-seed-7', author_name: 'Zbyněk V.', full_name: 'Zbyněk Vávra', rating: 5, date: '03. 04. 2014', text: 'Krásné prostředí, příjemná obsluha a výborná domácí kuchyně. Také jsme měli možnost ochutnat domácí uzený bůček a různé dobroty z grilu. Můžu jenom doporučit.', status: 'approved', created_at: '2014-04-03T12:00:00Z' }
+];
+
+const REVIEWS_LOCAL_KEY = 'hotel_umustku_reviews_v1';
+
+export function formatGDPRName(nameStr) {
+  if (!nameStr || typeof nameStr !== 'string') return 'Host hotelu';
+  const clean = nameStr.trim();
+  const parts = clean.split(/\s+/).filter(Boolean);
+  if (parts.length === 1) return parts[0];
+  const firstName = parts[0];
+  const lastInitial = parts[parts.length - 1].charAt(0).toUpperCase();
+  return `${firstName} ${lastInitial}.`;
+}
+
+let inMemoryReviews = [...DEFAULT_REVIEWS];
+
+export const getStoredReviews = async () => {
+  let localReviews = inMemoryReviews;
+  if (typeof localStorage !== 'undefined') {
+    try {
+      const raw = localStorage.getItem(REVIEWS_LOCAL_KEY);
+      if (raw) {
+        localReviews = JSON.parse(raw);
+        inMemoryReviews = localReviews;
+      } else {
+        localStorage.setItem(REVIEWS_LOCAL_KEY, JSON.stringify(DEFAULT_REVIEWS));
+      }
+    } catch (e) {
+      console.warn('Failed to parse local reviews:', e);
+    }
+  }
+
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('reviews')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (!error && data && data.length > 0) {
+        return data;
+      }
+    } catch (err) {
+      console.warn('Supabase fetch reviews failed, using local storage:', err);
+    }
+  }
+
+  return localReviews;
+};
+
+export const saveStoredReview = async (reviewPayload) => {
+  const gdprAuthor = formatGDPRName(reviewPayload.full_name || reviewPayload.author_name);
+  const nowISO = new Date().toISOString();
+  const d = new Date();
+  const formattedDate = `${String(d.getDate()).padStart(2, '0')}. ${String(d.getMonth() + 1).padStart(2, '0')}. ${d.getFullYear()}`;
+
+  const payload = {
+    id: reviewPayload.id || ('rev-' + Date.now() + '-' + Math.floor(Math.random() * 1000)),
+    full_name: (reviewPayload.full_name || reviewPayload.author_name || '').trim(),
+    author_name: gdprAuthor,
+    rating: Number(reviewPayload.rating || 5),
+    text: (reviewPayload.text || '').trim(),
+    date: reviewPayload.date || formattedDate,
+    status: reviewPayload.status || 'pending_approval',
+    created_at: reviewPayload.created_at || nowISO
+  };
+
+  const existingIdx = inMemoryReviews.findIndex(r => r.id === payload.id);
+  if (existingIdx !== -1) {
+    inMemoryReviews[existingIdx] = { ...inMemoryReviews[existingIdx], ...payload };
+  } else {
+    inMemoryReviews.unshift(payload);
+  }
+
+  // Always save to localStorage
+  if (typeof localStorage !== 'undefined') {
+    try {
+      localStorage.setItem(REVIEWS_LOCAL_KEY, JSON.stringify(inMemoryReviews));
+    } catch (e) {
+      console.error('Failed to save review to localStorage:', e);
+    }
+  }
+
+  // Save to Supabase if available
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('reviews')
+        .insert([payload])
+        .select();
+
+      if (!error && data) {
+        return { success: true, data: data[0] };
+      }
+    } catch (err) {
+      console.warn('Supabase insert review failed, stored locally:', err);
+    }
+  }
+
+  return { success: true, data: payload, isLocalOnly: true };
+};
+
+export const updateStoredReviewStatus = async (reviewId, status) => {
+  if (status === 'rejected') {
+    inMemoryReviews = inMemoryReviews.filter(r => r.id !== reviewId);
+  } else {
+    inMemoryReviews = inMemoryReviews.map(r => r.id === reviewId ? { ...r, status } : r);
+  }
+
+  // Update localStorage
+  if (typeof localStorage !== 'undefined') {
+    try {
+      localStorage.setItem(REVIEWS_LOCAL_KEY, JSON.stringify(inMemoryReviews));
+    } catch (e) {
+      console.error('Failed to update review status in localStorage:', e);
+    }
+  }
+
+  // Update Supabase
+  if (isSupabaseConfigured && supabase) {
+    try {
+      if (status === 'rejected') {
+        await supabase.from('reviews').delete().eq('id', reviewId);
+      } else {
+        await supabase.from('reviews').update({ status }).eq('id', reviewId);
+      }
+    } catch (err) {
+      console.warn('Supabase update review status failed:', err);
+    }
+  }
+
+  return { success: true };
+};
+

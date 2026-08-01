@@ -1,4 +1,4 @@
-import { MOCK_ROOMS, getStoredReservations, updateStoredReservationStatus, deleteStoredReservation, getStoredBlockedDates, saveStoredBlockedDate, deleteStoredBlockedDate, getStoredDiscountCodes, saveStoredDiscountCode, deleteStoredDiscountCode, getStoredRoomPrices, saveStoredRoomPrice, getStoredCustomRoomNames, saveStoredCustomRoomName, getStoredDisabledRooms, saveStoredDisabledRoom, getStoredNewsItems, saveStoredNewsItem, deleteStoredNewsItem, reorderNewsItem, uploadNewsImage, isSupabaseConfigured, supabase } from '../lib/supabaseClient.js';
+import { MOCK_ROOMS, getStoredReservations, updateStoredReservationStatus, deleteStoredReservation, getStoredBlockedDates, saveStoredBlockedDate, deleteStoredBlockedDate, getStoredDiscountCodes, saveStoredDiscountCode, deleteStoredDiscountCode, getStoredRoomPrices, saveStoredRoomPrice, getStoredCustomRoomNames, saveStoredCustomRoomName, getStoredDisabledRooms, saveStoredDisabledRoom, getStoredNewsItems, saveStoredNewsItem, deleteStoredNewsItem, reorderNewsItem, uploadNewsImage, isSupabaseConfigured, supabase, getStoredReviews, updateStoredReviewStatus } from '../lib/supabaseClient.js';
 import { calculateReservationPrice, generateSpaydQrUrl, BANK_ACCOUNT, formatCzechPrice, getVariableSymbol } from '../utils/pricing.js';
 import { sendEmail, generateEmail2ApprovalAndPaymentRequest, generateEmail3FinalConfirmation, generateEmailCancellation, getEmailLogs, sendAllTestEmailsTo } from '../utils/emailService.js';
 
@@ -87,6 +87,9 @@ export class AdminDashboard {
     this.newsForm = { title: '', banner_text: '', content: '', is_active: true, is_banner: false, image_url: '' };
     this.showCropModal = false;
     this.cropImageSrc = null;
+    this.showReviewsModal = false;
+    this.reviews = [];
+    this.reviewsTab = 'pending';
   }
 
   async init() {
@@ -98,12 +101,21 @@ export class AdminDashboard {
         this.fetchDiscountCodes(),
         this.fetchRoomPrices(),
         this.fetchDisabledRooms(),
-        this.fetchNewsItems()
+        this.fetchNewsItems(),
+        this.fetchReviews()
       ]);
     } catch (err) {
       console.error('AdminDashboard init fetch error:', err);
     }
     this.render();
+  }
+
+  async fetchReviews() {
+    try {
+      this.reviews = await getStoredReviews();
+    } catch (err) {
+      console.error('AdminDashboard fetchReviews error:', err);
+    }
   }
 
   async fetchNewsItems() {
@@ -880,6 +892,9 @@ export class AdminDashboard {
       return matchRoom && matchStatus;
     });
 
+    const pendingReviewsCount = (this.reviews || []).filter(r => r.status === 'pending_approval').length;
+    const approvedReviewsCount = (this.reviews || []).filter(r => r.status === 'approved').length;
+
     this.container.innerHTML = `
       <div class="admin-dashboard-wrapper">
         <!-- HORNÍ LIŠTA TITULKU A AKCÍ -->
@@ -889,6 +904,9 @@ export class AdminDashboard {
             <p>Správa rezervací a obsluha 30% záloh pro Hotel u Můstku</p>
           </div>
           <div class="admin-top-actions">
+            <button type="button" class="btn btn-specs-secondary btn-admin-reviews">
+              ⭐ Správa recenzí ${pendingReviewsCount > 0 ? `<span style="background: #e67e22; color: #ffffff; border-radius: 99px; padding: 2px 7px; font-size: 11px; font-weight: 700; margin-left: 4px;">${pendingReviewsCount}</span>` : ''}
+            </button>
             <button type="button" class="btn btn-specs-secondary btn-admin-news">
               📰 Správa aktualit ${this.newsItems.length > 0 ? `<span style="background: #2e3524; color: #ffffff; border-radius: 99px; padding: 2px 7px; font-size: 11px; font-weight: 700; margin-left: 4px;">${this.newsItems.length}</span>` : ''}
             </button>
@@ -1649,6 +1667,8 @@ export class AdminDashboard {
           </div>
         ` : ''}
 
+        ${this.showReviewsModal ? this.renderReviewsModalMarkup(pendingReviewsCount, approvedReviewsCount) : ''}
+
         ${this.adminToastMessage ? `
           <div class="admin-toast-bottom-widget ${this.toastExiting ? 'is-exiting' : ''}">
             <div class="toast-inner-content">
@@ -1665,6 +1685,79 @@ export class AdminDashboard {
     `;
 
     this.attachAdminListeners();
+  }
+
+  renderReviewsModalMarkup(pendingCount, approvedCount) {
+    const list = (this.reviews || []).filter(r => r.status === (this.reviewsTab || 'pending'));
+
+    return `
+      <div class="admin-modal-overlay admin-modal-overlay-block admin-modal-overlay-reviews">
+        <div class="admin-confirm-modal admin-block-modal" style="max-width: 780px; padding: 0 24px 24px 24px;">
+          <div class="admin-modal-header-sticky">
+            <h3 class="admin-modal-title" style="margin: 0; font-size: 18px; font-weight: 800; color: #1c1c19;">⭐ Správa recenzí hostů</h3>
+            <button type="button" class="btn-close-reviews-modal" style="background: none; border: none; font-size: 26px; cursor: pointer; color: #777; line-height: 1; padding: 4px 8px;">&times;</button>
+          </div>
+          <p class="admin-modal-desc" style="margin-top: 14px; margin-bottom: 16px; font-size: 13.5px; color: #55554e;">
+            Zde můžete schvalovat nové recenze zaslané hosty přes web, nebo vymazat nevhodné recenze.
+          </p>
+
+          <!-- TLAČÍTKA TABŮ -->
+          <div style="display: flex; gap: 10px; border-bottom: 1px solid #e8e7de; margin-bottom: 20px; padding-bottom: 10px;">
+            <button type="button" class="review-tab-btn ${this.reviewsTab === 'pending' ? 'active' : ''}" data-tab="pending" style="background: ${this.reviewsTab === 'pending' ? '#697947' : '#f2f2ee'}; color: ${this.reviewsTab === 'pending' ? '#ffffff' : '#333330'}; border: none; padding: 8px 16px; border-radius: 4px; font-size: 13.5px; font-weight: 700; cursor: pointer;">
+              Ke schválení ${pendingCount > 0 ? `<span style="background: #e67e22; color: #ffffff; border-radius: 99px; padding: 1px 7px; font-size: 11px; margin-left: 6px;">${pendingCount}</span>` : ''}
+            </button>
+            <button type="button" class="review-tab-btn ${this.reviewsTab === 'approved' ? 'active' : ''}" data-tab="approved" style="background: ${this.reviewsTab === 'approved' ? '#697947' : '#f2f2ee'}; color: ${this.reviewsTab === 'approved' ? '#ffffff' : '#333330'}; border: none; padding: 8px 16px; border-radius: 4px; font-size: 13.5px; font-weight: 700; cursor: pointer;">
+              Schválené na webu (${approvedCount})
+            </button>
+          </div>
+
+          <!-- SEZNAM RECENZÍ -->
+          <div style="max-height: 480px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; padding-right: 4px;">
+            ${list.length === 0 ? `
+              <div style="text-align: center; padding: 32px 16px; color: #777; font-size: 14px; background: #fafaf7; border-radius: 6px; border: 1px dashed #ddd;">
+                ${this.reviewsTab === 'pending' ? '✨ V současnosti nemáte žádné nové recenze ke schválení.' : 'Zatím nebyly schváleny žádné uživatelské recenze.'}
+              </div>
+            ` : list.map(r => `
+              <div style="background: #ffffff; border: 1px solid #e8e7de; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 8px;">
+                  <div>
+                    <strong style="font-size: 15px; color: #1c1c19;">${r.full_name || r.author_name}</strong>
+                    <span style="font-size: 12.5px; color: #697947; background: #edf2e4; padding: 2px 7px; border-radius: 4px; font-weight: 600; margin-left: 8px;">
+                      GDPR: ${r.author_name}
+                    </span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="color: #f39c12; font-size: 15px; letter-spacing: 2px;">
+                      ${'★'.repeat(r.rating || 5)}${'☆'.repeat(5 - (r.rating || 5))}
+                    </span>
+                    <span style="font-size: 12px; color: #888880;">${r.date || ''}</span>
+                  </div>
+                </div>
+
+                <p style="margin: 0 0 14px 0; font-size: 14px; color: #333330; line-height: 1.5; background: #fafaf7; padding: 12px; border-radius: 6px; border-left: 3px solid #697947;">
+                  „${r.text}“
+                </p>
+
+                <div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
+                  ${r.status === 'pending_approval' ? `
+                    <button type="button" class="btn-approve-review" data-id="${r.id}" style="background: #27ae60; color: #ffffff; border: none; border-radius: 4px; padding: 7px 16px; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                      ✓ Schválit a zveřejnit
+                    </button>
+                    <button type="button" class="btn-reject-review" data-id="${r.id}" style="background: #fff0f0; color: #c62828; border: 1px solid #f5c6cb; border-radius: 4px; padding: 7px 14px; font-size: 13px; font-weight: 600; cursor: pointer;">
+                      ✕ Zamítnout
+                    </button>
+                  ` : `
+                    <button type="button" class="btn-reject-review" data-id="${r.id}" style="background: #fff0f0; color: #c62828; border: 1px solid #f5c6cb; border-radius: 4px; padding: 7px 14px; font-size: 13px; font-weight: 600; cursor: pointer;">
+                      🗑️ Odstranit z webu
+                    </button>
+                  `}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    `;
   }
 
   renderAdminCalendarModal() {
@@ -2231,6 +2324,62 @@ export class AdminDashboard {
             label.textContent = isOpen ? 'Sbalit' : 'Rozbalit';
           }
         }
+      });
+    });
+
+    // ====================================================
+    // HANDLERY PRO SPRÁVU RECENZÍ
+    // ====================================================
+    const btnAdminReviews = this.container.querySelector('.btn-admin-reviews');
+    if (btnAdminReviews) {
+      btnAdminReviews.addEventListener('click', () => {
+        this.showReviewsModal = true;
+        this.render();
+      });
+    }
+
+    const btnCloseReviewsModal = this.container.querySelector('.btn-close-reviews-modal');
+    if (btnCloseReviewsModal) {
+      btnCloseReviewsModal.addEventListener('click', () => {
+        this.showReviewsModal = false;
+        this.render();
+      });
+    }
+
+    const reviewsOverlay = this.container.querySelector('.admin-modal-overlay-reviews');
+    if (reviewsOverlay) {
+      reviewsOverlay.addEventListener('click', (e) => {
+        if (e.target === reviewsOverlay) {
+          this.showReviewsModal = false;
+          this.render();
+        }
+      });
+    }
+
+    this.container.querySelectorAll('.review-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        this.reviewsTab = btn.dataset.tab;
+        this.render();
+      });
+    });
+
+    this.container.querySelectorAll('.btn-approve-review').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.dataset.id;
+        await updateStoredReviewStatus(id, 'approved');
+        await this.fetchReviews();
+        this.showAdminToast('Recenze byla schválena a přidána na web.');
+        this.render();
+      });
+    });
+
+    this.container.querySelectorAll('.btn-reject-review').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.dataset.id;
+        await updateStoredReviewStatus(id, 'rejected');
+        await this.fetchReviews();
+        this.showAdminToast('Recenze byla odstraněna.');
+        this.render();
       });
     });
 
