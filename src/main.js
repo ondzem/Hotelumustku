@@ -2984,6 +2984,10 @@ const preloadHeroImages = (pageKey) => {
     const src = '/Aktuality hero sekce.webp';
     const img = new Image();
     img.src = src;
+  } else if (pageKey === 'gdpr' || pageKey === 'cookies') {
+    const src = '/uvodni_hero_sekce.webp';
+    const img = new Image();
+    img.src = src;
   }
 };
 
@@ -3813,6 +3817,7 @@ export const getGdprPageHTML = () => `
     </section>
 
     ${getCtaHTML()}
+    ${getFooterHTML()}
   </div>
 `;
 
@@ -3882,6 +3887,7 @@ export const getCookiesPageHTML = () => `
     </section>
 
     ${getCtaHTML()}
+    ${getFooterHTML()}
   </div>
 `;
 
@@ -5131,7 +5137,7 @@ const route = (isInitial = false) => {
   const isNewPage = currentViewKey !== pageKey;
   currentViewKey = pageKey;
 
-  if (pageKey === 'ground' || pageKey === 'view' || pageKey === 'dining' || pageKey === 'events' || pageKey === 'activities' || pageKey === 'category-detail' || pageKey === 'contact' || pageKey === 'news') {
+  if (pageKey === 'ground' || pageKey === 'view' || pageKey === 'dining' || pageKey === 'events' || pageKey === 'activities' || pageKey === 'category-detail' || pageKey === 'contact' || pageKey === 'news' || pageKey === 'gdpr' || pageKey === 'cookies') {
     preloadHeroImages(pageKey);
   }
 
