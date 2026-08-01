@@ -89,6 +89,7 @@ export class BookingSystem {
     this.state = {
       selectedRoomId: '',
       isCustomDropdownOpen: false,
+      preselectedFromExternal: false,
       dateFrom: getTomorrowDateString(),
       dateTo: getDayAfterTomorrowDateString(),
       adults: 2,
@@ -149,6 +150,7 @@ export class BookingSystem {
   async init(initialRoomId) {
     if (initialRoomId && this.roomsList.some(r => r.id === initialRoomId)) {
       this.state.selectedRoomId = initialRoomId;
+      this.state.preselectedFromExternal = true;
     }
     this.syncGuestsArray();
 
@@ -1147,6 +1149,10 @@ export class BookingSystem {
     const formattedFrom = formatCzechDateStr(this.state.dateFrom);
     const formattedTo = formatCzechDateStr(this.state.dateTo);
 
+    const isOccupiedSelected = room ? Boolean(this.checkReservationOverlap(room.id, this.state.dateFrom, this.state.dateTo)) : false;
+    const isDisabledSelected = room ? Boolean(room.isDisabled || (this.disabledRooms && this.disabledRooms.some(d => d.room_id === room.id && d.is_disabled))) : false;
+    const isAvailableSelected = room ? (!isOccupiedSelected && !isDisabledSelected) : false;
+
     // Prepare availability statuses for all rooms for selected date range
     const roomItems = this.roomsList.map(r => {
       const isOccupied = Boolean(this.checkReservationOverlap(r.id, this.state.dateFrom, this.state.dateTo));
@@ -1231,10 +1237,28 @@ export class BookingSystem {
               </div>
             </div>
 
-            <!-- 2. VÝBĚR POKOJE K REZERVACI (STREAMLINED CUSTOM DROPDOWN SYSTEM) -->
+            <!-- 2. VÝBĚR POKOJE K REZERVACI (S UPOZORNĚNÍM PŘI PŘEDVÝBĚRU Z NABÍDKY) -->
             <div class="booking-card card-step-2-rooms">
               <h3 class="card-title">2. Výběr pokoje k rezervaci <span class="required-badge">* Povinné</span></h3>
               
+              ${this.state.preselectedFromExternal && room ? `
+                ${isAvailableSelected ? `
+                  <div class="booking-notice-alert" style="margin-bottom: 16px; background: #EDF2E4; border: 1px solid #C5D6AB; border-radius: 4px; padding: 14px 16px; color: #3B4A1D; font-size: 14px; line-height: 1.5; display: flex; align-items: flex-start; gap: 10px;">
+                    <span style="font-size: 18px; line-height: 1;">💡</span>
+                    <div>
+                      Z nabídky jste si vybrali <strong>${room.name}</strong> pro termín <strong>${formattedFrom} – ${formattedTo}</strong>. Pokud vám tento termín vyhovuje, můžete pokračovat v rezervaci níže. Přejete-li si změnit termín, upravte jej v bodu 1 nahoře.
+                    </div>
+                  </div>
+                ` : `
+                  <div class="booking-warning-alert" style="margin-bottom: 16px; background: #FFF8E7; border: 1px solid #FFE0B2; border-radius: 4px; padding: 14px 16px; color: #8D5B00; font-size: 14px; line-height: 1.5; display: flex; align-items: flex-start; gap: 10px;">
+                    <span style="font-size: 18px; line-height: 1;">⚠️</span>
+                    <div>
+                      Vybraný pokoj <strong>${room.name}</strong> je v termínu <strong>${formattedFrom} – ${formattedTo}</strong> <strong>${isOccupiedSelected ? 'obsazený' : 'nedostupný'}</strong>. Prosíme zvolte jiný termín pobytu v bodu 1 nahoře, nebo si níže v seznamu vyberte jiný volný pokoj.
+                    </div>
+                  </div>
+                `}
+              ` : ''}
+
               <div class="custom-room-dropdown ${this.state.isCustomDropdownOpen ? 'is-open' : ''}" id="custom-room-dropdown">
                 <label for="custom-dropdown-trigger" class="form-label">Vyberte si pokoj ze seznamu:</label>
                 
@@ -1244,8 +1268,9 @@ export class BookingSystem {
                       <div class="trigger-info">
                         <div class="trigger-header-line">
                           <span class="trigger-room-name">${room.name}</span>
-                          <span class="room-status-pill status-available" style="font-size: 11px; padding: 2px 7px;">
-                            <span class="status-dot dot-available"></span>Volno
+                          <span class="room-status-pill ${isAvailableSelected ? 'status-available' : (isDisabledSelected ? 'status-blocked' : 'status-occupied')}" style="font-size: 11px; padding: 2px 7px;">
+                            <span class="status-dot ${isAvailableSelected ? 'dot-available' : (isDisabledSelected ? 'dot-blocked' : 'dot-occupied')}"></span>
+                            ${isAvailableSelected ? 'Volno' : (isDisabledSelected ? 'Nedostupné' : 'Obsazeno')}
                           </span>
                         </div>
                         <span class="trigger-price-text">${formatCzechPrice(pricing.totalPrice)} za ${nights} ${nights === 1 ? 'noc' : (nights < 5 ? 'noci' : 'nocí')}</span>
@@ -1307,8 +1332,9 @@ export class BookingSystem {
                   <div class="preview-info-wrap">
                     <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px;">
                       <span class="preview-badge">${room.floor === 'prizemi' ? 'Přízemí' : '1. Patro (Výhled na můstky)'}</span>
-                      <span class="room-status-pill status-available" style="font-size: 11px; padding: 2px 8px;">
-                        <span class="status-dot dot-available"></span>Volno v tomto termínu
+                      <span class="room-status-pill ${isAvailableSelected ? 'status-available' : (isDisabledSelected ? 'status-blocked' : 'status-occupied')}" style="font-size: 11px; padding: 2px 8px;">
+                        <span class="status-dot ${isAvailableSelected ? 'dot-available' : (isDisabledSelected ? 'dot-blocked' : 'dot-occupied')}"></span>
+                        ${isAvailableSelected ? 'Volno v tomto termínu' : (isDisabledSelected ? 'Nedostupné v tomto termínu' : 'Obsazeno v tomto termínu')}
                       </span>
                     </div>
                     <h4 class="preview-room-title">${room.name}</h4>
