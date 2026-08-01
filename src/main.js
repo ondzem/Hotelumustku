@@ -1342,7 +1342,7 @@ const getRoomGroundFloorHTML = () => `
           </ul>
 
           <div class="room-specs-buttons">
-            <button class="btn btn-booking btn-specs-primary" id="btn-specs-rooms">Nabídka pokojů</button>
+            <button class="btn btn-booking btn-specs-primary" id="btn-specs-to-breakdown">Nabídka pokojů</button>
             <button class="btn btn-specs-secondary" id="btn-specs-more">Přečíst více</button>
           </div>
         </div>
@@ -2565,6 +2565,19 @@ const initInteractivity = () => {
     });
   }
 
+  const btnSpecsToBreakdown = document.getElementById('btn-specs-to-breakdown');
+  if (btnSpecsToBreakdown) {
+    btnSpecsToBreakdown.addEventListener('click', (e) => {
+      e.preventDefault();
+      const targetSec = document.getElementById('rozdeleni-pokoju');
+      if (targetSec) {
+        targetSec.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        window.location.href = '/ubytovani#rozdeleni-pokoju';
+      }
+    });
+  }
+
   const scrollBtnStravovani = document.getElementById('scroll-btn-stravovani');
   if (scrollBtnStravovani) {
     scrollBtnStravovani.addEventListener('click', (e) => {
@@ -2757,6 +2770,7 @@ const initInteractivity = () => {
         btn.id === 'btn-goto-prizemi' ||
         btn.id === 'btn-goto-vyhled' ||
         btn.id === 'btn-specs-rooms' ||
+        btn.id === 'btn-specs-to-breakdown' ||
         btn.id === 'btn-show-rooms-offer' ||
         btn.id === 'rooms-btn' ||
         btn.id === 'about-more-btn' ||
