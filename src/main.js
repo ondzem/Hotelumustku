@@ -4053,8 +4053,12 @@ export const getPodminkyPageHTML = () => `
                     <td>+ 195 Kč / osoba / den</td>
                   </tr>
                   <tr>
-                    <td>Pobyt na jednu jedinou noc</td>
-                    <td>+ 200 Kč / osoba</td>
+                    <td>Pobyt na jednu noc nebo samostatné obsazení pokoje jedním hostem<br><span style="opacity: 0.75;">pokoje Standard a Turistický</span></td>
+                    <td>+ 200 Kč / osoba / noc</td>
+                  </tr>
+                  <tr>
+                    <td>Pobyt na jednu noc nebo samostatné obsazení pokoje jedním hostem<br><span style="opacity: 0.75;">pokoje Nadstandard — kategorie A, A1, Zen</span></td>
+                    <td>+ 300 Kč / osoba / noc</td>
                   </tr>
                   <tr>
                     <td>Pes</td>
@@ -4086,7 +4090,7 @@ export const getPodminkyPageHTML = () => `
 
             <div class="legal-article-card">
               <h2 class="legal-article-title">5. Zrušení pobytu a storno poplatky</h2>
-              <p class="legal-article-text">Zrušit pobyt můžete kdykoli — písemně e-mailem nebo telefonicky. Rozhodující je den, kdy nám oznámení dojde. Storno poplatek se počítá z celkové ceny pobytu.</p>
+              <p class="legal-article-text">Zrušit pobyt můžete kdykoli — písemně e-mailem nebo telefonicky. Rozhodující je den, kdy nám oznámení dojde. Storno poplatek se počítá z celkové ceny pobytu. Zrušit pobyt zdarma můžete kdykoli více než 3 dny před příjezdem.</p>
               <table class="legal-info-table">
                 <thead>
                   <tr>
@@ -4096,26 +4100,18 @@ export const getPodminkyPageHTML = () => `
                 </thead>
                 <tbody>
                   <tr>
-                    <td>Více než 21 dní před příjezdem</td>
+                    <td>Více než 3 dny před příjezdem</td>
                     <td><strong>Zdarma</strong> — zálohu vracíme v plné výši</td>
                   </tr>
                   <tr>
-                    <td>21 až 14 dní před příjezdem</td>
-                    <td>40 % z celkové ceny</td>
-                  </tr>
-                  <tr>
-                    <td>14 až 7 dní před příjezdem</td>
-                    <td>60 % z celkové ceny</td>
-                  </tr>
-                  <tr>
-                    <td>Méně než 7 dní před příjezdem nebo nedojezd</td>
-                    <td>100 % z celkové ceny</td>
+                    <td>Méně než 3 dny před příjezdem, nebo nedojezd</td>
+                    <td>100 % z celkové ceny pobytu</td>
                   </tr>
                 </tbody>
               </table>
               <p class="legal-article-text" style="margin-top: 16px;">Případný přeplatek vracíme na účet, ze kterého záloha přišla, nejpozději do 14 dnů od zrušení pobytu.</p>
               <p class="legal-article-text">Zkrátíte-li pobyt po příjezdu nebo odjedete-li dříve, cena za sjednané noci se nevrací.</p>
-              <p class="legal-article-text"><strong>Vážné životní situace řešíme lidsky.</strong> Pokud vám do pobytu vstoupí nemoc, úraz nebo úmrtí v rodině, ozvěte se nám. Nemáme na to nárok podle podmínek, ale vždy hledáme řešení — nejčastěji přesun termínu.</p>
+              <p class="legal-article-text"><strong>Flexibilní přesun termínu.</strong> Pokud do vašich plánů vstoupí nečekaná událost, ozvěte se nám. Po vzájemné dohodě vám rádi přesuneme pobyt na jiný vyhovující termín, aniž byste přišli o zaplacenou zálohu.</p>
               <p class="legal-article-text">Pokud by ubytovatel z vážných provozních důvodů nemohl pobyt poskytnout, nabídne vám náhradní termín nebo srovnatelné ubytování. Nepřijmete-li ani jedno, vrátíme vám celou uhrazenou částku do 14 dnů.</p>
             </div>
 
@@ -4130,7 +4126,7 @@ export const getPodminkyPageHTML = () => `
             <div class="legal-article-card">
               <h2 class="legal-article-title">7. Příjezd, odjezd a průběh pobytu</h2>
               <ul style="line-height: 1.7; color: #4a4a46; padding-left: 20px;">
-                <li><strong>Příjezd (check-in):</strong> od 14:00. Přijedete-li dříve, rádi vám uschováme zavazadla.</li>
+                <li><strong>Příjezd (check-in):</strong> od 15:00. Přijedete-li dříve, rádi vám uschováme zavazadla.</li>
                 <li><strong>Odjezd (check-out):</strong> do 10:00 v den odjezdu.</li>
                 <li>Jiný čas příjezdu nebo odjezdu je možný po předchozí domluvě. Dejte nám prosím vědět, ať na vás počkáme.</li>
                 <li>Při příjezdu předložíte <strong>doklad totožnosti</strong> všech ubytovaných osob. Bez něj vás nesmíme ubytovat — ukládá nám to zákon o místních poplatcích a u cizinců zákon o pobytu cizinců.</li>
