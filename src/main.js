@@ -4238,12 +4238,28 @@ const CATEGORIES_DATA = {
     heroImg: '/Fotky Aktivit/Turistika.webp',
     items: [
       {
+        id: 'riedlova-hrobka',
+        title: 'Riedlova hrobka v Desné',
+        subtitle: 'pár minut od hotelu | Desná',
+        img: '/Fotky Aktivit/riedlova-hrobka-v-desne-4.webp',
+        alt: 'Secesní Riedlova hrobka v Desné v Jizerských horách',
+        desc: 'Hrobku si nechala postavit sklářská rodina Riedlů, která v Desné po generace určovala život celého kraje. Stavba z počátku dvacátého století je ukázkou secese s barevnými vitrážemi.\n\nStojí přímo v Desné, dojdete sem pěšky za pár minut. Je to zastávka na deset minut, ale stojí za to — takhle zachovalá secesní stavba není v okolí běžná.'
+      },
+      {
         id: 'protrzena-prehrada',
         title: 'Protržená přehrada na Bílé Desné',
         subtitle: '3 km od hotelu | Desná',
         img: '/Fotky Aktivit/protrzena-prehrada-na-bile-desne-5.webp',
         alt: 'Zbytky hráze protržené přehrady na Bílé Desné v Jizerských horách',
         desc: 'Přehrada se protrhla v září roku 1916, sotva rok po dokončení. Voda se během několika minut prohnala údolím a zaplavila Desnou. Zahynulo dvaašedesát lidí. Dodnes je to největší přehradní katastrofa v českých dějinách.\n\nZ hráze zůstala jen obrovská průrva a kamenné bloky v lese. Kolem vede naučná stezka s informačními cedulemi, kde si celý příběh přečtete. Cesta je rovná a nenáročná, dojdete sem pěšky přímo od hotelu asi za tři čtvrtě hodiny. Vhodné i pro pomalejší chůzi.'
+      },
+      {
+        id: 'vodopady-cerne-desne',
+        title: 'Vodopády Černé Desné',
+        subtitle: '5 km od hotelu | Desná',
+        img: '/Fotky Aktivit/vodopady-cerne-desne.jpg',
+        alt: 'Kaskády vodopádů na říčce Černá Desná v lesním údolí',
+        desc: 'Černá Desná se v lesním údolí přelévá přes balvany a vytváří řadu menších kaskád. Není to jeden velký vodopád, ale několik stupňů za sebou. V létě je tu příjemný chládek.\n\nÚdolím vede značená cesta podél vody. Terén je místy kamenitý, hodí se pevnější boty. Z hotelu je to nejbližší výlet za vodou — dojdete sem i pěšky.'
       },
       {
         id: 'vyhlidka-spicka',
@@ -4262,6 +4278,38 @@ const CATEGORIES_DATA = {
         desc: 'Souš leží v tichém údolí mezi lesy a zásobuje pitnou vodou celý Jablonecký region. Hladina se zrcadlí v okolních kopcích a bývá tu opravdové ticho — koupání ani lodě sem nepatří.\n\nKolem přehrady vede pohodlná cesta, po které se dá jít i s kočárkem. Celý okruh má asi šest kilometrů a nikde výrazně nestoupá. Autem sem dojedete za čtvrt hodiny, parkoviště je u hráze.'
       },
       {
+        id: 'rozhledna-svetly-vrch',
+        title: 'Rozhledna Světlý vrch v Albrechticích',
+        subtitle: '9 km od hotelu | Albrechtice',
+        img: '/Fotky Aktivit/rozhledna-svetly-vrch.webp',
+        alt: 'Kamenná rozhledna Světlý vrch nad Albrechticemi v Jizerských horách',
+        desc: 'Rozhledna stojí na kopci nad Albrechticemi a nabízí kruhový výhled na okolní hřebeny. Za jasného dne je odsud vidět daleko do vnitrozemí.\n\nK rozhledně vede značená cesta lesem, výstup trvá asi dvacet minut. Není strmý, jen mírně stoupá. Autem z hotelu je to zhruba čtvrt hodiny.'
+      },
+      {
+        id: 'rozhledna-stepanka',
+        title: 'Rozhledna Štěpánka',
+        subtitle: '9 km od hotelu | Kořenov',
+        img: '/Fotky Aktivit/rozhledna-stepanka-5.webp',
+        alt: 'Kamenná rozhledna Štěpánka na kopci nad Kořenovem',
+        desc: 'Štěpánka je nejstarší rozhlednou v Jizerských horách, stavěla se v polovině devatenáctého století a dokončena byla až o pár desítek let později. Kamenná věž stojí na vrcholu Hvězda nad Kořenovem.\n\nNahoru vede točité schodiště, po kterém vystoupáte na ochoz s výhledem na Jizerské hory i Krkonoše. Dole je restaurace. Autem z hotelu čtvrt hodiny, parkuje se kousek pod rozhlednou.'
+      },
+      {
+        id: 'raseliniste-jizerky',
+        title: 'Rašeliniště Jizerky',
+        subtitle: '13 km od hotelu',
+        img: '/Fotky Aktivit/raseliniste-jizerky-4.webp',
+        alt: 'Dřevěné povalové chodníky vedoucí přes rašeliniště Jizerky',
+        desc: 'Rašeliniště je jedno z nejcennějších míst v Jizerských horách. Rostou tu borovice kleč a rostliny, které jinde v Česku nepotkáte. Krajina působí trochu jako severská tundra.\n\nPřes mokřinu vedou dřevěné povalové chodníky, takže si neušpiníte boty a nikde se neboříte. Cesta je rovná a lemovaná cedulemi, které vysvětlují, co kolem sebe vidíte. Autem z hotelu asi dvacet minut.'
+      },
+      {
+        id: 'osada-jizerka',
+        title: 'Osada Jizerka',
+        subtitle: '13 km od hotelu',
+        img: '/Fotky Aktivit/osada-jizerka-1.webp',
+        alt: 'Roubené chalupy v horské osadě Jizerka obklopené loukami',
+        desc: 'Jizerka je hrstka roubených chalup rozesetých v široké horské kotlině. Bývá tu naměřená nejnižší teplota v celé republice — v mrazivých nocích tu klesá hluboko pod nulu.\n\nKolem osady jsou louky a rašeliniště, procházky vedou po rovině. Je tu muzeum i pár míst, kde se dá najíst. Auto se nechává na parkovišti před osadou, dovnitř se chodí pěšky. Z hotelu asi dvacet minut jízdy.'
+      },
+      {
         id: 'mumlavske-vodopady',
         title: 'Mumlavské vodopády v Harrachově',
         subtitle: '16 km od hotelu | Harrachov',
@@ -4276,54 +4324,6 @@ const CATEGORIES_DATA = {
         img: '/Fotky Aktivit/lanovy-park-bedrichov.jpg',
         alt: 'Lanové překážky mezi stromy v lanovém parku v Bedřichově',
         desc: 'Mezi stromy jsou natažené lanové překážky v několika výškových úrovních. Trasy jsou rozdělené podle náročnosti, takže si vybere i menší dítě i dospělý, který si chce vyzkoušet něco náročnějšího.\n\nO bezpečnost se stará obsluha a každý dostane jistící postroj. Nemusíte být sportovec — jde spíš o odvahu než o sílu. Autem z hotelu asi půl hodiny, ideální program na půl dne.'
-      },
-      {
-        id: 'raseliniste-jizerky',
-        title: 'Rašeliniště Jizerky',
-        subtitle: '13 km od hotelu',
-        img: '/Fotky Aktivit/raseliniste-jizerky-4.webp',
-        alt: 'Dřevěné povalové chodníky vedoucí přes rašeliniště Jizerky',
-        desc: 'Rašeliniště je jedno z nejcennějších míst v Jizerských horách. Rostou tu borovice kleč a rostliny, které jinde v Česku nepotkáte. Krajina působí trochu jako severská tundra.\n\nPřes mokřinu vedou dřevěné povalové chodníky, takže si neušpiníte boty a nikde se neboříte. Cesta je rovná a lemovaná cedulemi, které vysvětlují, co kolem sebe vidíte. Autem z hotelu asi dvacet minut.'
-      },
-      {
-        id: 'rozhledna-svetly-vrch',
-        title: 'Rozhledna Světlý vrch v Albrechticích',
-        subtitle: '9 km od hotelu | Albrechtice',
-        img: '/Fotky Aktivit/rozhledna-svetly-vrch.webp',
-        alt: 'Kamenná rozhledna Světlý vrch nad Albrechticemi v Jizerských horách',
-        desc: 'Rozhledna stojí na kopci nad Albrechticemi a nabízí kruhový výhled na okolní hřebeny. Za jasného dne je odsud vidět daleko do vnitrozemí.\n\nK rozhledně vede značená cesta lesem, výstup trvá asi dvacet minut. Není strmý, jen mírně stoupá. Autem z hotelu je to zhruba čtvrt hodiny.'
-      },
-      {
-        id: 'osada-jizerka',
-        title: 'Osada Jizerka',
-        subtitle: '13 km od hotelu',
-        img: '/Fotky Aktivit/osada-jizerka-1.webp',
-        alt: 'Roubené chalupy v horské osadě Jizerka obklopené loukami',
-        desc: 'Jizerka je hrstka roubených chalup rozesetých v široké horské kotlině. Bývá tu naměřená nejnižší teplota v celé republice — v mrazivých nocích tu klesá hluboko pod nulu.\n\nKolem osady jsou louky a rašeliniště, procházky vedou po rovině. Je tu muzeum i pár míst, kde se dá najíst. Auto se nechává na parkovišti před osadou, dovnitř se chodí pěšky. Z hotelu asi dvacet minut jízdy.'
-      },
-      {
-        id: 'riedlova-hrobka',
-        title: 'Riedlova hrobka v Desné',
-        subtitle: 'pár minut od hotelu | Desná',
-        img: '/Fotky Aktivit/riedlova-hrobka-v-desne-4.webp',
-        alt: 'Secesní Riedlova hrobka v Desné v Jizerských horách',
-        desc: 'Hrobku si nechala postavit sklářská rodina Riedlů, která v Desné po generace určovala život celého kraje. Stavba z počátku dvacátého století je ukázkou secese s barevnými vitrážemi.\n\nStojí přímo v Desné, dojdete sem pěšky za pár minut. Je to zastávka na deset minut, ale stojí za to — takhle zachovalá secesní stavba není v okolí běžná.'
-      },
-      {
-        id: 'rozhledna-stepanka',
-        title: 'Rozhledna Štěpánka',
-        subtitle: '9 km od hotelu | Kořenov',
-        img: '/Fotky Aktivit/rozhledna-stepanka-5.webp',
-        alt: 'Kamenná rozhledna Štěpánka na kopci nad Kořenovem',
-        desc: 'Štěpánka je nejstarší rozhlednou v Jizerských horách, stavěla se v polovině devatenáctého století a dokončena byla až o pár desítek let později. Kamenná věž stojí na vrcholu Hvězda nad Kořenovem.\n\nNahoru vede točité schodiště, po kterém vystoupáte na ochoz s výhledem na Jizerské hory i Krkonoše. Dole je restaurace. Autem z hotelu čtvrt hodiny, parkuje se kousek pod rozhlednou.'
-      },
-      {
-        id: 'vodopady-cerne-desne',
-        title: 'Vodopády Černé Desné',
-        subtitle: '5 km od hotelu | Desná',
-        img: '/Fotky Aktivit/vodopady-cerne-desne.jpg',
-        alt: 'Kaskády vodopádů na říčce Černá Desná v lesním údolí',
-        desc: 'Černá Desná se v lesním údolí přelévá přes balvany a vytváří řadu menších kaskád. Není to jeden velký vodopád, ale několik stupňů za sebou. V létě je tu příjemný chládek.\n\nÚdolím vede značená cesta podél vody. Terén je místy kamenitý, hodí se pevnější boty. Z hotelu je to nejbližší výlet za vodou — dojdete sem i pěšky.'
       }
     ]
   },
@@ -4333,20 +4333,20 @@ const CATEGORIES_DATA = {
     heroImg: '/Fotky Aktivit/cyklistika.webp',
     items: [
       {
-        id: 'singltrek-pod-smrkem',
-        title: 'Singltrek pod Smrkem',
-        subtitle: '40 km od hotelu',
-        img: '/Fotky Aktivit/singltrek-pod-smrkem-4.webp',
-        alt: 'Úzká lesní stezka pro horská kola v areálu Singltrek pod Smrkem',
-        desc: 'Singltrek je síť úzkých stezek, které se stavěly výhradně pro kola. Vedou lesem, kopírují terén a nikde se nekříží se silnicí. Celkem je jich tu přes osmdesát kilometrů.\n\nTrasy jsou barevně rozlišené jako sjezdovky — od zelené pro začátečníky po černou. Nemusíte být závodník, zelené a modré okruhy zvládne i běžný cyklista. Kolo se dá půjčit na místě. Autem z hotelu asi hodina.'
+        id: 'cyklostezka-udolim-kamenice',
+        title: 'Cyklotrasa údolím řeky Kamenice',
+        subtitle: '5 km od hotelu',
+        img: '/Fotky Aktivit/udoli-kamenice.webp',
+        alt: 'Cyklotrasa vedoucí údolím řeky Kamenice v Jizerských horách',
+        desc: 'Trasa sleduje řeku Kamenici a vede převážně z kopce. Je to jedna z nejpohodlnějších vyjížděk v okolí — jedete podél vody a nemusíte se nikam drát.\n\nHodí se i pro rodiny s dětmi. Zpátky se dá vyjet vlakem, který jezdí souběžně s údolím a kola bere. Nástup je kousek od hotelu.'
       },
       {
-        id: 'trasa-kolem-souse',
-        title: 'Trasa kolem vodní nádrže Souš',
-        subtitle: '8 km od hotelu',
-        img: '/Fotky Aktivit/vodni-nadrz-sous-5.webp',
-        alt: 'Asfaltová cyklistická cesta podél vodní nádrže Souš',
-        desc: 'Kolem přehrady Souš vede asfaltová cesta bez aut. Trasa je rovinatá, takže se dá jet v klidu a povídat si — nikde se nedřete do kopce.\n\nOkruh má zhruba šest kilometrů, dá se jet i s dětmi. Cestou je několik míst s výhledem na hladinu. Do Souše se z hotelu dá dojet i na kole, ale je to do kopce — pohodlnější je dovézt kola autem.'
+        id: 'bikepark-spicak',
+        title: 'Bikepark Tanvaldský Špičák',
+        subtitle: '7 km od hotelu',
+        img: '/Fotky Aktivit/bikepark-tanvaldsky-spicak-4.webp',
+        alt: 'Sjezdová trať bikeparku na Tanvaldském Špičáku',
+        desc: 'V létě se ze sjezdovky stává bikepark. Nahoru vás vyveze lanovka i s kolem, dolů si vyberete trať podle toho, co si troufnete.\n\nTratě jsou rozdělené podle obtížnosti, od jednoduchých po skokanské. Kolo i chrániče se půjčují na místě, takže se nemusíte tahat s vlastní výbavou. Z hotelu jen deset minut autem.'
       },
       {
         id: 'cyklostezka-cimrmana',
@@ -4357,20 +4357,12 @@ const CATEGORIES_DATA = {
         desc: 'Trasa je pojmenovaná po slavném fiktivním géniovi, který podle legendy v tomhle kraji působil. Vede přes Kořenov a okolní osady, částečně po klidných silničkách.\n\nStoupání jsou mírná a rozložená, není tu žádný prudký kopec. Cestou míjíte kapličky, staré domy a několik hospod. Nástup je kousek od hotelu, není potřeba nikam převážet kola.'
       },
       {
-        id: 'hrebenova-cyklotrasa-smedava',
-        title: 'Hřebenová cyklotrasa na Smědavu',
-        subtitle: '22 km od hotelu',
-        img: '/Fotky Aktivit/smedava-2.webp',
-        alt: 'Horská chata Smědava na hřebeni Jizerských hor',
-        desc: 'Trasa vede po hřebeni Jizerských hor a patří k náročnějším. Stoupání je delší, ale odměnou jsou otevřené výhledy do krajiny na obě strany.\n\nNa Smědavě stojí horská chata, kde se dá najíst a odpočinout před cestou zpátky. Je to klasický cíl jizerskohorských cyklistů. Počítejte s celým dnem a s tím, že je potřeba nějaká kondice.'
-      },
-      {
-        id: 'bikepark-spicak',
-        title: 'Bikepark Tanvaldský Špičák',
-        subtitle: '7 km od hotelu',
-        img: '/Fotky Aktivit/bikepark-tanvaldsky-spicak-4.webp',
-        alt: 'Sjezdová trať bikeparku na Tanvaldském Špičáku',
-        desc: 'V létě se ze sjezdovky stává bikepark. Nahoru vás vyveze lanovka i s kolem, dolů si vyberete trať podle toho, co si troufnete.\n\nTratě jsou rozdělené podle obtížnosti, od jednoduchých po skokanské. Kolo i chrániče se půjčují na místě, takže se nemusíte tahat s vlastní výbavou. Z hotelu jen deset minut autem.'
+        id: 'trasa-kolem-souse',
+        title: 'Trasa kolem vodní nádrže Souš',
+        subtitle: '8 km od hotelu',
+        img: '/Fotky Aktivit/vodni-nadrz-sous-5.webp',
+        alt: 'Asfaltová cyklistická cesta podél vodní nádrže Souš',
+        desc: 'Kolem přehrady Souš vede asfaltová cesta bez aut. Trasa je rovinatá, takže se dá jet v klidu a povídat si — nikde se nedřete do kopce.\n\nOkruh má zhruba šest kilometrů, dá se jet i s dětmi. Cestou je několik míst s výhledem na hladinu. Do Souše se z hotelu dá dojet i na kole, ale je to do kopce — pohodlnější je dovézt kola autem.'
       },
       {
         id: 'stepanka-na-kole',
@@ -4389,20 +4381,28 @@ const CATEGORIES_DATA = {
         desc: 'Jizerská magistrála je v zimě slavná běžkařská síť. V létě se z těch samých cest stávají skvělé trasy pro kola — jsou široké, zpevněné a nejezdí po nich auta.\n\nNástup je nejsnazší v Bedřichově, kde je velké parkoviště. Odtud si můžete poskládat okruh podle toho, kolik máte sil. Značení je přehledné, na rozcestích jsou mapy.'
       },
       {
-        id: 'cyklotrasa-udolim-kamenice',
-        title: 'Cyklotrasa údolím řeky Kamenice',
-        subtitle: '5 km od hotelu',
-        img: '/Fotky Aktivit/udoli-kamenice.webp',
-        alt: 'Cyklotrasa vedoucí údolím řeky Kamenice v Jizerských horách',
-        desc: 'Trasa sleduje řeku Kamenici a vede převážně z kopce. Je to jedna z nejpohodlnějších vyjížděk v okolí — jedete podél vody a nemusíte se nikam drát.\n\nHodí se i pro rodiny s dětmi. Zpátky se dá vyjet vlakem, který jezdí souběžně s údolím a kola bere. Nástup je kousek od hotelu.'
-      },
-      {
         id: 'cerna-studnice-na-kole',
         title: 'Rozhledna Černá Studnice na kole',
         subtitle: '20 km od hotelu',
         img: '/Fotky Aktivit/rozhledna-cerna-studnice.webp',
         alt: 'Kamenná rozhledna Černá Studnice s horskou chatou',
         desc: 'Černá Studnice je výrazný vrch nad Jabloncem s kamennou rozhlednou z konce devatenáctého století. Výjezd na kole je poctivé stoupání, ale cesta je celou dobu zpevněná.\n\nNahoře je vedle rozhledny chata s kuchyní, takže se dá dát oběd a pak si užít výhled. Za jasného počasí je vidět až na Ještěd. Sjezd zpátky je rychlý a příjemný.'
+      },
+      {
+        id: 'hrebenova-cyklotrasa-smedava',
+        title: 'Hřebenová cyklotrasa na Smědavu',
+        subtitle: '22 km od hotelu',
+        img: '/Fotky Aktivit/smedava-2.webp',
+        alt: 'Horská chata Smědava na hřebeni Jizerských hor',
+        desc: 'Trasa vede po hřebeni Jizerských hor a patří k náročnějším. Stoupání je delší, ale odměnou jsou otevřené výhledy do krajiny na obě strany.\n\nNa Smědavě stojí horská chata, kde se dá najíst a odpočinout před cestou zpátky. Je to klasický cíl jizerskohorských cyklistů. Počítejte s celým dnem a s tím, že je potřeba nějaká kondice.'
+      },
+      {
+        id: 'singltrek-pod-smrkem',
+        title: 'Singltrek pod Smrkem',
+        subtitle: '40 km od hotelu',
+        img: '/Fotky Aktivit/singltrek-pod-smrkem-4.webp',
+        alt: 'Úzká lesní stezka pro horská kola v areálu Singltrek pod Smrkem',
+        desc: 'Singltrek je síť úzkých stezek, které se stavěly výhradně pro kola. Vedou lesem, kopírují terén a nikde se nekříží se silnicí. Celkem je jich tu přes osmdesát kilometrů.\n\nTrasy jsou barevně rozlišené jako sjezdovky — od zelené pro začátečníky po černou. Nemusíte být závodník, zelené a modré okruhy zvládne i běžný cyklista. Kolo se dá půjčit na místě. Autem z hotelu asi hodina.'
       }
     ]
   },
@@ -4412,12 +4412,28 @@ const CATEGORIES_DATA = {
     heroImg: '/Fotky Aktivit/Zimni vylety.webp',
     items: [
       {
+        id: 'skiareal-tanvaldsky-spicak',
+        title: 'Skiareál Jizerky – Tanvaldský Špičák',
+        subtitle: '7 km od hotelu',
+        img: '/Fotky Aktivit/tanvaldsky-spicak-zima.webp',
+        alt: 'Zasněžená sjezdovka a lanovka ve skiareálu Tanvaldský Špičák',
+        desc: 'Tanvaldský Špičák je nejbližší větší středisko od hotelu — jste tam za deset minut autem. Sjezdovky pokrývají všechny obtížnosti od modrých po černé.\n\nNahoru vede lanovka, na svazích se uměle zasněžuje, takže sezona bývá dlouhá. Několik sjezdovek je osvětlených pro večerní lyžování. Půjčovna i lyžařská škola jsou přímo v areálu.'
+      },
+      {
         id: 'ski-cerna-ricka',
         title: 'Ski areál Černá Říčka v Desné',
         subtitle: '3 km od hotelu | Desná',
         img: '/Fotky Aktivit/ski-areal-cerna-ricka.webp',
         alt: 'Zasněžená sjezdovka ski areálu Černá Říčka v Desné',
         desc: 'Černá Říčka je malý rodinný areál přímo v Desné. Není to velké středisko s davy lidí — spíš klidné místo, kde se dá v pohodě lyžovat.\n\nPrávě proto se hodí pro začátečníky a děti. Fronty u vleku bývají krátké a nikdo vás nikam netlačí. Je to nejbližší lyžování od hotelu, dojedete sem za pár minut.'
+      },
+      {
+        id: 'muzeum-skla-bizuterie',
+        title: 'Muzeum skla a bižuterie v Jablonci nad Nisou',
+        subtitle: '18 km od hotelu | Jablonec nad Nisou',
+        img: '/Fotky Aktivit/muzeum-skla-jablonec.webp',
+        alt: 'Expozice historického skla a bižuterie v jabloneckém muzeu',
+        desc: 'Když je venku plískanice, tohle je dobrá volba. V teple si projdete jednu z největších sbírek skla a bižuterie na světě.\n\nNejhezčí bývá zimní expozice vánočních ozdob — ukazuje, jak se tady po generace vyráběly skleněné baňky. Prohlídka zabere hodinu a půl a není vyčerpávající. Autem z hotelu asi půl hodiny.'
       },
       {
         id: 'jizerska-magistrala-bezky',
@@ -4434,30 +4450,6 @@ const CATEGORIES_DATA = {
         img: '/Fotky Aktivit/aquapark-babylon-liberec-1.webp',
         alt: 'Vnitřní bazén aquaparku Babylon v Liberci',
         desc: 'Krytý aquapark s bazény, tobogány a vířivkami. Vedle je wellness s několika druhy saun a odpočívárnou.\n\nPo dni na běžkách nebo na sjezdovce je to přesně to, co potřebujete. Všechno je uvnitř, takže na počasí nezáleží. Aquapark je součástí komplexu Babylon, kde jsou i restaurace. Autem z hotelu necelou hodinu.'
-      },
-      {
-        id: 'jested-zima',
-        title: 'Ještěd v zimě',
-        subtitle: '35 km od hotelu | Liberec',
-        img: '/Fotky Aktivit/jested-zima.webp',
-        alt: 'Zasněžený vrchol Ještědu s vysílačem nad Libercem',
-        desc: 'V zimě se Ještěd mění na lyžařské středisko. Sjezdovky vedou přímo z vrcholu a patří k nejdelším v severních Čechách.\n\nI když nelyžujete, stojí za to vyjet lanovkou nahoru. Zasněžený vrchol s tou zvláštní kuželovitou věží je působivý pohled a nahoře je teplá restaurace s výhledem. Autem z hotelu asi tři čtvrtě hodiny.'
-      },
-      {
-        id: 'skiareal-tanvaldsky-spicak',
-        title: 'Skiareál Jizerky – Tanvaldský Špičák',
-        subtitle: '7 km od hotelu',
-        img: '/Fotky Aktivit/tanvaldsky-spicak-zima.webp',
-        alt: 'Zasněžená sjezdovka a lanovka ve skiareálu Tanvaldský Špičák',
-        desc: 'Tanvaldský Špičák je nejbližší větší středisko od hotelu — jste tam za deset minut autem. Sjezdovky pokrývají všechny obtížnosti od modrých po černé.\n\nNahoru vede lanovka, na svazích se uměle zasněžuje, takže sezona bývá dlouhá. Několik sjezdovek je osvětlených pro večerní lyžování. Půjčovna i lyžařská škola jsou přímo v areálu.'
-      },
-      {
-        id: 'muzeum-skla-bizuterie',
-        title: 'Muzeum skla a bižuterie v Jablonci nad Nisou',
-        subtitle: '18 km od hotelu | Jablonec nad Nisou',
-        img: '/Fotky Aktivit/muzeum-skla-jablonec.webp',
-        alt: 'Expozice historického skla a bižuterie v jabloneckém muzeu',
-        desc: 'Když je venku plískanice, tohle je dobrá volba. V teple si projdete jednu z největších sbírek skla a bižuterie na světě.\n\nNejhezčí bývá zimní expozice vánočních ozdob — ukazuje, jak se tady po generace vyráběly skleněné baňky. Prohlídka zabere hodinu a půl a není vyčerpávající. Autem z hotelu asi půl hodiny.'
       },
       {
         id: 'dinopark-liberec-zima',
@@ -4493,6 +4485,14 @@ const CATEGORIES_DATA = {
         objectPosition: 'left center',
         alt: 'Vnitřní zábavní park Babylon v Liberci s atrakcemi',
         desc: 'Celý zábavní komplex je pod střechou, takže mráz ani déšť nevadí. Lunapark má klasické kolotoče a atrakce, Funpark je určený menším dětem.\n\nVe stejné budově je aquapark, wellness a několik restaurací, takže se dá naplánovat celý den na jednom místě. Parkování je přímo u budovy. Autem z hotelu necelou hodinu.'
+      },
+      {
+        id: 'jested-zima',
+        title: 'Ještěd v zimě',
+        subtitle: '35 km od hotelu | Liberec',
+        img: '/Fotky Aktivit/jested-zima.webp',
+        alt: 'Zasněžený vrchol Ještědu s vysílačem nad Libercem',
+        desc: 'V zimě se Ještěd mění na lyžařské středisko. Sjezdovky vedou přímo z vrcholu a patří k nejdelším v severních Čechách.\n\nI když nelyžujete, stojí za to vyjet lanovkou nahoru. Zasněžený vrchol s tou zvláštní kuželovitou věží je působivý pohled a nahoře je teplá restaurace s výhledem. Autem z hotelu asi tři čtvrtě hodiny.'
       }
     ]
   },
@@ -4502,22 +4502,6 @@ const CATEGORIES_DATA = {
     heroImg: '/Fotky Aktivit/vylety autem.webp',
     items: [
       {
-        id: 'bobova-draha-janov',
-        title: 'Bobová dráha Janov nad Nisou',
-        subtitle: '16 km od hotelu | Janov nad Nisou',
-        img: '/Fotky Aktivit/bobova-draha-janov.jpg',
-        alt: 'Bob na kolejnici bobové dráhy v Janově nad Nisou',
-        desc: 'Dráha měří devět set metrů a má dvaadvacet zatáček. Zvláštností je karusel, ve kterém se bob otočí o celou zatáčku a půl.\n\nVozík má brzdu, takže si rychlost řídíte sami — dá se to sjet svižně i pomalu. Boby jsou pro jednoho nebo dva lidi, takže menší dítě může jet s vámi. V areálu je restaurace s terasou a dětský koutek. Otevřeno bývá celoročně.'
-      },
-      {
-        id: 'jested-auto',
-        title: 'Ještěd v Liberci',
-        subtitle: '35 km od hotelu | Liberec',
-        img: '/Fotky Aktivit/jested-2.webp',
-        alt: 'Silueta vysílače a hotelu Ještěd nad Libercem',
-        desc: 'Ještěd je nejznámější stavba severních Čech — kuželovitá věž, která plynule navazuje na tvar kopce. Je to zároveň vysílač i hotel s restaurací a architektonicky patří k tomu nejlepšímu, co u nás vzniklo.\n\nNahoru se dá vyjet lanovkou z Horního Hanychova, což je nejpohodlnější varianta. Za jasného počasí je z vrcholu vidět do Německa i do Polska. Autem z hotelu asi tři čtvrtě hodiny.'
-      },
-      {
         id: 'rozhledna-bramberk',
         title: 'Rozhledna Bramberk s restaurací',
         subtitle: '15 km od hotelu | Lučany nad Nisou',
@@ -4526,13 +4510,44 @@ const CATEGORIES_DATA = {
         desc: 'Bramberk stojí nad Lučany nad Nisou a patří k nejstarším rozhlednám v okolí. Kamenná věž vyrůstá přímo z lesa a nahoře je ochoz s kruhovým výhledem.\n\nU paty rozhledny je restaurace, takže se dá výlet spojit s obědem. Parkuje se kousek pod vrcholem, poslední úsek se jde pěšky asi deset minut. Nenáročné, vhodné i pro pomalejší chůzi.'
       },
       {
-        id: 'dinopark-auto',
-        title: 'Dinopark Liberec',
-        subtitle: '32 km od hotelu | Liberec',
-        img: '/Fotky Aktivit/dinopark-liberec.webp',
-        objectPosition: '25% center',
-        alt: 'Model dinosaura v životní velikosti v Dinoparku Liberec',
-        desc: 'V parku jsou rozestavěné modely dinosaurů v životní velikosti. Některé se hýbou a vydávají zvuky, což na děti udělá dojem.\n\nKromě modelů je tu kino s filmem o pravěku, paleontologické hřiště, kde se dá hrabat v písku, a naučné cedule. Cesta parkem je zpevněná a dá se projít bez námahy. Autem z hotelu necelou hodinu.'
+        id: 'bobova-draha-janov',
+        title: 'Bobová dráha Janov nad Nisou',
+        subtitle: '16 km od hotelu | Janov nad Nisou',
+        img: '/Fotky Aktivit/bobova-draha-janov.jpg',
+        alt: 'Bob na kolejnici bobové dráhy v Janově nad Nisou',
+        desc: 'Dráha měří devět set metrů a má dvaadvacet zatáček. Zvláštností je karusel, ve kterém se bob otočí o celou zatáčku a půl.\n\nVozík má brzdu, takže si rychlost řídíte sami — dá se to sjet svižně i pomalu. Boby jsou pro jednoho nebo dva lidi, takže menší dítě může jet s vámi. V areálu je restaurace s terasou a dětský koutek. Otevřeno bývá celoročně.'
+      },
+      {
+        id: 'rozhledna-kralovka',
+        title: 'Rozhledna Královka s restaurací',
+        subtitle: '16 km od hotelu | Janov nad Nisou',
+        img: '/Fotky Aktivit/rozhledna-kralovka-5.webp',
+        alt: 'Kamenná rozhledna Královka s restaurací nad Janovem nad Nisou',
+        desc: 'Královka stojí nad Janovem nad Nisou a je jednou z nejdostupnějších rozhleden v okolí. Od parkoviště je to jen kousek po rovině.\n\nZ ochozu vidíte na hřebeny Jizerských hor, Ještěd i na Jablonec. Hned u rozhledny je restaurace s terasou. Ideální na krátký výlet, když nechcete strávit celý den chůzí.'
+      },
+      {
+        id: 'muzeum-skla-auto',
+        title: 'Muzeum skla a bižuterie v Jablonci nad Nisou',
+        subtitle: '18 km od hotelu | Jablonec nad Nisou',
+        img: '/Fotky Aktivit/muzeum-skla-jablonec.webp',
+        alt: 'Expozice skleněných a bižuterních výrobků v jabloneckém muzeu',
+        desc: 'Muzeum ukazuje historii řemesla, které tenhle kraj po staletí živilo. Sbírka skla a bižuterie patří k nejrozsáhlejším na světě.\n\nUvidíte lustry, vánoční ozdoby, korálky i sklo z různých období. Expozice jsou přehledně uspořádané a nejsou vyčerpávající — projdete je za hodinu a půl. Vhodné za každého počasí. Autem z hotelu asi půl hodiny.'
+      },
+      {
+        id: 'koupaliste-dolina',
+        title: 'Koupaliště Dolina s restaurací v Bedřichově',
+        subtitle: '20 km od hotelu | Bedřichov',
+        img: '/Fotky Aktivit/koupaliste-dolina.webp',
+        alt: 'Přírodní koupaliště Dolina v Bedřichově s dřevěnou budovou restaurace',
+        desc: 'Dolina je přírodní koupaliště v Bedřichově, obklopené lesem. Voda je horská, takže i v největším vedru osvěží.\n\nU koupaliště je restaurace s terasou a posezením, dá se tu strávit celé odpoledne. Areál je udržovaný a klidný, není to velký aquapark, ale příjemné místo na pohodový den. Autem z hotelu asi půl hodiny.'
+      },
+      {
+        id: 'cerna-studnice-auto',
+        title: 'Rozhledna Černá Studnice s chatou',
+        subtitle: '20 km od hotelu | Jablonec nad Nisou',
+        img: '/Fotky Aktivit/rozhledna-cerna-studnice.webp',
+        alt: 'Kamenná rozhledna Černá Studnice s horskou chatou nad Jabloncem',
+        desc: 'Rozhledna z konce devatenáctého století stojí na skalnatém vrcholu nad Jabloncem. Je postavená z hrubého kamene a působí spíš jako středověká věž.\n\nZ ochozu je za jasného počasí vidět na Ještěd, Jizerské hory i do vnitrozemí. Hned vedle je horská chata s kuchyní, kde se dá naobědvat. Parkoviště je kousek pod vrcholem, pěšky asi patnáct minut.'
       },
       {
         id: 'bozkovske-jeskyne',
@@ -4543,12 +4558,30 @@ const CATEGORIES_DATA = {
         desc: 'Bozkovské jeskyně jsou jediné zpřístupněné jeskyně v severních Čechách. Objevily se náhodou při hledání vody v padesátých letech.\n\nProhlídka trvá zhruba čtyřicet minut a vede vás průvodce. Hlavní zajímavostí je podzemní jezero, největší svého druhu v Česku. Uvnitř je stále kolem devíti stupňů, vezměte si bundu. Vstupenky se doporučuje rezervovat předem.'
       },
       {
-        id: 'koupaliste-dolina',
-        title: 'Koupaliště Dolina s restaurací v Bedřichově',
-        subtitle: '20 km od hotelu | Bedřichov',
-        img: '/Fotky Aktivit/koupaliste-dolina.webp',
-        alt: 'Přírodní koupaliště Dolina v Bedřichově s dřevěnou budovou restaurace',
-        desc: 'Dolina je přírodní koupaliště v Bedřichově, obklopené lesem. Voda je horská, takže i v největším vedru osvěží.\n\nU koupaliště je restaurace s terasou a posezením, dá se tu strávit celé odpoledne. Areál je udržovaný a klidný, není to velký aquapark, ale příjemné místo na pohodový den. Autem z hotelu asi půl hodiny.'
+        id: 'obri-sud-libverda',
+        title: 'Výletní restaurace Obří sud v Lázních Libverda',
+        subtitle: '35 km od hotelu | Lázně Libverda',
+        img: '/Fotky Aktivit/obri-sud-libverda.webp',
+        objectPosition: 'left center',
+        alt: 'Dřevěná výletní restaurace Obří sud u Lázní Libverda',
+        desc: 'Restaurace je opravdu postavená do tvaru obrovského dřevěného sudu. Vznika ve třicátých letech jako výletní atrakce a slouží dodnes.\n\nUvnitř je klasická česká kuchyně, venku terasa s výhledem do kraje. Je to místo, kam se jezdí spíš pro tu kuriozitu a atmosféru než pro jídlo samotné — ale najíst se tu dá dobře. Nedaleko jsou Lázně Libverda a Hejnice.'
+      },
+      {
+        id: 'zamek-sychrov',
+        title: 'Státní zámek Sychrov',
+        subtitle: '45 km od hotelu | Sychrov',
+        img: '/Fotky Aktivit/zamek-sychrov-5.webp',
+        alt: 'Novogotický zámek Sychrov s parkem',
+        desc: 'Sychrov je novogotický zámek, který po generace patřil francouzskému rodu Rohanů. Interiéry jsou dochované v původním stavu — dřevěné obklady, portréty, knihovna.\n\nProhlídky vede průvodce a trvají zhruba hodinu. Kolem zámku je rozsáhlý anglický park s rybníkem a starými stromy, kterým se dá projít i bez vstupenky. Autem z hotelu necelou hodinu.'
+      },
+      {
+        id: 'dinopark-auto',
+        title: 'Dinopark Liberec',
+        subtitle: '32 km od hotelu | Liberec',
+        img: '/Fotky Aktivit/dinopark-liberec.webp',
+        objectPosition: '25% center',
+        alt: 'Model dinosaura v životní velikosti v Dinoparku Liberec',
+        desc: 'V parku jsou rozestavěné modely dinosaurů v životní velikosti. Některé se hýbou a vydávají zvuky, což na děti udělá dojem.\n\nKromě modelů je tu kino s filmem o pravěku, paleontologické hřiště, kde se dá hrabat v písku, a naučné cedule. Cesta parkem je zpevněná a dá se projít bez námahy. Autem z hotelu necelou hodinu.'
       },
       {
         id: 'zoo-liberec-auto',
@@ -4568,54 +4601,21 @@ const CATEGORIES_DATA = {
         desc: 'iQlandia je vědecké centrum, kde si všechno můžete osahat a vyzkoušet. Na čtyřech patrech je přes pět set exponátů rozdělených do jedenácti expozic — vesmír, lidské tělo, živly, smysly.\n\nSoučástí je planetárium s projekcí na kupoli. Během dne probíhají vědecké show, kde se předvádějí pokusy. Je to nejlepší program na deštivý den. Autem z hotelu necelou hodinu.'
       },
       {
-        id: 'cerna-studnice-auto',
-        title: 'Rozhledna Černá Studnice s chatou',
-        subtitle: '20 km od hotelu | Jablonec nad Nisou',
-        img: '/Fotky Aktivit/rozhledna-cerna-studnice.webp',
-        alt: 'Kamenná rozhledna Černá Studnice s horskou chatou nad Jabloncem',
-        desc: 'Rozhledna z konce devatenáctého století stojí na skalnatém vrcholu nad Jabloncem. Je postavená z hrubého kamene a působí spíš jako středověká věž.\n\nZ ochozu je za jasného počasí vidět na Ještěd, Jizerské hory i do vnitrozemí. Hned vedle je horská chata s kuchyní, kde se dá naobědvat. Parkoviště je kousek pod vrcholem, pěšky asi patnáct minut.'
-      },
-      {
         id: 'funpark-babylon-auto',
         title: 'Funpark a Lunapark Babylon v Liberci',
         subtitle: '32 km od hotelu | Liberec',
         img: '/Fotky Aktivit/funpark-babylon-liberec-1.webp',
         objectPosition: 'left center',
         alt: 'Vnitřní zábavní park Babylon v Liberci s atrakcemi',
-        desc: 'Babylon je velký zábavní komplex v centru Liberce. Lunapark nabízí klasické kolotoče a atrakce, Funpark je spíš pro menší děti — prolézačky, skluzavky a herní zóny.\n\nVšechno je pod střechou, takže na počasí vůbec nezáleží. V areálu je i aquapark a několik restaurací, dá se tu strávit celý den. Parkování je přímo u budovy.'
+        desc: 'Babylon je velký zábavní komplex v centrum Liberce. Lunapark nabízí klasické kolotoče a atrakce, Funpark je spíš pro menší děti — prolézačky, skluzavky a herní zóny.\n\nVšechno je pod střechou, takže na počasí vůbec nezáleží. V areálu je i aquapark a několik restaurací, dá se tu strávit celý den. Parkování je přímo u budovy.'
       },
       {
-        id: 'zamek-sychrov',
-        title: 'Státní zámek Sychrov',
-        subtitle: '45 km od hotelu | Sychrov',
-        img: '/Fotky Aktivit/zamek-sychrov-5.webp',
-        alt: 'Novogotický zámek Sychrov s parkem',
-        desc: 'Sychrov je novogotický zámek, který po generace patřil francouzskému rodu Rohanů. Interiéry jsou dochované v původním stavu — dřevěné obklady, portréty, knihovna.\n\nProhlídky vede průvodce a trvají zhruba hodinu. Kolem zámku je rozsáhlý anglický park s rybníkem a starými stromy, kterým se dá projít i bez vstupenky. Autem z hotelu necelou hodinu.'
-      },
-      {
-        id: 'obri-sud-libverda',
-        title: 'Výletní restaurace Obří sud v Lázních Libverda',
-        subtitle: '35 km od hotelu | Lázně Libverda',
-        img: '/Fotky Aktivit/obri-sud-libverda.webp',
-        objectPosition: 'left center',
-        alt: 'Dřevěná výletní restaurace Obří sud u Lázní Libverda',
-        desc: 'Restaurace je opravdu postavená do tvaru obrovského dřevěného sudu. Vznikla ve třicátých letech jako výletní atrakce a slouží dodnes.\n\nUvnitř je klasická česká kuchyně, venku terasa s výhledem do kraje. Je to místo, kam se jezdí spíš pro tu kuriozitu a atmosféru než pro jídlo samotné — ale najíst se tu dá dobře. Nedaleko jsou Lázně Libverda a Hejnice.'
-      },
-      {
-        id: 'rozhledna-kralovka',
-        title: 'Rozhledna Královka s restaurací',
-        subtitle: '16 km od hotelu | Janov nad Nisou',
-        img: '/Fotky Aktivit/rozhledna-kralovka-5.webp',
-        alt: 'Kamenná rozhledna Královka s restaurací nad Janovem nad Nisou',
-        desc: 'Královka stojí nad Janovem nad Nisou a je jednou z nejdostupnějších rozhleden v okolí. Od parkoviště je to jen kousek po rovině.\n\nZ ochozu vidíte na hřebeny Jizerských hor, Ještěd i na Jablonec. Hned u rozhledny je restaurace s terasou. Ideální na krátký výlet, když nechcete strávit celý den chůzí.'
-      },
-      {
-        id: 'muzeum-skla-auto',
-        title: 'Muzeum skla a bižuterie v Jablonci nad Nisou',
-        subtitle: '18 km od hotelu | Jablonec nad Nisou',
-        img: '/Fotky Aktivit/muzeum-skla-jablonec.webp',
-        alt: 'Expozice skleněných a bižuterních výrobků v jabloneckém muzeu',
-        desc: 'Muzeum ukazuje historii řemesla, které tenhle kraj po staletí živilo. Sbírka skla a bižuterie patří k nejrozsáhlejším na světě.\n\nUvidíte lustry, vánoční ozdoby, korálky i sklo z různých období. Expozice jsou přehledně uspořádané a nejsou vyčerpávající — projdete je za hodinu a půl. Vhodné za každého počasí. Autem z hotelu asi půl hodiny.'
+        id: 'jested-auto',
+        title: 'Ještěd v Liberci',
+        subtitle: '35 km od hotelu | Liberec',
+        img: '/Fotky Aktivit/jested-2.webp',
+        alt: 'Silueta vysílače a hotelu Ještěd nad Libercem',
+        desc: 'Ještěd je nejznámější stavba severních Čech — kuželovitá věž, která plynule navazuje na tvar kopce. Je to zároveň vysílač i hotel s restaurací a architektonicky patří k tomu nejlepšímu, co u nás vzniklo.\n\nNahoru se dá vyjet lanovkou z Horního Hanychova, což je nejpohodlnější varianta. Za jasného počasí je z vrcholu vidět do Německa i do Polska. Autem z hotelu asi tři čtvrtě hodiny.'
       }
     ]
   }
