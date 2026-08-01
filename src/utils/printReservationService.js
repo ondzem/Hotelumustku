@@ -10,6 +10,19 @@ function formatCzechDateStr(dateStr) {
   return dateStr;
 }
 
+function formatCzechDateTimeNow() {
+  const now = new Date();
+  const day = now.getDate();
+  const month = now.getMonth() + 1;
+  const year = now.getFullYear();
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  return {
+    dateStr: `${day}. ${month}. ${year}`,
+    timeStr: `${hours}:${minutes}`
+  };
+}
+
 function getStatusLabel(status) {
   switch (status) {
     case 'confirmed':
@@ -61,8 +74,8 @@ function renderGuestRowsHTML(reservation) {
           ${addressStr || '_____________________________________________'}
           ${phone ? `<br>Tel: ${phone}` : ''}
         </td>
-        <td style="height: 34px; vertical-align: bottom; text-align: center; font-size: 8pt; color: #777;">
-          ${name ? '✍️ ________________' : '________________'}
+        <td style="height: 36px; vertical-align: bottom; text-align: center; font-size: 8pt; color: #555;">
+          ${name ? '________________' : '________________'}
         </td>
       </tr>
     `);
@@ -95,13 +108,14 @@ export function printReservationSheet(reservation) {
     parkingCarsCount: reservation.parking_cars_count
   });
 
-  const printWindow = window.open('', '_blank', 'width=900,height=1100,scrollbars=yes,resizable=yes');
+  const printWindow = window.open('', '_blank', 'width=920,height=1100,scrollbars=yes,resizable=yes');
   if (!printWindow) {
     alert('Prosíme, povolte vyskakovací okna (pop-up) v prohlížeči, aby se mohlo otevřít okno tisku.');
     return;
   }
 
   const vsCode = getVariableSymbol(reservation.code);
+  const nowCzech = formatCzechDateTimeNow();
 
   const printHTML = `<!DOCTYPE html>
 <html lang="cs">
@@ -111,25 +125,26 @@ export function printReservationSheet(reservation) {
   <style>
     @page {
       size: A4 portrait;
-      margin: 12mm 15mm 12mm 15mm;
+      margin: 15mm 20mm 15mm 20mm;
     }
     * { box-sizing: border-box; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       font-size: 10.5pt;
-      line-height: 1.4;
+      line-height: 1.45;
       color: #000000;
       background: #ffffff;
-      margin: 0;
-      padding: 0;
+      margin: 0 auto;
+      padding: 24px 32px;
+      max-width: 960px;
     }
     .print-header {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
       border-bottom: 2px solid #000000;
-      padding-bottom: 10px;
-      margin-bottom: 16px;
+      padding-bottom: 12px;
+      margin-bottom: 24px;
     }
     .hotel-brand h1 {
       font-size: 17pt;
@@ -142,7 +157,7 @@ export function printReservationSheet(reservation) {
       margin: 0;
       font-size: 9pt;
       color: #222222;
-      line-height: 1.3;
+      line-height: 1.35;
     }
     .doc-meta {
       text-align: right;
@@ -164,35 +179,35 @@ export function printReservationSheet(reservation) {
       font-weight: 700;
       text-transform: uppercase;
       border: 1.5px solid #000000;
-      padding: 2px 7px;
+      padding: 3px 8px;
       display: inline-block;
-      margin-top: 3px;
+      margin-top: 4px;
     }
     
     .section-title {
-      font-size: 10pt;
+      font-size: 11pt;
       font-weight: 800;
       text-transform: uppercase;
       border-bottom: 1.5px solid #000000;
-      padding-bottom: 3px;
-      margin: 14px 0 8px 0;
-      letter-spacing: 0.3px;
+      padding-bottom: 4px;
+      margin: 28px 0 14px 0;
+      letter-spacing: 0.4px;
     }
     
     .grid-2col {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      margin-bottom: 10px;
+      gap: 20px;
+      margin-bottom: 18px;
     }
     
     .info-table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 6px;
+      margin-bottom: 18px;
     }
     .info-table td {
-      padding: 4px 6px;
+      padding: 5px 8px;
       font-size: 9.5pt;
       border-bottom: 1px solid #e0e0e0;
       vertical-align: top;
@@ -211,68 +226,68 @@ export function printReservationSheet(reservation) {
     .guest-table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 6px;
-      margin-bottom: 12px;
+      margin-top: 8px;
+      margin-bottom: 22px;
     }
     .guest-table th {
       background-color: #f2f2f2;
       border: 1px solid #000000;
-      padding: 5px 6px;
+      padding: 6px 8px;
       font-size: 8.5pt;
       font-weight: 700;
       text-align: left;
     }
     .guest-table td {
       border: 1px solid #000000;
-      padding: 5px 6px;
+      padding: 6px 8px;
       font-size: 9pt;
       vertical-align: middle;
     }
     
     .financial-box {
       border: 1.5px solid #000000;
-      padding: 10px 14px;
-      margin-top: 10px;
-      margin-bottom: 14px;
+      padding: 12px 18px;
+      margin-top: 12px;
+      margin-bottom: 24px;
       background: #fafafa;
     }
     .financial-row {
       display: flex;
       justify-content: space-between;
-      padding: 3px 0;
+      padding: 4px 0;
       font-size: 9.5pt;
     }
     .financial-row.total {
       font-size: 11.5pt;
       font-weight: 800;
       border-top: 1.5px solid #000000;
-      padding-top: 6px;
-      margin-top: 5px;
+      padding-top: 8px;
+      margin-top: 6px;
     }
 
     .signature-block {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 30px;
-      margin-top: 28px;
+      gap: 36px;
+      margin-top: 36px;
       page-break-inside: avoid;
     }
     .signature-line {
       border-top: 1px dashed #000000;
-      padding-top: 5px;
+      padding-top: 6px;
       text-align: center;
       font-size: 8.5pt;
       color: #222222;
-      line-height: 1.3;
+      line-height: 1.35;
     }
 
     .footer-note {
-      margin-top: 18px;
+      margin-top: 24px;
       text-align: center;
       font-size: 8pt;
       color: #555555;
       border-top: 1px solid #cccccc;
-      padding-top: 6px;
+      padding-top: 8px;
     }
 
     @media print {
@@ -284,11 +299,11 @@ export function printReservationSheet(reservation) {
 </head>
 <body>
   <!-- Controls for screen view before printing -->
-  <div class="no-print" style="background: #1c1c19; color: #fff; padding: 10px 18px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-radius: 4px;">
-    <div style="font-weight: 700; font-size: 13.5px;">🖨️ Náhled tisku rezervačního listu (${reservation.code})</div>
+  <div class="no-print" style="background: #1c1c19; color: #fff; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-radius: 4px;">
+    <div style="font-weight: 700; font-size: 14px;">Tisk rezervačního listu (${reservation.code})</div>
     <div>
-      <button onclick="window.print()" style="background: #ece8dd; color: #1c1c19; border: none; padding: 7px 16px; font-weight: 700; font-size: 13px; border-radius: 2px; cursor: pointer; margin-right: 8px;">Tisk / Uložit PDF</button>
-      <button onclick="window.close()" style="background: #555; color: #fff; border: none; padding: 7px 12px; font-weight: 600; font-size: 13px; border-radius: 2px; cursor: pointer;">Zavřít</button>
+      <button onclick="window.print()" style="background: #ece8dd; color: #1c1c19; border: none; padding: 8px 18px; font-weight: 700; font-size: 13.5px; border-radius: 2px; cursor: pointer; margin-right: 10px;">Tisk / Uložit PDF</button>
+      <button onclick="window.close()" style="background: #555; color: #fff; border: none; padding: 8px 14px; font-weight: 600; font-size: 13.5px; border-radius: 2px; cursor: pointer;">Zavřít</button>
     </div>
   </div>
 
@@ -302,7 +317,7 @@ export function printReservationSheet(reservation) {
     <div class="doc-meta">
       <h2>REZERVAČNÍ LIST</h2>
       <div class="doc-code">Kód: ${reservation.code}</div>
-      <div>Datum tisku: ${new Date().toLocaleDateString('cs-CZ')}</div>
+      <div>Datum tisku: ${nowCzech.dateStr}</div>
       <div class="doc-status">${getStatusLabel(reservation.status)}</div>
     </div>
   </div>
@@ -380,7 +395,7 @@ export function printReservationSheet(reservation) {
   </div>
 
   <div class="footer-note">
-    Dokument vytvořen ze systému Hotel u Můstku dnem ${new Date().toLocaleDateString('cs-CZ')} v ${new Date().toLocaleTimeString('cs-CZ', {hour: '2-digit', minute:'2-digit'})} hod. Slouží jako oficiální podklad pro rezervační a ubytovací knihu hotelu.
+    Dokument vytvořen ze systému Hotel u Můstku dnem ${nowCzech.dateStr} v ${nowCzech.timeStr} hod. Slouží jako oficiální podklad pro rezervační a ubytovací knihu hotelu.
   </div>
 
   <script>

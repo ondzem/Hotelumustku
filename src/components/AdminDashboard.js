@@ -1169,11 +1169,8 @@ export class AdminDashboard {
                       </div>
                     </div>
 
-                    <!-- TISK A VYMAZÁNÍ REZERVAČNÍHO ZÁZNAMU -->
-                    <div class="drawer-delete-bar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                      <button type="button" class="btn-drawer-print-clean btn-admin-action" data-id="${r.id || r.code}" data-act="print_reservation" style="background: #ece8dd; color: #1c1c19; border: 1px solid #dcd7c5; padding: 7px 16px; font-weight: 600; font-size: 13px; border-radius: 2px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
-                        🖨️ Vytisknout rezervační list (PDF)
-                      </button>
+                    <!-- VYMAZÁNÍ REZERVAČNÍHO ZÁZNAMU -->
+                    <div class="drawer-delete-bar" style="display: flex; justify-content: flex-end; align-items: center;">
                       <button type="button" class="btn-drawer-delete-clean btn-admin-action" data-id="${r.id || r.code}" data-act="delete">
                         Vymazat rezervaci z databáze
                       </button>
