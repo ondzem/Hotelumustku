@@ -1683,8 +1683,15 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .admin-top-actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 12px;
+  max-width: 100%;
+}
+
+.admin-top-actions button {
+  white-space: nowrap;
+  box-sizing: border-box;
 }
 
 /* Unified Toolbar (Filter Tabs + Room Selector in 1 clean line) */
@@ -3725,20 +3732,82 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   }
 }
 
-/* Standard Desktop (1029px - 1749px) */
-@media (min-width: 1029px) and (max-width: 1749px) {
+/* Small Desktop & Laptops (1028px - 1349.98px) */
+@media (min-width: 1028px) and (max-width: 1349.98px) {
   .btn, .btn-primary, .btn-secondary, .btn-booking-submit {
-    height: 45px !important;
-    font-size: 17px !important;
-    padding: 0 28px !important;
+    height: 42px !important;
+    font-size: 15.5px !important;
+    padding: 0 20px !important;
+    border-radius: 1px !important;
+  }
+
+  .admin-header-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    width: 100%;
+  }
+
+  .admin-title-group {
+    width: 100%;
+  }
+
+  .admin-top-actions {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .admin-top-actions button,
+  .admin-top-actions .btn {
+    height: 40px !important;
+    padding: 0 16px !important;
+    font-size: 14.5px !important;
+    font-weight: 500 !important;
     border-radius: 1px !important;
   }
 }
 
 /* Tablet (768px - 1028px) */
-@media (min-width: 768px) and (max-width: 1028px) {
+@media (min-width: 768px) and (max-width: 1027.98px) {
   .admin-dashboard-wrapper {
-    padding: 60px 32px 60px 32px;
+    padding: 60px 24px 60px 24px;
+  }
+
+  .admin-header-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    width: 100%;
+  }
+
+  .admin-title-group {
+    width: 100%;
+  }
+
+  .admin-top-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .admin-top-actions button,
+  .admin-top-actions .btn {
+    flex: 1 1 calc(33.333% - 10px);
+    min-width: 140px;
+    max-width: calc(50% - 5px);
+    height: 40px !important;
+    padding: 0 14px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    border-radius: 1px !important;
+    justify-content: center;
+    text-align: center;
+    box-sizing: border-box;
   }
 
   .res-card-grid {
@@ -3782,7 +3851,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 /* Mobile (< 768px) Button Design System */
-@media (max-width: 767px) {
+@media (max-width: 767.98px) {
   .btn, .btn-primary, .btn-secondary, .btn-booking-submit {
     height: 36px !important;
     font-size: 14.5px !important;
@@ -3794,7 +3863,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 /* ====================================================
    MOBILE RESPONSIVE STYLES FOR RECEPTION ADMIN (<768px)
    ==================================================== */
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
   /* Admin Container */
   .admin-dashboard-wrapper {
     padding: 56px 16px 56px 16px;
@@ -3804,7 +3873,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   .admin-header-bar {
     flex-direction: column;
     align-items: flex-start;
-    gap: 18px;
+    gap: 16px;
     margin-bottom: 24px;
   }
 
@@ -3820,19 +3889,23 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
   .admin-top-actions {
     width: 100%;
-    display: flex;
-    gap: 12px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
     margin-top: 4px;
   }
 
-  .admin-top-actions button {
-    flex: 1;
-    height: 36px !important;
-    padding: 0 14px !important;
-    font-size: 13.5px !important;
+  .admin-top-actions button,
+  .admin-top-actions .btn {
+    width: 100%;
+    height: 38px !important;
+    padding: 0 8px !important;
+    font-size: 13px !important;
     font-weight: 500 !important;
     border-radius: 1px !important;
     justify-content: center;
+    text-align: center;
+    box-sizing: border-box;
   }
 
   /* Toolbar & Filter Tabs */
