@@ -1,5 +1,5 @@
 import { MOCK_ROOMS, isSupabaseConfigured, supabase, getStoredReservations, saveStoredReservation, getStoredBlockedDates, getStoredDiscountCodes, getStoredRoomPrices, getStoredDisabledRooms, getDeviceRedeemedDiscountCodes, markDiscountCodeRedeemedOnDevice, incrementDiscountCodeUsage } from '../lib/supabaseClient.js';
-import { calculateReservationPrice, generateReservationCode, generateManageToken, BANK_ACCOUNT, BANK_NAME, formatCzechPrice, validateSystemDateIntegrity } from '../utils/pricing.js';
+import { calculateReservationPrice, generateReservationCode, generateManageToken, BANK_ACCOUNT, BANK_NAME, formatCzechPrice, validateSystemDateIntegrity, isWinterSeason } from '../utils/pricing.js';
 import { sendEmail, generateEmail1RequestReceived, generateEmail1ReceptionNotification } from '../utils/emailService.js';
 
 function getTodayDateString() {
@@ -101,7 +101,9 @@ export class BookingSystem {
       hasEbike: false,
       ebikeCount: 1,
       hasHalfBoard: false,
-      halfBoardCount: null,
+      halfBoardCount: 2,
+      hasWinterParking: false,
+      parkingCarsCount: 1,
       guestName: '',
       guestEmail: '',
       guestPhone: '',
@@ -642,6 +644,7 @@ export class BookingSystem {
   getPricingBreakdown() {
     const room = this.getSelectedRoom();
     const nights = this.calculateNights();
+    const isWinter = isWinterSeason(this.state.dateFrom, this.state.dateTo);
     if (!room) {
       return {
         nights,
@@ -658,6 +661,15 @@ export class BookingSystem {
         totalPrice: 0,
         depositPriceTotal: 0,
         remainingPriceTotal: 0,
+        hasHalfBoard: this.state.hasHalfBoard,
+        halfBoardCount: this.state.halfBoardCount || this.state.adults || 2,
+        hasDog: this.state.hasDog,
+        hasEbike: this.state.hasEbike,
+        ebikeCount: this.state.ebikeCount || 1,
+        isWinterSeason: isWinter,
+        hasWinterParking: isWinter && this.state.hasWinterParking,
+        parkingCarsCount: this.state.parkingCarsCount || 1,
+        winterParkingPriceTotal: 0,
       };
     }
     const customPriceObj = (this.roomPrices || []).find(p => p.room_id === room.id);
@@ -675,9 +687,11 @@ export class BookingSystem {
       dateTo: this.state.dateTo,
       hasDog: this.state.hasDog,
       hasEbike: this.state.hasEbike,
-      ebikeCount: this.state.ebikeCount,
+      ebikeCount: this.state.ebikeCount || 1,
       hasHalfBoard: this.state.hasHalfBoard,
-      halfBoardCount: this.state.halfBoardCount,
+      halfBoardCount: this.state.halfBoardCount || this.state.adults || 2,
+      hasWinterParking: this.state.hasWinterParking,
+      parkingCarsCount: this.state.parkingCarsCount || 1,
       customBaseRate,
       customWeekdayRate,
       customWeekendRate,
@@ -833,6 +847,9 @@ export class BookingSystem {
       ebike_count: pricing.ebikeCount,
       has_half_board: this.state.hasHalfBoard,
       half_board_count: pricing.halfBoardCount,
+      has_winter_parking: pricing.hasWinterParking,
+      parking_cars_count: pricing.parkingCarsCount,
+      winter_parking_price_total: pricing.winterParkingPriceTotal,
       total_price: pricing.totalPrice,
       deposit_price: pricing.depositPriceTotal,
       remaining_price: pricing.remainingPriceTotal,
@@ -1421,7 +1438,7 @@ export class BookingSystem {
                       <span class="subcontrol-label">Počet osob s polopenzí:</span>
                       <div class="counter-controls">
                         <button type="button" class="btn-counter btn-counter-minus" data-target="halfBoardCount">-</button>
-                        <span class="counter-value">${pricing.halfBoardCount}</span>
+                        <span class="counter-value">${pricing.halfBoardCount || this.state.halfBoardCount || this.state.adults || 1}</span>
                         <button type="button" class="btn-counter btn-counter-plus" data-target="halfBoardCount">+</button>
                       </div>
                     </div>
@@ -1449,12 +1466,34 @@ export class BookingSystem {
                       <span class="subcontrol-label">Počet elektrokol:</span>
                       <div class="counter-controls">
                         <button type="button" class="btn-counter btn-counter-minus" data-target="ebikeCount">-</button>
-                        <span class="counter-value">${pricing.ebikeCount}</span>
+                        <span class="counter-value">${pricing.ebikeCount || this.state.ebikeCount || 1}</span>
                         <button type="button" class="btn-counter btn-counter-plus" data-target="ebikeCount">+</button>
                       </div>
                     </div>
                   ` : ''}
                 </div>
+
+                ${pricing.isWinterSeason ? `
+                  <div class="checkbox-addon-group">
+                    <label class="checkbox-addon-item">
+                      <input type="checkbox" id="addon-winter-parking" ${this.state.hasWinterParking ? 'checked' : ''}>
+                      <span class="addon-text">
+                        <strong>Zimní parkování u hotelu</strong> (+50 Kč / auto / noc)
+                        <small>Příspěvek na pravidelnou zimní údržbu, odhrnování sněhu a údržbu příjezdové dráhy v zimním období (1. 11. – 30. 4.).</small>
+                      </span>
+                    </label>
+                    ${this.state.hasWinterParking ? `
+                      <div class="addon-subcontrols">
+                        <span class="subcontrol-label">Počet aut:</span>
+                        <div class="counter-controls">
+                          <button type="button" class="btn-counter btn-counter-minus" data-target="parkingCarsCount">-</button>
+                          <span class="counter-value">${pricing.parkingCarsCount || this.state.parkingCarsCount || 1}</span>
+                          <button type="button" class="btn-counter btn-counter-plus" data-target="parkingCarsCount">+</button>
+                        </div>
+                      </div>
+                    ` : ''}
+                  </div>
+                ` : ''}
               </div>
             </div>
 
@@ -1510,7 +1549,7 @@ export class BookingSystem {
                 ${this.discountSuccessMsg ? `<div style="color: #2e7d32; font-size: 12.5px; font-weight: 700; margin-top: 8px; display: flex; align-items: center; gap: 4px;">✓ ${this.discountSuccessMsg}</div>` : ''}
               </div>
 
-              ${(pricing.singleNightSurchargeTotal > 0 || pricing.hasHalfBoard || pricing.hasDog || pricing.hasEbike || pricing.cityTax > 0) ? `
+              ${(pricing.singleNightSurchargeTotal > 0 || pricing.hasHalfBoard || pricing.hasDog || pricing.hasEbike || pricing.hasWinterParking || pricing.cityTax > 0) ? `
                 <div class="summary-total-divider"></div>
                 <div class="summary-rows">
                   ${pricing.singleNightSurchargeTotal > 0 ? `
@@ -1556,6 +1595,16 @@ export class BookingSystem {
                       <span class="row-price">+${pricing.ebikePriceTotal} Kč</span>
                     </div>
                   ` : ''}
+
+                  ${pricing.hasWinterParking ? `
+                    <div class="summary-row">
+                      <div class="row-info">
+                        <span class="row-label">Zimní parkování u hotelu</span>
+                        <span class="row-details">(+50 Kč/noc • ${pricing.parkingCarsCount}x auto, ${nights}x noc)</span>
+                      </div>
+                      <span class="row-price">+${pricing.winterParkingPriceTotal} Kč</span>
+                    </div>
+                  ` : ''}
                 </div>
               ` : ''}
 
@@ -1594,7 +1643,7 @@ export class BookingSystem {
 
               <div class="summary-perks">
                 <span>✓ Snídaně formou bufetu v ceně</span>
-                <span>✓ Parkování u hotelu ZDARMA</span>
+                <span>${pricing.isWinterSeason ? (pricing.hasWinterParking ? '✓ Zimní údržba & parkování v ceně' : '✓ Parkování u hotelu (v zimě s údržbou)') : '✓ Parkování u hotelu ZDARMA'}</span>
                 <span>✓ Wi-Fi připojené zdarma</span>
               </div>
 
@@ -2266,6 +2315,9 @@ export class BookingSystem {
           } else if (target === 'ebikeCount') {
             const currentE = this.state.ebikeCount || 1;
             this.state.ebikeCount = isPlus ? Math.min(4, currentE + 1) : Math.max(1, currentE - 1);
+          } else if (target === 'parkingCarsCount') {
+            const currentCars = this.state.parkingCarsCount || 1;
+            this.state.parkingCarsCount = isPlus ? Math.min(5, currentCars + 1) : Math.max(1, currentCars - 1);
           }
           this.render();
         });
@@ -2274,6 +2326,7 @@ export class BookingSystem {
       const addonHalfBoard = document.getElementById('addon-halfboard');
       const addonDog = document.getElementById('addon-dog');
       const addonEbike = document.getElementById('addon-ebike');
+      const addonWinterParking = document.getElementById('addon-winter-parking');
 
       if (addonHalfBoard) {
         addonHalfBoard.addEventListener('change', (e) => {
@@ -2295,6 +2348,15 @@ export class BookingSystem {
           this.state.hasEbike = e.target.checked;
           if (this.state.hasEbike && !this.state.ebikeCount) {
             this.state.ebikeCount = 1;
+          }
+          this.render();
+        });
+      }
+      if (addonWinterParking) {
+        addonWinterParking.addEventListener('change', (e) => {
+          this.state.hasWinterParking = e.target.checked;
+          if (this.state.hasWinterParking && !this.state.parkingCarsCount) {
+            this.state.parkingCarsCount = 1;
           }
           this.render();
         });

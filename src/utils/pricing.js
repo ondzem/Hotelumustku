@@ -7,6 +7,7 @@ export const CITY_TAX_PER_ADULT_NIGHT = 20; // 20 Kč / dospělý / noc
 export const HALF_BOARD_PER_PERSON_NIGHT = 195; // 195 Kč / osoba / noc
 export const DOG_PER_DAY = 150; // 150 Kč / den
 export const EBIKE_PER_DAY = 15; // 15 Kč / den
+export const WINTER_PARKING_PER_CAR_NIGHT = 50; // 50 Kč / auto / noc v zimním období
 
 /**
  * Single source of truth for Variable Symbol generation across Admin & QR codes
@@ -25,6 +26,17 @@ export function isWeekendNight(dateInput) {
   if (isNaN(d.getTime())) return false;
   const day = d.getDay();
   return day === 5 || day === 6 || day === 0;
+}
+
+/**
+ * Helper to check if a reservation stay falls within the Winter Season (1. 11. - 30. 4.)
+ * Jizerské hory (Desná) winter snow & maintenance period: November (11), December (12), January (1), February (2), March (3), April (4)
+ */
+export function isWinterSeason(dateFromInput, dateToInput) {
+  const checkDate = dateFromInput ? new Date(dateFromInput) : new Date();
+  if (isNaN(checkDate.getTime())) return false;
+  const month = checkDate.getMonth() + 1; // 1-12
+  return month === 11 || month === 12 || month === 1 || month === 2 || month === 3 || month === 4;
 }
 
 /**
@@ -59,6 +71,8 @@ export function calculateReservationPrice({
   hasHalfBoard = false,
   halfBoardCount = null,
   ebikeCount = 1,
+  hasWinterParking = false,
+  parkingCarsCount = 1,
   customBaseRate = null,
   customWeekdayRate = null,
   customWeekendRate = null,
@@ -137,15 +151,23 @@ export function calculateReservationPrice({
   const cityTax = 0;
 
   // 4. Granular Addons Calculation
+  const isWinter = isWinterSeason(dateFrom, dateTo);
   const safeHalfBoardCount = hasHalfBoard
     ? Math.min(totalGuests, Math.max(1, parseInt(halfBoardCount ?? totalGuests)))
-    : 0;
-  const halfBoardPriceTotal = safeHalfBoardCount * HALF_BOARD_PER_PERSON_NIGHT * safeNights;
+    : totalGuests;
+  const halfBoardPriceTotal = hasHalfBoard ? safeHalfBoardCount * HALF_BOARD_PER_PERSON_NIGHT * safeNights : 0;
   const dogPriceTotal = hasDog ? DOG_PER_DAY * safeNights : 0;
-  const safeEbikeCount = hasEbike ? Math.max(1, parseInt(ebikeCount || 1)) : 0;
-  const ebikePriceTotal = safeEbikeCount * EBIKE_PER_DAY * safeNights;
+  const safeEbikeCount = hasEbike ? Math.max(1, parseInt(ebikeCount || 1)) : 1;
+  const ebikePriceTotal = hasEbike ? safeEbikeCount * EBIKE_PER_DAY * safeNights : 0;
 
-  const addonsPrice = halfBoardPriceTotal + dogPriceTotal + ebikePriceTotal;
+  const safeParkingCarsCount = (isWinter && hasWinterParking)
+    ? Math.max(1, parseInt(parkingCarsCount || 1))
+    : 1;
+  const winterParkingPriceTotal = (isWinter && hasWinterParking)
+    ? safeParkingCarsCount * WINTER_PARKING_PER_CAR_NIGHT * safeNights
+    : 0;
+
+  const addonsPrice = halfBoardPriceTotal + dogPriceTotal + ebikePriceTotal + winterParkingPriceTotal;
 
   // 5. Subtotal & Discount Code Calculation
   const subtotalPrice = accommodationPrice + cityTax + addonsPrice;
@@ -194,6 +216,10 @@ export function calculateReservationPrice({
     hasEbike,
     ebikeCount: safeEbikeCount,
     ebikePriceTotal,
+    isWinterSeason: isWinter,
+    hasWinterParking: isWinter && hasWinterParking,
+    parkingCarsCount: safeParkingCarsCount,
+    winterParkingPriceTotal,
     addonsPrice,
     subtotalPrice,
     discountAmount,
