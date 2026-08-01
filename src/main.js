@@ -3713,6 +3713,178 @@ const getNewsPageHTML = async () => {
   `;
 };
 
+// Render Funkce Pro Právní Stránky (GDPR & Cookies)
+export const getGdprPageHTML = () => `
+  <div class="legal-page">
+    <!-- HERO SEKCE -->
+    <section class="hero-section room-detail-hero" id="uvod-gdpr">
+      <img src="/uvodni_hero_sekce.webp" alt="Hotel U Můstků - Ochrana osobních údajů" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; filter: brightness(0.75);">
+      <div class="hero-overlay"></div>
+      <div class="hero-inner">
+        ${getHeaderHTML()}
+
+        <div class="room-detail-hero-center">
+          <h1 class="hero-title room-detail-hero-title">
+            <span>Ochrana osobních údajů (GDPR)</span>
+          </h1>
+          <p class="room-detail-hero-subtitle">
+            <span>Informace o tom, jak nakládáme s vašimi osobními údajmi při rezervaci ubytování a používání nášho webu.</span>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- OBSAHOVÁ SEKCE -->
+    <section class="legal-page-content-section">
+      <div class="legal-page-inner">
+        
+        <div class="legal-article-card">
+          <h2 class="legal-article-title">1. Správce osobních údajů</h2>
+          <p class="legal-article-text">Správcem osobních údajů zpracovávaných prostřednictvím tohoto webu je provozovatel Hotelu U Můstků:</p>
+          <p class="legal-article-text">
+            <strong>Lenka Bellingerová</strong><br>
+            IČ: 74349074 (Živnostenský úřad Poděbrady)<br>
+            Sídlo a adresa provozovny: Údolní 368, Desná v Jizerských horách 1, 468 61<br>
+            Telefon: <a href="tel:+420777666273" style="color: #1c1c19; text-decoration: underline;">+420 777 666 273</a><br>
+            E-mail: <a href="mailto:hotel@umustku.cz" style="color: #1c1c19; text-decoration: underline;">hotel@umustku.cz</a>
+          </p>
+        </div>
+
+        <div class="legal-article-card">
+          <h2 class="legal-article-title">2. Jaké osobní údaje zpracováváme a proč</h2>
+          <p class="legal-article-text">Vaše osobní údaje zpracováváme výhradně pro účely řádného vyřízení ubytování a zodpovězení vašich dotazů:</p>
+          
+          <table class="legal-info-table">
+            <thead>
+              <tr>
+                <th>Účel zpracování</th>
+                <th>Zpracovávané údaje</th>
+                <th>Právní základ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Rezervace ubytování</strong></td>
+                <td>Jméno, příjmení, e-mail, telefonní číslo, adresa, termín pobytu, počet osob.</td>
+                <td>Plnění smlouvy o ubytování a zákonná povinnost (evidence hostů dle zákona č. 565/1990 Sb. a zákona č. 326/1999 Sb.).</td>
+              </tr>
+              <tr>
+                <td><strong>Dotaz z kontaktního formuláře</strong></td>
+                <td>Jméno, e-mail, obsah vaší zprávy.</td>
+                <td>Oprávněný zájem na zodpovězení vašich dotazů a komunikaci s vámi.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="legal-article-card">
+          <h2 class="legal-article-title">3. Doba uchování údajů</h2>
+          <p class="legal-article-text">Osobní údaje uchováváme pouze po dobu nezbytně nutnou:</p>
+          <ul style="line-height: 1.7; color: #4a4a46; padding-left: 20px;">
+            <li><strong>Účetní a daňové doklady</strong> (faktury, potvrzení rezervace) uchováváme po dobu 10 let, jak ukládá zákon o účetnictví.</li>
+            <li><strong>Záznamy v domovní knize hostů</strong> uchováváme po dobu 6 let dle zákona o pobytu cizinců.</li>
+            <li><strong>Běžné zprávy z kontaktního formuláře</strong> promazáváme do 6 měsíců od vyřízení komunikace.</li>
+          </ul>
+        </div>
+
+        <div class="legal-article-card">
+          <h2 class="legal-article-title">4. Komu údaje předáváme (Příjemci údajů)</h2>
+          <p class="legal-article-text">Vaše soukromí si chráníme. Osobní údaje nikdy neprodáváme ani neposkytujeme třetím stranám k marketingovým účelům. Pro zajištění chodu webu a doručení e-mailů využíváme pouze ověřené technické partnery:</p>
+          <ul style="line-height: 1.7; color: #4a4a46; padding-left: 20px;">
+            <li>Poskytovatel zabezpečené databáze rezervací (Supabase Inc.).</li>
+            <li>Poskytovatel e-mailových služeb pro doručení potvrzení rezervace (Resend Inc.).</li>
+            <li>Poskytovatel webového hostingu.</li>
+          </ul>
+        </div>
+
+        <div class="legal-article-card">
+          <h2 class="legal-article-title">5. Vaše práva dle nariadení GDPR</h2>
+          <p class="legal-article-text">V souvislosti se zpracováním osobních údajů máte tato práva:</p>
+          <ul style="line-height: 1.7; color: #4a4a46; padding-left: 20px;">
+            <li><strong>Právo na přístup</strong> k vašim osobním údajům a získání jejich kopie.</li>
+            <li><strong>Právo na opravu</strong> nepřesných nebo neúplných údajů.</li>
+            <li><strong>Právo na výmaz</strong> ("právo být zapomenut"), pokud již údaje nejsou potřeba nebo u nich nevzniká zákonná povinnost uchování.</li>
+            <li><strong>Právo na omezení zpracování</strong> a právo vznést námitku proti zpracování.</li>
+            <li><strong>Právo podat stížnost</strong> u dozorového úřadu: Úřad pro ochranu osobních údajů, Pplk. Sochora 27, 170 00 Praha 7, e-mail: posta@uoou.cz, web: <a href="https://www.uoou.cz" target="_blank" rel="noopener" style="color: #1c1c19; text-decoration: underline;">www.uoou.cz</a>.</li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+    ${getCtaHTML()}
+  </div>
+`;
+
+export const getCookiesPageHTML = () => `
+  <div class="legal-page">
+    <!-- HERO SEKCE -->
+    <section class="hero-section room-detail-hero" id="uvod-cookies">
+      <img src="/uvodni_hero_sekce.webp" alt="Hotel U Můstků - Cookies" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; filter: brightness(0.75);">
+      <div class="hero-overlay"></div>
+      <div class="hero-inner">
+        ${getHeaderHTML()}
+
+        <div class="room-detail-hero-center">
+          <h1 class="hero-title room-detail-hero-title">
+            <span>Používání souborů cookies</span>
+          </h1>
+          <p class="room-detail-hero-subtitle">
+            <span>Přehledné informace o tom, jaké cookies používáme a jak můžete kdykoliv upravit své nastavení.</span>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- OBSAHOVÁ SEKCE -->
+    <section class="legal-page-content-section">
+      <div class="legal-page-inner">
+        
+        <div class="legal-article-card">
+          <h2 class="legal-article-title">1. Co jsou soubory cookies?</h2>
+          <p class="legal-article-text">Cookies jsou malé textové soubory, které webová stránka ukládá ve vašem počítači nebo telefonu při jejím prohlížení. Díky nim si web na určitou dobu zapamatuje vaše kroky a preference, abyste je nemuseli zadávat znovu.</p>
+          <p class="legal-article-text">Respektujeme vaše soukromí — na našem webu nezobrazujeme žádné reklamy a vaše údaje neprodáváme žádným třetím stranám.</p>
+        </div>
+
+        <div class="legal-article-card">
+          <h2 class="legal-article-title">2. Přehled používaných cookies na našem webu</h2>
+          <p class="legal-article-text">Na tomto webu používáme dva typy souborů cookies:</p>
+
+          <div style="margin-top: 20px;">
+            <div class="cookie-option-card" style="margin-bottom: 20px;">
+              <div class="cookie-option-header">
+                <span class="cookie-option-name">Technické (Nutné) cookies</span>
+                <span class="cookie-badge-necessary">Vždy povolené</span>
+              </div>
+              <p class="cookie-option-desc">Tyto cookies jsou nezbytné pro správné fungování webu, odeslání rezervačního formuláře a zapamatování vašeho nastavení soukromí. Nelze je vypnout, protože bez nich by web nemohl správně fungovat.</p>
+            </div>
+
+            <div class="cookie-option-card">
+              <div class="cookie-option-header">
+                <span class="cookie-option-name">Analytické cookies (Google Analytics)</span>
+                <span style="font-size: 13px; color: #555550;">Vyžadují váš souhlas</span>
+              </div>
+              <p class="cookie-option-desc">Pomáhají nám anonymně měřit návštěvnost webu (kolik lidí nás navštívilo a které stránky si prohlížejí). Používáme službu Google Analytics (ID: G-X62MWWL0FV) s plnou anonymizací IP adresy. Tyto cookies se spustí <strong>pouze tehdy, pokud dáte souhlas</strong>.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="legal-article-card" style="text-align: center;">
+          <h2 class="legal-article-title">3. Jak můžete změnit své nastavení?</h2>
+          <p class="legal-article-text">Svá rozhodnutí můžete kdykoliv změnit. Kliknutím na tlačítko níže znovu otevřete okno s nastavením cookies:</p>
+          
+          <div style="margin-top: 24px; display: flex; justify-content: center;">
+            <button class="btn btn-cookie-modal-save" id="btn-open-cookie-settings-page">Změnit nastavení cookies</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    ${getCtaHTML()}
+  </div>
+`;
+
 // Render Funkce Pro Stránku "Kontakt"
 const getContactPageHTML = () => `
   <div class="contact-page-wrapper">
@@ -4982,6 +5154,10 @@ const route = (isInitial = false) => {
       isPreRenderedMatch = true;
     } else if (pageKey === 'news' && app.querySelector('.news-hero-section, #seznam-aktualit')) {
       isPreRenderedMatch = true;
+    } else if (pageKey === 'gdpr' && app.querySelector('#uvod-gdpr')) {
+      isPreRenderedMatch = true;
+    } else if (pageKey === 'cookies' && app.querySelector('#uvod-cookies')) {
+      isPreRenderedMatch = true;
     }
   }
 
@@ -4993,8 +5169,11 @@ const route = (isInitial = false) => {
   } else if (pageKey === 'admin') {
     app.innerHTML = getAdminPageHTML();
     new AdminDashboard('admin-container').init();
-  } else if (pageKey === 'gdpr' || pageKey === 'cookies') {
-    // Statická právní stránka — ponecháme pre-renderované HTML z gdpr.html nebo cookies.html
+  } else if (pageKey === 'gdpr') {
+    if (!isPreRenderedMatch) app.innerHTML = getGdprPageHTML();
+    initInteractivity();
+  } else if (pageKey === 'cookies') {
+    if (!isPreRenderedMatch) app.innerHTML = getCookiesPageHTML();
     initInteractivity();
   } else if (pageKey === 'news') {
     if (!isPreRenderedMatch) {
