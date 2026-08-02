@@ -34,14 +34,67 @@ Všechny vnitřní kontejnery sekcí (`.hero-inner`, `.about-inner`, `.promo-inn
 1. **Fluidní šířka kontejnerů**:
    - Používat výhradně `width: 100%; max-width: 1440px; margin: 0 auto; box-sizing: border-box;` (nikdy statické `width: 1440px;` bez `max-width: 100%`).
 2. **Symetrické a čisté odsazení sekcí (Padding)**:
-   - Horní i spodní padding sekce musí být rovnocenný a symetrický (`padding: Npx 0 Npx 0;`).
+   - Horní i spodní padding sekce musí být rovnocenný a symetrický.
+   - ⛔ **Padding se NIKDY nezadává jen v pixelech.** Vždy `clamp(minimum, Xvh, maximum)`, kde `Xvh = maximum ÷ 9`. Důvod viz sekce „Pravidlo pro výšku okna" níže.
    - Prvky uvnitř sekce nesmí mít zbytečné vysoké statické odsazení (`top`), které by v kombinaci s paddingem sekce vytvářelo asymetrii (např. 3× větší horní mezeru než spodní).
 3. **Plynulé přizpůsobení obsahu a responzivní padding (1028px – 1500px)**:
    - Šířky prvků, obrázků a mřížek musí používat responzivní jednotky (`%`, `vw`, `clamp()`).
-   - Kdykoliv se v sekci nachází obrázky, které se responzivně zvětšují/zmenšují, MUSÍ se výška kontejneru (`min-height: clamp(...vw...)`) i padding sekce (`padding: clamp(...) 0`) zvětšovat v odpovídajícím poměru (`vw`), aby rozměry sekce reagovaly na růst obrázků a spodní i horní odsazení zůstávalo v každém okamžiku 100% symetrické a stejné.
+   - Kdykoliv se v sekci nachází obrázky, které se responzivně zvětšují/zmenšují, musí se výška kontejneru i padding sekce zvětšovat v odpovídajícím poměru (`vw`), aby odsazení zůstalo symetrické.
+   - ⚠️ **ALE výsledek musí být vždy zastropovaný podle výšky okna** pomocí `min(..., Xvh)`. Samotné `vw` nebo `clamp(...vw...)` je zakázané — na notebooku s nízkou obrazovkou sekce přeteče. Viz sekce „Pravidlo pro výšku okna" níže.
    - Obrázky se musí zmenšovat/zvětšovat plynule bez přetékání mimo kontejner.
    - Šířka a výška sekcí musí být dynamická (`height: auto;`), aby nedocházelo k překrývání se sousedními sekcemi.
    - Pro absolutně poziciované prvky (např. překrývající se dekorace nebo fotky) vždy použít `left: auto !important;` / `right` offsety tak, aby lícovaly k okraji obsahu a nepřetékaly mimo viditelnou plochu obrazovky.
+
+## 📏 PRAVIDLO PRO VÝŠKU OKNA (nadřazené — nesmazat)
+
+**Kontext:** 1. 8. 2026 se ukázalo, že web je nepoužitelný na noteboocích s nízkou obrazovkou. Majitel hotelu neviděl na žádné sekci zároveň nadpis i tlačítka. Příčinou byla tři pravidla z tohoto dokumentu. Následující zásady je nahrazují a mají přednost.
+
+### 1. Pixelový `min-height` nesmí nikdy přesáhnout okno
+
+⛔ **Zakázáno:** `height: 100vh; min-height: 760px;`
+Na okně vysokém 650 px je taková sekce vyšší než celá obrazovka.
+
+✅ **Správně:** buď `min-height` úplně vynechat, nebo zastropovat: `min-height: min(760px, 88svh);`
+
+### 2. Rozměry počítané ze šířky musí mít strop podle výšky
+
+`vw` je šířka okna. Sekce, která se řídí jen jí, na nízké obrazovce přeteče.
+
+⛔ **Zakázáno:** `padding: clamp(120px, 8.5vw, 160px) 0;`
+⛔ **Zakázáno:** `min-height: clamp(730px, 63vw, 900px);`
+
+✅ **Správně:** `padding: min(clamp(120px, 8.5vw, 160px), 13.4vh) 0;`
+
+**Vzorec pro strop:** `Xvh = pixelová hodnota ÷ 9`. Při okně vysokém 900 px vyjde původní hodnota, nad ní se nic nemění, pod ní se plynule zmenšuje.
+
+### 3. Obsah v hero se nepozicuje pevnými pixely shora
+
+⛔ **Zakázáno:** `.hero-title { position: absolute; top: 404px; }`
+Nadpis zůstane 404 px od vrchu i když je hero vysoké 404 px — skončí přesně na hraně a tlačítka vypadnou ven. Naměřeno: přetečení 109 px.
+
+✅ **Správně:** na nízkých obrazovkách přepnout `.hero-inner` na `display: flex; flex-direction: column; justify-content: center;` a obsahu dát `position: static`. Hotové řešení je v `src/style.css` v `@media (max-height: 820px)`.
+
+**Hlavička, logo, šipka dolů a přepínač Léto/Zima zůstávají `position: absolute`** — ty se na `static` nepřepínají nikdy.
+
+### 4. Povinné testování každé změny rozvržení
+
+DevTools → Responsive. Vždy projet: **1440 × 900** (nesmí se změnit nic), **1280 × 700**, **1280 × 550**, **1057 × 544**.
+
+Kontrolní příkaz do konzole, musí vrátit `0`:
+```js
+(h=>h.scrollHeight-h.clientHeight)(document.querySelector('.hero-inner'))
+```
+
+### 5. Existující pojistky v CSS — NEODSTRAŇOVAT
+
+| kde v `src/style.css` | co dělá |
+|---|---|
+| `@media (max-height: 820px)` | ruší pixelové `min-height` hero, přepíná obsah na flexbox |
+| `@media (max-height: 620px)` | krajní případ, ještě nižší hero |
+| `@media (min-width: 1029px) and (max-width: 1500px)` na konci souboru | stropuje paddingy notebooků podle výšky |
+| `clamp(...vh...)` u ~29 paddingů sekcí | plynulé zmenšování na nízkých obrazovkách |
+
+---
 
 ## 📱 Pravidlo pro Mobilní (<768px) a Tabletové (768px-1028px) verze
 
@@ -84,7 +137,7 @@ Všechny Hero sekce (Úvodní, Stravování, Pokoje, Přízemí, Výhled) MUSÍ 
   - **Pouze 1 tlačítko**: Primární tlačítko (např. *Nejsem ubytovaný* / *Rezervovat pobyt*) s rozměry dle Button Design System (`height: 36px !important; padding: 0 20px !important; font-size: 14.5px !important; border-radius: 1px !important; background-color: #ece8dd !important; color: #1c1c19 !important;`). Druhé tlačítko (např. *Přečíst více*) je skryté (`display: none !important`).
   - **Spodní odskrolovávací šipka**: ZOBRAZENÁ a VYCENTROVANÁ NA STŘED (`display: flex !important; margin: 15px auto 0 auto !important; align-self: center !important; transform: translateY(-25px) !important;`). Odsazení šipky od spodního okraje je striktně zachováno.
   - **Hover efekt tlačítka**: Plný neprahledný hover s jemným ztmavnutím podkladu (`background-color: #dcd7c5 !important; color: #1c1c19 !important; border: none !important;`).
-* **Výška sekce**: `height: 100vh !important; min-height: 520px !important;`.
+* **Výška sekce**: `height: 100vh !important;` — ⛔ **bez pixelového `min-height`**. Pojistka pro nízké obrazovky je v `@media (max-height: 820px)`, viz Pravidlo pro výšku okna.
 
 ### 📱 2. Tabletová verze (768px - 1028.98px)
 * **Struktura prvků**:
@@ -94,7 +147,7 @@ Všechny Hero sekce (Úvodní, Stravování, Pokoje, Přízemí, Výhled) MUSÍ 
   - **Pouze 1 tlačítko**: Primární tlačítko s tabletovými rozměry dle Button Design System (`height: 40px !important; padding: 0 24px !important; font-size: 15.5px !important; border-radius: 1px !important; background-color: #ece8dd !important; color: #1c1c19 !important;`). Druhé tlačítko je skryté (`display: none !important`).
   - **Spodní odskrolovávací šipka**: ZOBRAZENÁ a 100% VYCENTROVANÁ NA STŘED (`display: flex !important; margin: 15px auto 0 auto !important; align-self: center !important; transform: translateY(-25px) !important;`).
   - **Hover efekt tlačítka**: Plný neprahledný hover s jemným ztmavnutím podkladu (`background-color: #dcd7c5 !important; color: #1c1c19 !important; border: none !important;`).
-* **Výška sekce**: `height: 100vh !important; min-height: 600px !important;`.
+* **Výška sekce**: `height: 100vh !important;` — ⛔ **bez pixelového `min-height`**. Pojistka pro nízké obrazovky je v `@media (max-height: 820px)`, viz Pravidlo pro výšku okna.
 
 ### 💻 3. Desktopová verze (1029px+)
 * **Struktura prvků**:

@@ -8272,7 +8272,7 @@ html.is-route-loading #app {
 }
 
 .dining-dinner-section {
-  padding: 55px 0 clamp(47px, 9.4vh, 85px) 0 !important;
+  padding: 55px 0 clamp(66px, 13.3vh, 120px) 0 !important;
 }
 
 .dining-feature-inner {
