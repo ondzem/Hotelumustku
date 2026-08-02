@@ -699,54 +699,6 @@ const getReviewsHTML = () => `
     </div>
   </section>
 
-  <!-- MODAL: NAPSAT NOVOU RECENZI -->
-  <div class="review-modal-overlay" id="add-review-modal-overlay" aria-hidden="true">
-    <div class="review-modal-card">
-      <div class="review-modal-header">
-        <h3 class="review-modal-title">Přidat novou recenzi</h3>
-        <button type="button" class="review-modal-close" id="btn-close-review-modal" aria-label="Zavřít">&times;</button>
-      </div>
-
-      <form id="add-review-form" class="review-modal-form" novalidate>
-        <div class="review-modal-body">
-          <p class="review-modal-subtitle">
-            Vaše zkušenost pomůže ostatním hostům. Po odeslání bude recenze schválena recepcí a následně zveřejněna.
-          </p>
-
-          <div id="review-modal-alert-area"></div>
-
-          <!-- Honeypot -->
-          <div style="display:none;" aria-hidden="true">
-            <input type="text" id="hp-review-field" tabindex="-1" autocomplete="off">
-          </div>
-
-          <div class="form-field" id="field-wrap-review-name">
-            <label for="review-fullname-input" class="form-label">Jméno a Příjmení <span class="required" style="color: #c62828;">*</span></label>
-            <input type="text" id="review-fullname-input" class="form-input" placeholder="např. Jan Novák" required>
-            <small class="form-hint" style="font-size: 12.5px; color: #666660; margin-top: 5px; display: block;">
-              🔒 <strong>Ochrana soukromí (GDPR):</strong> Vaše příjmení bude po odeslání automaticky zkráceno na počáteční písmeno (např. <em>Jan N.</em>).
-            </small>
-          </div>
-
-          <div class="form-field" id="field-wrap-review-text" style="margin-top: 16px;">
-            <label for="review-text-input" class="form-label">Text vaší recenze <span class="required" style="color: #c62828;">*</span></label>
-            <textarea id="review-text-input" class="form-textarea" rows="4" maxlength="500" placeholder="Napište, jak se vám u nás líbilo, jak vám chutnala snídaně či jak hodnotíte čistotu a personál..." required></textarea>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 12.5px; color: #666660;">
-              <span id="review-text-hint">Minimálně 15 znaků, maximálně 500 znaků (cca 80 slov).</span>
-              <span id="review-text-count" style="font-weight: 600;">0 / 500</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="review-modal-footer">
-          <button type="button" class="btn btn-specs-secondary" id="btn-cancel-review-modal">Zrušit</button>
-          <button type="submit" class="btn btn-booking-submit" id="btn-submit-review">
-            <span>Odeslat recenzi ke schválení →</span>
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
 `;
 
 const getFeaturesHTML = () => `
@@ -2377,6 +2329,12 @@ const initInteractivity = () => {
   }
 
   // REVIEW MODAL & FORM HANDLERS (AUTOMATIC INJECTION & DELEGATION)
+  // Clean up any duplicate modal overlays if present
+  const allOverlays = document.querySelectorAll('#add-review-modal-overlay, .review-modal-overlay');
+  allOverlays.forEach((el, idx) => {
+    if (idx > 0) el.remove();
+  });
+
   let modalOverlay = document.getElementById('add-review-modal-overlay');
 
   // If modal overlay is missing from DOM on any page, dynamically inject it into body
@@ -2472,14 +2430,15 @@ const initInteractivity = () => {
   }
 
   const toggleReviewModal = (show) => {
-    if (!modalOverlay) return;
+    const activeOverlay = document.getElementById('add-review-modal-overlay');
+    if (!activeOverlay) return;
     if (show) {
-      modalOverlay.classList.add('is-open');
-      modalOverlay.setAttribute('aria-hidden', 'false');
+      activeOverlay.classList.add('is-open');
+      activeOverlay.setAttribute('aria-hidden', 'false');
       document.body.style.overflow = 'hidden';
     } else {
-      modalOverlay.classList.remove('is-open');
-      modalOverlay.setAttribute('aria-hidden', 'true');
+      activeOverlay.classList.remove('is-open');
+      activeOverlay.setAttribute('aria-hidden', 'true');
       document.body.style.overflow = '';
       if (reviewForm) reviewForm.reset();
       if (reviewTextCount) {
@@ -2493,21 +2452,25 @@ const initInteractivity = () => {
     }
   };
 
-  // Delegate click for opening modal on any page/button
-  document.body.addEventListener('click', (e) => {
-    const trigger = e.target.closest('#btn-open-review-modal, .btn-add-review');
-    if (trigger) {
-      e.preventDefault();
-      toggleReviewModal(true);
-    }
-  });
-
-  if (closeModalBtn) closeModalBtn.addEventListener('click', () => toggleReviewModal(false));
-  if (cancelModalBtn) cancelModalBtn.addEventListener('click', () => toggleReviewModal(false));
-  if (modalOverlay) {
-    modalOverlay.addEventListener('click', (e) => {
-      if (e.target === modalOverlay) toggleReviewModal(false);
+  // Delegate click for opening modal on any page/button — attached ONLY ONCE
+  if (!window._reviewModalClickListening) {
+    window._reviewModalClickListening = true;
+    document.body.addEventListener('click', (e) => {
+      const trigger = e.target.closest('#btn-open-review-modal, .btn-add-review');
+      if (trigger) {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleReviewModal(true);
+      }
     });
+  }
+
+  if (closeModalBtn) closeModalBtn.onclick = () => toggleReviewModal(false);
+  if (cancelModalBtn) cancelModalBtn.onclick = () => toggleReviewModal(false);
+  if (modalOverlay) {
+    modalOverlay.onclick = (e) => {
+      if (e.target === modalOverlay) toggleReviewModal(false);
+    };
   }
 
   if (reviewForm) {
