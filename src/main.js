@@ -406,7 +406,7 @@ const getServicesHTML = () => `
           </div>
           <div class="service-card-body">
             <h3 class="service-card-title">Skupinové Akce</h3>
-            <p class="service-card-desc">Uspořádejte nezapomenutelnou oslavu, teambuilding nebo svatbu v Jizerských horách s kompletním pronájmem hotelu pro 42 hostů a naprostým soukromím.</p>
+            <p class="service-card-desc">Uspořádejte nezapomenutelnou oslavu, teambuilding nebo svatbu v Jizerských horách s kompletním pronájmem hotelu pro 34 hostů a naprostým soukromím.</p>
             <button class="btn btn-service-more" id="service-events-btn">Zjistit více</button>
           </div>
         </div>
@@ -3384,7 +3384,7 @@ const getStravovaniPageHTML = () => `
       <div class="dining-events-content">
         <h2 class="dining-events-title">Rodinné oslavy, svatby či firemní akce?</h2>
         <p class="dining-events-p1">Plánujete skupinovou akci?</p>
-        <p class="dining-events-p2">Rádi pro vás po předchozí dohodě zajistíme kompletní pohoštění, rauty i ubytování pro skupiny do 40 osob.</p>
+        <p class="dining-events-p2">Rádi pro vás po předchozí dohodě zajistíme kompletní pohoštění, rauty i ubytování pro skupiny do 34 osob.</p>
         <p class="dining-events-p3">Postaráme se o rodinnou atmosféru a hladký průběh vaší akce v klidném údolí Jizerských hor.</p>
       </div>
       <div class="dining-events-action">
@@ -3432,7 +3432,7 @@ const getEventsPageHTML = () => `
           <span class="events-title-mobile">Prohlédněte si nabídku našich skupinových akcí</span>
         </h1>
         <p class="room-detail-hero-subtitle">
-          <span>Uspořádejte nezapomenutelnou akci v Jizerských horách — s kompletním pronájmem hotelu pro 42 hostů a rozlehlým areálem.</span>
+          <span>Uspořádejte nezapomenutelnou akci v Jizerských horách — s kompletním pronájmem hotelu pro 34 hostů a rozlehlým areálem.</span>
         </p>
 
         <div class="events-hero-buttons-wrap">
@@ -3457,7 +3457,7 @@ const getEventsPageHTML = () => `
         <h2 class="about-title">Celý hotel jen pro vás a vaše hosty</h2>
         <div class="about-text">
           <p>Plánujete skupinovou akci? Po předchozí dohodě pro vás zajistíme kompletní pronájem celého hotelu — ubytování, společenské prostory i pohoštění na jednom místě.</p>
-          <p>Postaráme se o rodinnou atmosféru a hladký průběh celé akce v klidném údolí Jizerských hor, stranou ruchu a s naprostým soukromím pro skupiny až do 42 osob.</p>
+          <p>Postaráme se o rodinnou atmosféru a hladký průběh celé akce v klidném údolí Jizerských hor, stranou ruchu a s naprostým soukromím pro skupiny až do 34 osob.</p>
         </div>
         <a href="/kontakt#form-sekce" class="btn btn-about btn-events-about-cta" id="events-about-cta-btn">Nezávazně poptat termín</a>
       </div>
