@@ -176,7 +176,7 @@ export function calculateReservationPrice({
 
   const addonsPrice = halfBoardPriceTotal + dogPriceTotal + ebikePriceTotal + winterParkingPriceTotal;
 
-  // 5. Subtotal & Discount Code Calculation
+  // 5. Subtotal & Discount Code Calculation (Sleva se počítá výhradně z ceny ubytování)
   const subtotalPrice = accommodationPrice + cityTax + addonsPrice;
   let discountAmount = 0;
   let discountLabel = '';
@@ -184,11 +184,11 @@ export function calculateReservationPrice({
   if (discountObj && discountObj.is_active) {
     const val = Number(discountObj.discount_value) || 0;
     if (discountObj.discount_type === 'percent' || val <= 100) {
-      discountAmount = Math.round(subtotalPrice * (val / 100));
-      discountLabel = `Sleva (${discountObj.code} -${val} %)`;
+      discountAmount = Math.round(accommodationPrice * (val / 100));
+      discountLabel = `Sleva na ubytování (${discountObj.code} -${val} %)`;
     } else {
-      discountAmount = Math.min(subtotalPrice, val);
-      discountLabel = `Sleva (${discountObj.code})`;
+      discountAmount = Math.min(accommodationPrice, val);
+      discountLabel = `Sleva na ubytování (${discountObj.code} -${formatCzechPrice(val)})`;
     }
   }
 
