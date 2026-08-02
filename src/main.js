@@ -306,20 +306,22 @@ export function getTopAnnouncementBarHTML() {
 const getHeaderHTML = () => `
   <!-- Hlavička (Navigace a logo) -->
   <header class="site-header">
-    <div class="nav-left">
-      <a href="/ubytovani" class="nav-link">Nabídka pokojů</a>
-      <a href="/stravovani" class="nav-link">Stravování</a>
-      <a href="/okoli" class="nav-link">Aktivity</a>
-    </div>
-    
+    <!-- Levá strana: Logo -->
     <a href="/" class="header-logo">
-      <img src="/Logo/white logo.webp" alt="Hotel u Můstku Logo" loading="eager" fetchpriority="high">
+      <img src="/Logo/white-logo-orez.webp" alt="Hotel u Můstku Logo" loading="eager" fetchpriority="high">
     </a>
-    
-    <div class="nav-right">
-      <a href="/akce" class="nav-link">Skupinové akce</a>
-      <a href="/aktuality" class="nav-link" id="nav-link-aktuality">Aktuality</a>
-      <a href="/kontakt" class="nav-link">Kontakt</a>
+
+    <!-- Pravá strana: Odkazy a Tlačítko Rezervovat pobyt -->
+    <div class="header-nav-right">
+      <nav class="header-nav-links">
+        <a href="/ubytovani" class="nav-link">Nabídka pokojů</a>
+        <a href="/stravovani" class="nav-link">Stravování</a>
+        <a href="/okoli" class="nav-link">Aktivity</a>
+        <a href="/akce" class="nav-link">Skupinové akce</a>
+        <a href="/aktuality" class="nav-link" id="nav-link-aktuality">Aktuality</a>
+        <a href="/kontakt" class="nav-link">Kontakt</a>
+      </nav>
+      <a href="/#rezervace" class="btn btn-header-booking" id="header-booking-btn">Rezervovat pobyt</a>
     </div>
 
     <!-- Mobilní tlačítko menu (Hamburger) -->
@@ -418,239 +420,264 @@ const getServicesHTML = () => `
 // Anonymizovaná databáze reálných recenzí hostů (GDPR compliant, bez odpovědí provozovatele)
 const GUEST_REVIEWS = [
   {
-    date: "26. 06. 2026",
-    author: "Jitka",
-    text: "Strávili jsme tady s manželem nádherný víkend. Krásné prostředí, útulný hotel, výborná kuchyně, i když vaří jenom jedno menu. Úschovna kol, kde jsme si mohli elektrokola nabít, a co bylo super v těchto vedrech — pod terasou nádherný splav, kde jsme se mohli koupat. Posezení na zahrádce u dobrého piva bylo super. Určitě ještě přijedeme."
+    "date": "26. 07. 2026",
+    "author": "Grizzly",
+    "text": "Úžasně vstřícný personál, ochotný, usměvavý. Dlouho budeme vzpomínat na žampionovou polévku, kulajdu a domácí jogurt, který dělá paní majitelka."
   },
   {
-    date: "24. 08. 2025",
-    author: "Lenka a Ruda",
-    text: "Děkujeme za příjemně strávenou dovolenou v útulných, velmi čistých pokojích. Majitelé jsou pohodoví a ochotní, velký výběr domácích produktů ve snídaňovém bufetu, večeře výborné za lidové ceny. Určitě doporučujeme všem, kdo stojí o dovolenou v hezkém, klidném prostředí. Stoprocentní spokojenost, vřele doporučujeme. Děkujeme."
+    "date": "26. 06. 2026",
+    "author": "Jitka",
+    "text": "Strávili jsme tady s manželem nádherný víkend. Krásné prostředí, útulný hotel, výborná kuchyně, i když vaří jenom jedno menu. Úschovna kol, kde jsme si mohli elektrokola nabít, a co bylo super v těchto vedrech — pod terasou nádherný splav, kde jsme se mohli koupat. Posezení na zahrádce u dobrého piva bylo super. Určitě ještě přijedeme."
   },
   {
-    date: "17. 08. 2025",
-    author: "Dana N.",
-    text: "Byli jsme jen na tři dny, ale naprostá spokojenost. Tak čistý pokoj jsme snad ještě nezažili, majitelé vstřícní a jídlo také nemělo chybu. Pokud pojedeme do těchto končin znovu, určitě se ubytujeme opět tady."
+    "date": "13. 03. 2026",
+    "author": "Zdeňka",
+    "text": "V hotelu jsme byli moc spokojeni. Pokoj měl starší vybavení, ale byl udržovaný a čistý. Ocenili jsme balkónek, který měl krásný výhled na můstky a na říčku Bílá Desná. Snídaně byly dostatečné. Večeři, která zahrnovala polévku a hlavní jídlo, si bylo možné předem objednat. Dalším bonusem je poloha hotelu — Jizerská magistrála se nachází zhruba 2 km od ubytování."
   },
   {
-    date: "08. 08. 2025",
-    author: "Roman K.",
-    text: "Spokojenost, doporučuji."
+    "date": "22. 01. 2026",
+    "author": "Lucie",
+    "text": "Hotel na klidném pěkném místě. Vybavení starší, ale vše plně funkční a čisté. Velmi příjemný personál. Snídaně dostačující, možnost objednání večeří (jednotné menu — polévka, hlavní chod). Byli jsme velmi spokojeni."
   },
   {
-    date: "18. 02. 2025",
-    author: "Adam",
-    text: "Pobyt se nám u vás moc líbil. Milý přístup, krásně čisto, výborné jídlo, pěkné okolí hotelu a večer jsme se nenudili (kulečník, fotbálek, stolní tenis). Děkujeme :-)"
+    "date": "24. 08. 2025",
+    "author": "Lenka a Ruda",
+    "text": "Děkujeme za příjemně strávenou dovolenou v útulných, velmi čistých pokojích. Majitelé jsou pohodoví a ochotní, velký výběr domácích produktů ve snídaňovém bufetu, večeře výborné za lidové ceny. Určitě doporučujeme všem, kdo stojí o dovolenou v hezkém, klidném prostředí. Stoprocentní spokojenost, vřele doporučujeme. Děkujeme."
   },
   {
-    date: "02. 02. 2025",
-    author: "Honza",
-    text: "V současné době můžu pochválit ceny, krásně čisto, příjemný personál, klidné místo. Vřele doporučuji."
+    "date": "17. 08. 2025",
+    "author": "Dana N.",
+    "text": "Byli jsme jen na tři dny, ale naprostá spokojenost. Tak čistý pokoj jsme snad ještě nezažili, majitelé vstřícní a jídlo také nemělo chybu. Pokud pojedeme do těchto končin znovu, určitě se ubytujeme opět tady."
   },
   {
-    date: "10. 09. 2024",
-    author: "Jirka",
-    text: "Pokud chcete dovolenou v klidném prostředí, tak vřele doporučuji. Na hotelu klid, v noci klid a okolí krásné a klidné. Výborné večeře, sice bez výběru, jedno menu, ale kvalita, se kterou se hned tak nesetkáte. Podotýkám česká kuchyně. Rádi se sem vrátíme."
+    "date": "08. 08. 2025",
+    "author": "Roman K.",
+    "text": "Spokojenost, doporučuji."
   },
   {
-    date: "18. 06. 2024",
-    author: "Tomáš",
-    text: "Vrátili jsme se po třech letech a můžu říct, že jsem opět mile překvapen. Ceny pořád stejné, výborná kuchyně a pokoje bez sebemenší špíny, prostě super. Díky."
+    "date": "08. 06. 2025",
+    "author": "Antonín",
+    "text": "Příjemné, klidné místo, dobré jídlo, přátelský personál, parkování u hotelu. Vzhledem k tomu, že je hotel starší, tak se mi vybavily příjemné vzpomínky na obdobná ubytování v 90. letech."
   },
   {
-    date: "18. 06. 2024",
-    author: "Tomáš",
-    text: "Obrovská spokojenost, ceny stejné jako před třemi lety. Pořád krásně čisto, výborné jídlo a ochotný personál. Díky."
+    "date": "18. 02. 2025",
+    "author": "Adam",
+    "text": "Pobyt se nám u vás moc líbil. Milý přístup, krásně čisto, výborné jídlo, pěkné okolí hotelu a večer jsme se nenudili (kulečník, fotbálek, stolní tenis). Děkujeme :-)"
   },
   {
-    date: "05. 01. 2024",
-    author: "Zbyněk",
-    text: "Super místo, Silvestr neměl chybu. Perfektní jídlo, snídaně — velký výběr. V létě určitě přijedeme. Velice příjemný a ochotný personál. Určitě v létě přijedeme na kola."
+    "date": "02. 02. 2025",
+    "author": "Honza",
+    "text": "V současné době můžu pochválit ceny, krásně čisto, příjemný personál, klidné místo. Vřele doporučuji."
   },
   {
-    date: "11. 08. 2023",
-    author: "Jana a Zdeněk",
-    text: "Na dovolené jsme zde byli už počtvrté a opět stoprocentní spokojenost. Ochotní majitelé, výborná kuchyně, čisté pokoje a hlavně klid a pohoda. Děkujeme za příjemně strávenou dovolenou. Těšíme se na příště."
+    "date": "02. 01. 2025",
+    "author": "Vojtěch",
+    "text": "Hotel je ve velmi klidné části Desné daleko od veškerého ruchu, ale ne zase příliš daleko od centra, nádraží nebo přírody. Pokoj prostorný, postel i gauč vskutku pohodlné. U snídaně dostatečný výběr a možnost domluvit si za pár korun i svačinu s sebou. Dále byla možnost objednat večeři — tradiční česká kuchyně, která byla vynikající. Majitelé hotelu jsou velmi milí lidé a není problém vyřešit jakoukoliv situaci. Dále je možné zahrát si stolní fotbal nebo například kulečník."
   },
   {
-    date: "01. 01. 2023",
-    author: "Kymličkovi",
-    text: "Příjemné klidné prostředí s chutnou domácí stravou a personálem ochotným vyhovět specifickým požadavkům. Pokoje útulné a všude čisto. Pobyt byl milým překvapením a můžeme jen doporučit."
+    "date": "10. 09. 2024",
+    "author": "Jirka",
+    "text": "Pokud chcete dovolenou v klidném prostředí, tak vřele doporučuji. Na hotelu klid, v noci klid a okolí krásné a klidné. Výborné večeře, sice bez výběru, jedno menu, ale kvalita, se kterou se hned tak nesetkáte. Podotýkám česká kuchyně. Rádi se sem vrátíme."
   },
   {
-    date: "13. 08. 2022",
-    author: "Jana a Jirka",
-    text: "Jezdíme pravidelně každý rok už od roku 2015. Dovolená je každý rok lepší a lepší. Skvělá kuchyně, výborné snídaně s domácími jogurty a chlebem, všude čisto, klid a pohoda. Vřele doporučujeme a těšíme se na příští léto. Děkujeme za krásnou dovolenou."
+    "date": "18. 06. 2024",
+    "author": "Tomáš",
+    "text": "Obrovská spokojenost, ceny stejné jako před třemi lety. Pořád krásně čisto, výborné jídlo a ochotný personál. Díky."
   },
   {
-    date: "02. 09. 2021",
-    author: "Jana a Jirka",
-    text: "Tak jako každý rok, byl ten týden u Vás v hotelu úplný balzám na tělo i duši. Škoda jen, že to vždy tak rychle uteče. Děkujeme a už nyní se těšíme na příští rok."
+    "date": "05. 01. 2024",
+    "author": "Zbyněk",
+    "text": "Super místo, Silvestr neměl chybu. Perfektní jídlo, snídaně — velký výběr. V létě určitě přijedeme. Velice příjemný a ochotný personál. Určitě v létě přijedeme na kola."
   },
   {
-    date: "08. 01. 2020",
-    author: "Jana a Filip",
-    text: "Děkujeme za příjemný pobyt v útulném prostředí a skvělou domácí kuchyni. V létě přijedeme zase."
+    "date": "02. 10. 2023",
+    "author": "Soňa",
+    "text": "Krásné místo, útulný hotýlek, všude čisto, příjemní a milí majitelé, výhled přímo na můstky, snídaně výborná, zkrátka úžasný odpočinek v nádherném prostředí."
   },
   {
-    date: "27. 07. 2019",
-    author: "Jana a Jirka",
-    text: "Stále stejně super hotel v klidném prostředí s výbornou kuchyní. Užili jsme si to my i děti. Příští rok se chystáme znovu. Děkujeme za nádhernou dovolenou."
+    "date": "11. 08. 2023",
+    "author": "Jana a Zdeněk",
+    "text": "Na dovolené jsme zde byli už počtvrté a opět stoprocentní spokojenost. Ochotní majitelé, výborná kuchyně, čisté pokoje a hlavně klid a pohoda. Děkujeme za příjemně strávenou dovolenou. Těšíme se na příště."
   },
   {
-    date: "24. 01. 2019",
-    author: "J. M.",
-    text: "Vše tak, jak má být. Stoprocentní spokojenost. Děkujeme."
+    "date": "01. 01. 2023",
+    "author": "Kymličkovi",
+    "text": "Příjemné klidné prostředí s chutnou domácí stravou a personálem ochotným vyhovět specifickým požadavkům. Pokoje útulné a všude čisto. Pobyt byl milým překvapením a můžeme jen doporučit."
   },
   {
-    date: "14. 08. 2018",
-    author: "Jana a Jirka",
-    text: "Už čtvrtý pobyt a je to čím dál tím lepší. Doporučujeme."
+    "date": "13. 08. 2022",
+    "author": "Jana a Jirka",
+    "text": "Jezdíme pravidelně každý rok už od roku 2015. Dovolená je každý rok lepší a lepší. Skvělá kuchyně, výborné snídaně s domácími jogurty a chlebem, všude čisto, klid a pohoda. Vřele doporučujeme a těšíme se na příští léto. Děkujeme za krásnou dovolenou."
   },
   {
-    date: "29. 07. 2018",
-    author: "P. a R. T.",
-    text: "Děkujeme vám za příjemně strávenou dovolenou ve vašem klidném, čistém a útulném hotelu s výbornou kuchyní. Moc se nám u vás líbilo. Všem doporučujeme."
+    "date": "02. 09. 2021",
+    "author": "Jana a Jirka",
+    "text": "Tak jako každý rok, byl ten týden u Vás v hotelu úplný balzám na tělo i duši. Škoda jen, že to vždy tak rychle uteče. Děkujeme a už nyní se těšíme na příští rok."
   },
   {
-    date: "10. 03. 2018",
-    author: "Jitka a Michal",
-    text: "Klid, čisto, pohodlí, snídaně i večeře super. Přestože se vaří jednotné jídlo, s takovou kvalitou se setkáváme málokde. Doporučujeme."
+    "date": "08. 01. 2020",
+    "author": "Jana a Filip",
+    "text": "Děkujeme za příjemný pobyt v útulném prostředí a skvělou domácí kuchyni. V létě přijedeme zase."
   },
   {
-    date: "28. 08. 2017",
-    author: "Jana a Jirka",
-    text: "Letos jsme se vrátili už potřetí a určitě ne naposledy. Vřele doporučujeme — dovolená tady nemá chybu. Děkujeme."
+    "date": "27. 07. 2019",
+    "author": "Jana a Jirka",
+    "text": "Stále stejně super hotel v klidném prostředí s výbornou kuchyní. Užili jsme si to my i děti. Příští rok se chystáme znovu. Děkujeme za nádhernou dovolenou."
   },
   {
-    date: "19. 08. 2017",
-    author: "Aleš D. s rodinou",
-    text: "S velmi dobrým pocitem odjíždíme z týdenního pobytu v tomto hotelu s velice příjemným a čistým prostředím, výbornou kuchyní a úžasnými majiteli. Velké díky za příjemné prožití letní dovolené a někdy zase na shledanou v hotelu U Můstků."
+    "date": "24. 01. 2019",
+    "author": "J. M.",
+    "text": "Vše tak, jak má být. Stoprocentní spokojenost. Děkujeme."
   },
   {
-    date: "06. 03. 2017",
-    author: "Jiří Č.",
-    text: "Moc Vám děkujeme za příjemný pobyt, dobré ubytování, výbornou domácí kuchyni a moc příjemné majitele. Určitě všem doporučujeme."
+    "date": "14. 08. 2018",
+    "author": "Jana a Jirka",
+    "text": "Už čtvrtý pobyt a je to čím dál tím lepší. Doporučujeme."
   },
   {
-    date: "04. 02. 2017",
-    author: "Thomas (DE)",
-    text: "Einfach, praktisch, super nette Leute und preiswert, super Frühstück und wer wollte exzellentes Abendbrot."
+    "date": "29. 07. 2018",
+    "author": "P. a R. T.",
+    "text": "Děkujeme vám za příjemně strávenou dovolenou ve vašem klidném, čistém a útulném hotelu s výbornou kuchyní. Moc se nám u vás líbilo. Všem doporučujeme."
   },
   {
-    date: "11. 09. 2016",
-    author: "Majkovi",
-    text: "Děkujeme za úžasný týdenní pobyt nejen v příjemném hotelu s úžasnými majiteli, ale také za krásná místa v okolí. Hotel U Můstků můžeme všem jen doporučit. Ještě jednou děkujeme."
+    "date": "10. 03. 2018",
+    "author": "Jitka a Michal",
+    "text": "Klid, čisto, pohodlí, snídaně i večeře super. Přestože se vaří jednotné jídlo, s takovou kvalitou se setkáváme málokde. Doporučujeme."
   },
   {
-    date: "01. 09. 2016",
-    author: "Novákovi",
-    text: "Děkujeme majitelům hotelu za příjemně strávený pobyt a vše, co pro nás dělali. Ještě jednou vřelý dík. Všem vřele doporučujeme."
+    "date": "28. 08. 2017",
+    "author": "Jana a Jirka",
+    "text": "Letos jsme se vrátili už potřetí a určitě ne naposledy. Vřele doporučujeme — dovolená tady nemá chybu. Děkujeme."
   },
   {
-    date: "31. 07. 2016",
-    author: "Jana a Jirka",
-    text: "Všem doporučujeme — pěkný hotel a hlavně úžasní majitelé a výborná kuchyně. Letos jsme byli už podruhé, vrátili jsme se po roce a bylo to snad ještě lepší než loni :-) Děkujeme za nádhernou dovolenou."
+    "date": "19. 08. 2017",
+    "author": "Aleš D. s rodinou",
+    "text": "S velmi dobrým pocitem odjíždíme z týdenního pobytu v tomto hotelu s velice příjemným a čistým prostředím, výbornou kuchyní a úžasnými majiteli. Velké díky za příjemné prožití letní dovolené a někdy zase na shledanou v hotelu U Můstků."
   },
   {
-    date: "27. 06. 2016",
-    author: "Volfovi",
-    text: "Krásný hotel v krásné krajině, možnost mnoha výletů a procházek, skvělá kuchyně a velice milí a ochotní majitelé. Dovolená se nám moc líbila, ani odjíždět se nám nechtělo. Určitě se ještě někdy vrátíme."
+    "date": "06. 03. 2017",
+    "author": "Jiří Č.",
+    "text": "Moc Vám děkujeme za příjemný pobyt, dobré ubytování, výbornou domácí kuchyni a moc příjemné majitele. Určitě všem doporučujeme."
   },
   {
-    date: "08. 03. 2016",
-    author: "Sládkovi",
-    text: "V hotelu jsme strávili týden a vřele ho doporučujeme všem návštěvníkům — levné a skvěle připravené jídlo, velice příjemní a ochotní majitelé."
+    "date": "04. 02. 2017",
+    "author": "Thomas (DE)",
+    "text": "Einfach, praktisch, super nette Leute und preiswert, super Frühstück und wer wollte exzellentes Abendbrot."
   },
   {
-    date: "28. 01. 2016",
-    author: "Antonín H.",
-    text: "Zdejší hotel hodnotíme s manželkou — za slušné peníze hodně muziky. Výborné ubytování, služby, kuchyně, čistota a slušní majitelé. Procestovali jsme toho hodně a tento hotel s klidem můžeme doporučit."
+    "date": "11. 09. 2016",
+    "author": "Majkovi",
+    "text": "Děkujeme za úžasný týdenní pobyt nejen v příjemném hotelu s úžasnými majiteli, ale také za krásná místa v okolí. Hotel U Můstků můžeme všem jen doporučit. Ještě jednou děkujeme."
   },
   {
-    date: "11. 01. 2016",
-    author: "Milan",
-    text: "Silvestrovský pobyt super. Děkujeme za krásný vstup do nového roku 2016."
+    "date": "01. 09. 2016",
+    "author": "Novákovi",
+    "text": "Děkujeme majitelům hotelu za příjemně strávený pobyt a vše, co pro nás dělali. Ještě jednou vřelý dík. Všem vřele doporučujeme."
   },
   {
-    date: "15. 09. 2015",
-    author: "Kamila",
-    text: "Pobyt v hotelu se nám moc líbil. Na pokoji nám nic nechybělo — vše mají promyšleno do detailů. Jídlo bylo moc dobré. Majitelé jsou velmi příjemní a ochotní. Vhodné i pro rodinu s malými dětmi. Byli jsme moc spokojení. Doporučujeme!"
+    "date": "31. 07. 2016",
+    "author": "Jana a Jirka",
+    "text": "Všem doporučujeme — pěkný hotel a hlavně úžasní majitelé a výborná kuchyně. Letos jsme byli už podruhé, vrátili jsme se po roce a bylo to snad ještě lepší než loni :-) Děkujeme za nádhernou dovolenou."
   },
   {
-    date: "07. 09. 2015",
-    author: "Jindra",
-    text: "V neděli jsme měli oslavu narozenin ve zdejším hotelu. Všichni jsme byli velice mile překvapeni kvalitou a chutí jídla, zároveň příjemným, přitom profesionálním personálem. Vřele doporučujeme."
+    "date": "27. 06. 2016",
+    "author": "Volfovi",
+    "text": "Krásný hotel v krásné krajině, možnost mnoha výletů a procházek, skvělá kuchyně a velice milí a ochotní majitelé. Dovolená se nám moc líbila, ani odjíždět se nám nechtělo. Určitě se ještě někdy vrátíme."
   },
   {
-    date: "10. 08. 2015",
-    author: "Jana a Zdeněk",
-    text: "V sobotu jsme se vrátili z týdenní dovolené, vše bylo super! Včetně vynikajícího personálu (tímto jej zdravíme) a domácí kuchyně! Ještě jednou díky za příjemně strávený týden. Vřele všem doporučujeme!"
+    "date": "08. 03. 2016",
+    "author": "Sládkovi",
+    "text": "V hotelu jsme strávili týden a vřele ho doporučujeme všem návštěvníkům — levné a skvěle připravené jídlo, velice příjemní a ochotní majitelé."
   },
   {
-    date: "10. 08. 2015",
-    author: "Venca a Barča",
-    text: "Naprosto bezchybný týden dovolené, vše už zde bylo napsáno, naše hodnocení: jednička s hvězdou. Vše super, doporučujeme."
+    "date": "28. 01. 2016",
+    "author": "Antonín H.",
+    "text": "Zdejší hotel hodnotíme s manželkou — za slušné peníze hodně muziky. Výborné ubytování, služby, kuchyně, čistota a slušní majitelé. Procestovali jsme toho hodně a tento hotel s klidem můžeme doporučit."
   },
   {
-    date: "01. 08. 2015",
-    author: "Jana a Jirka",
-    text: "Příjemný hotel, výborná domácí kuchyně, domácí atmosféra. Dovolenou tady vřele všem doporučujeme. Nádherná dovolená — děkujeme a moc rádi se vrátíme."
+    "date": "11. 01. 2016",
+    "author": "Milan",
+    "text": "Silvestrovský pobyt super. Děkujeme za krásný vstup do nového roku 2016."
   },
   {
-    date: "30. 07. 2015",
-    author: "Jirka a Jana",
-    text: "Klidné prostředí, pohoda. Doporučuji."
+    "date": "15. 09. 2015",
+    "author": "Kamila",
+    "text": "Pobyt v hotelu se nám moc líbil. Na pokoji nám nic nechybělo — vše mají promyšleno do detailů. Jídlo bylo moc dobré. Majitelé jsou velmi příjemní a ochotní. Vhodné i pro rodinu s malými dětmi. Byli jsme moc spokojení. Doporučujeme!"
   },
   {
-    date: "24. 03. 2015",
-    author: "Erika B.",
-    text: "Příjemně strávený pobyt v hotelu, všem doporučuji a hlavně dobrá kuchyně. Pozdrav provozovatelům."
+    "date": "07. 09. 2015",
+    "author": "Jindra",
+    "text": "V neděli jsme měli oslavu narozenin ve zdejším hotelu. Všichni jsme byli velice mile překvapeni kvalitou a chutí jídla, zároveň příjemným, přitom profesionálním personálem. Vřele doporučujeme."
   },
   {
-    date: "24. 03. 2015",
-    author: "Eva N.",
-    text: "S rodinou jsme byli v hotelu U Můstků v Desné, prostě paráda. Domácí strava a příjemná obsluha, palec nahoru."
+    "date": "10. 08. 2015",
+    "author": "Jana a Zdeněk",
+    "text": "V sobotu jsme se vrátili z týdenní dovolené, vše bylo super! Včetně vynikajícího personálu (tímto jej zdravíme) a domácí kuchyně! Ještě jednou díky za příjemně strávený týden. Vřele všem doporučujeme!"
   },
   {
-    date: "19. 01. 2015",
-    author: "Pavel K.",
-    text: "Na začátku ledna jsme se s rodinou ubytovali v hotelu, kde jsme strávili pět dnů. Byli jsme spokojeni. Doporučuji."
+    "date": "10. 08. 2015",
+    "author": "Venca a Barča",
+    "text": "Naprosto bezchybný týden dovolené, vše už zde bylo napsáno, naše hodnocení: jednička s hvězdou. Vše super, doporučujeme."
   },
   {
-    date: "09. 09. 2014",
-    author: "Honza s přáteli",
-    text: "O prázdninách jsme navštívili s kamarády Jizerské hory a ubytování v hotelu U Můstků bylo super. Určitě pojedeme znovu i v zimě na lyže. Tímto pozdravuji provozovatele."
+    "date": "01. 08. 2015",
+    "author": "Jana a Jirka",
+    "text": "Příjemný hotel, výborná domácí kuchyně, domácí atmosféra. Dovolenou tady vřele všem doporučujeme. Nádherná dovolená — děkujeme a moc rádi se vrátíme."
   },
   {
-    date: "24. 07. 2014",
-    author: "Michal a Jitka",
-    text: "Rodinný hotel v klidném prostředí, výborná domácí kuchyně a příjemní lidé... :-) Parádní dovolená."
+    "date": "30. 07. 2015",
+    "author": "Jirka a Jana",
+    "text": "Klidné prostředí, pohoda. Doporučuji."
   },
   {
-    date: "13. 07. 2014",
-    author: "Dana",
-    text: "S přítelem jsme strávili tři dny a byli jsme velice spokojeni."
+    "date": "24. 03. 2015",
+    "author": "Erika B.",
+    "text": "Příjemně strávený pobyt v hotelu, všem doporučuji a hlavně dobrá kuchyně. Pozdrav provozovatelům."
   },
   {
-    date: "31. 05. 2014",
-    author: "Jana V.",
-    text: "Minulý týden jsme se s rodinou ubytovali v hotelu U Můstků a můžu jenom doporučit. Velice příjemní lidé, výborná domácí kuchyně. Všude čisto. Opravdu doporučuji."
+    "date": "24. 03. 2015",
+    "author": "Eva N.",
+    "text": "S rodinou jsme byli v hotelu U Můstků v Desné, prostě paráda. Domácí strava a příjemná obsluha, palec nahoru."
   },
   {
-    date: "16. 04. 2014",
-    author: "Ilona M.",
-    text: "Přespali jsme sice jenom jednu noc a musím konstatovat, že jsme spokojeni s přístupem a hlavně nádherně čistě uklizenými pokoji. Snídaně formou bufetu bez sebemenších připomínek."
+    "date": "19. 01. 2015",
+    "author": "Pavel K.",
+    "text": "Na začátku ledna jsme se s rodinou ubytovali v hotelu, kde jsme strávili pět dnů. Byli jsme spokojeni. Doporučuji."
   },
   {
-    date: "15. 04. 2014",
-    author: "Jaroslav K.",
-    text: "Za profesionální přístup personálu a příjemné prostředí palec nahoru. Mohu všem jen doporučit. Zároveň si přeji, aby takto fungovala všechna podobná zařízení v Desné. Majitelům a personálu přeji plno slušných hostů a hodně elánu do jejich další práce."
+    "date": "09. 09. 2014",
+    "author": "Honza s přáteli",
+    "text": "O prázdninách jsme navštívili s kamarády Jizerské hory a ubytování v hotelu U Můstků bylo super. Určitě pojedeme znovu i v zimě na lyže. Tímto pozdravuji provozovatele."
   },
   {
-    date: "03. 04. 2014",
-    author: "Zbyněk V.",
-    text: "Krásné prostředí, příjemná obsluha a výborná domácí kuchyně. Také jsme měli možnost ochutnat domácí uzený bůček a různé dobroty z grilu. Můžu jenom doporučit."
+    "date": "24. 07. 2014",
+    "author": "Michal a Jitka",
+    "text": "Rodinný hotel v klidném prostředí, výborná domácí kuchyně a příjemní lidé... :-) Parádní dovolená."
+  },
+  {
+    "date": "13. 07. 2014",
+    "author": "Dana",
+    "text": "S přítelem jsme strávili tři dny a byli jsme velice spokojeni."
+  },
+  {
+    "date": "31. 05. 2014",
+    "author": "Jana V.",
+    "text": "Minulý týden jsme se s rodinou ubytovali v hotelu U Můstků a můžu jenom doporučit. Velice příjemní lidé, výborná domácí kuchyně. Všude čisto. Opravdu doporučuji."
+  },
+  {
+    "date": "16. 04. 2014",
+    "author": "Ilona M.",
+    "text": "Přespali jsme sice jenom jednu noc a musím konstatovat, že jsme spokojeni s přístupem a hlavně nádherně čistě uklizenými pokoji. Snídaně formou bufetu bez sebemenších připomínek."
+  },
+  {
+    "date": "15. 04. 2014",
+    "author": "Jaroslav K.",
+    "text": "Za profesionální přístup personálu a příjemné prostředí palec nahoru. Mohu všem jen doporučit. Zároveň si přeji, aby takto fungovala všechna podobná zařízení v Desné. Majitelům a personálu přeji plno slušných hostů a hodně elánu do jejich další práce."
+  },
+  {
+    "date": "03. 04. 2014",
+    "author": "Zbyněk V.",
+    "text": "Krásné prostředí, příjemná obsluha a výborná domácí kuchyně. Také jsme měli možnost ochutnat domácí uzený bůček a různé dobroty z grilu. Můžu jenom doporučit."
   }
 ];
 
@@ -1068,6 +1095,7 @@ const getHomePageHTML = () => {
 };
 
 // Render Funkce Pro Stránku "Nabídka Pokojů" (Ubytování)
+// Render Funkce Pro Stránku "Nabídka Pokojů" (Ubytování)
 const getRoomsPageHTML = () => `
   <!-- 1. HERO SEKCE POKOJŮ -->
   <section class="hero-section rooms-hero-section room-detail-hero" id="uvod-pokoje">
@@ -1097,135 +1125,7 @@ const getRoomsPageHTML = () => `
     </div>
   </section>
 
-  <!-- SEKCE NABÍDKA POKOJŮ (SEZNAM POKOJŮ) -->
-  <section class="rooms-list-section">
-    <div class="rooms-list-inner">
-      <!-- Card 1: Pokoje přízemí -->
-      <div class="room-card">
-        <div class="room-card-image-wrap">
-          <img src="/balkony 1 copy.webp" alt="Pokoje přízemí" loading="lazy" decoding="async">
-        </div>
-        <div class="room-card-content">
-          <h2 class="room-card-title">Pokoje přízemí</h2>
-          <p class="room-card-desc">Útulně zařízené pokoje Standard v přízemí hotelu nabízejí příjemný pobyt s vlastním balkónem a výhledem.</p>
-          <div class="room-card-buttons">
-            <button class="btn btn-booking btn-room-primary" id="btn-goto-prizemi">Prohlédnout nabídku</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Card 2: Pokoje s výhledem -->
-      <div class="room-card">
-        <div class="room-card-content">
-          <h2 class="room-card-title">Pokoje s výhledem</h2>
-          <p class="room-card-desc">Prostorné pokoje v patře hotelu s vlastním balkónem v alpském stylu. Nabízejí nádherný přímý výhled na šumící splav řeky Bílé Desné a na skokanské můstky.</p>
-          <div class="room-card-buttons">
-            <button class="btn btn-booking btn-room-primary" id="btn-goto-vyhled">Prohlédnout nabídku</button>
-          </div>
-        </div>
-        <div class="room-card-image-wrap">
-          <img src="/vyhled 1.webp" alt="Pokoje s výhledem" loading="lazy" decoding="async">
-        </div>
-      </div>
-    </div>
-  </section>
-
-  ${getPromoHTML()}
-  ${getPanoramicHTML()}
-  ${getServicesHTML()}
-  ${getReviewsHTML()}
-  ${getFeaturesHTML()}
-  ${getSurroundingsHTML('rooms-surroundings-section')}
-  ${getCtaHTML()}
-  ${getFooterHTML()}
-`;
-
-// Render Funkce Pro Stránku "Rezervace"
-const getBookingPageHTML = () => `
-  <section class="hero-section booking-hero-section" id="uvod-rezervace">
-    <div class="hero-overlay"></div>
-    <div class="hero-inner">
-      ${getHeaderHTML()}
-
-      <div class="booking-hero-center">
-        <h1 class="booking-hero-main-title">Rezervace ubytování</h1>
-        <p class="booking-hero-subtitle">Hotel u Můstku — Desná v Jizerských horách</p>
-      </div>
-    </div>
-  </section>
-
-  <main class="booking-page-main">
-    <div id="booking-container" class="booking-section-wrapper"></div>
-  </main>
-  ${getFooterHTML()}
-`;
-
-// Render Funkce Pro Recepční Admin Panel
-const getAdminPageHTML = () => `
-  <section class="hero-section booking-hero-section admin-hero-section" id="uvod-admin">
-    <div class="hero-overlay"></div>
-    <div class="hero-inner">
-      ${getHeaderHTML()}
-
-      <div class="booking-hero-center">
-        <h1 class="booking-hero-main-title">Recepční systém</h1>
-        <p class="booking-hero-subtitle">Správa a přehled rezervací Hotelu u Můstku</p>
-      </div>
-    </div>
-  </section>
-
-  <main class="admin-page-main">
-    <div id="admin-container"></div>
-  </main>
-  ${getFooterHTML()}
-`;
-
-// Render Funkce Pro 404 Error Stránku (Čistá samostatná obrazovka bez navbaru a footeru)
-const get404PageHTML = () => `
-  <main class="error-standalone-wrapper">
-    <div class="error-content-container">
-      <div class="error-code-badge">404</div>
-      <h1 class="error-title">Požadovaná stránka neexistuje</h1>
-      <p class="error-desc">
-        Omlouváme se, ale adresa, kterou jste zadali, na našem webu neexistuje, byla přesunuta nebo změněna.
-      </p>
-      <div class="error-actions-group">
-        <a href="#domu" class="btn btn-booking-submit btn-go-home">Zpět na hlavní stránku</a>
-      </div>
-    </div>
-  </main>
-`;
-
-// Render Funkce Pro Stránku "Pokoje přízemí" (Detail pokoje)
-const getRoomGroundFloorHTML = () => `
-  <!-- 1. HERO SEKCE DETAILU POKOJE -->
-  <section class="hero-section rooms-hero-section room-detail-hero" id="uvod-prizemi">
-    <div class="hero-overlay"></div>
-    <div class="hero-inner">
-      ${getHeaderHTML()}
-
-      <div class="room-detail-hero-center">
-        <h1 class="hero-title room-detail-hero-title">
-          <span class="desktop-title-text">Pokoje v přízemí</span>
-          <span class="mobile-tablet-title-text">Vyberte si svůj pokoj v přízemí</span>
-        </h1>
-        <p class="room-detail-hero-subtitle">
-          <span class="desktop-sub-text">Útulně zařízené pokoje Standard v přízemí hotelu nabízejí příjemný pobyt s vlastním balkónem a výhledem.</span>
-          <span class="mobile-sub-text">Příjemný pobyt v přízemí hotelu s vlastním balkónem a výhledem</span>
-        </p>
-        <button class="btn btn-booking room-detail-hero-btn" id="btn-specs-rooms">Zjistit detaily</button>
-      </div>
-
-      <!-- Spodní šipka dolů (mobil + tablet) -->
-      <div class="scroll-down-btn mobile-only-scroll-btn" id="scroll-btn-prizemi">
-        <svg width="12" height="14" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M7.29 17.1C7.68 17.49 8.32 17.49 8.71 17.1L15.07 10.74C15.46 10.35 15.46 9.71 15.07 9.32C14.68 8.93 14.05 8.93 13.66 9.32L8 14.98L2.34 9.32C1.95 8.93 1.32 8.93 0.93 9.32C0.54 9.71 0.54 10.35 0.93 10.74L7.29 17.1ZM8 0H7V16.39H8H9V0H8Z" fill="white"/>
-        </svg>
-      </div>
-    </div>
-  </section>
-
-  <!-- 2. DETAILY POKOJŮ (SPECS SEKCE) -->
+  <!-- 2. DETAILY POKOJŮ (SPECS SEKCE - 14 POLOŽEK) -->
   <section class="room-specs-section" id="detaily-pokoju">
     <div class="room-specs-inner">
       <h2 class="room-specs-main-title">Detaily Pokojů</h2>
@@ -1296,7 +1196,7 @@ const getRoomGroundFloorHTML = () => `
             </li>
 
             <!-- EXTENZE DETAILŮ (Zobrazí se plynule po kliknutí na Přečíst více) -->
-            <!-- Vlastní koupelna -->
+            <!-- 7. Vlastní koupelna -->
             <li class="room-spec-item spec-extra-item">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/bathroom.png" alt="" class="spec-icon-img">
@@ -1306,6 +1206,7 @@ const getRoomGroundFloorHTML = () => `
               </div>
             </li>
 
+            <!-- 8. TV na pokoji -->
             <li class="room-spec-item spec-extra-item">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/television.png" alt="" class="spec-icon-img">
@@ -1315,6 +1216,7 @@ const getRoomGroundFloorHTML = () => `
               </div>
             </li>
 
+            <!-- 9. Nekuřácké prostředí -->
             <li class="room-spec-item spec-extra-item">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/no-smoking.png" alt="" class="spec-icon-img">
@@ -1324,6 +1226,7 @@ const getRoomGroundFloorHTML = () => `
               </div>
             </li>
 
+            <!-- 10. Zakázkové povlečení -->
             <li class="room-spec-item spec-extra-item">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/folding.png" alt="" class="spec-icon-img">
@@ -1333,6 +1236,7 @@ const getRoomGroundFloorHTML = () => `
               </div>
             </li>
 
+            <!-- 11. Ručníky -->
             <li class="room-spec-item spec-extra-item">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/towel.png" alt="" class="spec-icon-img">
@@ -1342,6 +1246,7 @@ const getRoomGroundFloorHTML = () => `
               </div>
             </li>
 
+            <!-- 12. Minibar -->
             <li class="room-spec-item spec-extra-item">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/mini.png" alt="" class="spec-icon-img">
@@ -1351,6 +1256,7 @@ const getRoomGroundFloorHTML = () => `
               </div>
             </li>
 
+            <!-- 13. Šatní skříň -->
             <li class="room-spec-item spec-extra-item">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/wardrobe.png" alt="" class="spec-icon-img">
@@ -1360,6 +1266,7 @@ const getRoomGroundFloorHTML = () => `
               </div>
             </li>
 
+            <!-- 14. Fén -->
             <li class="room-spec-item spec-extra-item">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/hair-dryer.png" alt="" class="spec-icon-img">
@@ -1378,21 +1285,21 @@ const getRoomGroundFloorHTML = () => `
 
         <!-- Pravý sloupec: Fotka pokoje -->
         <div class="room-specs-image-wrap">
-          <img src="/hezky pokoj 1.webp" alt="Detaily Pokojů v Přízemí" loading="eager" fetchpriority="high" decoding="async">
+          <img src="/hezky pokoj 1.webp" alt="Detaily Pokojů v Hotelu u Můstku" loading="eager" fetchpriority="high" decoding="async">
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 3. PANORAMATICKÝ BANNER POKOJE (1:1 REPLIKA DLE PŘEDLOHY) -->
+  <!-- 3. PANORAMATICKÝ BANNER POKOJE -->
   <section class="room-banner-section">
     <div class="room-banner-overlay"></div>
     <div class="room-banner-inner">
-      <p class="room-banner-text">Pokoje Standard v přízemí hotelu nabízejí útulné a pohodlné ubytování.<br>Disponují vlastním balkónem a výhledem.</p>
+      <p class="room-banner-text">Pokoje hotelu U Můstků nabízejí útulné a pohodlné ubytování.<br>Disponují vlastním balkónem či terasou s výhledem.</p>
     </div>
   </section>
 
-  <!-- 4. ROZDĚLENÍ POKOJŮ (1:1 REPLIKA DLE SVG PŘEDLOHY S AKORDEONEM) -->
+  <!-- 4. ROZDĚLENÍ POKOJŮ (VŠECH 12 POKOJŮ VE 2 SKUPINÁCH) -->
   <section class="room-breakdown-section" id="rozdeleni-pokoju">
     <div class="room-breakdown-inner">
       <div class="room-breakdown-header">
@@ -1401,107 +1308,23 @@ const getRoomGroundFloorHTML = () => `
       </div>
 
       <div class="room-breakdown-list">
-        <!-- Pokoj 1: Standard P1 -->
+        <!-- SKUPINA 1: POKOJE V PŘÍZEMÍ -->
+        <h3 class="room-group-label">Pokoje v přízemí</h3>
         ${renderRoomBreakdownItem('p6', 'Pokoj Standard P1', 'standard', 830)}
-
-        <!-- Pokoj 2: Standard P2 -->
         ${renderRoomBreakdownItem('p5', 'Pokoj Standard P2', 'standard', 830)}
-
-        <!-- Pokoj 3: Nadstandard Mahagon -->
         ${renderRoomBreakdownItem('pa', 'Pokoj Nadstandard Mahagon', 'nadstandard', 890)}
+        ${renderRoomBreakdownItem('p3', 'Pokoj Turistický P4', 'standard', 830)}
+        ${renderRoomBreakdownItem('p2', 'Pokoj Turistický P5', 'standard', 830)}
+        ${renderRoomBreakdownItem('p1', 'Pokoj Turistický P6', 'standard', 830)}
 
-        <!-- Pokoj 4: Turistický P4 (v rekonstrukci) -->
-        <div class="room-breakdown-item" data-room="p3">
-          <div class="room-breakdown-row">
-            <span class="room-breakdown-name"><strong>Pokoj Turistický P4</strong> <span class="room-meal">(se snídaní)</span></span>
-            <button class="btn-toggle-details" aria-expanded="false">
-              <span class="toggle-text">Zobrazit podrobnosti</span>
-              <svg class="toggle-arrow" width="12" height="7" viewBox="0 0 12 7" fill="none"><path d="M1 1L6 6L11 1" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
-            </button>
-          </div>
-
-          <div class="room-breakdown-drawer">
-            <div class="drawer-inner">
-              <div class="renovation-notice-box" style="padding: 24px 0 20px 0; text-align: left;">
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                  <span style="font-size: 22px;">🔨</span>
-                  <h4 style="margin: 0; font-size: 16px; font-weight: 700; color: #1c1c19;">Probíhá rekonstrukce pokoje</h4>
-                </div>
-                <p style="margin: 0; font-size: 13.5px; color: #666660; line-height: 1.5; max-width: 580px;">
-                  V tomto pokoji v současnosti probíhá renovace. Pokoj je dočasně nedostupný pro rezervace. Prosíme, vyberte si jiný volný pokoj z naší nabídky.
-                </p>
-              </div>
-
-              <div class="drawer-footer-controls" style="justify-content: flex-end;">
-                <div class="drawer-action-btns">
-                  <button class="btn btn-booking btn-room-reserve btn-room-disabled" disabled><span>Dočasně nedostupné</span></button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Pokoj 5: Turistický P5 (v rekonstrukci) -->
-        <div class="room-breakdown-item" data-room="p2">
-          <div class="room-breakdown-row">
-            <span class="room-breakdown-name"><strong>Pokoj Turistický P5</strong> <span class="room-meal">(se snídaní)</span></span>
-            <button class="btn-toggle-details" aria-expanded="false">
-              <span class="toggle-text">Zobrazit podrobnosti</span>
-              <svg class="toggle-arrow" width="12" height="7" viewBox="0 0 12 7" fill="none"><path d="M1 1L6 6L11 1" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
-            </button>
-          </div>
-
-          <div class="room-breakdown-drawer">
-            <div class="drawer-inner">
-              <div class="renovation-notice-box" style="padding: 24px 0 20px 0; text-align: left;">
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                  <span style="font-size: 22px;">🔨</span>
-                  <h4 style="margin: 0; font-size: 16px; font-weight: 700; color: #1c1c19;">Probíhá rekonstrukce pokoje</h4>
-                </div>
-                <p style="margin: 0; font-size: 13.5px; color: #666660; line-height: 1.5; max-width: 580px;">
-                  V tomto pokoji v současnosti probíhá renovace. Pokoj je dočasně nedostupný pro rezervace. Prosíme, vyberte si jiný volný pokoj z naší nabídky.
-                </p>
-              </div>
-
-              <div class="drawer-footer-controls" style="justify-content: flex-end;">
-                <div class="drawer-action-btns">
-                  <button class="btn btn-booking btn-room-reserve btn-room-disabled" disabled><span>Dočasně nedostupné</span></button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Pokoj 6: Turistický P6 (v rekonstrukci) -->
-        <div class="room-breakdown-item" data-room="p1">
-          <div class="room-breakdown-row">
-            <span class="room-breakdown-name"><strong>Pokoj Turistický P6</strong> <span class="room-meal">(se snídaní)</span></span>
-            <button class="btn-toggle-details" aria-expanded="false">
-              <span class="toggle-text">Zobrazit podrobnosti</span>
-              <svg class="toggle-arrow" width="12" height="7" viewBox="0 0 12 7" fill="none"><path d="M1 1L6 6L11 1" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/></svg>
-            </button>
-          </div>
-
-          <div class="room-breakdown-drawer">
-            <div class="drawer-inner">
-              <div class="renovation-notice-box" style="padding: 24px 0 20px 0; text-align: left;">
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                  <span style="font-size: 22px;">🔨</span>
-                  <h4 style="margin: 0; font-size: 16px; font-weight: 700; color: #1c1c19;">Probíhá rekonstrukce pokoje</h4>
-                </div>
-                <p style="margin: 0; font-size: 13.5px; color: #666660; line-height: 1.5; max-width: 580px;">
-                  V tomto pokoji v současnosti probíhá renovace. Pokoj je dočasně nedostupný pro rezervace. Prosíme, vyberte si jiný volný pokoj z naší nabídky.
-                </p>
-              </div>
-
-              <div class="drawer-footer-controls" style="justify-content: flex-end;">
-                <div class="drawer-action-btns">
-                  <button class="btn btn-booking btn-room-reserve btn-room-disabled" disabled><span>Dočasně nedostupné</span></button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <!-- SKUPINA 2: POKOJE V PATŘE -->
+        <h3 class="room-group-label">Pokoje v patře</h3>
+        ${renderRoomBreakdownItem('p7', 'Pokoj Standard P7', 'standard', 830)}
+        ${renderRoomBreakdownItem('a1', 'Pokoj Nadstandard Motýl', 'nadstandard', 890)}
+        ${renderRoomBreakdownItem('zen', 'Pokoj Nadstandard Zen', 'nadstandard', 890)}
+        ${renderRoomBreakdownItem('p10', 'Pokoj Standard P10', 'standard', 830)}
+        ${renderRoomBreakdownItem('p11', 'Pokoj Standard P11', 'standard', 830)}
+        ${renderRoomBreakdownItem('p12', 'Pokoj Standard P12', 'standard', 830)}
       </div>
 
       <p class="room-breakdown-footer-note">Pobyt na 1 noc: Příplatek +200 Kč / osoba / noc k základní ceně.</p>
@@ -1554,13 +1377,12 @@ const getRoomGroundFloorHTML = () => `
     </div>
   </section>
 
-  <!-- 7. VÝHODY UBYTOVÁNÍ U NÁS (1:1 REPLIKA DLE PŘEDLOHY) -->
+  <!-- 7. VÝHODY UBYTOVÁNÍ U NÁS -->
   <section class="room-detail-features-section" id="vyhody-ubytovani">
     <div class="room-detail-features-inner">
       <h2 class="room-detail-features-title">Výhody ubytování u nás</h2>
 
       <div class="room-features-cards-grid">
-        <!-- Karta 1: Máte Mazlíčka? -->
         <div class="room-feature-card">
           <div class="room-feature-img-wrap">
             <img src="/IMG_1458 1.webp" alt="Máte Mazlíčka?" loading="lazy" decoding="async">
@@ -1571,8 +1393,6 @@ const getRoomGroundFloorHTML = () => `
             <span class="mobile-sub-text">150 Kč / den hotel je dog-friendly, nutné vodítko v areálu.</span>
           </p>
         </div>
-
-        <!-- Karta 2: Nabíjení Elektrokola -->
         <div class="room-feature-card">
           <div class="room-feature-img-wrap">
             <img src="/IMG_1437 1.webp" alt="Nabíjení Elektrokola" loading="lazy" decoding="async">
@@ -1580,30 +1400,26 @@ const getRoomGroundFloorHTML = () => `
           <h3 class="room-feature-card-title">Nabíjení Elektrokola</h3>
           <p class="room-feature-card-desc">
             <span class="desktop-sub-text">15 Kč / den - bezpečné dobíjení v uzamykatelné kolárně.</span>
-            <span class="mobile-sub-text">15 Kč / den - bezpečné dobíjení v uzamykatelné kolárně.</span>
+            <span class="mobile-sub-text">15 Kč / den - dobíjení v kolárně pod zámkem.</span>
           </p>
         </div>
-
-        <!-- Karta 3: Parkování -->
         <div class="room-feature-card">
           <div class="room-feature-img-wrap">
             <img src="/desna_parkovani.webp" alt="Parkování" loading="lazy" decoding="async">
           </div>
           <h3 class="room-feature-card-title">Parkování</h3>
           <p class="room-feature-card-desc">
-            <span class="desktop-sub-text">Zdarma na vlastním parkovišti pod kamerami.</span>
-            <span class="mobile-sub-text">Zdarma na vlastním oploceném parkovišti se závorou pod kamerami.</span>
+            <span class="desktop-sub-text">Zdarma na vlastním oploceném parkovišti se závorou pod kamerami.</span>
+            <span class="mobile-sub-text">Zdarma na vlastním oploceném parkovišti.</span>
           </p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 8. PODMÍNKY UBYTOVÁNÍ (1:1 REPLIKA DLE SVG PŘEDLOHY) -->
-  <section class="room-terms-section" id="podminky-ubytovani">
+  <!-- 8. PODMÍNKY UBYTOVÁNÍ -->
+  <section class="room-terms-section">
     <div class="room-terms-inner">
-      <h2 class="room-terms-main-title">Podmínky ubytování</h2>
-
       <div class="room-terms-content-wrap">
         <!-- Levý blok: Storno podmínky (Tabulka) -->
         <div class="storno-table-container">
@@ -1666,107 +1482,7 @@ const getRoomGroundFloorHTML = () => `
   ${getFooterHTML()}
 `;
 
-// Render Funkce Pro Stránku "Pokoje s výhledem" (Detail pokoje s výhledem - 1:1 Kopie)
-const getRoomViewFloorHTML = () => {
-  let html = getRoomGroundFloorHTML();
 
-  // 1. Změna Hero sekce (ID a třída pro fotky na pozadí)
-  html = html.replace('id="uvod-prizemi"', 'id="uvod-vyhled"');
-  html = html.replace('id="scroll-btn-prizemi"', 'id="scroll-btn-vyhled"');
-  html = html.replace(
-    'class="hero-section rooms-hero-section room-detail-hero"',
-    'class="hero-section rooms-hero-section room-detail-hero room-view-hero"'
-  );
-
-  // 2. Změna H1 nadpisu v Hero sekci
-  html = html.replace(
-    '<span class="desktop-title-text">Pokoje v přízemí</span>',
-    '<span class="desktop-title-text">Pokoje s výhledem</span>'
-  );
-  html = html.replace(
-    '<span class="mobile-tablet-title-text">Vyberte si svůj pokoj v přízemí</span>',
-    '<span class="mobile-tablet-title-text">Vyberte si svůj pokoj s výhledem</span>'
-  );
-
-  // 3. Náhrada Wi-Fi zdarma v hlavním seznamu za 1. patro s výhledem
-  const oldWifiItem = `<!-- 5. Wi-Fi zdarma -->
-            <li class="room-spec-item">
-              <div class="spec-icon-wrap">
-                <img src="/Icons/Ikony/wifi.png" alt="" class="spec-icon-img">
-              </div>
-              <div class="spec-text-wrap">
-                <span class="spec-label"><strong>Wi-Fi</strong> zdarma</span>
-              </div>
-            </li>`;
-
-  const newViewFloorItem = `<!-- 5. 1. patro s výhledem -->
-            <li class="room-spec-item">
-              <div class="spec-icon-wrap">
-                <img src="/Icons/Ikony/balcony.png" alt="" class="spec-icon-img">
-              </div>
-              <div class="spec-text-wrap">
-                <span class="spec-label"><strong>1. patro</strong> s výhledem</span>
-              </div>
-            </li>`;
-
-  html = html.replace(oldWifiItem, newViewFloorItem);
-
-  // 4. Přidání Wi-Fi zdarma do rozbalovací nabídky (Přečíst více) hned pod Vlastní koupelna
-  const bathroomExtraItem = `<!-- Vlastní koupelna -->
-            <li class="room-spec-item spec-extra-item">
-              <div class="spec-icon-wrap">
-                <img src="/Icons/Ikony/bathroom.png" alt="" class="spec-icon-img">
-              </div>
-              <div class="spec-text-wrap">
-                <span class="spec-label"><strong>Vlastní koupelna:</strong> WC a sprchový kout</span>
-              </div>
-            </li>`;
-
-  const bathroomWithWifiExtraItem = `${bathroomExtraItem}
-
-            <!-- Wi-Fi zdarma (Přesunuto do rozbalovací nabídky pro Pokoje s výhledem) -->
-            <li class="room-spec-item spec-extra-item">
-              <div class="spec-icon-wrap">
-                <img src="/Icons/Ikony/wifi.png" alt="" class="spec-icon-img">
-              </div>
-              <div class="spec-text-wrap">
-                <span class="spec-label"><strong>Wi-Fi</strong> zdarma</span>
-              </div>
-            </li>`;
-
-  html = html.replace(bathroomExtraItem, bathroomWithWifiExtraItem);
-
-  // 5. Výhody / Detaily pokojů fotka (desna_41.webp)
-  html = html.replace('/hezky pokoj 1.webp', '/desna_41.webp');
-  html = html.replace('alt="Detaily Pokojů v Přízemí"', 'alt="Detaily Pokojů s Výhledem" class="img-desna-41"');
-
-  // 6. Panoramatický banner fotka na pozadí a text
-  const oldBannerText = `Pokoje Standard v přízemí hotelu nabízejí útulné a pohodlné ubytování.<br>Disponují vlastním balkónem a výhledem.`;
-  const newBannerText = `Nově zrekonstruovaný pokoj v prvním patře s dřevěným alpským balkónem.<br>Užijte si jedinečný výhled na můstky a uklidňující šumění splavu Bílé Desné přímo pod okny.`;
-
-  html = html.replace(oldBannerText, newBannerText);
-  html = html.replace('class="room-banner-section"', 'class="room-banner-section room-view-banner"');
-
-  // 7. Rozdělení pokojů – Názvy a ceny pokojů pro Pokoje s výhledem
-  const listStart = html.indexOf('<div class="room-breakdown-list">');
-  const listEnd = html.indexOf('<p class="room-breakdown-footer-note">');
-
-  if (listStart !== -1 && listEnd !== -1) {
-    const viewRoomsHtml = `
-      <div class="room-breakdown-list">
-        ${renderRoomBreakdownItem('p7', 'Pokoj Standard P7', 'standard', 830)}
-        ${renderRoomBreakdownItem('a1', 'Pokoj Nadstandard Motýl', 'nadstandard', 890)}
-        ${renderRoomBreakdownItem('zen', 'Pokoj Nadstandard Zen', 'nadstandard', 890)}
-        ${renderRoomBreakdownItem('p10', 'Pokoj Standard P10', 'standard', 830)}
-        ${renderRoomBreakdownItem('p11', 'Pokoj Standard P11', 'standard', 830)}
-        ${renderRoomBreakdownItem('p12', 'Pokoj Standard P12', 'standard', 830)}
-      </div>
-    `;
-    html = html.substring(0, listStart) + viewRoomsHtml + html.substring(listEnd);
-  }
-
-  return html;
-};
 
 export function closePromoCodeModal() {
   const modalOverlay = document.getElementById('promo-code-modal-overlay');
@@ -1923,19 +1639,31 @@ export function setSeasonMode(mode, savePreference = true) {
 
   window.currentSeasonMode = mode;
 
+  if (mode === 'winter') {
+    document.documentElement.classList.add('season-winter');
+    document.documentElement.classList.remove('season-summer');
+  } else {
+    document.documentElement.classList.add('season-summer');
+    document.documentElement.classList.remove('season-winter');
+  }
+
   // Zrušení předchozího neaktivního načítání při manuálním přepnutí uživatele
   if (deferredPreloadTimer) {
     clearTimeout(deferredPreloadTimer);
     deferredPreloadTimer = null;
   }
 
-  // 1. Změna Hero Sekce
-  let heroVideo = document.querySelector('.hero-video');
-  let heroSummerPoster = document.querySelector('.hero-summer-poster');
-  let heroWinterImg = document.querySelector('.hero-winter-img');
-  const heroSection = document.querySelector('.hero-section');
+  // 1. Změna Hero Sekce (STRIKTNĚ POUZE PRO ÚVODNÍ STRÁNKU #uvod)
+  const homeHeroSection = document.querySelector('.hero-section#uvod, .home-hero-section');
 
-  if (heroSection) {
+  // Odstranění zbloudilých prvků videa a plákátů ze VŠECH podstránek
+  document.querySelectorAll('.hero-section:not(#uvod) .hero-video, .hero-section:not(#uvod) .hero-summer-poster, .hero-section:not(#uvod) .hero-winter-img').forEach(el => el.remove());
+
+  if (homeHeroSection) {
+    let heroVideo = homeHeroSection.querySelector('.hero-video');
+    let heroSummerPoster = homeHeroSection.querySelector('.hero-summer-poster');
+    let heroWinterImg = homeHeroSection.querySelector('.hero-winter-img');
+
     if (mode === 'winter') {
       if (heroVideo) {
         heroVideo.pause();
@@ -1951,7 +1679,7 @@ export function setSeasonMode(mode, savePreference = true) {
         heroWinterImg.setAttribute('fetchpriority', 'high');
         heroWinterImg.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;';
         heroWinterImg.src = '/Zimni rezim/Zima - hotel.webp';
-        heroSection.insertBefore(heroWinterImg, heroSection.firstChild);
+        homeHeroSection.insertBefore(heroWinterImg, homeHeroSection.firstChild);
       } else {
         heroWinterImg.style.display = 'block';
       }
@@ -1966,7 +1694,7 @@ export function setSeasonMode(mode, savePreference = true) {
         heroSummerPoster.setAttribute('fetchpriority', 'high');
         heroSummerPoster.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;';
         heroSummerPoster.src = '/uvodni_hero_sekce.webp';
-        heroSection.insertBefore(heroSummerPoster, heroSection.firstChild);
+        homeHeroSection.insertBefore(heroSummerPoster, homeHeroSection.firstChild);
       } else {
         heroSummerPoster.style.display = 'block';
       }
@@ -1978,11 +1706,12 @@ export function setSeasonMode(mode, savePreference = true) {
         heroVideo.loop = true;
         heroVideo.playsInline = true;
         heroVideo.setAttribute('fetchpriority', 'high');
+        heroVideo.setAttribute('data-hero-video', '');
         heroVideo.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; background: transparent;';
         heroVideo.innerHTML = `
           <source src="https://jpvnvjcktpxyxrvsdukm.supabase.co/storage/v1/object/public/hotel-videos/hero_final_v5.mp4" type="video/mp4">
         `;
-        heroSection.insertBefore(heroVideo, heroSection.firstChild);
+        homeHeroSection.insertBefore(heroVideo, homeHeroSection.firstChild);
       } else {
         heroVideo.style.display = 'block';
         heroVideo.play().catch(() => {});
@@ -2057,13 +1786,86 @@ export function navigateTo(targetUrl) {
 }
 window.navigateTo = navigateTo;
 
+const initStickyHeader = () => {
+  const header = document.querySelector('.site-header');
+  if (!header) return;
+
+  // Ochrana proti dvojímu navěšení při překreslení stránky
+  if (header.dataset.stickyInit === '1') return;
+  header.dataset.stickyInit = '1';
+
+  const heroSel = '.hero-section, .rooms-hero-section, .room-detail-hero,' +
+                  '.contact-hero-section, .activities-hero-section,' +
+                  '.dining-hero-section, .news-hero-section, .booking-hero-section';
+
+  let lastY = window.scrollY;
+  let ticking = false;
+
+  const prepocitat = () => {
+    ticking = false;
+    const y = window.scrollY;
+    const hero = document.querySelector(heroSel);
+    const navH = header.offsetHeight;
+
+    // BÍLÝ STAV: přepnout v polovině hero sekce (40 % výšky)
+    const prah = hero ? hero.offsetHeight * 0.4 : 0;
+    const podHerem = !hero || y > prah;
+    header.classList.toggle('is-solid', podHerem);
+
+    // SKRÝVÁNÍ: jen když je otevřené mobilní menu, nikdy neskrývat
+    const menuOtevrene = document.querySelector('.mobile-menu-overlay.is-active');
+    if (menuOtevrene) {
+      header.classList.remove('is-hidden');
+      lastY = y;
+      return;
+    }
+
+    const rozdil = y - lastY;
+    if (Math.abs(rozdil) > 6) {            // práh proti chvění
+      if (rozdil > 0 && y > 200) header.classList.add('is-hidden');
+      else header.classList.remove('is-hidden');
+      lastY = y;
+    }
+    if (y < 10) header.classList.remove('is-hidden');   // nahoře vždy vidět
+  };
+
+  const naScroll = () => {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(prepocitat);
+    }
+  };
+
+  window.addEventListener('scroll', naScroll, { passive: true });
+  window.addEventListener('resize', naScroll, { passive: true });
+  prepocitat();   // nastavit správný stav hned po načtení
+};
+
 // Inicializace událostí a interaktivity po vykreslení
 const initInteractivity = () => {
   // Aplikace sezónního režimu (Léto / Zima)
   const currentMode = getInitialSeasonMode();
+  setSeasonMode(currentMode, false);
   scheduleInactiveSeasonPreload(currentMode);
   initProgressiveLazyLoading();
   initCategoryHoverPreload();
+  initStickyHeader();
+
+  const closeMobileMenu = () => {
+    const mobileOverlay = document.getElementById('mobile-menu-overlay');
+    if (mobileOverlay) mobileOverlay.classList.remove('is-active');
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
+    document.body.classList.remove('modal-open');
+    document.documentElement.classList.remove('modal-open');
+  };
+
+  const openMobileMenu = () => {
+    const mobileOverlay = document.getElementById('mobile-menu-overlay');
+    if (mobileOverlay) mobileOverlay.classList.add('is-active');
+    document.body.style.overflow = 'hidden';
+    document.body.classList.add('modal-open');
+  };
 
   const seasonControls = document.querySelectorAll('.bottom-left-controls .control-item, .mobile-season-toggle .control-item');
   seasonControls.forEach(control => {
@@ -2073,42 +1875,50 @@ const initInteractivity = () => {
       const text = control.textContent.trim().toLowerCase();
       const newMode = text.includes('zima') ? 'winter' : 'summer';
       setSeasonMode(newMode, true);
-      const mobileOverlay = document.getElementById('mobile-menu-overlay');
-      if (mobileOverlay) {
-        mobileOverlay.classList.remove('is-active');
-      }
+      closeMobileMenu();
     });
   });
 
-  // Mobile Hamburger Drawer
+  // Mobile Hamburger Drawer (Robust & Fail-safe)
   const mobileToggle = document.getElementById('mobile-menu-toggle');
   const mobileClose = document.getElementById('mobile-menu-close');
   const mobileOverlay = document.getElementById('mobile-menu-overlay');
 
   if (mobileToggle && mobileOverlay) {
-    mobileToggle.addEventListener('click', () => {
-      mobileOverlay.classList.add('is-active');
-      document.body.style.overflow = 'hidden';
-      document.body.classList.add('modal-open');
+    mobileToggle.onclick = (e) => {
+      e.stopPropagation();
+      openMobileMenu();
+    };
+  }
+
+  if (mobileClose) {
+    mobileClose.onclick = (e) => {
+      e.stopPropagation();
+      closeMobileMenu();
+    };
+  }
+
+  if (mobileOverlay) {
+    // Close when clicking outside content (on backdrop)
+    mobileOverlay.onclick = (e) => {
+      if (e.target === mobileOverlay) {
+        closeMobileMenu();
+      }
+    };
+
+    // Close when clicking ANY link, button, or item inside mobile overlay
+    mobileOverlay.querySelectorAll('a, button:not(#mobile-menu-close), .control-item').forEach(item => {
+      item.onclick = () => {
+        closeMobileMenu();
+      };
     });
   }
 
-  if (mobileClose && mobileOverlay) {
-    mobileClose.addEventListener('click', () => {
-      mobileOverlay.classList.remove('is-active');
-      document.body.style.overflow = '';
-      document.body.classList.remove('modal-open');
-    });
-  }
-
-  // Links navigation inside mobile overlay
-  const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
-  mobileNavLinks.forEach(link => {
-    link.addEventListener('click', () => {
-      if (mobileOverlay) mobileOverlay.classList.remove('is-active');
-      document.body.style.overflow = '';
-      document.body.classList.remove('modal-open');
-    });
+  // Safety fallback: Esc key closes mobile menu & restores scroll
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeMobileMenu();
+    }
   });
 
   // Interaktivita FAQ Accordionu na stránce Aktivity
@@ -2140,7 +1950,7 @@ const initInteractivity = () => {
 
   // Hero Video Handling (HomePage)
   const heroVideo = document.querySelector('.hero-video');
-  const heroSection = document.querySelector('.hero-section');
+  const heroSection = document.querySelector('.hero-section#uvod, .home-hero-section');
 
   if (heroVideo) {
     heroVideo.playbackRate = 0.85;
@@ -2699,38 +2509,14 @@ const initInteractivity = () => {
     });
   }
 
-  const btnGotoPrizemi = document.getElementById('btn-goto-prizemi');
-  if (btnGotoPrizemi) {
-    btnGotoPrizemi.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.location.hash = '#prizemi';
-      route(false);
-      window.scrollTo(0, 0);
-      document.body.scrollTop = 0;
-      document.documentElement.scrollTop = 0;
-    });
-  }
-
   const btnShowRoomsOffer = document.getElementById('btn-show-rooms-offer');
   if (btnShowRoomsOffer) {
     btnShowRoomsOffer.addEventListener('click', (e) => {
       e.preventDefault();
-      const roomsSec = document.querySelector('.rooms-list-section');
+      const roomsSec = document.getElementById('rozdeleni-pokoju') || document.querySelector('.room-breakdown-section');
       if (roomsSec) {
         roomsSec.scrollIntoView({ behavior: 'smooth' });
       }
-    });
-  }
-
-  const btnGotoVyhled = document.getElementById('btn-goto-vyhled');
-  if (btnGotoVyhled) {
-    btnGotoVyhled.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.location.hash = '#vyhled';
-      route(false);
-      window.scrollTo(0, 0);
-      document.body.scrollTop = 0;
-      document.documentElement.scrollTop = 0;
     });
   }
 
@@ -3171,7 +2957,7 @@ const initInteractivity = () => {
   secretAdminTriggers.forEach(el => {
     el.addEventListener('click', (e) => {
       e.preventDefault();
-      window.location.hash = '#admin';
+      window.location.href = '/admin';
     });
   });
 
@@ -3255,15 +3041,7 @@ const initCategoryHoverPreload = () => {
 // Preload Funkce Pro Hero Obrázky (Zrychlení prvního vykreslení)
 const preloadHeroImages = (pageKey) => {
   const isMobile = window.innerWidth <= 768;
-  if (pageKey === 'ground') {
-    const src = isMobile ? '/mobile_hero_prizemi.webp' : '/balkony 1 copy.webp';
-    const img = new Image();
-    img.src = src;
-  } else if (pageKey === 'view') {
-    const src = isMobile ? '/mobile_vyhled.webp' : '/vyhled.webp';
-    const img = new Image();
-    img.src = src;
-  } else if (pageKey === 'dining') {
+  if (pageKey === 'dining') {
     const src = '/Uvodni stranka/stravovani.webp';
     const img = new Image();
     img.src = src;
@@ -3387,7 +3165,7 @@ const getStravovaniPageHTML = () => `
                 <img src="/Icons/Ikony/beer.png" alt="" class="dining-inline-icon">
                 <span>Co je na čepu?</span>
               </h3>
-              <p class="dining-info-desc">Točené pivo Bernard 10°, Polotmavý ležák Bernard 11°, Prémiový Pilsner Urquell 12°.</p>
+              <p class="dining-info-desc">Točené pivo Bernard 11° (při větším počtu osob je po předchozí domluvě možné zařídit jakékoliv pivo).</p>
             </div>
 
             <div class="dining-info-item">
@@ -3426,9 +3204,9 @@ const getStravovaniPageHTML = () => `
             <div class="dining-info-item">
               <h3 class="dining-info-heading">
                 <img src="/Icons/Ikony/smoker.png" alt="" class="dining-inline-icon">
-                <span>Nová venkovní udírna:</span>
+                <span>Venkovní grilování</span>
               </h3>
-              <p class="dining-info-desc">Zbudovaná pro uzení chutných klobásek a dalších specialit.</p>
+              <p class="dining-info-desc">Po předchozí domluvě je pro ubytované hosty možné zařídit grilování či využít gril pro vlastní speciality.</p>
             </div>
 
             <div class="dining-info-item">
@@ -4014,12 +3792,58 @@ const getNewsPageHTML = async () => {
   `;
 };
 
+// Render Funkce Pro Admin a Rezervaci
+export const getAdminPageHTML = () => `
+  <section class="hero-section booking-hero-section admin-hero-section" id="uvod-admin">
+    <div class="hero-overlay"></div>
+    <div class="hero-inner">
+      ${getHeaderHTML()}
+
+      <div class="booking-hero-center">
+        <h1 class="booking-hero-main-title">Recepční systém</h1>
+        <p class="booking-hero-subtitle">Správa a přehled rezervací Hotelu u Můstku</p>
+      </div>
+    </div>
+  </section>
+
+  <main class="admin-page-main">
+    <div id="admin-container"></div>
+  </main>
+  ${getFooterHTML()}
+`;
+
+export const getBookingPageHTML = () => `
+  <div class="booking-page">
+    <!-- HERO SEKCE REZERVAČNÍ STRÁNKY (ORIGINÁLNÍ 1:1 DLE STYLU BOOKING.CSS) -->
+    <section class="booking-hero-section" id="uvod-rezervace">
+      <div class="hero-overlay"></div>
+      <div class="hero-inner">
+        ${getHeaderHTML()}
+
+        <div class="booking-hero-center">
+          <div class="booking-hero-center-group">
+            <h1 class="booking-hero-main-title">Rezervace pobytu</h1>
+            <p class="booking-hero-subtitle">Zvolte si termín, pokoj a doplňkové služby pro váš pobyt v Jizerských horách.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HLAVNÍ OBSAH REZERVAČNÍHO SYSTÉMU -->
+    <main class="booking-main-content">
+      <div id="booking-container"></div>
+    </main>
+
+    ${getFooterHTML()}
+  </div>
+`;
+
 // Render Funkce Pro Právní Stránky (GDPR & Cookies)
 export const getGdprPageHTML = () => `
   <div class="legal-page">
     <!-- HERO SEKCE -->
     <section class="hero-section room-detail-hero" id="uvod-gdpr">
-      <img src="/uvodni_hero_sekce.webp" alt="Hotel U Můstků - Ochrana osobních údajů" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; filter: brightness(0.75);">
+      <img src="/uvodni_hero_sekce.webp" alt="Hotel U Můstků - Ochrana osobních údajů" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; filter: brightness(0.88);">
       <div class="hero-overlay"></div>
       <div class="hero-inner">
         ${getHeaderHTML()}
@@ -4264,7 +4088,7 @@ export const getPodminkyPageHTML = () => `
   <div class="legal-page">
     <!-- HERO SEKCE -->
     <section class="hero-section room-detail-hero" id="uvod-podminky">
-      <img src="/uvodni_hero_sekce.webp" alt="Hotel U Můstků - Obchodní podmínky" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; filter: brightness(0.75);">
+      <img src="/uvodni_hero_sekce.webp" alt="Hotel U Můstků - Obchodní podmínky" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; filter: brightness(0.88);">
       <div class="hero-overlay"></div>
       <div class="hero-inner">
         ${getHeaderHTML()}
@@ -4515,7 +4339,7 @@ export const getCookiesPageHTML = () => `
   <div class="legal-page">
     <!-- HERO SEKCE -->
     <section class="hero-section room-detail-hero" id="uvod-cookies">
-      <img src="/uvodni_hero_sekce.webp" alt="Hotel U Můstků - Cookies" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; filter: brightness(0.75);">
+      <img src="/uvodni_hero_sekce.webp" alt="Hotel U Můstků - Cookies" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; filter: brightness(0.88);">
       <div class="hero-overlay"></div>
       <div class="hero-inner">
         ${getHeaderHTML()}
@@ -4793,18 +4617,6 @@ const getContactPageHTML = () => `
       </div>
     </section>
 
-    <!-- 3. BANNER: POZOR NA UZAVÍRKU SILNICE V ZIMĚ -->
-    <section class="contact-road-closure-section">
-      <div class="road-closure-overlay"></div>
-      <div class="road-closure-inner">
-        <h2 class="road-closure-title">Pozor na uzavírku silnice v zimě</h2>
-        <p class="road-closure-desc">
-          V zimním období je silnice III/290 (úsek přehrada Souš – Smědava) uzavřena.<br>
-          K hotelu je celoročně přístupná cesta vždy od Tanvaldu a Desné.
-        </p>
-      </div>
-    </section>
-
     <!-- 4. JAK SE K NÁM DOSTAT? -->
     <section class="contact-directions-section">
       <div class="contact-directions-inner">
@@ -4813,7 +4625,7 @@ const getContactPageHTML = () => `
         <div class="directions-grid">
           <!-- Levá část: Parkování -->
           <div class="directions-left-col">
-            <h3 class="directions-parking-title">Parkování zdarma přímo u hotelu</h3>
+            <h3 class="directions-parking-title">Parkování v létě zdarma přímo u hotelu</h3>
             <p class="directions-parking-desc">
               Uzamykatelné a hlídané kamerovým systémem, bez nutnosti rezervace místa.
             </p>
@@ -5794,6 +5606,18 @@ const app = document.querySelector('#app');
 let currentViewKey = null;
 
 const route = (isInitial = false) => {
+  // Ensure page scrolling is unlocked on every navigation/route change
+  document.body.style.overflow = '';
+  document.documentElement.style.overflow = '';
+  document.body.classList.remove('modal-open');
+  document.documentElement.classList.remove('modal-open');
+  const activeOverlay = document.getElementById('mobile-menu-overlay');
+  if (activeOverlay) activeOverlay.classList.remove('is-active');
+
+  // Ensure saved season mode is maintained
+  const savedSeason = getInitialSeasonMode();
+  setSeasonMode(savedSeason, false);
+
   const hash = window.location.hash || '';
   let cleanHash = hash.split('?')[0];
   try {
@@ -5839,10 +5663,12 @@ const route = (isInitial = false) => {
   const pathName = window.location.pathname.toLowerCase().replace(/\/$/, '');
 
   // 1. SPECIFICKÉ SUB-VIEW HASHE (přehodnocení nad obecnou pathname pro #prizemi, #vyhled, #turistika atd.)
-  if (cleanHash === '#prizemi' || cleanHash === '#pokoj-prizemi' || cleanHash === '#pokoje-prizemi' || cleanHash === '#pokoj-v-prizemi' || cleanHash === '#prizemi-detail') {
-    pageKey = 'ground';
-  } else if (cleanHash === '#vyhled' || cleanHash === '#pokoj-vyhled' || cleanHash === '#pokoje-vyhled' || cleanHash === '#pokoj-s-vyhledem' || cleanHash === '#vyhled-detail') {
-    pageKey = 'view';
+  if (cleanHash === '#prizemi' || cleanHash === '#pokoj-prizemi' || cleanHash === '#pokoje-prizemi' || cleanHash === '#pokoj-v-prizemi' || cleanHash === '#prizemi-detail' || cleanHash === '#vyhled' || cleanHash === '#pokoj-vyhled' || cleanHash === '#pokoje-vyhled' || cleanHash === '#pokoj-s-vyhledem' || cleanHash === '#vyhled-detail') {
+    if (pathName !== '/ubytovani' && pathName !== '/ubytovani.html') {
+      window.location.replace('/ubytovani#rozdeleni-pokoju');
+      return;
+    }
+    pageKey = 'rooms';
   } else if (cleanHash.startsWith('#rezervace')) {
     pageKey = 'booking';
   } else if (cleanHash.startsWith('#admin')) {
@@ -5851,7 +5677,10 @@ const route = (isInitial = false) => {
     pageKey = 'category-detail';
   }
   // 2. PATHNAME KONTROLA (podle čisté URL adresy v adresním řádku)
-  else if (pathName === '/ubytovani' || pathName === '/ubytovani.html' || pathName === '/pokoje') {
+  else if (pathName === '/prizemi' || pathName === '/vyhled') {
+    window.location.replace('/ubytovani#rozdeleni-pokoju');
+    return;
+  } else if (pathName === '/ubytovani' || pathName === '/ubytovani.html' || pathName === '/pokoje') {
     pageKey = 'rooms';
   } else if (pathName === '/stravovani' || pathName === '/stravovani.html' || pathName === '/gastronomie') {
     pageKey = 'dining';
@@ -5865,7 +5694,7 @@ const route = (isInitial = false) => {
     pageKey = 'news';
   } else if (pathName === '/kontakt' || pathName === '/kontakt.html') {
     pageKey = 'contact';
-  } else if (pathName === '/admin' || pathName === '/recepce') {
+  } else if (pathName === '/admin' || pathName === '/admin.html' || pathName === '/recepce') {
     pageKey = 'admin';
   } else if (pathName === '/rezervace' || pathName === '/booking') {
     pageKey = 'booking';
@@ -5906,7 +5735,7 @@ const route = (isInitial = false) => {
   const isNewPage = currentViewKey !== pageKey;
   currentViewKey = pageKey;
 
-  if (pageKey === 'ground' || pageKey === 'view' || pageKey === 'dining' || pageKey === 'events' || pageKey === 'activities' || pageKey === 'category-detail' || pageKey === 'contact' || pageKey === 'news' || pageKey === 'gdpr' || pageKey === 'cookies' || pageKey === 'podminky') {
+  if (pageKey === 'rooms' || pageKey === 'dining' || pageKey === 'events' || pageKey === 'activities' || pageKey === 'category-detail' || pageKey === 'contact' || pageKey === 'news' || pageKey === 'gdpr' || pageKey === 'cookies' || pageKey === 'podminky') {
     preloadHeroImages(pageKey);
   }
 
@@ -5940,11 +5769,13 @@ const route = (isInitial = false) => {
 
   if (pageKey === 'booking') {
     app.innerHTML = getBookingPageHTML();
+    initInteractivity();
     const urlParams = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
     const roomId = urlParams.get('room') || '';
     new BookingSystem('booking-container').init(roomId);
   } else if (pageKey === 'admin') {
     app.innerHTML = getAdminPageHTML();
+    initInteractivity();
     new AdminDashboard('admin-container').init();
   } else if (pageKey === 'gdpr') {
     if (!isPreRenderedMatch) app.innerHTML = getGdprPageHTML();
@@ -5994,10 +5825,6 @@ const route = (isInitial = false) => {
     if (!isPreRenderedMatch) app.innerHTML = getEventsPageHTML();
   } else if (pageKey === 'dining') {
     if (!isPreRenderedMatch) app.innerHTML = getStravovaniPageHTML();
-  } else if (pageKey === 'ground') {
-    app.innerHTML = getRoomGroundFloorHTML();
-  } else if (pageKey === 'view') {
-    app.innerHTML = getRoomViewFloorHTML();
   } else if (pageKey === 'rooms') {
     if (!isPreRenderedMatch) app.innerHTML = getRoomsPageHTML();
   } else if (pageKey === 'contact') {

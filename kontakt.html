@@ -246,20 +246,22 @@
         
   <!-- Hlavička (Navigace a logo) -->
   <header class="site-header">
-    <div class="nav-left">
-      <a href="/ubytovani" class="nav-link">Nabídka pokojů</a>
-      <a href="/stravovani" class="nav-link">Stravování</a>
-      <a href="/okoli" class="nav-link">Aktivity</a>
-    </div>
-    
+    <!-- Levá strana: Logo -->
     <a href="/" class="header-logo">
-      <img src="/Logo/white logo.webp" alt="Hotel u Můstku Logo" loading="eager" fetchpriority="high">
+      <img src="/Logo/white-logo-orez.webp" alt="Hotel u Můstku Logo" loading="eager" fetchpriority="high">
     </a>
-    
-    <div class="nav-right">
-      <a href="/akce" class="nav-link">Skupinové akce</a>
-      <a href="/aktuality" class="nav-link" id="nav-link-aktuality">Aktuality</a>
-      <a href="/kontakt" class="nav-link">Kontakt</a>
+
+    <!-- Pravá strana: Odkazy a Tlačítko Rezervovat pobyt -->
+    <div class="header-nav-right">
+      <nav class="header-nav-links">
+        <a href="/ubytovani" class="nav-link">Nabídka pokojů</a>
+        <a href="/stravovani" class="nav-link">Stravování</a>
+        <a href="/okoli" class="nav-link">Aktivity</a>
+        <a href="/akce" class="nav-link">Skupinové akce</a>
+        <a href="/aktuality" class="nav-link" id="nav-link-aktuality">Aktuality</a>
+        <a href="/kontakt" class="nav-link">Kontakt</a>
+      </nav>
+      <a href="/#rezervace" class="btn btn-header-booking" id="header-booking-btn">Rezervovat pobyt</a>
     </div>
 
     <!-- Mobilní tlačítko menu (Hamburger) -->
@@ -422,18 +424,6 @@
       </div>
     </section>
 
-    <!-- 3. BANNER: POZOR NA UZAVÍRKU SILNICE V ZIMĚ -->
-    <section class="contact-road-closure-section">
-      <div class="road-closure-overlay"></div>
-      <div class="road-closure-inner">
-        <h2 class="road-closure-title">Pozor na uzavírku silnice v zimě</h2>
-        <p class="road-closure-desc">
-          V zimním období je silnice III/290 (úsek přehrada Souš – Smědava) uzavřena.<br>
-          K hotelu je celoročně přístupná cesta vždy od Tanvaldu a Desné.
-        </p>
-      </div>
-    </section>
-
     <!-- 4. JAK SE K NÁM DOSTAT? -->
     <section class="contact-directions-section">
       <div class="contact-directions-inner">
@@ -442,7 +432,7 @@
         <div class="directions-grid">
           <!-- Levá část: Parkování -->
           <div class="directions-left-col">
-            <h3 class="directions-parking-title">Parkování zdarma přímo u hotelu</h3>
+            <h3 class="directions-parking-title">Parkování v létě zdarma přímo u hotelu</h3>
             <p class="directions-parking-desc">
               Uzamykatelné a hlídané kamerovým systémem, bez nutnosti rezervace místa.
             </p>

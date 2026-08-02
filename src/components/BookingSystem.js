@@ -1122,12 +1122,23 @@ export class BookingSystem {
                 <span class="cal-summary-label" style="font-size: 14px; font-weight: 700; color: #1C1C19;">
                   Příjezd: ${formatCzechDateStr(effectiveFrom)} &nbsp;|&nbsp; Odjezd: ${formatCzechDateStr(effectiveTo)}
                 </span>
-                <span class="cal-summary-sub" style="font-size: 13px; color: #666660; font-weight: 500;">
-                  Celková délka pobytu: <strong>${tempNights} ${tempNights === 1 ? 'noc' : (tempNights < 5 ? 'noci' : 'nocí')}</strong>
-                </span>
+                ${tempNights < 2 ? `
+                  <span class="cal-summary-sub" style="font-size: 13.5px; color: #B45309; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; margin-top: 3px;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="8" x2="12" y2="12"></line>
+                      <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    Minimální délka pobytu jsou 2 noci. Prosíme zvolte pozdější datum odjezdu.
+                  </span>
+                ` : `
+                  <span class="cal-summary-sub" style="font-size: 13px; color: #666660; font-weight: 500;">
+                    Celková délka pobytu: <strong>${tempNights} ${tempNights < 5 ? 'noci' : 'nocí'}</strong>
+                  </span>
+                `}
               </div>
-              <button type="button" class="btn btn-confirm-cal-dates" id="cal-confirm-dates-btn" style="height: 42px; padding: 0 24px; font-size: 15px; font-weight: 600; color: #FFFFFF; background-color: #4A5A24; border: none; border-radius: 2px; cursor: pointer; width: 100%; display: inline-flex; align-items: center; justify-content: center; transition: background 0.15s ease;">
-                Potvrdit termín pobytu
+              <button type="button" class="btn btn-confirm-cal-dates" id="cal-confirm-dates-btn" ${tempNights < 2 ? 'disabled' : ''} style="height: 42px; padding: 0 24px; font-size: 15px; font-weight: 600; color: ${tempNights < 2 ? '#999990' : '#FFFFFF'}; background-color: ${tempNights < 2 ? '#E7E5DC' : '#4A5A24'}; border: none; border-radius: 2px; cursor: ${tempNights < 2 ? 'not-allowed' : 'pointer'}; width: 100%; display: inline-flex; align-items: center; justify-content: center; transition: background 0.15s ease;">
+                ${tempNights < 2 ? 'Potvrdit termín (Min. 2 noci)' : 'Potvrdit termín pobytu'}
               </button>
             ` : (effectiveFrom ? `
               <div class="cal-range-summary" style="display: flex; flex-direction: column; gap: 2px;">
@@ -1135,13 +1146,16 @@ export class BookingSystem {
                   Příjezd: ${formatCzechDateStr(effectiveFrom)}
                 </span>
                 <span class="cal-summary-sub" style="font-size: 13px; color: #666660; font-weight: 500;">
-                  Nyní klikněte v kalendáři na datum odjezdu (Check-out)
+                  Nyní klikněte v kalendáři na datum odjezdu (Check-out alespoň po 2 nocích)
                 </span>
               </div>
             ` : `
               <div class="cal-range-summary" style="display: flex; flex-direction: column; gap: 2px;">
                 <span class="cal-summary-label" style="font-size: 14px; font-weight: 700; color: #666660;">
                   Klikněte v kalendáři na datum příjezdu (Check-in)
+                </span>
+                <span class="cal-summary-sub" style="font-size: 12.5px; color: #888880; font-weight: 500;">
+                  Minimální délka pobytu jsou 2 noci.
                 </span>
               </div>
             `)}
@@ -2434,8 +2448,15 @@ export class BookingSystem {
           }
           const start = new Date(this.state.dateFrom);
           const end = new Date(this.state.dateTo);
+          const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
           if (isNaN(start.getTime()) || isNaN(end.getTime()) || end <= start) {
             this.state.errorMessage = 'Prosíme, vyberte platný termín pobytu (Datum odjezdu musí být po datu příjezdu).';
+            this.render();
+            this.scrollToErrorMessage();
+            return;
+          }
+          if (diffDays < 2) {
+            this.state.errorMessage = 'Minimální délka pobytu v Hotelu u Můstku jsou 2 noci. Prosíme zvolte delší termín pobytu.';
             this.render();
             this.scrollToErrorMessage();
             return;
@@ -2636,6 +2657,10 @@ export class BookingSystem {
         btnConfirmCal.addEventListener('click', (e) => {
           e.preventDefault();
           if (this.state.tempDateFrom && this.state.tempDateTo) {
+            const start = new Date(this.state.tempDateFrom);
+            const end = new Date(this.state.tempDateTo);
+            const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+            if (diffDays < 2) return;
             this.state.dateFrom = this.state.tempDateFrom;
             this.state.dateTo = this.state.tempDateTo;
           }

@@ -70,6 +70,16 @@ body.modal-open {
   overscroll-behavior: none !important;
 }
 
+/* Okamžité skrytí letního/zimního média při zátěži stránky dle sezóny (prevent flash) */
+html.season-winter .hero-summer-poster,
+html.season-winter .hero-video {
+  display: none !important;
+}
+
+html.season-summer .hero-winter-img {
+  display: none !important;
+}
+
 .admin-modal-overlay,
 .promo-code-modal-overlay,
 .terms-modal-overlay,
@@ -105,7 +115,7 @@ a {
   position: relative;
   width: 100%;
   height: 95vh;
-  min-height: 760px;
+  min-height: min(760px, 88svh);
   background-color: #1c1c19;
   background-size: cover;
   background-position: center;
@@ -158,71 +168,137 @@ a {
   box-sizing: border-box;
 }
 
-/* Hlavička s 100% matematicky vycentrovaným logem i odkazů */
+/* Hlavička - Plovoucí (sticky) s automatickým skrýváním a bílým stavem */
 .site-header {
-  position: absolute;
-  top: 16px;
+  position: fixed;
+  top: 0;
   left: 0;
+  transform: none;
   width: 100%;
+  max-width: none;
   height: 110px;
-  padding: 0 33px;
+  padding-inline: max(32px, calc(50% - 688px));
+  z-index: 1000;
+  background-color: transparent;
+  box-shadow: none;
+  transition: height .28s ease, background-color .28s ease,
+              box-shadow .28s ease, transform .32s ease;
+  will-change: transform;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  z-index: 10;
   box-sizing: border-box;
 }
 
-.nav-left, .nav-right {
-  display: flex;
-  align-items: center;
-  gap: 36px;
-  flex: 1;
-  height: 100%;
-  box-sizing: border-box;
+/* SKRYTÝ STAV — vysune se nahoru mimo okno */
+.site-header.is-hidden {
+  transform: translateY(-100%);
 }
 
-.nav-left {
-  justify-content: flex-end;
-  padding-right: 90px;
+/* BÍLÝ STAV — po odscrollování pod hero */
+.site-header.is-solid {
+  height: 88px;
+  background-color: #ffffff;
+  box-shadow: 0 1px 12px rgba(28, 28, 25, 0.10);
 }
 
-.nav-right {
-  justify-content: flex-start;
-  padding-left: 90px;
+.site-header.is-solid .nav-link {
+  color: #1c1c19;
 }
 
-.nav-link {
+.site-header.is-solid .btn-header-booking {
+  background-color: #697947;
   color: #ffffff;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 1;
-  letter-spacing: 0.01em;
-  white-space: nowrap;
 }
 
-.nav-link:hover {
-  opacity: 0.8;
+.site-header.is-solid .btn-header-booking:hover {
+  background-color: #58643c;
 }
 
 .header-logo {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 110px;
-  height: 110px;
+  position: relative;
+  top: auto;
+  left: auto;
+  transform: none;
+  height: 60px;
+  width: auto;
+  aspect-ratio: 246 / 173;
+  margin-left: 0;
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  justify-content: center;
   z-index: 12;
+  transition: height .28s ease;
 }
 
 .header-logo img {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  filter: brightness(1);
+  transition: filter .28s ease;
+}
+
+.site-header.is-solid .header-logo img {
+  filter: brightness(0);
+}
+
+/* Hamburger na mobilu — proužky ztmavnou v bílém stavu */
+.site-header.is-solid .mobile-menu-btn span {
+  background-color: #1c1c19;
+}
+
+.header-nav-right {
+  display: flex;
+  align-items: center;
+  gap: clamp(20px, 2.2vw, 36px);
+  z-index: 10;
+}
+
+.header-nav-links {
+  display: flex;
+  align-items: center;
+  gap: clamp(14px, 1.8vw, 28px);
+}
+
+.nav-link {
+  color: #ffffff;
+  font-size: clamp(14.5px, 1.1vw, 16px);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.nav-link:hover {
+  opacity: 0.8;
+}
+
+/* Tlačítko Rezervovat pobyt v hlavičce dle Button Design System */
+.btn-header-booking {
+  height: 45px;
+  padding: 0 28px;
+  font-size: 17px;
+  font-weight: 500;
+  background-color: #ece8dd;
+  color: #1c1c19;
+  border-radius: 1px;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  text-decoration: none;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.btn-header-booking:hover {
+  background-color: #dcd7c5;
+  color: #1c1c19;
 }
 
 /* Zmenšený a tenčí nadpis (weight 500 - Medium, přizpůsobený pro 95vh) */
@@ -354,7 +430,6 @@ a {
   }
 
   .site-header {
-    top: 24px;
     height: 126px;
     gap: 44px;
     padding: 0 60px;
@@ -377,8 +452,8 @@ a {
   }
 
   .header-logo {
-    width: 126px;
-    height: 126px;
+    height: 68px;
+    width: auto;
   }
 
   .hero-title {
@@ -653,8 +728,10 @@ a {
 
   .review-card {
     width: 482px;
-    height: 210px;
-    padding: 28px 28px 20px 28px;
+    height: 220px !important;
+    min-height: 220px !important;
+    max-height: 220px !important;
+    padding: 20px 24px 16px 24px;
   }
 
   .review-quote {
@@ -813,9 +890,13 @@ a {
   }
 
   .site-header {
-    top: 32px;
+    height: 140px;
     gap: 52px;
     padding: 0 80px;
+  }
+
+  .site-header.is-solid {
+    height: 104px;
   }
 
   .nav-left, .nav-right {
@@ -827,8 +908,8 @@ a {
   }
 
   .header-logo {
-    width: 144px;
-    height: 144px;
+    height: 78px;
+    width: auto;
   }
 
   .hero-title {
@@ -1102,8 +1183,10 @@ a {
 
   .review-card {
     width: 556px;
-    height: 240px;
-    padding: 32px 32px 24px 32px;
+    height: 245px !important;
+    min-height: 245px !important;
+    max-height: 245px !important;
+    padding: 24px 28px 18px 28px;
   }
 
   .review-quote {
@@ -1806,7 +1889,7 @@ h3 {
   line-height: 1.25;
   letter-spacing: -0.015em;
   text-align: left;
-  margin: 0;
+  margin: 0 0 28px 0 !important;
   padding-left: 0;
 }
 
@@ -1875,7 +1958,7 @@ h3 {
 
 .reviews-slider-track {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   gap: 36px;
   width: max-content;
   will-change: transform;
@@ -1884,48 +1967,45 @@ h3 {
 .review-card {
   position: relative;
   width: 434px;
-  height: 184px;
+  height: 205px !important;
+  min-height: 205px !important;
+  max-height: 205px !important;
   flex-shrink: 0;
   background-color: #ffffff;
   border-radius: 5px;
-  padding: 24px 24px 18px 24px;
+  padding: 16px 20px 14px 20px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-}
-
-/* Úpravy pozadí a odsazení recenzí výhradně pro stránku Stravování */
-.dining-page .reviews-section {
-  background-color: #ffffff !important;
-  padding: 60px 0 135px 0 !important;
-}
-
-.dining-page .review-card {
-  background-color: #f2f2f2 !important;
 }
 
 .review-google-icon {
   position: absolute;
-  top: 18px;
-  right: 18px;
-  width: 28px;
-  height: 29px;
+  top: 14px;
+  right: 16px;
+  width: 26px;
+  height: 27px;
   object-fit: contain;
   z-index: 3;
 }
 
 .review-quote {
-  font-size: 15px;
+  font-size: 13.5px;
   font-weight: 400;
   color: #111111;
-  line-height: 1.45;
+  line-height: 1.35;
   margin: 0;
-  max-width: 350px;
+  max-width: 375px;
   position: relative;
   z-index: 2;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.review-quote::-webkit-scrollbar {
+  display: none;
 }
 
 .review-contour-bg {
@@ -2513,7 +2593,7 @@ h3 {
 @media (max-width: 768px) {
   .hero-section {
     height: 95vh;
-    min-height: 540px;
+    min-height: min(540px, 88svh);
     max-height: 750px;
   }
 
@@ -2525,7 +2605,7 @@ h3 {
   }
 
   .site-header {
-    top: 18px;
+    height: 84px;
     padding: 0 20px;
     display: flex;
     justify-content: space-between;
@@ -2533,6 +2613,11 @@ h3 {
     box-sizing: border-box;
   }
 
+  .site-header.is-solid {
+    height: 68px;
+  }
+
+  .header-nav-right,
   .nav-left,
   .nav-right {
     display: none !important;
@@ -2543,14 +2628,9 @@ h3 {
     left: auto !important;
     top: auto !important;
     transform: none !important;
-    width: 90px;
-    height: auto;
-    margin-left: -5px;
-  }
-
-  .header-logo img {
-    width: 100%;
-    height: auto;
+    height: 48px;
+    width: auto;
+    margin-left: 0;
   }
 
   /* Mobilní Hamburger tlačítko se 2 delšími a 1 kratší čárou */
@@ -2592,8 +2672,9 @@ h3 {
     left: 0;
     width: 100%;
     height: 100vh;
+    height: 100svh;
     background-color: #2E3128;
-    z-index: 999;
+    z-index: 9999;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -2601,6 +2682,8 @@ h3 {
     box-sizing: border-box;
     opacity: 0;
     pointer-events: none;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     transition: opacity 0.3s ease;
   }
 
@@ -3792,7 +3875,7 @@ h3 {
 @media (min-width: 769px) and (max-width: 1028px) {
   .hero-section {
     height: 90vh;
-    min-height: 600px;
+    min-height: min(600px, 88svh);
   }
 
   .hero-inner {
@@ -3802,24 +3885,36 @@ h3 {
   }
 
   .site-header {
-    top: 24px;
+    height: 100px;
     padding: 0 32px;
-    justify-content: center;
-    gap: 20px;
+    justify-content: space-between;
   }
 
-  .nav-left,
-  .nav-right {
-    gap: 20px;
-  }
-
-  .nav-link {
-    font-size: 14.5px;
+  .site-header.is-solid {
+    height: 80px;
   }
 
   .header-logo {
-    width: 115px;
-    height: auto;
+    height: 62px;
+    width: auto;
+  }
+
+  .header-nav-right {
+    gap: 16px;
+  }
+
+  .header-nav-links {
+    gap: 12px;
+  }
+
+  .nav-link {
+    font-size: 13.5px;
+  }
+
+  .btn-header-booking {
+    height: 40px;
+    padding: 0 20px;
+    font-size: 14.5px;
   }
 
   /* Středový nadpis (posunutý níže na 54 %, zmenšený na 31px) */
@@ -3884,7 +3979,7 @@ h3 {
   /* Specifická pravidla pro Rooms Hero na tabletu (769px - 1028px) */
   .rooms-hero-section {
     height: 90vh;
-    min-height: 560px;
+    min-height: min(560px, 88svh);
     max-height: 700px;
   }
 
@@ -5053,24 +5148,34 @@ h3 {
   position: relative;
   width: 100%;
   height: 90vh;
-  min-height: 700px;
+  min-height: min(700px, 88svh);
   background-image: url('/nabidka-pokoju.webp') !important;
   background-size: cover;
   background-position: center;
   overflow: visible;
 }
 
-/* Mírně tmavší filtr hero fotky pro stránku Nabídka pokojů (Ubytování) */
-#uvod-pokoje .hero-overlay,
-.rooms-hero-section .hero-overlay {
+/* Mírně tmavší filtr hero fotky pro hlavní přehled Nabídka pokojů */
+#uvod-pokoje .hero-overlay {
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.58) 0%, rgba(0, 0, 0, 0.40) 50%, rgba(0, 0, 0, 0.60) 100%) !important;
+}
+
+/* Jemnější a světlejší filtr pro Pokoje v přízemí, Pokoje s výhledem, Aktuality a Kontakt */
+#uvod-prizemi .hero-overlay,
+#uvod-vyhled .hero-overlay,
+.room-view-hero .hero-overlay,
+#uvod-aktuality .hero-overlay,
+.news-hero-section .hero-overlay,
+#uvod-kontakt .hero-overlay,
+.contact-hero-section .hero-overlay {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.32) 0%, rgba(0, 0, 0, 0.15) 50%, rgba(0, 0, 0, 0.35) 100%) !important;
 }
 
 .rooms-hero-section {
   position: relative;
   width: 100%;
   height: 90vh;
-  min-height: 700px;
+  min-height: min(700px, 88svh);
   background-size: cover;
   background-position: center;
   overflow: visible;
@@ -5337,7 +5442,7 @@ h3 {
     position: relative;
     width: 100%;
     height: 95vh;
-    min-height: 540px;
+    min-height: min(540px, 88svh);
     max-height: 750px;
     background-image: url('/nabidka-pokoju.webp') !important;
     background-size: cover;
@@ -5538,7 +5643,7 @@ h3 {
 @media (min-width: 769px) and (max-width: 1028px) {
   .rooms-hero-section {
     height: 90vh !important;
-    min-height: 560px !important;
+    min-height: min(560px, 88svh) !important;
     max-height: 720px !important;
   }
 
@@ -5744,7 +5849,7 @@ h3 {
   position: relative;
   width: 100%;
   height: 90vh;
-  min-height: 700px;
+  min-height: min(700px, 88svh);
   background-image: url('/balkony 1 copy.webp');
   background-size: cover;
   background-position: center;
@@ -6105,7 +6210,7 @@ h3 {
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  border-top: 1px solid #C8C8C8;
+  border-top: none;
 }
 
 .room-breakdown-item {
@@ -6731,7 +6836,7 @@ h3 {
     position: relative !important;
     width: 100% !important;
     height: 95vh !important;
-    min-height: 540px !important;
+    min-height: min(540px, 88svh) !important;
     max-height: 750px !important;
     background-image: url('/mobile_hero_prizemi.webp') !important;
     background-size: cover !important;
@@ -8890,7 +8995,7 @@ html.is-route-loading #app {
   .room-detail-hero,
   .dining-hero-section {
     height: 100vh !important;
-    min-height: 520px !important;
+    min-height: min(520px, 88svh) !important;
   }
 
   .room-detail-hero .hero-inner,
@@ -9576,15 +9681,7 @@ html.is-route-loading #app {
   padding-bottom: 100px !important;
 }
 
-/* 5. RECENZE PRO STRÁNKU SKUPINOVÉ AKCE (1:1 DLE STRÁNKY STRAVOVÁNÍ - Pozadí #ffffff, kartičky #f2f2f2, zvětšený horní padding) */
-.events-page .reviews-section {
-  background-color: #ffffff !important;
-  padding: 90px 0 135px 0 !important;
-}
 
-.events-page .review-card {
-  background-color: #f2f2f2 !important;
-}
 
 /* RESPONSIVE MEDIA QUERIES FOR TABLET & MOBILE */
 @media (min-width: 768px) and (max-width: 1028.98px) {
@@ -10093,7 +10190,7 @@ html.is-route-loading #app {
 @media (min-width: 768px) and (max-width: 1028.98px) {
   .activities-hero-section {
     height: 100vh !important;
-    min-height: 600px !important;
+    min-height: min(600px, 88svh) !important;
   }
 
   .activities-hero-section .room-detail-hero-center {
@@ -10244,7 +10341,7 @@ html.is-route-loading #app {
 @media (max-width: 767.98px) {
   .activities-hero-section {
     height: 100vh !important;
-    min-height: 520px !important;
+    min-height: min(520px, 88svh) !important;
   }
 
   .activities-hero-section .room-detail-hero-center {
@@ -10747,7 +10844,7 @@ html.is-route-loading #app {
   position: relative;
   width: 100%;
   height: 90vh;
-  min-height: 700px;
+  min-height: min(700px, 88svh);
   background-image: none !important;
   background-color: #1c1c19;
   overflow: visible;
@@ -10757,7 +10854,7 @@ html.is-route-loading #app {
   #uvod-kontakt,
   .contact-hero-section {
     height: 95vh !important;
-    min-height: 540px !important;
+    min-height: min(540px, 88svh) !important;
     max-height: 750px !important;
     background-image: none !important;
   }
@@ -11328,7 +11425,7 @@ html.is-route-loading #app {
   #uvod-kontakt,
   .contact-hero-section {
     height: 100vh !important;
-    min-height: 520px !important;
+    min-height: min(520px, 88svh) !important;
   }
 
   .contact-hero-section .room-detail-hero-btn {
@@ -12730,7 +12827,7 @@ input:checked + .cookie-slider:before {
   border-bottom-left-radius: 6px;
   border-bottom-right-radius: 6px;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
-  max-height: 420px;
+  max-height: min(420px, 55svh);
   overflow-y: auto;
   box-sizing: border-box;
 }
@@ -13133,6 +13230,8 @@ input:checked + .cookie-slider:before {
   border-radius: 8px;
   max-width: 540px;
   width: 100%;
+  max-height: 90vh;
+  max-height: 90svh;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
   overflow: hidden;
   transform: translateY(20px);
@@ -13151,6 +13250,7 @@ input:checked + .cookie-slider:before {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-shrink: 0;
 }
 
 .review-modal-title {
@@ -13177,8 +13277,9 @@ input:checked + .cookie-slider:before {
 
 .review-modal-body {
   padding: 24px;
-  max-height: 75vh;
   overflow-y: auto;
+  min-height: 0;
+  max-height: none;
 }
 
 .review-modal-subtitle {
@@ -13221,6 +13322,7 @@ input:checked + .cookie-slider:before {
   background: #FAF9F5;
   display: flex;
   align-items: center;
+  flex-shrink: 0;
   justify-content: flex-end;
   gap: 12px;
 }
@@ -13239,6 +13341,10 @@ input:checked + .cookie-slider:before {
    Příčina: min-height v pixelech přebíjel výšku v jednotkách vh.
    =================================================================== */
 @media (max-height: 820px) {
+  .site-header { height: 92px; }
+  .site-header.is-solid { height: 74px; }
+  .header-logo { height: 54px; width: auto; }
+
   .hero-section,
   .rooms-hero-section,
   .contact-hero-section,
@@ -13252,7 +13358,8 @@ input:checked + .cookie-slider:before {
     max-height: none !important;
   }
 
-  .booking-hero-section {
+  .booking-hero-section,
+  .admin-hero-section {
     height: 46vh !important;
     height: 46svh !important;
     min-height: 0 !important;
@@ -13260,9 +13367,11 @@ input:checked + .cookie-slider:before {
   }
 
   .hero-title,
-  .room-detail-hero-title { font-size: clamp(26px, 5.4vh, 44px) !important; }
+  .room-detail-hero-title { font-size: min(clamp(28px, 3.2vw, 36px), 5.2vh) !important; }
   .hero-subtitle,
-  .room-detail-hero-subtitle { font-size: clamp(13.5px, 2.1vh, 17px) !important; }
+  .room-detail-hero-subtitle { font-size: clamp(15.5px, 2.4vh, 18px) !important; }
+  .booking-hero-main-title { font-size: min(clamp(26px, 3vw, 34px), 5vh) !important; }
+  .booking-hero-subtitle { font-size: clamp(15px, 2.2vh, 17px) !important; }
   .hero-inner { padding-top: 0 !important; padding-bottom: 0 !important; }
   .scroll-down-btn { margin-top: 10px !important; transform: none !important; }
 
@@ -13276,7 +13385,17 @@ input:checked + .cookie-slider:before {
     align-items: center !important;
     justify-content: center !important;
     gap: 16px !important;
-    padding: 130px 24px 74px 24px !important;
+    padding: 96px 24px 74px 24px !important;
+  }
+
+  .booking-hero-section .hero-inner,
+  .admin-hero-section .hero-inner {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    padding: 96px 24px 28px 24px !important;
   }
 
   .hero-section .hero-title,
@@ -13291,6 +13410,20 @@ input:checked + .cookie-slider:before {
     transform: none !important;
     text-align: center !important;
     width: 100% !important;
+  }
+
+  .booking-hero-center,
+  .booking-hero-center-group {
+    position: static !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+    width: 100% !important;
+    text-align: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 8px !important;
   }
 
   .hero-section .hero-buttons {
@@ -13311,8 +13444,19 @@ input:checked + .cookie-slider:before {
     height: 92svh !important;
   }
   .hero-title,
-  .room-detail-hero-title { font-size: clamp(22px, 5vh, 32px) !important; }
-  .booking-hero-section { height: 38vh !important; height: 38svh !important; }
+  .room-detail-hero-title { font-size: min(clamp(24px, 3.2vw, 32px), 5.6vh) !important; }
+  .booking-hero-section,
+  .admin-hero-section { height: 38vh !important; height: 38svh !important; }
+
+  .booking-hero-section .hero-inner,
+  .admin-hero-section .hero-inner {
+    padding: 84px 20px 20px 20px !important;
+    gap: 6px !important;
+  }
+  .booking-hero-main-title {
+    font-size: min(clamp(22px, 3vw, 28px), 5.4vh) !important;
+  }
+  .booking-hero-subtitle { display: none !important; }
 }
 
 /* ===================================================================
@@ -13321,6 +13465,9 @@ input:checked + .cookie-slider:before {
    nezmění nic, pod ní se padding plynule zmenšuje.
    =================================================================== */
 @media (min-width: 1029px) and (max-width: 1500px) {
+  .site-header {
+    padding-inline: max(33px, calc(50% - 687px));
+  }
   .about-section,
   .rooms-section,
   .services-section,
@@ -13347,6 +13494,44 @@ input:checked + .cookie-slider:before {
   .about-inner {
     min-height: min(clamp(730px, 63vw, 900px), 100vh) !important;
   }
+}
+
+/* Přístupnost: Systémové vypnutí animací a přechodů */
+@media (prefers-reduced-motion: reduce) {
+  .site-header,
+  .site-header .header-logo,
+  .site-header .header-logo img {
+    transition: none !important;
+  }
+}
+
+/* Štítek skupiny pokojů na stránce ubytování */
+.room-group-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(13px, 1vw, 14.5px);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8a8a80;
+  margin: 0 0 16px 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e8e6df;
+  border-top: none;
+}
+.room-group-label:not(:first-of-type) {
+  margin-top: 60px;
+}
+
+/* ===================================================================
+   POJISTKA PRO VYSKAKOVACÍ OKNA
+   Žádné modální okno nesmí přesáhnout výšku okna prohlížeče.
+   Uplatní se jen tam, kde vlastní pravidlo chybí.
+   =================================================================== */
+[class*="-modal-card"],
+[class*="-modal-container"],
+[class*="-modal-content"] {
+  max-height: min(92svh, 92vh);
+  overflow-y: auto;
 }
 
 

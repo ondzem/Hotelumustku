@@ -18,6 +18,10 @@
 /cz/index.php   stranka=mapy          /kontakt      301!
 /cz/index.php   stranka=kontakt       /kontakt      301!
 
+# 301 Přesměrování sloučených stránek ubytování
+/prizemi   /ubytovani   301!
+/vyhled    /ubytovani   301!
+
 # Poznámka: ceník i rezervace jsou sekce uvnitř /ubytovani, ne samostatné
 # stránky. Recenze mají kotvu /#recenze na úvodní stránce.
 
@@ -52,6 +56,8 @@
 /gdpr         /gdpr.html         200
 /cookies      /cookies.html      200
 /podminky     /podminky.html     200
+/admin        /admin.html        200
+/recepce      /admin.html        200
 
 
 # Varianty s .html přesměrovat na hezkou URL (zamezí duplicitnímu obsahu)
@@ -69,6 +75,7 @@
 /gdpr.html         /gdpr         301!
 /cookies.html      /cookies      301!
 /podminky.html     /podminky     301!
+/admin.html        /admin        301!
 
 # =====================================================================
 #  ŽÁDNÝ CATCH-ALL

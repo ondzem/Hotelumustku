@@ -9,6 +9,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: 'index.html',
+        admin: 'admin.html',
         ubytovani: 'ubytovani.html',
         stravovani: 'stravovani.html',
         akce: 'akce.html',
@@ -26,6 +27,39 @@ export default defineConfig({
     }
   },
   plugins: [
+    {
+      name: 'clean-urls-middleware',
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          if (req.url && req.method === 'GET' && !req.url.startsWith('/api') && !req.url.includes('.')) {
+            const cleanPath = req.url.split('?')[0].split('#')[0].replace(/\/$/, '');
+            const queryAndHash = req.url.slice(cleanPath.length);
+            if (cleanPath === '/admin' || cleanPath === '/recepce') {
+              req.url = '/admin.html' + queryAndHash;
+            } else if (cleanPath === '/ubytovani' || cleanPath === '/pokoje') {
+              req.url = '/ubytovani.html' + queryAndHash;
+            } else if (cleanPath === '/stravovani') {
+              req.url = '/stravovani.html' + queryAndHash;
+            } else if (cleanPath === '/akce') {
+              req.url = '/akce.html' + queryAndHash;
+            } else if (cleanPath === '/okoli') {
+              req.url = '/okoli.html' + queryAndHash;
+            } else if (cleanPath === '/kontakt') {
+              req.url = '/kontakt.html' + queryAndHash;
+            } else if (cleanPath === '/aktuality') {
+              req.url = '/aktuality.html' + queryAndHash;
+            } else if (cleanPath === '/gdpr') {
+              req.url = '/gdpr.html' + queryAndHash;
+            } else if (cleanPath === '/cookies') {
+              req.url = '/cookies.html' + queryAndHash;
+            } else if (cleanPath === '/podminky') {
+              req.url = '/podminky.html' + queryAndHash;
+            }
+          }
+          next();
+        });
+      }
+    },
     {
       name: 'resend-api-middleware',
       configureServer(server) {
