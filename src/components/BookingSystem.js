@@ -1064,10 +1064,8 @@ export class BookingSystem {
 
       const isDisabled = isPast;
       const tooltipText = isOccupied
-        ? 'V tomto dni probíhá rezervace či uzávěrka (Noc je obsazená)'
-        : (isCheckoutTurnover
-          ? 'Příjezd možný od 15:00 (Odjezd předchozího hosta do 10:00 • Úklid 10:00–15:00)'
-          : 'Volný termín (Příjezd od 15:00)');
+        ? 'V tomto dni probíhá rezervace či uzávěrka'
+        : 'Příjezd možný od 15:00';
 
       daysHtml += `
         <button type="button" class="${dayClass}" data-date="${dayStr}" ${isDisabled ? 'disabled' : ''} title="${tooltipText}">
