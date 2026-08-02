@@ -555,7 +555,7 @@ export class AdminDashboard {
     return this.reservations.filter(r => {
       if (r.status === 'cancelled' || r.status === 'stornováno') return false;
       if (roomId !== 'all' && r.room_id !== roomId) return false;
-      return selectedDates.some(d => d >= r.date_from && d <= r.date_to);
+      return selectedDates.some(d => d >= r.date_from && d < r.date_to);
     });
   }
 
@@ -588,12 +588,12 @@ export class AdminDashboard {
       const guestBooking = this.reservations.find(r => {
         if (r.status === 'cancelled' || r.status === 'stornováno') return false;
         if (selectedRoomId !== 'all' && r.room_id !== selectedRoomId) return false;
-        return dayStr >= r.date_from && dayStr <= r.date_to;
+        return dayStr >= r.date_from && dayStr < r.date_to;
       });
 
       const isAlreadyBlocked = this.blockedDates.some(b => {
         if (b.room_id !== 'all' && selectedRoomId !== 'all' && b.room_id !== selectedRoomId) return false;
-        return dayStr >= b.date_from && dayStr <= b.date_to;
+        return dayStr >= b.date_from && dayStr < b.date_to;
       });
 
       const isSelectedForBlock = this.blockSelectedDates.includes(dayStr);

@@ -408,7 +408,7 @@ export class BookingSystem {
     if (this.blockedDates && this.blockedDates.length > 0) {
       const isBlocked = this.blockedDates.some(b => {
         if (b.room_id !== 'all' && b.room_id !== roomId) return false;
-        return dateStr >= b.date_from && dateStr <= b.date_to;
+        return dateStr >= b.date_from && dateStr < b.date_to;
       });
       if (isBlocked) return true;
     }
@@ -424,7 +424,7 @@ export class BookingSystem {
     if (this.blockedDates && this.blockedDates.length > 0) {
       const blockedConflict = this.blockedDates.find(b => {
         if (b.room_id !== 'all' && b.room_id !== roomId) return false;
-        return b.date_from <= dateTo && b.date_to >= dateFrom;
+        return b.date_from < dateTo && b.date_to > dateFrom;
       });
       if (blockedConflict) {
         return { isBlocked: true, reason: blockedConflict.reason };
@@ -1045,6 +1045,11 @@ export class BookingSystem {
       const isPast = dayStr < todayStr;
       const isOccupied = this.isDateOccupied(dayStr, roomIdForCal);
 
+      const isCheckoutTurnover = !isOccupied && this.activeReservations && this.activeReservations.some(r => {
+        if (r.room_id !== roomIdForCal || (r.status && (r.status.startsWith('cancelled') || r.status === 'stornováno'))) return false;
+        return r.date_to === dayStr;
+      });
+
       const isFrom = dayStr === effectiveFrom;
       const isTo = dayStr === effectiveTo;
       const isInRange = effectiveFrom && effectiveTo && dayStr > effectiveFrom && dayStr < effectiveTo;
@@ -1052,14 +1057,20 @@ export class BookingSystem {
       let dayClass = 'cal-day';
       if (isPast) dayClass += ' is-disabled';
       if (isOccupied) dayClass += ' is-occupied';
+      if (isCheckoutTurnover) dayClass += ' is-turnover-day';
       if (isFrom) dayClass += ' is-from is-selected';
       if (isTo) dayClass += ' is-to is-selected';
       if (isInRange) dayClass += ' in-range';
 
       const isDisabled = isPast;
+      const tooltipText = isOccupied
+        ? 'V tomto dni probíhá rezervace či uzávěrka (Noc je obsazená)'
+        : (isCheckoutTurnover
+          ? 'Příjezd možný od 15:00 (Odjezd předchozího hosta do 10:00 • Úklid 10:00–15:00)'
+          : 'Volný termín (Příjezd od 15:00)');
 
       daysHtml += `
-        <button type="button" class="${dayClass}" data-date="${dayStr}" ${isDisabled ? 'disabled' : ''} title="${isOccupied ? 'V tomto dni probíhá rezervace či uzávěrka' : ''}">
+        <button type="button" class="${dayClass}" data-date="${dayStr}" ${isDisabled ? 'disabled' : ''} title="${tooltipText}">
           ${day}
         </button>
       `;

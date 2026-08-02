@@ -3443,6 +3443,24 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   color: #999999 !important;
 }
 
+.cal-day.is-turnover-day {
+  position: relative;
+  background: linear-gradient(135deg, #f3f3f3 50%, #ffffff 50%) !important;
+  color: #1c1c19 !important;
+  cursor: pointer !important;
+}
+
+.cal-day.is-turnover-day::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: #2e7d32;
+}
+
 .cal-modal-footer {
   padding: 10px 16px;
   background-color: #f8f9f5;
