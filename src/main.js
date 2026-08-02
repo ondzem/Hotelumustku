@@ -3348,18 +3348,12 @@ const getStravovaniPageHTML = () => `
       <div class="dining-section-header">
         <h2 class="dining-section-title">Večeře formou polopenze</h2>
         <p class="dining-section-lead">
-          Užijte si poctivou českou kuchyni formou dvouchodového menu, které pro vás vaříme z čerstvých sezónních surovin.
+          Užijte si poctivou českou kuchyni formou dvouchodového menu, které pro vás vaříme z čerstvých sezónních surovin. Jelikož nejsme veřejná restaurace, večeře podáváme ubytovaným hostům společně v 18:00 hodin. Při pozdním návratu z výletu či túry vám jídlo po předchozí domluvě rádi uchováme a ohřejeme.
         </p>
       </div>
 
       <div class="dining-single-img-wrap">
         <img src="/stravovani/vecere.webp" alt="Večeře formou polopenze" loading="lazy" decoding="async">
-      </div>
-
-      <div class="dining-bottom-notice">
-        <p class="dining-bottom-notice-text">
-          Jelikož nejsme veřejná restaurace, večeře podáváme ubytovaným hostům společně v 18:00 hodin. Při pozdním návratu z výletu či túry vám jídlo po předchozí domluvě rádi uchováme a ohřejeme.
-        </p>
       </div>
     </div>
   </section>
