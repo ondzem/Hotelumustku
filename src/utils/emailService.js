@@ -46,8 +46,8 @@ export async function sendEmail({ to, subject, html, type, reservationCode }) {
 
   if (resendApiKey) {
     const senders = [
-      'Hotel u Můstku <hotel@umustku.cz>',
-      'Hotel u Můstku <onboarding@resend.dev>'
+      'Hotel u Můstku <onboarding@resend.dev>',
+      'Hotel u Můstku <hotel@umustku.cz>'
     ];
     const endpoints = (typeof window !== 'undefined')
       ? ['/api/resend/emails', 'https://api.resend.com/emails']
@@ -672,54 +672,40 @@ export function generateEmailContactNotification({ name, surname, email, phone, 
 export function generateEmailNewReviewNotification({ review }) {
   const authorName = review.author_name || review.author || 'Host';
   const fullName = review.full_name || authorName;
-  const rating = Number(review.rating || 5);
-  const starsStr = '★'.repeat(rating) + '☆'.repeat(5 - rating);
 
   const html = `
     ${getEmailHeader('Nová recenze ke schválení')}
-    <p style="color: #1a1a1a !important; font-size: 15.5px; line-height: 1.5; margin-bottom: 20px;">
-      Někdo z hostů přidal na webu <strong>Hotel u Můstku</strong> novou recenzi. Než se zobrazí veřejně mezi ostatními recenzemi, je potřeba ji schválit v recepčním portálu:
+    <p style="color: #1a1a1a !important; font-size: 15.5px; line-height: 1.6; margin-bottom: 24px;">
+      Na webu <strong>Hotel u Můstku</strong> byla odeslána nová recenze hosta ke schválení:
     </p>
 
     <table class="info-table" style="background-color: #ffffff !important; margin: 20px 0; width: 100%; border-collapse: collapse;">
       <tr>
-        <td style="color: #555555 !important; width: 150px; padding: 8px 12px; font-weight: 500; border-bottom: 1px solid #f0f0f0;">Jméno hosta:</td>
-        <td style="color: #1a1a1a !important; padding: 8px 12px; font-weight: 700; border-bottom: 1px solid #f0f0f0;">
+        <td style="color: #555555 !important; width: 150px; padding: 10px 12px; font-weight: 500; border-bottom: 1px solid #f0f0f0;">Jméno hosta:</td>
+        <td style="color: #1a1a1a !important; padding: 10px 12px; font-weight: 700; border-bottom: 1px solid #f0f0f0;">
           ${fullName} <span style="color: #697947; font-weight: 600;">(Zobrazí se jako: ${authorName})</span>
         </td>
       </tr>
       <tr>
-        <td style="color: #555555 !important; padding: 8px 12px; font-weight: 500; border-bottom: 1px solid #f0f0f0;">Hodnocení:</td>
-        <td style="color: #e67e22 !important; padding: 8px 12px; font-weight: 700; border-bottom: 1px solid #f0f0f0; font-size: 16px;">
-          ${starsStr} (${rating}/5)
-        </td>
+        <td style="color: #555555 !important; padding: 10px 12px; font-weight: 500; border-bottom: 1px solid #f0f0f0;">Datum odeslání:</td>
+        <td style="color: #1a1a1a !important; padding: 10px 12px; border-bottom: 1px solid #f0f0f0;">${review.date || new Date().toLocaleDateString('cs-CZ')}</td>
       </tr>
       <tr>
-        <td style="color: #555555 !important; padding: 8px 12px; font-weight: 500; border-bottom: 1px solid #f0f0f0;">Datum odeslání:</td>
-        <td style="color: #1a1a1a !important; padding: 8px 12px; border-bottom: 1px solid #f0f0f0;">${review.date || new Date().toLocaleDateString('cs-CZ')}</td>
-      </tr>
-      <tr>
-        <td style="color: #555555 !important; padding: 8px 12px; font-weight: 500; vertical-align: top;">Text recenze:</td>
-        <td style="color: #1a1a1a !important; padding: 12px; font-style: italic; background-color: #faf9f5; border-radius: 4px; line-height: 1.6;">
+        <td style="color: #555555 !important; padding: 10px 12px; font-weight: 500; vertical-align: top;">Text recenze:</td>
+        <td style="color: #1a1a1a !important; padding: 12px; font-style: italic; background-color: #faf9f5; border-radius: 4px; line-height: 1.6; border: 1px solid #eae7dc;">
           "${review.text || 'Bez textu'}"
         </td>
       </tr>
     </table>
 
-    <div style="text-align: center; margin: 28px 0 16px 0;">
-      <a href="https://hotelumustku.cz/#admin" style="display: inline-block; background-color: #4A5A24; color: #ffffff !important; text-decoration: none; font-weight: 700; font-size: 15px; padding: 12px 24px; border-radius: 2px;">
-        Přejít do Recepčního portálu ke schválení &rarr;
-      </a>
-    </div>
-
-    <div class="alert-box" style="background-color: #edf2e4 !important; color: #4a5a24 !important; border-left: 4px solid #697947 !important; padding: 14px 18px; margin-top: 20px; border-radius: 4px; font-size: 13.5px;">
-      💡 V recepčním portálu stačí kliknout na tlačítko <strong>Schválit</strong> (přidá se na web) nebo <strong>Odmítnout</strong> (smaže se).
+    <div class="alert-box" style="background-color: #edf2e4 !important; color: #4a5a24 !important; border-left: 4px solid #697947 !important; padding: 14px 18px; margin-top: 24px; border-radius: 4px; font-size: 13.5px;">
+      💡 Pro schválení nebo smazání recenze přejděte do Recepčního portálu administrace.
     </div>
     ${getEmailFooter()}
   `;
 
   return {
-    subject: `[RECENZE] Nová recenze ke schválení od ${authorName}`,
+    subject: `Nová recenze ke schválení od ${authorName} — Hotel u Můstku`,
     html
   };
 }

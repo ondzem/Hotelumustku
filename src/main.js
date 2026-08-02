@@ -2376,11 +2376,83 @@ const initInteractivity = () => {
     })();
   }
 
-  // REVIEW MODAL & FORM HANDLERS
-  const openModalBtn = document.getElementById('btn-open-review-modal');
+  // REVIEW MODAL & FORM HANDLERS (AUTOMATIC INJECTION & DELEGATION)
+  let modalOverlay = document.getElementById('add-review-modal-overlay');
+
+  // If modal overlay is missing from DOM on any page, dynamically inject it into body
+  if (!modalOverlay) {
+    const modalContainer = document.createElement('div');
+    modalContainer.innerHTML = `
+      <div class="review-modal-overlay" id="add-review-modal-overlay" aria-hidden="true">
+        <div class="review-modal-card">
+          <div class="review-modal-header">
+            <h3 class="review-modal-title">Přidat novou recenzi</h3>
+            <button type="button" class="review-modal-close" id="btn-close-review-modal" aria-label="Zavřít">&times;</button>
+          </div>
+
+          <form id="add-review-form" class="review-modal-form" novalidate>
+            <div class="review-modal-body">
+              <p class="review-modal-subtitle">
+                Vaše zkušenost pomůže ostatním hostům. Po odeslání bude recenze schválena recepcí a následně zveřejněna.
+              </p>
+
+              <div id="review-modal-alert-area"></div>
+
+              <div style="display:none;" aria-hidden="true">
+                <input type="text" id="hp-review-field" tabindex="-1" autocomplete="off">
+              </div>
+
+              <div class="form-field" id="field-wrap-review-name">
+                <label for="review-fullname-input" class="form-label">Jméno a Příjmení <span class="required" style="color: #c62828;">*</span></label>
+                <input type="text" id="review-fullname-input" class="form-input" placeholder="např. Jan Novák" required>
+                <small class="form-hint" style="font-size: 12.5px; color: #666660; margin-top: 5px; display: block;">
+                  🔒 <strong>Ochrana soukromí (GDPR):</strong> Vaše příjmení bude po odeslání automaticky zkráceno na počáteční písmeno (např. <em>Jan N.</em>).
+                </small>
+              </div>
+
+              <div class="form-field" id="field-wrap-review-text" style="margin-top: 16px;">
+                <label for="review-text-input" class="form-label">Text vaší recenze <span class="required" style="color: #c62828;">*</span></label>
+                <textarea id="review-text-input" class="form-textarea" rows="4" maxlength="500" placeholder="Napište, jak se vám u nás líbilo, jak vám chutnala snídaně či jak hodnotíte čistotu a personál..." required></textarea>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 12.5px; color: #666660;">
+                  <span id="review-text-hint">Minimálně 15 znaků, maximálně 500 znaků (cca 80 slov).</span>
+                  <span id="review-text-count" style="font-weight: 600;">0 / 500</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="review-modal-footer">
+              <button type="button" class="btn btn-specs-secondary" id="btn-cancel-review-modal">Zrušit</button>
+              <button type="submit" class="btn btn-booking-submit" id="btn-submit-review">
+                <span>Odeslat recenzi ke schválení →</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modalContainer.firstElementChild);
+    modalOverlay = document.getElementById('add-review-modal-overlay');
+  }
+
+  // Ensure button exists inside .reviews-nav-controls on any page
+  const navControls = document.querySelector('.reviews-nav-controls');
+  if (navControls && !navControls.querySelector('#btn-open-review-modal')) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'btn btn-add-review';
+    btn.id = 'btn-open-review-modal';
+    btn.innerHTML = `
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 20h9"></path>
+        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+      </svg>
+      <span>Napsat recenzi</span>
+    `;
+    navControls.appendChild(btn);
+  }
+
   const closeModalBtn = document.getElementById('btn-close-review-modal');
   const cancelModalBtn = document.getElementById('btn-cancel-review-modal');
-  const modalOverlay = document.getElementById('add-review-modal-overlay');
   const reviewForm = document.getElementById('add-review-form');
   const reviewTextInput = document.getElementById('review-text-input');
   const reviewTextCount = document.getElementById('review-text-count');
@@ -2421,7 +2493,15 @@ const initInteractivity = () => {
     }
   };
 
-  if (openModalBtn) openModalBtn.addEventListener('click', () => toggleReviewModal(true));
+  // Delegate click for opening modal on any page/button
+  document.body.addEventListener('click', (e) => {
+    const trigger = e.target.closest('#btn-open-review-modal, .btn-add-review');
+    if (trigger) {
+      e.preventDefault();
+      toggleReviewModal(true);
+    }
+  });
+
   if (closeModalBtn) closeModalBtn.addEventListener('click', () => toggleReviewModal(false));
   if (cancelModalBtn) cancelModalBtn.addEventListener('click', () => toggleReviewModal(false));
   if (modalOverlay) {
@@ -2478,21 +2558,44 @@ const initInteractivity = () => {
 
       const gdprName = formatGDPRName(fullName);
       const submitBtn = document.getElementById('btn-submit-review');
-      if (submitBtn) submitBtn.disabled = true;
+      const originalBtnHTML = submitBtn ? submitBtn.innerHTML : '';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.75';
+        submitBtn.style.cursor = 'wait';
+        submitBtn.innerHTML = `
+          <svg style="animation: review-spin 0.8s linear infinite; width: 16px; height: 16px; margin-right: 8px; vertical-align: middle; display: inline-block;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="2" x2="12" y2="6"></line>
+            <line x1="12" y1="18" x2="12" y2="22"></line>
+            <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
+            <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+            <line x1="2" y1="12" x2="6" y2="12"></line>
+            <line x1="18" y1="12" x2="22" y2="12"></line>
+            <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
+            <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+          </svg>
+          <span>Odesílám recenzi...</span>
+        `;
+      }
 
       const reviewRecord = {
         full_name: fullName,
         author_name: gdprName,
-        rating: rating,
         text: text,
         status: 'pending_approval'
       };
 
-      await saveStoredReview(reviewRecord);
+      try {
+        await saveStoredReview(reviewRecord);
+      } catch (saveErr) {
+        console.error('Error saving review to store/DB:', saveErr);
+      }
 
       // Send email notification to admin ondra.zeman05@gmail.com
       try {
-        const emailTemplate = generateEmailNewReviewNotification({ review: { ...reviewRecord, date: new Date().toLocaleDateString('cs-CZ') } });
+        const emailTemplate = generateEmailNewReviewNotification({
+          review: { ...reviewRecord, date: new Date().toLocaleDateString('cs-CZ') }
+        });
         await sendEmail({
           to: 'ondra.zeman05@gmail.com',
           subject: emailTemplate.subject,
@@ -2501,6 +2604,13 @@ const initInteractivity = () => {
         });
       } catch (err) {
         console.warn('E-mail notification failed:', err);
+      }
+
+      if (submitBtn) {
+        submitBtn.innerHTML = originalBtnHTML;
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '';
+        submitBtn.style.cursor = '';
       }
 
       if (alertArea) {

@@ -1559,7 +1559,7 @@ h3 {
 .rooms-section {
   position: relative;
   width: 100%;
-  padding: 45px 0 160px 0;
+  padding: 45px 0 clamp(88px, 17.8vh, 160px) 0;
   background-color: #ffffff;
 }
 
@@ -1779,7 +1779,7 @@ h3 {
 .reviews-section {
   position: relative;
   width: 100%;
-  padding: 25px 0 110px 0;
+  padding: 25px 0 clamp(61px, 12.2vh, 110px) 0;
   background-color: #f2f2f2;
 }
 
@@ -2008,7 +2008,7 @@ h3 {
 .features-section {
   position: relative;
   width: 100%;
-  padding: 50px 0 110px 0;
+  padding: 50px 0 clamp(61px, 12.2vh, 110px) 0;
   background-color: #ffffff;
 }
 
@@ -2102,7 +2102,7 @@ h3 {
 .surroundings-section {
   position: relative;
   width: 100%;
-  padding: 100px 0 100px 0;
+  padding: clamp(55px, 11.1vh, 100px) 0 clamp(55px, 11.1vh, 100px) 0;
   background-color: #ffffff;
 }
 
@@ -2110,7 +2110,7 @@ h3 {
 .home-surroundings-section,
 .rooms-surroundings-section {
   padding-top: 25px !important;
-  padding-bottom: 185px !important;
+  padding-bottom: clamp(102px, 20.6vh, 185px) !important;
 }
 
 .surroundings-slider-viewport {
@@ -5183,7 +5183,7 @@ h3 {
   position: relative;
   width: 100%;
   background-color: #ffffff;
-  padding: 120px 0 115px 0;
+  padding: clamp(66px, 13.3vh, 120px) 0 clamp(63px, 12.8vh, 115px) 0;
 }
 
 .rooms-list-inner {
@@ -5821,7 +5821,7 @@ h3 {
 /* 2. Sekce Detaily Pokojů (Specs Grid) - 1:1 Pixel Perfect Desktop */
 .room-specs-section {
   width: 100%;
-  padding: 85px 0 150px 0;
+  padding: clamp(47px, 9.4vh, 85px) 0 clamp(82px, 16.7vh, 150px) 0;
   background-color: #ffffff;
 }
 
@@ -6025,7 +6025,7 @@ h3 {
   z-index: 2;
   width: 100%;
   max-width: 1100px;
-  padding: 95px 40px 0 40px;
+  padding: clamp(52px, 10.6vh, 95px) 40px 0 40px;
   text-align: center;
   box-sizing: border-box;
 }
@@ -6052,7 +6052,7 @@ h3 {
 /* 4. Rozdělení Pokojů (Breakdown & Accordions 1:1 Desktop) */
 .room-breakdown-section {
   width: 100%;
-  padding: 65px 0 110px 0;
+  padding: clamp(36px, 7.2vh, 65px) 0 clamp(61px, 12.2vh, 110px) 0;
   background-color: #f2f2f2;
 }
 
@@ -6401,7 +6401,7 @@ h3 {
 /* 5. Stravování Sekce v Detailu */
 .room-detail-dining-section {
   width: 100%;
-  padding: 75px 0 75px 0;
+  padding: clamp(41px, 8.3vh, 75px) 0 clamp(41px, 8.3vh, 75px) 0;
   background-color: #ffffff;
 }
 
@@ -6480,7 +6480,7 @@ h3 {
 /* 6. Výhody Ubytování Sekce */
 .room-detail-features-section {
   width: 100%;
-  padding: 50px 0 115px 0;
+  padding: 50px 0 clamp(63px, 12.8vh, 115px) 0;
   background-color: #ffffff;
 }
 
@@ -6551,7 +6551,7 @@ h3 {
 /* 7. Podmínky Ubytování Sekce (1:1 Desktop) */
 .room-terms-section {
   width: 100%;
-  padding: 65px 0 110px 0;
+  padding: clamp(36px, 7.2vh, 65px) 0 clamp(61px, 12.2vh, 110px) 0;
   background-color: #f2f2f2;
 }
 
@@ -8263,16 +8263,16 @@ html.is-route-loading #app {
 
 .dining-feature-section {
   width: 100%;
-  padding: 85px 0 85px 0;
+  padding: clamp(47px, 9.4vh, 85px) 0 clamp(47px, 9.4vh, 85px) 0;
   background-color: #ffffff;
 }
 
 .dining-buffet-section {
-  padding: 85px 0 55px 0 !important;
+  padding: clamp(47px, 9.4vh, 85px) 0 55px 0 !important;
 }
 
 .dining-dinner-section {
-  padding: 55px 0 120px 0 !important;
+  padding: 55px 0 clamp(66px, 13.3vh, 120px) 0 !important;
 }
 
 .dining-feature-inner {
@@ -8368,13 +8368,13 @@ html.is-route-loading #app {
 
 .dining-terrace-section {
   width: 100%;
-  padding: 155px 0 50px 0;
+  padding: clamp(85px, 17.2vh, 155px) 0 50px 0;
   background-color: #ffffff;
 }
 
 .dining-grill-section {
   width: 100%;
-  padding: 50px 0 155px 0;
+  padding: 50px 0 clamp(85px, 17.2vh, 155px) 0;
   background-color: #ffffff;
 }
 
@@ -9484,7 +9484,7 @@ html.is-route-loading #app {
 /* 3. JAKÉ AKCE U NÁS MŮŽETE NAPLÁNOVAT? (1:1 DLE SVG PŘEDLOHY) */
 .events-types-section {
   width: 100%;
-  padding: 60px 0 100px 0;
+  padding: clamp(33px, 6.7vh, 60px) 0 clamp(55px, 11.1vh, 100px) 0;
   background-color: #f2f2f2;
 }
 
@@ -9733,7 +9733,7 @@ html.is-route-loading #app {
 /* 2. AKTIVITY V NAŠEM HOTELU */
 .hotel-activities-section {
   width: 100%;
-  padding: 100px 0;
+  padding: clamp(55px, 11.1vh, 100px) 0;
   background-color: #ffffff;
 }
 
@@ -9872,7 +9872,7 @@ html.is-route-loading #app {
 /* 3. AKTIVITY V OKOLÍ HOTELU */
 .surroundings-activities-section {
   width: 100%;
-  padding: 100px 0;
+  padding: clamp(55px, 11.1vh, 100px) 0;
   background-color: #f2f2f2;
 }
 
@@ -9970,7 +9970,7 @@ html.is-route-loading #app {
 /* 4. ČASTO KLADENÉ DOTAZY (FAQ ACCORDION) */
 .activities-faq-section {
   width: 100%;
-  padding: 110px 0 130px 0;
+  padding: clamp(61px, 12.2vh, 110px) 0 clamp(72px, 14.4vh, 130px) 0;
   background-color: #ffffff;
 }
 
@@ -10369,7 +10369,7 @@ html.is-route-loading #app {
 .home-surroundings-section,
 .rooms-surroundings-section {
   padding-top: 15px !important;
-  padding-bottom: 195px !important;
+  padding-bottom: clamp(107px, 21.7vh, 195px) !important;
 }
 
 @media (min-width: 768px) and (max-width: 1028.98px) {
@@ -10413,7 +10413,7 @@ html.is-route-loading #app {
 
 /* Mřížka aktivit na detailní stránce kategorie */
 .category-destinations-section {
-  padding: 80px 0 100px 0;
+  padding: clamp(44px, 8.9vh, 80px) 0 clamp(55px, 11.1vh, 100px) 0;
   background-color: #f7f6f2;
 }
 
@@ -10767,7 +10767,7 @@ html.is-route-loading #app {
 .contact-main-section {
   width: 100%;
   background-color: #ffffff;
-  padding: 100px 0;
+  padding: clamp(55px, 11.1vh, 100px) 0;
 }
 
 .contact-main-inner {
@@ -11070,7 +11070,7 @@ html.is-route-loading #app {
   z-index: 2;
   width: 100%;
   max-width: 960px;
-  padding: 70px 32px;
+  padding: clamp(38px, 7.8vh, 70px) 32px;
   margin: 0 auto;
   box-sizing: border-box;
 }
@@ -11095,7 +11095,7 @@ html.is-route-loading #app {
 .contact-directions-section {
   width: 100%;
   background-color: #f2f2f2;
-  padding: 100px 0;
+  padding: clamp(55px, 11.1vh, 100px) 0;
 }
 
 .contact-directions-inner {
@@ -11189,7 +11189,7 @@ html.is-route-loading #app {
 .contact-map-section {
   width: 100%;
   background-color: #ffffff;
-  padding: 90px 0;
+  padding: clamp(50px, 10.0vh, 90px) 0;
 }
 
 .contact-map-inner {
@@ -11668,7 +11668,7 @@ html.is-route-loading #app {
 
 .news-main-section {
   width: 100%;
-  padding: 130px 0 130px 0;
+  padding: clamp(72px, 14.4vh, 130px) 0 clamp(72px, 14.4vh, 130px) 0;
   background-color: #fcfbf9;
 }
 
@@ -12248,7 +12248,7 @@ input:checked + .cookie-slider:before {
 /* STYLY PRO LEGAL STRÁNKY (GDPR & COOKIES — 1:1 SHODA S AKCEMI / AKTUALITAMI) */
 .legal-page-content-section {
   width: 100%;
-  padding: 80px 0 110px 0;
+  padding: clamp(44px, 8.9vh, 80px) 0 clamp(61px, 12.2vh, 110px) 0;
   background-color: #f2f2f2;
   color: #1c1c19;
   font-family: 'Outfit', sans-serif;
@@ -13095,6 +13095,14 @@ input:checked + .cookie-slider:before {
   }
 }
 
+@media (min-width: 2200px) {
+  .btn-add-review {
+    height: 52px;
+    padding: 0 36px;
+    font-size: 19.5px;
+  }
+}
+
 /* REVIEW MODAL OVERLAY & CARD */
 .review-modal-overlay {
   position: fixed;
@@ -13216,5 +13224,130 @@ input:checked + .cookie-slider:before {
   justify-content: flex-end;
   gap: 12px;
 }
+
+@keyframes review-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===================================================================
+   NÍZKÉ OBRAZOVKY — hero nesmí být vyšší než okno prohlížeče
+   Příčina: min-height v pixelech přebíjel výšku v jednotkách vh.
+   =================================================================== */
+@media (max-height: 820px) {
+  .hero-section,
+  .rooms-hero-section,
+  .contact-hero-section,
+  .activities-hero-section,
+  .dining-hero-section,
+  .news-hero-section,
+  .room-detail-hero {
+    height: 86vh !important;
+    height: 86svh !important;
+    min-height: 0 !important;
+    max-height: none !important;
+  }
+
+  .booking-hero-section {
+    height: 46vh !important;
+    height: 46svh !important;
+    min-height: 0 !important;
+    max-height: none !important;
+  }
+
+  .hero-title,
+  .room-detail-hero-title { font-size: clamp(26px, 5.4vh, 44px) !important; }
+  .hero-subtitle,
+  .room-detail-hero-subtitle { font-size: clamp(13.5px, 2.1vh, 17px) !important; }
+  .hero-inner { padding-top: 0 !important; padding-bottom: 0 !important; }
+  .scroll-down-btn { margin-top: 10px !important; transform: none !important; }
+
+  /* Obsah hero se na nízkých obrazovkách vysází flexboxem,
+     aby nemohl přetéct ven ze sekce */
+  .hero-section .hero-inner,
+  .rooms-hero-section .hero-inner,
+  .room-detail-hero .hero-inner {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 16px !important;
+    padding: 130px 24px 74px 24px !important;
+  }
+
+  .hero-section .hero-title,
+  .hero-section .hero-subtitle,
+  .hero-section .hero-buttons,
+  .rooms-hero-section .rooms-hero-subtitle,
+  .room-detail-hero .room-detail-hero-title,
+  .room-detail-hero .room-detail-hero-subtitle {
+    position: static !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+    text-align: center !important;
+    width: 100% !important;
+  }
+
+  .hero-section .hero-buttons {
+    display: flex !important;
+    justify-content: center !important;
+  }
+}
+
+@media (max-height: 620px) {
+  .hero-section,
+  .rooms-hero-section,
+  .contact-hero-section,
+  .activities-hero-section,
+  .dining-hero-section,
+  .news-hero-section,
+  .room-detail-hero {
+    height: 92vh !important;
+    height: 92svh !important;
+  }
+  .hero-title,
+  .room-detail-hero-title { font-size: clamp(22px, 5vh, 32px) !important; }
+  .booking-hero-section { height: 38vh !important; height: 38svh !important; }
+}
+
+/* ===================================================================
+   NOTEBOOKY 1029–1500px — paddingy musí reagovat i na VÝŠKU okna.
+   Funkce min() přidává strop podle výšky. Nad ~900px výšky se
+   nezmění nic, pod ní se padding plynule zmenšuje.
+   =================================================================== */
+@media (min-width: 1029px) and (max-width: 1500px) {
+  .about-section,
+  .rooms-section,
+  .services-section,
+  .features-section {
+    padding-top: min(clamp(120px, 8.5vw, 160px), 13.4vh);
+    padding-bottom: min(clamp(120px, 8.5vw, 160px), 13.4vh);
+  }
+  .promo-banner {
+    padding-top: min(clamp(90px, 7vw, 130px), 10.1vh);
+    padding-bottom: min(clamp(90px, 7vw, 130px), 10.1vh);
+  }
+  .reviews-section {
+    padding-top: min(clamp(50px, 4.5vw, 70px), 5.6vh);
+    padding-bottom: min(clamp(100px, 8vw, 140px), 11.2vh);
+  }
+  .surroundings-section {
+    padding-bottom: min(clamp(155px, 11vw, 195px), 17.3vh) !important;
+  }
+  .site-footer {
+    padding-top: min(clamp(70px, 6vw, 85px), 7.8vh);
+  }
+  /* .about-inner má min-height: clamp(730px, 63vw, 900px) — také
+     počítanou jen ze šířky. Na nízkém okně to sekci zbytečně natahuje. */
+  .about-inner {
+    min-height: min(clamp(730px, 63vw, 900px), 100vh) !important;
+  }
+}
+
 
 

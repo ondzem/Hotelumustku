@@ -1736,7 +1736,13 @@ export class AdminDashboard {
   }
 
   renderReviewsModalMarkup(pendingCount, approvedCount) {
-    const list = (this.reviews || []).filter(r => r.status === (this.reviewsTab || 'pending'));
+    const activeTab = this.reviewsTab || 'pending_approval';
+    const list = (this.reviews || []).filter(r => {
+      if (activeTab === 'pending' || activeTab === 'pending_approval') {
+        return r.status === 'pending_approval' || r.status === 'pending';
+      }
+      return r.status === activeTab;
+    });
 
     return `
       <div class="admin-modal-overlay admin-modal-overlay-block admin-modal-overlay-reviews">
@@ -1751,10 +1757,10 @@ export class AdminDashboard {
 
           <!-- TLAČÍTKA TABŮ -->
           <div style="display: flex; gap: 10px; border-bottom: 1px solid #e8e7de; margin-bottom: 20px; padding-bottom: 10px;">
-            <button type="button" class="review-tab-btn ${this.reviewsTab === 'pending' ? 'active' : ''}" data-tab="pending" style="background: ${this.reviewsTab === 'pending' ? '#697947' : '#f2f2ee'}; color: ${this.reviewsTab === 'pending' ? '#ffffff' : '#333330'}; border: none; padding: 8px 16px; border-radius: 4px; font-size: 13.5px; font-weight: 700; cursor: pointer;">
+            <button type="button" class="review-tab-btn ${activeTab === 'pending_approval' || activeTab === 'pending' ? 'active' : ''}" data-tab="pending_approval" style="background: ${activeTab === 'pending_approval' || activeTab === 'pending' ? '#697947' : '#f2f2ee'}; color: ${activeTab === 'pending_approval' || activeTab === 'pending' ? '#ffffff' : '#333330'}; border: none; padding: 8px 16px; border-radius: 4px; font-size: 13.5px; font-weight: 700; cursor: pointer;">
               Ke schválení ${pendingCount > 0 ? `<span style="background: #e67e22; color: #ffffff; border-radius: 99px; padding: 1px 7px; font-size: 11px; margin-left: 6px;">${pendingCount}</span>` : ''}
             </button>
-            <button type="button" class="review-tab-btn ${this.reviewsTab === 'approved' ? 'active' : ''}" data-tab="approved" style="background: ${this.reviewsTab === 'approved' ? '#697947' : '#f2f2ee'}; color: ${this.reviewsTab === 'approved' ? '#ffffff' : '#333330'}; border: none; padding: 8px 16px; border-radius: 4px; font-size: 13.5px; font-weight: 700; cursor: pointer;">
+            <button type="button" class="review-tab-btn ${activeTab === 'approved' ? 'active' : ''}" data-tab="approved" style="background: ${activeTab === 'approved' ? '#697947' : '#f2f2ee'}; color: ${activeTab === 'approved' ? '#ffffff' : '#333330'}; border: none; padding: 8px 16px; border-radius: 4px; font-size: 13.5px; font-weight: 700; cursor: pointer;">
               Schválené na webu (${approvedCount})
             </button>
           </div>
@@ -1763,7 +1769,7 @@ export class AdminDashboard {
           <div style="max-height: 480px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; padding-right: 4px;">
             ${list.length === 0 ? `
               <div style="text-align: center; padding: 32px 16px; color: #777; font-size: 14px; background: #fafaf7; border-radius: 6px; border: 1px dashed #ddd;">
-                ${this.reviewsTab === 'pending' ? '✨ V současnosti nemáte žádné nové recenze ke schválení.' : 'Zatím nebyly schváleny žádné uživatelské recenze.'}
+                ${activeTab === 'pending_approval' || activeTab === 'pending' ? '✨ V současnosti nemáte žádné nové recenze ke schválení.' : 'Zatím nebyly schváleny žádné uživatelské recenze.'}
               </div>
             ` : list.map(r => `
               <div style="background: #ffffff; border: 1px solid #e8e7de; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
@@ -1775,10 +1781,7 @@ export class AdminDashboard {
                     </span>
                   </div>
                   <div style="display: flex; align-items: center; gap: 10px;">
-                    <span style="color: #f39c12; font-size: 15px; letter-spacing: 2px;">
-                      ${'★'.repeat(r.rating || 5)}${'☆'.repeat(5 - (r.rating || 5))}
-                    </span>
-                    <span style="font-size: 12px; color: #888880;">${r.date || ''}</span>
+                    <span style="font-size: 12.5px; color: #888880;">${r.date || ''}</span>
                   </div>
                 </div>
 
@@ -1787,7 +1790,7 @@ export class AdminDashboard {
                 </p>
 
                 <div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
-                  ${r.status === 'pending_approval' ? `
+                  ${r.status === 'pending_approval' || r.status === 'pending' ? `
                     <button type="button" class="btn-approve-review" data-id="${r.id}" style="background: #27ae60; color: #ffffff; border: none; border-radius: 4px; padding: 7px 16px; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
                       ✓ Schválit a zveřejnit
                     </button>
@@ -2380,7 +2383,8 @@ export class AdminDashboard {
     // ====================================================
     const btnAdminReviews = this.container.querySelector('.btn-admin-reviews');
     if (btnAdminReviews) {
-      btnAdminReviews.addEventListener('click', () => {
+      btnAdminReviews.addEventListener('click', async () => {
+        await this.fetchReviews();
         this.showReviewsModal = true;
         this.render();
       });
