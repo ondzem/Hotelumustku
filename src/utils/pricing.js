@@ -185,10 +185,10 @@ export function calculateReservationPrice({
     const val = Number(discountObj.discount_value) || 0;
     if (discountObj.discount_type === 'percent' || val <= 100) {
       discountAmount = Math.round(accommodationPrice * (val / 100));
-      discountLabel = `Sleva na ubytování (${discountObj.code} -${val} %)`;
+      discountLabel = `Sleva na pokoj (${discountObj.code} -${val} %)`;
     } else {
       discountAmount = Math.min(accommodationPrice, val);
-      discountLabel = `Sleva na ubytování (${discountObj.code} -${formatCzechPrice(val)})`;
+      discountLabel = `Sleva na pokoj (${discountObj.code} -${formatCzechPrice(val)})`;
     }
   }
 

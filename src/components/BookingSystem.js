@@ -359,7 +359,7 @@ export class BookingSystem {
     // Valid code passed all 4 checks!
     this.appliedDiscount = found;
     const isPercent = found.discount_type === 'percent' || Number(found.discount_value) <= 100;
-    this.discountSuccessMsg = `Slevový kód ${found.code} (${isPercent ? `-${found.discount_value} %` : `-${found.discount_value} Kč`} na ubytování) byl úspěšně uplatněn!`;
+    this.discountSuccessMsg = `Slevový kód ${found.code} (${isPercent ? `-${found.discount_value} %` : `-${found.discount_value} Kč`} na pokoj) byl úspěšně uplatněn!`;
     this.discountError = '';
     this.render();
   }
