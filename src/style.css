@@ -13940,3 +13940,32 @@ html.anim-ready [data-anim].is-in {
     margin: 0 8px 16px 0;
   }
 }
+
+/* =====================================================================
+   KARUSEL RECENZÍ — rychlejší náběh karet
+
+   Karty recenzí jsou vedle sebe ve vodorovné pásce, ne pod sebou.
+   Postupné zpoždění podle pořadí v kódu tu nedává smysl: páska má
+   159 karet (47 originálů + klony) a viditelné jsou ty kolem indexu
+   50, takže všechny dostaly stropovou prodlevu 0,96 s a teprve pak
+   se 1,6 s posouvaly. Dohromady přes 2,5 s — a bez kaskády, protože
+   měly prodlevu stejnou.
+
+   Tady tedy žádná prodleva, kratší doba a menší dráha, ať karty
+   naskočí podobně svižně jako nadpis nad nimi.
+   ===================================================================== */
+html.anim-ready .review-card[data-anim] {
+  transition: opacity 0.5s cubic-bezier(0.33, 1, 0.68, 1),
+              transform 0.7s cubic-bezier(0.33, 1, 0.68, 1) !important;
+  /* přebíjí prodlevu, kterou nastavuje motor přímo na prvek */
+  transition-delay: 0s !important;
+}
+
+html.anim-ready .review-card[data-anim="up"] {
+  transform: translateY(26px);
+}
+
+/* musí být až za předchozím pravidlem, jinak by karta zůstala posunutá */
+html.anim-ready .review-card[data-anim].is-in {
+  transform: none;
+}

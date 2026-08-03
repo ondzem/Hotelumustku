@@ -811,6 +811,19 @@ export class BookingSystem {
       return;
     }
 
+    // Pobyt s pejskem vyžaduje upřesnění v poznámce —
+    // recepce podle toho pobyt schvaluje.
+    if (this.state.hasDog) {
+      const poznamkaEl = this.container.querySelector('#guest-note');
+      const poznamka = (poznamkaEl ? poznamkaEl.value : this.state.guestNote || '').trim();
+
+      if (poznamka.length < 5) {
+        this.showFieldError('guest-note',
+          'Uveďte prosím do poznámky rasu a velikost pejska. Bez toho nemůže recepce pobyt se psem schválit.');
+        return;
+      }
+    }
+
     for (let i = 1; i < this.state.guests.length; i++) {
       const nameEl = this.container.querySelector(`#guest-${i}-name`);
       if (nameEl && nameEl.value) this.state.guests[i].name = nameEl.value.trim();
@@ -2023,14 +2036,26 @@ export class BookingSystem {
 
                 <div class="form-section-divider" style="margin: 24px 0;"></div>
 
-                <div class="form-field">
-                  <label for="guest-note" class="form-label">Poznámka / Speciální přání pro celý pobyt <span class="optional-tag">(Volitelné / Nepovinné)</span></label>
+                <div class="form-field ${this.state.fieldErrors['guest-note'] ? 'has-error' : ''}">
+                  <label for="guest-note" class="form-label">
+                    Poznámka / Speciální přání pro celý pobyt
+                    ${this.state.hasDog
+                      ? '<span class="required-badge">* Povinné</span>'
+                      : '<span class="optional-tag">(Volitelné / Nepovinné)</span>'}
+                  </label>
                   ${this.state.hasDog ? `
                     <div style="background: #fff8e1; border: 1px solid #ffe082; padding: 10px 14px; border-radius: 2px; margin-bottom: 10px; font-size: 13.5px; color: #5d4037; font-weight: 600; display: flex; align-items: center; gap: 8px;">
                       <span>🐶</span> <span><strong>Pobyt s pejskem:</strong> Napište nám prosím do poznámky rasu a velikost pejska pro schválení recepcí.</span>
                     </div>
                   ` : ''}
-                  <textarea id="guest-note" class="form-textarea" rows="3" placeholder="${this.state.hasDog ? 'Dopňte prosím rasu a velikost pejska, případně předpokládaný čas příjezdu...' : 'Předpokládaný čas příjezdu, dieta či jiná přání...'}">${this.state.guestNote}</textarea>
+                  <textarea id="guest-note" class="form-textarea" rows="3" placeholder="${this.state.hasDog ? 'Doplňte prosím rasu a velikost pejska, případně předpokládaný čas příjezdu...' : 'Předpokládaný čas příjezdu, dieta či jiná přání...'}">${this.state.guestNote || ''}</textarea>
+                  ${this.state.fieldErrors['guest-note'] ? `
+                    <div class="field-error-popover">
+                      <span class="popover-arrow"></span>
+                      <span class="popover-icon">⚠️</span>
+                      <span>${this.state.fieldErrors['guest-note']}</span>
+                    </div>
+                  ` : ''}
                 </div>
               </div>
             </div>
@@ -2643,6 +2668,22 @@ export class BookingSystem {
           }
         });
       });
+
+      const noteInput = this.container.querySelector('#guest-note');
+      if (noteInput) {
+        noteInput.addEventListener('input', (e) => {
+          this.state.guestNote = e.target.value;
+          if (this.state.fieldErrors && this.state.fieldErrors['guest-note']) {
+            delete this.state.fieldErrors['guest-note'];
+            const errField = noteInput.closest('.form-field');
+            if (errField) {
+              errField.classList.remove('has-error');
+              const popover = errField.querySelector('.field-error-popover');
+              if (popover) popover.remove();
+            }
+          }
+        });
+      }
 
       this.setupAddressAutocomplete();
     } else if (this.currentStep === 3) {
