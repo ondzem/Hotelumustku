@@ -4796,12 +4796,14 @@ const getContactPageHTML = () => `
 const initContactPageInteractivity = () => {
   const currentHash = window.location.hash.toLowerCase();
   if (currentHash === '#form-sekce' || currentHash === '#napiste-nam' || currentHash === '#kontakt-form' || currentHash === '#poptavka') {
-    setTimeout(() => {
+    requestAnimationFrame(() => {
       const formSec = document.getElementById('form-sekce') || document.getElementById('contact-page-form');
-      if (formSec) {
-        formSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, 120);
+      if (!formSec) return;
+      const hlavicka = document.querySelector('.site-header');
+      const odstup = hlavicka ? hlavicka.offsetHeight + 12 : 100;
+      const y = formSec.getBoundingClientRect().top + window.pageYOffset - odstup;
+      window.scrollTo({ top: Math.max(0, y), behavior: 'auto' });
+    });
   }
 
   const heroBtn = document.getElementById('btn-goto-contact-form');
@@ -4810,9 +4812,11 @@ const initContactPageInteractivity = () => {
       e.preventDefault();
       e.stopPropagation();
       const formSec = document.getElementById('form-sekce') || document.getElementById('contact-page-form');
-      if (formSec) {
-        formSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
+      if (!formSec) return;
+      const hlavicka = document.querySelector('.site-header');
+      const odstup = hlavicka ? hlavicka.offsetHeight + 12 : 100;
+      const y = formSec.getBoundingClientRect().top + window.pageYOffset - odstup;
+      window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
     });
   }
 
@@ -5928,7 +5932,8 @@ const route = (isInitial = false) => {
   // Přesun na vrchol při běžné navigaci na NOVOU stránku nebo na kontakt / aktuality
   const isSectionHashOnDining = pageKey === 'dining' && ['#snidane', '#vecere', '#krb-restaurace', '#teraska', '#grilovani', '#oslavy-akce'].includes(cleanHash);
   const isContactFormHash = pageKey === 'contact' && ['#form-sekce', '#napiste-nam', '#kontakt-form', '#poptavka'].includes(cleanHash);
-  if (!isContactFormHash && (pageKey === 'booking' || pageKey === 'contact' || pageKey === 'news' || (!isInitial && isNewPage && !window.pendingAutoOpenRoom && hash !== '#pokoje-nabidka' && !isSectionHashOnDining))) {
+  const isActivitiesSectionHash = pageKey === 'activities' && ['#aktivity-v-hotelu', '#aktivity-v-okoli'].includes(cleanHash);
+  if (!isContactFormHash && !isActivitiesSectionHash && (pageKey === 'booking' || pageKey === 'contact' || pageKey === 'news' || (!isInitial && isNewPage && !window.pendingAutoOpenRoom && hash !== '#pokoje-nabidka' && !isSectionHashOnDining))) {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
     document.documentElement.scrollTop = 0;
@@ -5942,36 +5947,36 @@ const route = (isInitial = false) => {
   // Automatické odskrolování na sekci Nabídka pokojů při přechodu z tlačítka Nabídka pokojů
   if (pageKey === 'rooms' && hash === '#pokoje-nabidka') {
     requestAnimationFrame(() => {
-      setTimeout(() => {
-        const roomsSec = document.querySelector('.rooms-list-section');
-        if (roomsSec) {
-          roomsSec.scrollIntoView({ behavior: 'smooth' });
-        }
-      }, 100);
+      const roomsSec = document.querySelector('.rooms-list-section');
+      if (!roomsSec) return;
+      const hlavicka = document.querySelector('.site-header');
+      const odstup = hlavicka ? hlavicka.offsetHeight + 12 : 100;
+      const y = roomsSec.getBoundingClientRect().top + window.pageYOffset - odstup;
+      window.scrollTo({ top: Math.max(0, y), behavior: 'auto' });
     });
   }
 
   // Automatické odskrolování na podsekci na stránce Stravování
   if (isSectionHashOnDining) {
     requestAnimationFrame(() => {
-      setTimeout(() => {
-        const targetEl = document.querySelector(cleanHash);
-        if (targetEl) {
-          targetEl.scrollIntoView({ behavior: 'smooth' });
-        }
-      }, 100);
+      const cil = document.querySelector(cleanHash);
+      if (!cil) return;
+      const hlavicka = document.querySelector('.site-header');
+      const odstup = hlavicka ? hlavicka.offsetHeight + 12 : 100;
+      const y = cil.getBoundingClientRect().top + window.pageYOffset - odstup;
+      window.scrollTo({ top: Math.max(0, y), behavior: 'auto' });
     });
   }
 
   // Automatické odskrolování na sekce na stránce Aktivity (#aktivity-v-hotelu / #aktivity-v-okoli)
-  if (pageKey === 'activities' && ['#aktivity-v-hotelu', '#aktivity-v-okoli'].includes(cleanHash)) {
+  if (isActivitiesSectionHash) {
     requestAnimationFrame(() => {
-      setTimeout(() => {
-        const targetEl = document.querySelector(cleanHash);
-        if (targetEl) {
-          targetEl.scrollIntoView({ behavior: 'smooth' });
-        }
-      }, 100);
+      const cil = document.querySelector(cleanHash);
+      if (!cil) return;
+      const hlavicka = document.querySelector('.site-header');
+      const odstup = hlavicka ? hlavicka.offsetHeight + 12 : 100;
+      const y = cil.getBoundingClientRect().top + window.pageYOffset - odstup;
+      window.scrollTo({ top: Math.max(0, y), behavior: 'auto' });
     });
   }
 
