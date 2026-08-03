@@ -2348,12 +2348,19 @@ const initInteractivity = () => {
     };
   }
 
-  if (reviewForm) {
+  if (reviewForm && !reviewForm.dataset.submitInit) {
+    reviewForm.dataset.submitInit = '1';
     reviewForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (reviewForm.dataset.isSubmitting === 'true') return;
+      reviewForm.dataset.isSubmitting = 'true';
+
       const alertArea = document.getElementById('review-modal-alert-area');
       const hpField = document.getElementById('hp-review-field');
-      if (hpField && hpField.value) return; // Anti-spam
+      if (hpField && hpField.value) {
+        reviewForm.dataset.isSubmitting = 'false';
+        return; // Anti-spam
+      }
 
       const nameInput = document.getElementById('review-fullname-input');
       const textInput = document.getElementById('review-text-input');
@@ -2369,6 +2376,7 @@ const initInteractivity = () => {
             </div>
           `;
         }
+        reviewForm.dataset.isSubmitting = 'false';
         return;
       }
 
@@ -2380,6 +2388,7 @@ const initInteractivity = () => {
             </div>
           `;
         }
+        reviewForm.dataset.isSubmitting = 'false';
         return;
       }
 
@@ -2391,6 +2400,7 @@ const initInteractivity = () => {
             </div>
           `;
         }
+        reviewForm.dataset.isSubmitting = 'false';
         return;
       }
 
@@ -2461,6 +2471,7 @@ const initInteractivity = () => {
       }
 
       setTimeout(() => {
+        reviewForm.dataset.isSubmitting = 'false';
         toggleReviewModal(false);
       }, 3500);
     });
@@ -4829,7 +4840,9 @@ const initContactPageInteractivity = () => {
       });
     }
 
-    contactForm.addEventListener('submit', async (e) => {
+    if (contactForm && !contactForm.dataset.submitInit) {
+      contactForm.dataset.submitInit = '1';
+      contactForm.addEventListener('submit', async (e) => {
       const submitBtn = contactForm.querySelector('button[type="submit"]');
       const statusEl = document.getElementById('contact-form-status');
 
@@ -4987,6 +5000,7 @@ const initContactPageInteractivity = () => {
       }
     });
   }
+}
 
   initContactMap();
 };
