@@ -5991,26 +5991,31 @@ h3 {
   line-height: 1.4 !important;
 }
 
-.room-detail-hero-btn {
+.room-detail-hero-btn,
+.btn-contact-hero-btn,
+.btn-news-hero-btn {
   height: 45px;
   padding: 0 28px;
   font-size: 17px;
   font-weight: 500;
   border-radius: 1px;
-  background-color: #ffffff;
-  color: #111111;
-  border: none;
+  background-color: #ece8dd !important;
+  color: #1c1c19 !important;
+  border: none !important;
   cursor: pointer;
   white-space: nowrap;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   transition: background-color 0.2s ease, opacity 0.2s ease;
+  text-decoration: none;
 }
 
-.room-detail-hero-btn:hover {
-  background-color: #e5e0da !important;
-  color: #111111 !important;
+.room-detail-hero-btn:hover,
+.btn-contact-hero-btn:hover,
+.btn-news-hero-btn:hover {
+  background-color: #dedad0 !important;
+  color: #1c1c19 !important;
 }
 
 /* 2. Sekce Detaily Pokojů (Specs Grid) - 1:1 Pixel Perfect Desktop */
@@ -8881,7 +8886,9 @@ html.is-route-loading #app {
   .room-detail-hero-btn,
   .btn-dining-read-more,
   .btn-dining-not-guest,
-  .btn-events-read-more {
+  .btn-events-read-more,
+  .btn-contact-hero-btn,
+  .btn-news-hero-btn {
     position: relative !important;
     top: auto !important;
     left: auto !important;
@@ -8904,7 +8911,9 @@ html.is-route-loading #app {
   .room-detail-hero-btn:hover,
   .btn-dining-read-more:hover,
   .btn-dining-not-guest:hover,
-  .btn-events-read-more:hover {
+  .btn-events-read-more:hover,
+  .btn-contact-hero-btn:hover,
+  .btn-news-hero-btn:hover {
     background-color: #dcd7c5 !important;
     color: #1c1c19 !important;
     border: none !important;
@@ -9185,7 +9194,9 @@ html.is-route-loading #app {
   .room-detail-hero-btn,
   .btn-dining-read-more,
   .btn-dining-not-guest,
-  .btn-events-read-more {
+  .btn-events-read-more,
+  .btn-contact-hero-btn,
+  .btn-news-hero-btn {
     position: relative !important;
     top: auto !important;
     left: auto !important;
@@ -9208,7 +9219,9 @@ html.is-route-loading #app {
   .room-detail-hero-btn:hover,
   .btn-dining-read-more:hover,
   .btn-dining-not-guest:hover,
-  .btn-events-read-more:hover {
+  .btn-events-read-more:hover,
+  .btn-contact-hero-btn:hover,
+  .btn-news-hero-btn:hover {
     background-color: #dcd7c5 !important;
     color: #1c1c19 !important;
     border: none !important;
