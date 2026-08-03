@@ -440,6 +440,29 @@ export class BookingSystem {
     });
   }
 
+  // Kolik prodejných pokojů je v daný den obsazeno.
+  // Vypnuté pokoje se nepočítají ani do jednoho čísla.
+  getDayOccupancy(dateStr) {
+    const prodejne = (this.roomsList || []).filter((r) => {
+      const vypnuty = Boolean(
+        r.isDisabled ||
+        (this.disabledRooms || []).some(
+          (d) => d.room_id === r.id && d.is_disabled
+        )
+      );
+      return !vypnuty;
+    });
+
+    const celkem = prodejne.length;
+    if (celkem === 0) return { obsazeno: 0, celkem: 0 };
+
+    const obsazeno = prodejne.filter(
+      (r) => this.isDateOccupied(dateStr, r.id)
+    ).length;
+
+    return { obsazeno, celkem };
+  }
+
   checkReservationOverlap(roomId, dateFrom, dateTo) {
     if (!dateFrom || !dateTo) return null;
     if (this.blockedDates && this.blockedDates.length > 0) {
@@ -1063,12 +1086,10 @@ export class BookingSystem {
     for (let day = 1; day <= daysInMonth; day++) {
       const dayStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       const isPast = dayStr < todayStr;
-      const isOccupied = this.isDateOccupied(dayStr, roomIdForCal);
 
-      const isCheckoutTurnover = !isOccupied && this.activeReservations && this.activeReservations.some(r => {
-        if (r.room_id !== roomIdForCal || (r.status && (r.status.startsWith('cancelled') || r.status === 'stornováno'))) return false;
-        return r.date_to === dayStr;
-      });
+      const { obsazeno, celkem } = this.getDayOccupancy(dayStr);
+      const jePlne = celkem > 0 && obsazeno >= celkem;
+      const jeCastecne = obsazeno > 0 && obsazeno < celkem;
 
       const isFrom = dayStr === effectiveFrom;
       const isTo = dayStr === effectiveTo;
@@ -1076,24 +1097,23 @@ export class BookingSystem {
 
       let dayClass = 'cal-day';
       if (isPast) dayClass += ' is-disabled';
-      if (isOccupied) dayClass += ' is-occupied';
-      if (isCheckoutTurnover) dayClass += ' is-turnover-day';
+      if (jePlne) dayClass += ' is-full';
+      else if (jeCastecne) dayClass += ' is-partial';
       if (isFrom) dayClass += ' is-from is-selected';
       if (isTo) dayClass += ' is-to is-selected';
       if (isInRange) dayClass += ' in-range';
 
-      const isDisabled = isPast;
-      let tooltipText;
-      if (isOccupied) {
-        tooltipText = 'Tento den je obsazený';
-      } else if (isCheckoutTurnover && isFrom) {
-        tooltipText = 'Váš příjezd — předchozí hosté odjíždějí do 10:00, můžete se ubytovat od 15:00';
-      } else if (isCheckoutTurnover) {
-        tooltipText = 'Předchozí hosté odjíždějí do 10:00 — můžete přijet od 15:00';
-      } else if (isTo) {
-        tooltipText = 'Váš odjezd — pokoj opouštíte do 10:00';
+      const isDisabled = isPast || jePlne;
+
+      let tooltipText = '';
+      if (jeCastecne) {
+        tooltipText = `Obsazeno ${obsazeno} z ${celkem} pokojů`;
+      } else if (jePlne) {
+        tooltipText = 'Tento den je hotel plně obsazený';
       } else if (isFrom) {
         tooltipText = 'Váš příjezd — ubytování od 15:00';
+      } else if (isTo) {
+        tooltipText = 'Váš odjezd — pokoj opouštíte do 10:00';
       } else {
         tooltipText = 'Volný den, příjezd možný od 15:00';
       }
@@ -1147,15 +1167,15 @@ export class BookingSystem {
           <div class="cal-modal-footer" style="padding: 16px; border-top: 1px solid #E7E5DC; display: flex; flex-direction: column; gap: 12px;">
             <div class="cal-legend" style="display:flex; flex-wrap:wrap; gap:14px; padding:4px 0 10px 0; border-bottom:1px solid #E7E5DC; margin-bottom:4px;">
               <span class="cal-legend-item">
-                <i class="cal-legend-box" style="background:#fef5e7; border:1px solid #e67e22;"></i>
+                <i class="cal-legend-box" style="background:#fbe3e0;"></i>
                 Obsazeno
               </span>
               <span class="cal-legend-item">
-                <i class="cal-legend-box" style="background:linear-gradient(to bottom right, #fef5e7 0 50%, #ffffff 50% 100%); border-style:solid; border-width:1px; border-top-color:#e67e22; border-left-color:#e67e22; border-right-color:#ddd9cf; border-bottom-color:#ddd9cf;"></i>
-                Odjezd do 10:00, příjezd od 15:00
+                <i class="cal-legend-box" style="background:#fdf3d7;"></i>
+                Částečně obsazeno
               </span>
               <span class="cal-legend-item">
-                <i class="cal-legend-box" style="background:#697947;"></i>
+                <i class="cal-legend-box" style="background:#eef3e6;"></i>
                 Váš termín
               </span>
             </div>
@@ -1416,7 +1436,7 @@ export class BookingSystem {
                             ${isAvailableSelected ? 'Volno' : (isDisabledSelected ? 'Nedostupné' : 'Obsazeno')}
                           </span>
                         </div>
-                        <span class="trigger-price-text">${formatCzechPrice(pricing.totalPrice)} za ${nights} ${nights === 1 ? 'noc' : (nights < 5 ? 'noci' : 'nocí')}</span>
+                        <span class="trigger-price-text">${isDisabledSelected ? '' : `${formatCzechPrice(pricing.totalPrice)} za ${nights} ${nights === 1 ? 'noc' : (nights < 5 ? 'noci' : 'nocí')}`}</span>
                       </div>
                     </div>
                   ` : `
@@ -1452,7 +1472,7 @@ export class BookingSystem {
                               <span class="option-floor-tag">${r.floor === 'prizemi' ? 'Přízemí' : '1. Patro'}</span>
                             </div>
                             <div class="option-sub-row">
-                              <span class="option-price-tag">${formatCzechPrice(p.totalPrice)} <small>/ ${nights} ${nights === 1 ? 'noc' : (nights < 5 ? 'noci' : 'nocí')}</small></span>
+                              ${item.isDisabled ? '' : `<span class="option-price-tag">${formatCzechPrice(p.totalPrice)} <small>/ ${nights} ${nights === 1 ? 'noc' : (nights < 5 ? 'noci' : 'nocí')}</small></span>`}
                             </div>
                           </div>
 
@@ -2740,6 +2760,31 @@ export class BookingSystem {
             const end = new Date(this.state.tempDateTo);
             const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
             if (diffDays < 2) return;
+
+            // Kontrola, zda v rozsahu [tempDateFrom, tempDateTo) není plně obsazený den
+            let curr = new Date(this.state.tempDateFrom + 'T00:00:00');
+            const stopDate = new Date(this.state.tempDateTo + 'T00:00:00');
+            let maPlnyDen = false;
+
+            while (curr < stopDate) {
+              const y = curr.getFullYear();
+              const m = String(curr.getMonth() + 1).padStart(2, '0');
+              const d = String(curr.getDate()).padStart(2, '0');
+              const dStr = `${y}-${m}-${d}`;
+
+              const { obsazeno, celkem } = this.getDayOccupancy(dStr);
+              if (celkem > 0 && obsazeno >= celkem) {
+                maPlnyDen = true;
+                break;
+              }
+              curr.setDate(curr.getDate() + 1);
+            }
+
+            if (maPlnyDen) {
+              alert('V termínu je den, kdy je hotel plně obsazený. Vyberte prosím jiný termín.');
+              return;
+            }
+
             this.state.dateFrom = this.state.tempDateFrom;
             this.state.dateTo = this.state.tempDateTo;
           } else if (!this.state.tempDateFrom && !this.state.tempDateTo) {

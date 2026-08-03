@@ -3424,6 +3424,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .cal-day {
   height: 48px;
+  box-sizing: border-box;
   border: none;
   background: none;
   font-family: 'Outfit', sans-serif;
@@ -3443,15 +3444,57 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   color: #697947;
 }
 
+/* Obsazeno — všechny prodejné pokoje zabrané */
+.cal-day.is-full {
+  background-color: #fbe3e0 !important;
+  color: #b03a2e !important;
+  text-decoration: line-through !important;
+  cursor: not-allowed !important;
+  border: 1px solid #fbe3e0 !important;
+}
+.cal-day.is-full:hover {
+  background-color: #fbe3e0 !important;
+  color: #b03a2e !important;
+}
+
+/* Částečně obsazeno — něco volného zbývá, jde kliknout */
+.cal-day.is-partial {
+  background-color: #fdf3d7 !important;
+  color: #8a6d1f !important;
+  cursor: pointer !important;
+  border: 1px solid #fdf3d7 !important;
+}
+.cal-day.is-partial:hover {
+  background-color: #f9e9bd !important;
+}
+
 .cal-day.is-selected {
-  background-color: #697947 !important;
-  color: #ffffff !important;
+  background-color: #eef3e6 !important;
+  color: #1c1c19 !important;
   font-weight: 700 !important;
+  border: 1px solid #eef3e6 !important;
 }
 
 .cal-day.in-range {
-  background-color: #eef3e6;
-  color: #697947;
+  background-color: #eef3e6 !important;
+  color: #697947 !important;
+  border: 1px solid #eef3e6 !important;
+}
+
+/* Váš den PŘÍJEZDU — dopoledne volno, od 15:00 jste tu vy */
+.cal-day.is-from {
+  position: relative;
+  background: linear-gradient(to bottom right,
+              #ffffff 0 50%,
+              #eef3e6 50% 100%) !important;
+  color: #1c1c19 !important;
+  border-style: solid !important;
+  border-width: 1px !important;
+  border-top-color: #ddd9cf !important;
+  border-left-color: #ddd9cf !important;
+  border-right-color: #eef3e6 !important;
+  border-bottom-color: #eef3e6 !important;
+  text-shadow: none !important;
 }
 
 .cal-day.is-disabled {
@@ -3478,12 +3521,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   position: relative;
   background: linear-gradient(to bottom right, #fef5e7 0 50%, #ffffff 50% 100%) !important;
   color: #1c1c19 !important;
-  border-style: solid !important;
-  border-width: 1px !important;
-  border-top-color: #e67e22 !important;
-  border-left-color: #e67e22 !important;
-  border-right-color: #ddd9cf !important;
-  border-bottom-color: #ddd9cf !important;
   cursor: pointer !important;
   text-shadow: none !important;
 }
@@ -3491,26 +3528,30 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 /* Přestupní den vybraný jako PŘÍJEZDU — dopoledne obsazeno, odpoledne váš */
 .cal-day.is-turnover-day.is-from {
   position: relative;
-  background: linear-gradient(to bottom right, #fef5e7 0 50%, #697947 50% 100%) !important;
+  background: linear-gradient(to bottom right,
+              #fef5e7 0 50%,
+              #eef3e6 50% 100%) !important;
   color: #1c1c19 !important;
   border-style: solid !important;
   border-width: 1px !important;
-  border-top-color: #e67e22 !important;
-  border-left-color: #e67e22 !important;
-  border-right-color: #697947 !important;
-  border-bottom-color: #697947 !important;
+  border-top-color: #fef5e7 !important;
+  border-left-color: #fef5e7 !important;
+  border-right-color: #eef3e6 !important;
+  border-bottom-color: #eef3e6 !important;
   text-shadow: none !important;
 }
 
 /* Váš den ODJEZDU — dopoledne jste tu vy, odpoledne je volno */
 .cal-day.is-to {
   position: relative;
-  background: linear-gradient(to bottom right, #697947 0 50%, #ffffff 50% 100%) !important;
+  background: linear-gradient(to bottom right,
+              #eef3e6 0 50%,
+              #ffffff 50% 100%) !important;
   color: #1c1c19 !important;
   border-style: solid !important;
   border-width: 1px !important;
-  border-top-color: #697947 !important;
-  border-left-color: #697947 !important;
+  border-top-color: #eef3e6 !important;
+  border-left-color: #eef3e6 !important;
   border-right-color: #ddd9cf !important;
   border-bottom-color: #ddd9cf !important;
   text-shadow: none !important;
@@ -3519,26 +3560,17 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 /* Váš odjezd, který je zároveň přestupní pro dalšího hosta */
 .cal-day.is-to.is-turnover-day {
   position: relative;
-  background: linear-gradient(to bottom right, #697947 0 50%, #ffffff 50% 100%) !important;
+  background: linear-gradient(to bottom right,
+              #eef3e6 0 50%,
+              #ffffff 50% 100%) !important;
   color: #1c1c19 !important;
   border-style: solid !important;
   border-width: 1px !important;
-  border-top-color: #697947 !important;
-  border-left-color: #697947 !important;
+  border-top-color: #eef3e6 !important;
+  border-left-color: #eef3e6 !important;
   border-right-color: #ddd9cf !important;
   border-bottom-color: #ddd9cf !important;
   text-shadow: none !important;
-}
-
-.cal-day.is-turnover-day::after {
-  content: '';
-  position: absolute;
-  top: 3px;
-  right: 3px;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background-color: #2e7d32;
 }
 
 /* Legenda kalendáře */

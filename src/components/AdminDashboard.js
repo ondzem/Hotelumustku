@@ -276,12 +276,19 @@ export class AdminDashboard {
         if (!error && data && data.length > 0) {
           data.forEach(remoteItem => {
             const localItem = priceMap.get(remoteItem.room_id) || {};
+            const localCas = localItem.updated_at ? Date.parse(localItem.updated_at) : 0;
+            const remoteCas = remoteItem.updated_at ? Date.parse(remoteItem.updated_at) : 0;
+
+            // Novější záznam přebíjí starší
+            const mergedItem = remoteCas >= localCas
+              ? { ...localItem, ...remoteItem }
+              : { ...remoteItem, ...localItem };
+
             const merged = {
-              ...localItem,
-              ...remoteItem,
-              weekday_price: Number(remoteItem.weekday_price || localItem.weekday_price || remoteItem.base_price || 830),
-              weekend_price: Number(remoteItem.weekend_price || localItem.weekend_price || remoteItem.base_price || 890),
-              base_price: Number(remoteItem.base_price || localItem.base_price || 830)
+              ...mergedItem,
+              weekday_price: Number(mergedItem.weekday_price || mergedItem.base_price || 830),
+              weekend_price: Number(mergedItem.weekend_price || mergedItem.base_price || 890),
+              base_price: Number(mergedItem.base_price || 830)
             };
             priceMap.set(remoteItem.room_id, merged);
           });
@@ -296,6 +303,7 @@ export class AdminDashboard {
     (this.roomPrices || []).forEach(p => {
       const rm = MOCK_ROOMS.find(r => r.id === p.room_id);
       if (rm) {
+        if (p.room_name) rm.name = p.room_name;
         if (p.weekday_price) rm.weekdayPrice = Number(p.weekday_price);
         if (p.weekend_price) rm.weekendPrice = Number(p.weekend_price);
         if (p.base_price) rm.basePrice = Number(p.base_price);
@@ -317,29 +325,27 @@ export class AdminDashboard {
       saveStoredCustomRoomName({ room_id: roomId, room_name: trimmedName, name: trimmedName });
     }
 
-    if (!isNaN(weekdayNum) && weekdayNum > 0) {
-      const fullPayload = {
-        room_id: roomId,
-        room_name: trimmedName || (rm ? rm.name : ''),
-        base_price: weekdayNum,
-        weekday_price: weekdayNum,
-        weekend_price: weekendNum,
-        updated_at: new Date().toISOString()
-      };
+    const fullPayload = {
+      room_id: roomId,
+      room_name: trimmedName || (rm ? rm.name : ''),
+      base_price: !isNaN(weekdayNum) && weekdayNum > 0 ? weekdayNum : (rm ? rm.basePrice : 830),
+      weekday_price: !isNaN(weekdayNum) && weekdayNum > 0 ? weekdayNum : (rm ? rm.weekdayPrice : 830),
+      weekend_price: !isNaN(weekendNum) && weekendNum > 0 ? weekendNum : (rm ? rm.weekendPrice : 890),
+      updated_at: new Date().toISOString()
+    };
 
-      saveStoredRoomPrice(fullPayload);
-      const existingIdx = (this.roomPrices || []).findIndex(p => p.room_id === roomId);
-      if (existingIdx >= 0) {
-        this.roomPrices[existingIdx] = { ...this.roomPrices[existingIdx], ...fullPayload };
-      } else {
-        this.roomPrices.push(fullPayload);
-      }
+    saveStoredRoomPrice(fullPayload);
+    const existingIdx = (this.roomPrices || []).findIndex(p => p.room_id === roomId);
+    if (existingIdx >= 0) {
+      this.roomPrices[existingIdx] = { ...this.roomPrices[existingIdx], ...fullPayload };
+    } else {
+      this.roomPrices.push(fullPayload);
+    }
 
-      if (rm) {
-        rm.basePrice = weekdayNum;
-        rm.weekdayPrice = weekdayNum;
-        rm.weekendPrice = weekendNum;
-      }
+    if (rm && !isNaN(weekdayNum) && weekdayNum > 0) {
+      rm.basePrice = weekdayNum;
+      rm.weekdayPrice = weekdayNum;
+      rm.weekendPrice = weekendNum;
     }
 
     if (typeof window !== 'undefined') {
@@ -352,23 +358,29 @@ export class AdminDashboard {
     }
 
     const roomName = rm ? rm.name : 'Pokoj';
-    this.showAdminToast(`✅ Název a ceny pro "${roomName}" byly úspěšně uloženy.`);
-    this.render();
+
+    let upsertSuccess = true;
+    let upsertErrMsg = '';
 
     if (isSupabaseConfigured && supabase) {
       try {
-        const validPayload = {
-          room_id: roomId,
-          base_price: !isNaN(weekdayNum) && weekdayNum > 0 ? weekdayNum : (rm ? rm.basePrice : 830),
-          updated_at: new Date().toISOString()
-        };
-        const { error: upsertError } = await supabase.from('room_prices').upsert([validPayload], { onConflict: 'room_id' });
+        const { error: upsertError } = await supabase.from('room_prices').upsert([fullPayload], { onConflict: 'room_id' });
         if (upsertError) {
           console.warn('Upsert room_prices returned error:', upsertError.message);
+          upsertSuccess = false;
+          upsertErrMsg = upsertError.message;
         }
       } catch (err) {
         console.error('Supabase updateRoomNameAndPrice failed:', err);
+        upsertSuccess = false;
+        upsertErrMsg = err.message;
       }
+    }
+
+    if (upsertSuccess) {
+      this.showAdminToast(`✅ Název a ceny pro "${roomName}" byly úspěšně uloženy.`);
+    } else {
+      this.showAdminToast(`⚠️ Uložení do databáze selhalo: ${upsertErrMsg}`);
     }
   }
 
@@ -710,7 +722,8 @@ export class AdminDashboard {
     this.toastTimer = setTimeout(() => {
       this.adminToastMessage = '';
       this.toastExiting = false;
-      this.render();
+      const widget = this.container ? this.container.querySelector('.admin-toast-bottom-widget') : null;
+      if (widget) widget.remove();
     }, 5000);
   }
 

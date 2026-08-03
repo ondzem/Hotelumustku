@@ -53,6 +53,11 @@ export function syncDisabledRoomsToDOM() {
     const isRenovating = ['p1', 'p2', 'p3'].includes(roomId);
     const isDisabled = isRenovating || disabledRooms.some(d => d.room_id === roomId && d.is_disabled);
     const selectBtn = item.querySelector('.btn-room-reserve, .btn-choose-room');
+    const priceWrap = item.querySelector('.room-drawer-price-wrap');
+
+    if (priceWrap) {
+      priceWrap.style.display = isDisabled ? 'none' : '';
+    }
 
     if (selectBtn) {
       if (isDisabled) {
@@ -101,8 +106,8 @@ export function syncDisabledRoomsToDOM() {
 window.syncDisabledRoomsToDOM = syncDisabledRoomsToDOM;
 
 export const ROOM_GALLERIES = {
-  p1: ['/hezky pokoj 1.webp'],
-  p2: ['/hezky pokoj 1.webp'],
+  p1: ['/balkony 1 copy.webp'],
+  p2: ['/balkony 1 copy.webp'],
   p3: ['/balkony 1 copy.webp'],
   pa: [
     '/pokoje/mahagon/1.webp',
@@ -194,6 +199,10 @@ export const ROOM_GALLERIES = {
 export const renderRoomBreakdownItem = (roomId, defaultRoomName, priceType, priceAmount) => {
   const rmObj = MOCK_ROOMS.find(r => r.id === roomId);
   const roomName = (rmObj && rmObj.name) ? rmObj.name : defaultRoomName;
+  const isRenovating = ['p1', 'p2', 'p3'].includes(roomId);
+  const disabledRooms = getStoredDisabledRooms();
+  const isDisabled = isRenovating || (rmObj && rmObj.isDisabled) || disabledRooms.some(d => d.room_id === roomId && d.is_disabled);
+
   const photos = ROOM_GALLERIES[roomId] || ['/hezky pokoj 1.webp'];
   const slidesHtml = photos.map((src, idx) => `
     <div class="room-carousel-slide">
@@ -230,7 +239,7 @@ export const renderRoomBreakdownItem = (roomId, defaultRoomName, priceType, pric
             </div>
 
             <div class="drawer-action-btns">
-              <div class="room-drawer-price-wrap" data-price="${priceType}">
+              <div class="room-drawer-price-wrap" data-price="${priceType}" ${isDisabled ? 'style="display: none;"' : ''}>
                 <div class="price-main-block">
                   <span class="price-amount">${priceAmount} Kč</span>
                   <span class="price-suffix">/ noc</span>
@@ -305,19 +314,23 @@ export function getTopAnnouncementBarHTML() {
 }
 
 const getHeaderHTML = () => `
-  <!-- Hlavička (Navigace a logo) -->
+      <!-- Hlavička (Navigace a logo) -->
   <header class="site-header">
-    <!-- Levá strana: Logo -->
+    <!-- Levá strana: první tři odkazy -->
+    <nav class="header-nav-links header-nav-left">
+      <a href="/ubytovani" class="nav-link">Nabídka pokojů</a>
+      <a href="/stravovani" class="nav-link">Stravování</a>
+      <a href="/okoli" class="nav-link">Aktivity</a>
+    </nav>
+
+    <!-- Střed: logo -->
     <a href="/" class="header-logo">
       <img src="/Logo/white-logo-orez.webp" alt="Hotel u Můstku Logo" loading="eager" fetchpriority="high">
     </a>
 
-    <!-- Pravá strana: Odkazy a Tlačítko Rezervovat pobyt -->
+    <!-- Pravá strana: zbylé odkazy a tlačítko -->
     <div class="header-nav-right">
       <nav class="header-nav-links">
-        <a href="/ubytovani" class="nav-link">Nabídka pokojů</a>
-        <a href="/stravovani" class="nav-link">Stravování</a>
-        <a href="/okoli" class="nav-link">Aktivity</a>
         <a href="/akce" class="nav-link">Skupinové akce</a>
         <a href="/aktuality" class="nav-link" id="nav-link-aktuality">Aktuality</a>
         <a href="/kontakt" class="nav-link">Kontakt</a>
@@ -1720,9 +1733,9 @@ export function setSeasonMode(mode, savePreference = true) {
     }
   }
 
-  // 2. Sekce Zázemí (O nás)
-  const aboutTopImg = document.querySelector('.about-img-top img');
-  const aboutBottomImg = document.querySelector('.about-img-bottom img');
+  // 2. Sekce Zázemí (O nás pouze na úvodní stránce, ať se nepřepisují fotky v sekci Celý hotel na /akce)
+  const aboutTopImg = document.querySelector('#about .about-img-top img');
+  const aboutBottomImg = document.querySelector('#about .about-img-bottom img');
   if (aboutTopImg) {
     aboutTopImg.src = mode === 'winter'
       ? '/Zimni rezim/Zima - prijezdova fotka.webp'
