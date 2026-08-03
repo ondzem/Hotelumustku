@@ -1064,9 +1064,20 @@ export class BookingSystem {
       if (isInRange) dayClass += ' in-range';
 
       const isDisabled = isPast;
-      const tooltipText = isOccupied
-        ? 'V tomto dni probíhá rezervace či uzávěrka'
-        : 'Příjezd možný od 15:00';
+      let tooltipText;
+      if (isOccupied) {
+        tooltipText = 'Tento den je obsazený';
+      } else if (isCheckoutTurnover && isFrom) {
+        tooltipText = 'Váš příjezd — předchozí hosté odjíždějí do 10:00, můžete se ubytovat od 15:00';
+      } else if (isCheckoutTurnover) {
+        tooltipText = 'Předchozí hosté odjíždějí do 10:00 — můžete přijet od 15:00';
+      } else if (isTo) {
+        tooltipText = 'Váš odjezd — pokoj opouštíte do 10:00';
+      } else if (isFrom) {
+        tooltipText = 'Váš příjezd — ubytování od 15:00';
+      } else {
+        tooltipText = 'Volný den, příjezd možný od 15:00';
+      }
 
       daysHtml += `
         <button type="button" class="${dayClass}" data-date="${dayStr}" ${isDisabled ? 'disabled' : ''} title="${tooltipText}">
@@ -1088,24 +1099,21 @@ export class BookingSystem {
         <div class="cal-modal-card">
           <div class="cal-modal-header" style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
             <div style="display: flex; align-items: center; gap: 8px;">
-              <button type="button" class="cal-nav-btn" id="cal-prev-month" aria-label="Předchozí měsíc">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="15 18 9 12 15 6"></polyline>
-                </svg>
-              </button>
-              <h4 class="cal-month-title">${monthNames[month - 1]} ${year}</h4>
-              <button type="button" class="cal-nav-btn" id="cal-next-month" aria-label="Následující měsíc">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="9 18 15 12 9 6"></polyline>
-                </svg>
-              </button>
+              <span class="cal-month-title">${monthNames[month - 1]} ${year}</span>
             </div>
-            
             <div style="display: flex; align-items: center; gap: 8px;">
-              <button type="button" id="cal-reset-btn" class="btn-cal-reset-link" style="font-size: 12.5px; font-weight: 600; color: #888880; background: none; border: none; cursor: pointer; text-decoration: underline; padding: 4px 6px;">
+              <button type="button" class="btn btn-cal-nav cal-nav-btn" id="cal-prev-month" title="Předchozí měsíc">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              </button>
+              <button type="button" class="btn btn-cal-nav cal-nav-btn" id="cal-next-month" title="Následující měsíc">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+              <button type="button" class="btn btn-cal-reset" id="cal-reset-btn" style="font-size: 13px; font-weight: 600; color: #4A5A24; background: none; border: none; cursor: pointer; padding: 4px 8px; margin-left: 4px; text-decoration: underline;">
                 Vynulovat výběr
               </button>
-              <button type="button" class="cal-close-btn" id="cal-close-btn" aria-label="Zavřít">&times;</button>
+              <button type="button" class="btn btn-cal-close cal-close-btn" id="cal-close-btn" title="Zavřít kalendář">
+                &times;
+              </button>
             </div>
           </div>
 
@@ -1118,6 +1126,20 @@ export class BookingSystem {
           </div>
 
           <div class="cal-modal-footer" style="padding: 16px; border-top: 1px solid #E7E5DC; display: flex; flex-direction: column; gap: 12px;">
+            <div class="cal-legend" style="display:flex; flex-wrap:wrap; gap:14px; padding:4px 0 10px 0; border-bottom:1px solid #E7E5DC; margin-bottom:4px;">
+              <span class="cal-legend-item">
+                <i class="cal-legend-box" style="background:#fef5e7; border:1px solid #e67e22;"></i>
+                Obsazeno
+              </span>
+              <span class="cal-legend-item">
+                <i class="cal-legend-box" style="background:linear-gradient(to bottom,#fef5e7 50%,#ffffff 50%); border:1px solid #e67e22;"></i>
+                Odjezd do 10:00, příjezd od 15:00
+              </span>
+              <span class="cal-legend-item">
+                <i class="cal-legend-box" style="background:#697947;"></i>
+                Váš termín
+              </span>
+            </div>
             ${effectiveFrom && effectiveTo ? `
               <div class="cal-range-summary" style="display: flex; flex-direction: column; gap: 2px;">
                 <span class="cal-summary-label" style="font-size: 14px; font-weight: 700; color: #1C1C19;">
