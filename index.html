@@ -349,20 +349,20 @@
   <!-- SEKCE O NÁS / ZÁZEMÍ -->
   <section class="about-section" id="ubytovani">
     <div class="about-inner">
-      <div class="about-content">
-        <h2 class="about-title" id="o-nas">Klid Jizerských hor, do kterého se budete rádi vracet</h2>
-        <div class="about-text">
+      <div class="about-content" data-anim="right">
+        <h2 class="about-title" id="o-nas" data-anim="up">Klid Jizerských hor, do kterého se budete rádi vracet</h2>
+        <div class="about-text" data-anim="up">
           <p>Hotel U Můstků najdete ukrytý v tichém údolí nad Desnou. Pod okny šumí splav Bílé Desné, z balkónů dohlédnete na skokanské můstky.</p>
           <p>Čeká vás poctivá domácí kuchyně a osobní přístup, díky kterému se tu budete cítit jako doma.</p>
         </div>
-        <button class="btn btn-about" id="about-more-btn">Nabídka pokojů</button>
+        <button class="btn btn-about" id="about-more-btn" data-anim="up">Nabídka pokojů</button>
       </div>
       
-      <div class="about-img-top">
+      <div class="about-img-top" data-anim="left">
         <img src="/Uvodni stranka/Vyhled z balkonu na skokanky.webp" alt="Vyhlídka ze skokanských můstků" loading="eager" fetchpriority="high">
       </div>
 
-      <div class="about-img-bottom">
+      <div class="about-img-bottom" data-anim="left">
         <img src="/Uvodni stranka/Pohled na hotel ze z predni strany.webp" alt="Hotel u Můstku budova" loading="lazy" decoding="async">
       </div>
 
@@ -376,7 +376,7 @@
   <!-- PROMO BANNER (SLEVA SEKCE 1:1 REPLIKA) -->
   <section class="promo-banner">
     <img src="/Decoration/Hory - dekorace.webp" alt="" class="promo-contour-img" aria-hidden="true" loading="lazy" decoding="async">
-    <div class="promo-inner">
+    <div class="promo-inner" data-anim="up">
       <div class="promo-content">
         <h2 class="promo-title">Jak získat nejvýhodnější pobyt?</h2>
         <p class="promo-desc">Rezervací přímo na tomto webu získáte slevu <strong>5%</strong> na celý pobyt. Ušetříte a zajistíte si nejvýhodnější ubytování v našem hotelu.</p>
@@ -388,17 +388,17 @@
   </section>
 
   <section class="panoramic-section" id="galerie">
-    <img src="/Uvodni stranka/Fotka Zahrady a Terasy.webp" alt="Zahrada a terasa Hotelu u Můstku" class="panoramic-img" loading="lazy" decoding="async">
+    <img src="/Uvodni stranka/Fotka Zahrady a Terasy.webp" alt="Zahrada a terasa Hotelu u Můstku" class="panoramic-img" loading="lazy" decoding="async" data-anim="fade">
   </section>
   
   <!-- SEKCE CO DALŠÍHO NABÍZÍME / UPSELL (1:1 REPLIKA DLE SVG PŘEDLOHY) -->
   <section class="services-section" id="sluzby">
     <div class="services-inner">
-      <h2 class="services-title">Co dalšího nabízíme?</h2>
+      <h2 class="services-title" data-anim="up">Co dalšího nabízíme?</h2>
       
-      <div class="services-cards-wrap">
+      <div class="services-cards-wrap" data-anim-group>
         <!-- Karta 1: Stravování (Vlevo) -->
-        <div class="service-card service-card-left">
+        <div class="service-card service-card-left" data-anim="up">
           <div class="service-img-wrap">
             <img src="/Uvodni stranka/stravovani.webp" alt="Stravování v Hotelu u Můstku" loading="lazy" decoding="async">
           </div>
@@ -410,7 +410,7 @@
         </div>
 
         <!-- Karta 2: Skupinové Akce (Vpravo - posunutá dolů) -->
-        <div class="service-card service-card-right">
+        <div class="service-card service-card-right" data-anim="up">
           <div class="service-img-wrap">
             <img src="/Uvodni stranka/skupinove_akce_zelena_profesionalni_uprava.webp" alt="Skupinové akce v Hotelu u Můstku" loading="lazy" decoding="async">
           </div>
@@ -428,10 +428,10 @@
   <!-- SEKCE RECENZE (1:1 REPLIKA DLE SVG PŘEDLOHY + INTERAKTIVNÍ INFINITY SLIDER) -->
   <section class="reviews-section" id="recenze">
     <div class="reviews-inner">
-      <h2 class="reviews-title" style="margin-bottom: 24px;">Co o nás říkají sami hosté?</h2>
+      <h2 class="reviews-title" style="margin-bottom: 24px;" data-anim="up">Co o nás říkají sami hosté?</h2>
       
       <div class="reviews-slider-viewport" id="reviews-viewport">
-        <div class="reviews-slider-track" id="reviews-track">
+        <div class="reviews-slider-track" id="reviews-track" data-anim-group>
           
             <div class="review-card">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
@@ -1025,13 +1025,13 @@
   <!-- SEKCE VÝHODY HOTELU / VÍCE NEŽ JEN UBYTOVÁNÍ (1:1 REPLIKA DLE SVG PŘEDLOHY) -->
   <section class="features-section">
     <div class="features-inner">
-      <h2 class="features-title">Více než jen ubytování</h2>
+      <h2 class="features-title" data-anim="up">Více než jen ubytování</h2>
       
-      <div class="features-grid">
+      <div class="features-grid" data-anim-group>
         <!-- Horní řada (3 výhody) -->
         <div class="features-row">
           <!-- Výhoda 1 -->
-          <div class="feature-item">
+          <div class="feature-item" data-anim="up">
             <div class="feature-icon">
               <img src="/Icons/Ikona - spolecenska herna.webp" alt="Vnitřní společenská herna" loading="lazy" decoding="async">
             </div>
@@ -1041,7 +1041,7 @@
           </div>
 
           <!-- Výhoda 2 -->
-          <div class="feature-item">
+          <div class="feature-item" data-anim="up">
             <div class="feature-icon">
               <img src="/Icons/Otuzovani-u-splavu.webp" alt="Přírodní otužování u splavu" class="feature-icon-otuzovani" loading="lazy" decoding="async">
             </div>
@@ -1051,7 +1051,7 @@
           </div>
 
           <!-- Výhoda 3 -->
-          <div class="feature-item">
+          <div class="feature-item" data-anim="up">
             <div class="feature-icon">
               <img src="/Icons/Ikona - venkovni posezeni.webp" alt="Relaxace na dřevěné terase" loading="lazy" decoding="async">
             </div>
@@ -1067,7 +1067,7 @@
         <!-- Spodní řada (3 výhody) -->
         <div class="features-row">
           <!-- Výhoda 4 -->
-          <div class="feature-item">
+          <div class="feature-item" data-anim="up">
             <div class="feature-icon">
               <img src="/Icons/Ikona - ohniste.webp" alt="Zahrada s ohništěm" loading="lazy" decoding="async">
             </div>
@@ -1077,7 +1077,7 @@
           </div>
 
           <!-- Výhoda 5 -->
-          <div class="feature-item">
+          <div class="feature-item" data-anim="up">
             <div class="feature-icon">
               <img src="/Icons/Ikona - polopenze.webp" alt="Domácí polopenze" loading="lazy" decoding="async">
             </div>
@@ -1087,7 +1087,7 @@
           </div>
 
           <!-- Výhoda 6 -->
-          <div class="feature-item">
+          <div class="feature-item" data-anim="up">
             <div class="feature-icon">
               <img src="/Icons/Ikona - turistika a cyklistika.webp" alt="Turistické a cyklistické trasy" loading="lazy" decoding="async">
             </div>
@@ -1104,12 +1104,12 @@
   <!-- SEKCE AKTIVITY V OKOLÍ (1:1 REPLIKA DLE SVG PŘEDLOHY) -->
   <section class="surroundings-section home-surroundings-section" id="aktivity">
     <div class="surroundings-inner">
-      <h2 class="surroundings-title">Co vše můžete v okolí podniknout?</h2>
+      <h2 class="surroundings-title" data-anim="up">Co vše můžete v okolí podniknout?</h2>
       
       <div class="surroundings-slider-viewport" id="surroundings-viewport">
-        <div class="surroundings-cards-grid" id="surroundings-track">
+        <div class="surroundings-cards-grid" id="surroundings-track" data-anim-group>
           <!-- Karta 1 -->
-          <div class="surrounding-card">
+          <div class="surrounding-card" data-anim="up">
             <div class="surrounding-card-img-wrap">
               <img src="/Uvodni stranka/Rozhledna Stepanka.webp" alt="Rozhledna Štěpánka" loading="lazy" decoding="async">
             </div>
@@ -1117,7 +1117,7 @@
           </div>
           
           <!-- Karta 2 -->
-          <div class="surrounding-card">
+          <div class="surrounding-card" data-anim="up">
             <div class="surrounding-card-img-wrap">
               <img src="/Uvodni stranka/Vodopady Jizerky.webp" alt="Vodopády na Černé Desné" loading="lazy" decoding="async">
             </div>
@@ -1125,7 +1125,7 @@
           </div>
           
           <!-- Karta 3 -->
-          <div class="surrounding-card">
+          <div class="surrounding-card" data-anim="up">
             <div class="surrounding-card-img-wrap">
               <img src="/Uvodni stranka/Tanvaldsky spicak.webp" alt="Ski Areál Tanvaldský Špičák" loading="lazy" decoding="async">
             </div>
@@ -1133,7 +1133,7 @@
           </div>
           
           <!-- Karta 4 -->
-          <div class="surrounding-card">
+          <div class="surrounding-card" data-anim="up">
             <div class="surrounding-card-img-wrap">
               <img src="/Uvodni stranka/Liberec zoo.webp" alt="ZOO Liberec" loading="lazy" decoding="async">
             </div>
@@ -1159,7 +1159,7 @@
 
   <section class="cta-section" >
     <div class="cta-overlay"></div>
-    <div class="cta-inner">
+    <div class="cta-inner" data-anim="up">
       <h2 class="cta-title">Dopřejte si zasloužený<br>odpočinek v Jizerských horách</h2>
       <button class="btn btn-cta" id="cta-booking-btn">Rezervovat pobyt</button>
     </div>

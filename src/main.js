@@ -364,7 +364,7 @@ const getPromoHTML = () => `
   <!-- PROMO BANNER (SLEVA SEKCE 1:1 REPLIKA) -->
   <section class="promo-banner">
     <img src="/Decoration/Hory - dekorace.webp" alt="" class="promo-contour-img" aria-hidden="true" loading="lazy" decoding="async">
-    <div class="promo-inner">
+    <div class="promo-inner" data-anim="up">
       <div class="promo-content">
         <h2 class="promo-title">Jak získat nejvýhodnější pobyt?</h2>
         <p class="promo-desc">Rezervací přímo na tomto webu získáte slevu <strong>5%</strong> na celý pobyt. Ušetříte a zajistíte si nejvýhodnější ubytování v našem hotelu.</p>
@@ -379,7 +379,7 @@ const getPromoHTML = () => `
 const getPanoramicHTML = () => `
   <!-- PANORAMATICKÝ NÁHLED (FOTKA ZAHRADY A TERASY POD BANNEREM) -->
   <section class="panoramic-section" id="galerie">
-    <img src="/Uvodni stranka/Fotka Zahrady a Terasy.webp" alt="Zahrada a terasa Hotelu u Můstku" class="panoramic-img" loading="lazy" decoding="async">
+    <img src="/Uvodni stranka/Fotka Zahrady a Terasy.webp" alt="Zahrada a terasa Hotelu u Můstku" class="panoramic-img" loading="lazy" decoding="async" data-anim="fade">
   </section>
 `;
 
@@ -387,11 +387,11 @@ const getServicesHTML = () => `
   <!-- SEKCE CO DALŠÍHO NABÍZÍME / UPSELL (1:1 REPLIKA DLE SVG PŘEDLOHY) -->
   <section class="services-section" id="sluzby">
     <div class="services-inner">
-      <h2 class="services-title">Co dalšího nabízíme?</h2>
+      <h2 class="services-title" data-anim="up">Co dalšího nabízíme?</h2>
       
-      <div class="services-cards-wrap">
+      <div class="services-cards-wrap" data-anim-group>
         <!-- Karta 1: Stravování (Vlevo) -->
-        <div class="service-card service-card-left">
+        <div class="service-card service-card-left" data-anim="up">
           <div class="service-img-wrap">
             <img src="/Uvodni stranka/stravovani.webp" alt="Stravování v Hotelu u Můstku" loading="lazy" decoding="async">
           </div>
@@ -403,7 +403,7 @@ const getServicesHTML = () => `
         </div>
 
         <!-- Karta 2: Skupinové Akce (Vpravo - posunutá dolů) -->
-        <div class="service-card service-card-right">
+        <div class="service-card service-card-right" data-anim="up">
           <div class="service-img-wrap">
             <img src="/Uvodni stranka/skupinove_akce_zelena_profesionalni_uprava.webp" alt="Skupinové akce v Hotelu u Můstku" loading="lazy" decoding="async">
           </div>
@@ -686,12 +686,12 @@ const getReviewsHTML = () => `
   <!-- SEKCE RECENZE (1:1 REPLIKA DLE SVG PŘEDLOHY + INTERAKTIVNÍ INFINITY SLIDER + NAPSAT RECENZI) -->
   <section class="reviews-section" id="recenze">
     <div class="reviews-inner">
-      <h2 class="reviews-title" style="margin-bottom: 24px;">Co o nás říkají sami hosté?</h2>
+      <h2 class="reviews-title" style="margin-bottom: 24px;" data-anim="up">Co o nás říkají sami hosté?</h2>
       
       <div class="reviews-slider-viewport" id="reviews-viewport">
-        <div class="reviews-slider-track" id="reviews-track">
+        <div class="reviews-slider-track" id="reviews-track" data-anim-group>
           ${GUEST_REVIEWS.map(r => `
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">${r.text}</p>
               <div class="review-contour-bg">
@@ -733,13 +733,13 @@ const getFeaturesHTML = () => `
   <!-- SEKCE VÝHODY HOTELU / VÍCE NEŽ JEN UBYTOVÁNÍ (1:1 REPLIKA DLE SVG PŘEDLOHY) -->
   <section class="features-section">
     <div class="features-inner">
-      <h2 class="features-title">Více než jen ubytování</h2>
+      <h2 class="features-title" data-anim="up">Více než jen ubytování</h2>
       
-      <div class="features-grid">
+      <div class="features-grid" data-anim-group>
         <!-- Horní řada (3 výhody) -->
         <div class="features-row">
           <!-- Výhoda 1 -->
-          <div class="feature-item">
+          <div class="feature-item" data-anim="up">
             <div class="feature-icon">
               <img src="/Icons/Ikona - spolecenska herna.webp" alt="Vnitřní společenská herna" loading="lazy" decoding="async">
             </div>
@@ -749,7 +749,7 @@ const getFeaturesHTML = () => `
           </div>
 
           <!-- Výhoda 2 -->
-          <div class="feature-item">
+          <div class="feature-item" data-anim="up">
             <div class="feature-icon">
               <img src="/Icons/Otuzovani-u-splavu.webp" alt="Přírodní otužování u splavu" class="feature-icon-otuzovani" loading="lazy" decoding="async">
             </div>
@@ -759,7 +759,7 @@ const getFeaturesHTML = () => `
           </div>
 
           <!-- Výhoda 3 -->
-          <div class="feature-item">
+          <div class="feature-item" data-anim="up">
             <div class="feature-icon">
               <img src="/Icons/Ikona - venkovni posezeni.webp" alt="Relaxace na dřevěné terase" loading="lazy" decoding="async">
             </div>
@@ -775,7 +775,7 @@ const getFeaturesHTML = () => `
         <!-- Spodní řada (3 výhody) -->
         <div class="features-row">
           <!-- Výhoda 4 -->
-          <div class="feature-item">
+          <div class="feature-item" data-anim="up">
             <div class="feature-icon">
               <img src="/Icons/Ikona - ohniste.webp" alt="Zahrada s ohništěm" loading="lazy" decoding="async">
             </div>
@@ -785,7 +785,7 @@ const getFeaturesHTML = () => `
           </div>
 
           <!-- Výhoda 5 -->
-          <div class="feature-item">
+          <div class="feature-item" data-anim="up">
             <div class="feature-icon">
               <img src="/Icons/Ikona - polopenze.webp" alt="Domácí polopenze" loading="lazy" decoding="async">
             </div>
@@ -795,7 +795,7 @@ const getFeaturesHTML = () => `
           </div>
 
           <!-- Výhoda 6 -->
-          <div class="feature-item">
+          <div class="feature-item" data-anim="up">
             <div class="feature-icon">
               <img src="/Icons/Ikona - turistika a cyklistika.webp" alt="Turistické a cyklistické trasy" loading="lazy" decoding="async">
             </div>
@@ -813,12 +813,12 @@ const getSurroundingsHTML = (customClass = '') => `
   <!-- SEKCE AKTIVITY V OKOLÍ (1:1 REPLIKA DLE SVG PŘEDLOHY) -->
   <section class="surroundings-section ${customClass}" id="aktivity">
     <div class="surroundings-inner">
-      <h2 class="surroundings-title">Co vše můžete v okolí podniknout?</h2>
+      <h2 class="surroundings-title" data-anim="up">Co vše můžete v okolí podniknout?</h2>
       
       <div class="surroundings-slider-viewport" id="surroundings-viewport">
-        <div class="surroundings-cards-grid" id="surroundings-track">
+        <div class="surroundings-cards-grid" id="surroundings-track" data-anim-group>
           <!-- Karta 1 -->
-          <div class="surrounding-card">
+          <div class="surrounding-card" data-anim="up">
             <div class="surrounding-card-img-wrap">
               <img src="/Uvodni stranka/Rozhledna Stepanka.webp" alt="Rozhledna Štěpánka" loading="lazy" decoding="async">
             </div>
@@ -826,7 +826,7 @@ const getSurroundingsHTML = (customClass = '') => `
           </div>
           
           <!-- Karta 2 -->
-          <div class="surrounding-card">
+          <div class="surrounding-card" data-anim="up">
             <div class="surrounding-card-img-wrap">
               <img src="/Uvodni stranka/Vodopady Jizerky.webp" alt="Vodopády na Černé Desné" loading="lazy" decoding="async">
             </div>
@@ -834,7 +834,7 @@ const getSurroundingsHTML = (customClass = '') => `
           </div>
           
           <!-- Karta 3 -->
-          <div class="surrounding-card">
+          <div class="surrounding-card" data-anim="up">
             <div class="surrounding-card-img-wrap">
               <img src="/Uvodni stranka/Tanvaldsky spicak.webp" alt="Ski Areál Tanvaldský Špičák" loading="lazy" decoding="async">
             </div>
@@ -842,7 +842,7 @@ const getSurroundingsHTML = (customClass = '') => `
           </div>
           
           <!-- Karta 4 -->
-          <div class="surrounding-card">
+          <div class="surrounding-card" data-anim="up">
             <div class="surrounding-card-img-wrap">
               <img src="/Uvodni stranka/Liberec zoo.webp" alt="ZOO Liberec" loading="lazy" decoding="async">
             </div>
@@ -1053,20 +1053,20 @@ const getHomePageHTML = () => {
   <!-- SEKCE O NÁS / ZÁZEMÍ -->
   <section class="about-section" id="ubytovani">
     <div class="about-inner">
-      <div class="about-content">
-        <h2 class="about-title" id="o-nas">Klid Jizerských hor, do kterého se budete rádi vracet</h2>
-        <div class="about-text">
+      <div class="about-content" data-anim="right">
+        <h2 class="about-title" id="o-nas" data-anim="up">Klid Jizerských hor, do kterého se budete rádi vracet</h2>
+        <div class="about-text" data-anim="up">
           <p>Hotel U Můstků najdete ukrytý v tichém údolí nad Desnou. Pod okny šumí splav Bílé Desné, z balkónů dohlédnete na skokanské můstky.</p>
           <p>Čeká vás poctivá domácí kuchyně a osobní přístup, díky kterému se tu budete cítit jako doma.</p>
         </div>
-        <button class="btn btn-about" id="about-more-btn">Nabídka pokojů</button>
+        <button class="btn btn-about" id="about-more-btn" data-anim="up">Nabídka pokojů</button>
       </div>
       
-      <div class="about-img-top">
+      <div class="about-img-top" data-anim="left">
         <img src="${aboutTopSrc}" alt="Vyhlídka ze skokanských můstků" loading="eager" fetchpriority="high">
       </div>
 
-      <div class="about-img-bottom">
+      <div class="about-img-bottom" data-anim="left">
         <img src="${aboutBottomSrc}" alt="Hotel u Můstku budova" loading="lazy" decoding="async">
       </div>
 
@@ -1129,14 +1129,14 @@ const getRoomsPageHTML = () => `
   <!-- 2. DETAILY POKOJŮ (SPECS SEKCE - 14 POLOŽEK) -->
   <section class="room-specs-section" id="detaily-pokoju">
     <div class="room-specs-inner">
-      <h2 class="room-specs-main-title">Detaily Pokojů</h2>
+      <h2 class="room-specs-main-title" data-anim="up">Detaily Pokojů</h2>
 
       <div class="room-specs-grid">
         <!-- Levý sloupec: Seznam parametrů -->
         <div class="room-specs-content">
-          <ul class="room-specs-list">
+          <ul class="room-specs-list" data-anim-group>
             <!-- 1. Max. počet osob -->
-            <li class="room-spec-item">
+            <li class="room-spec-item" data-anim="up">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/group.png" alt="" class="spec-icon-img">
               </div>
@@ -1146,7 +1146,7 @@ const getRoomsPageHTML = () => `
             </li>
 
             <!-- 2. 2 postele -->
-            <li class="room-spec-item spec-item-with-subtext">
+            <li class="room-spec-item spec-item-with-subtext" data-anim="up">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/double-bed.png" alt="" class="spec-icon-img">
               </div>
@@ -1157,7 +1157,7 @@ const getRoomsPageHTML = () => `
             </li>
 
             <!-- 3. Dětská postýlka -->
-            <li class="room-spec-item">
+            <li class="room-spec-item" data-anim="up">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/cot.png" alt="" class="spec-icon-img">
               </div>
@@ -1167,7 +1167,7 @@ const getRoomsPageHTML = () => `
             </li>
 
             <!-- 4. Vytápění je ústřední -->
-            <li class="room-spec-item">
+            <li class="room-spec-item" data-anim="up">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/air.png" alt="" class="spec-icon-img">
               </div>
@@ -1177,7 +1177,7 @@ const getRoomsPageHTML = () => `
             </li>
 
             <!-- 5. Wi-Fi zdarma -->
-            <li class="room-spec-item">
+            <li class="room-spec-item" data-anim="up">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/wifi.png" alt="" class="spec-icon-img">
               </div>
@@ -1187,7 +1187,7 @@ const getRoomsPageHTML = () => `
             </li>
 
             <!-- 6. Máte mazlíčka? -->
-            <li class="room-spec-item">
+            <li class="room-spec-item" data-anim="up">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/pawprint.png" alt="" class="spec-icon-img">
               </div>
@@ -1198,7 +1198,7 @@ const getRoomsPageHTML = () => `
 
             <!-- EXTENZE DETAILŮ (Zobrazí se plynule po kliknutí na Přečíst více) -->
             <!-- 7. Vlastní koupelna -->
-            <li class="room-spec-item spec-extra-item">
+            <li class="room-spec-item spec-extra-item" data-anim="up">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/bathroom.png" alt="" class="spec-icon-img">
               </div>
@@ -1208,7 +1208,7 @@ const getRoomsPageHTML = () => `
             </li>
 
             <!-- 8. TV na pokoji -->
-            <li class="room-spec-item spec-extra-item">
+            <li class="room-spec-item spec-extra-item" data-anim="up">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/television.png" alt="" class="spec-icon-img">
               </div>
@@ -1218,7 +1218,7 @@ const getRoomsPageHTML = () => `
             </li>
 
             <!-- 9. Nekuřácké prostředí -->
-            <li class="room-spec-item spec-extra-item">
+            <li class="room-spec-item spec-extra-item" data-anim="up">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/no-smoking.png" alt="" class="spec-icon-img">
               </div>
@@ -1228,7 +1228,7 @@ const getRoomsPageHTML = () => `
             </li>
 
             <!-- 10. Zakázkové povlečení -->
-            <li class="room-spec-item spec-extra-item">
+            <li class="room-spec-item spec-extra-item" data-anim="up">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/folding.png" alt="" class="spec-icon-img">
               </div>
@@ -1238,7 +1238,7 @@ const getRoomsPageHTML = () => `
             </li>
 
             <!-- 11. Ručníky -->
-            <li class="room-spec-item spec-extra-item">
+            <li class="room-spec-item spec-extra-item" data-anim="up">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/towel.png" alt="" class="spec-icon-img">
               </div>
@@ -1248,7 +1248,7 @@ const getRoomsPageHTML = () => `
             </li>
 
             <!-- 12. Minibar -->
-            <li class="room-spec-item spec-extra-item">
+            <li class="room-spec-item spec-extra-item" data-anim="up">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/mini.png" alt="" class="spec-icon-img">
               </div>
@@ -1258,7 +1258,7 @@ const getRoomsPageHTML = () => `
             </li>
 
             <!-- 13. Šatní skříň -->
-            <li class="room-spec-item spec-extra-item">
+            <li class="room-spec-item spec-extra-item" data-anim="up">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/wardrobe.png" alt="" class="spec-icon-img">
               </div>
@@ -1268,7 +1268,7 @@ const getRoomsPageHTML = () => `
             </li>
 
             <!-- 14. Fén -->
-            <li class="room-spec-item spec-extra-item">
+            <li class="room-spec-item spec-extra-item" data-anim="up">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/hair-dryer.png" alt="" class="spec-icon-img">
               </div>
@@ -1285,7 +1285,7 @@ const getRoomsPageHTML = () => `
         </div>
 
         <!-- Pravý sloupec: Fotka pokoje -->
-        <div class="room-specs-image-wrap">
+        <div class="room-specs-image-wrap" data-anim="right">
           <img src="/hezky pokoj 1.webp" alt="Detaily Pokojů v Hotelu u Můstku" loading="eager" fetchpriority="high" decoding="async">
         </div>
       </div>
@@ -1295,7 +1295,7 @@ const getRoomsPageHTML = () => `
   <!-- 3. PANORAMATICKÝ BANNER POKOJE -->
   <section class="room-banner-section">
     <div class="room-banner-overlay"></div>
-    <div class="room-banner-inner">
+    <div class="room-banner-inner" data-anim="fade">
       <p class="room-banner-text">Pokoje hotelu U Můstků nabízejí útulné a pohodlné ubytování.<br>Disponují vlastním balkónem či terasou s výhledem.</p>
     </div>
   </section>
@@ -1304,13 +1304,13 @@ const getRoomsPageHTML = () => `
   <section class="room-breakdown-section" id="rozdeleni-pokoju">
     <div class="room-breakdown-inner">
       <div class="room-breakdown-header">
-        <h2 class="room-breakdown-title">Rozdělení pokojů</h2>
+        <h2 class="room-breakdown-title" data-anim="up">Rozdělení pokojů</h2>
         <button class="btn btn-booking btn-breakdown-cta">Rezervovat pobyt</button>
       </div>
 
-      <div class="room-breakdown-list">
+      <div class="room-breakdown-list" data-anim-group>
         <!-- SKUPINA 1: POKOJE V PŘÍZEMÍ -->
-        <h3 class="room-group-label">Pokoje v přízemí</h3>
+        <h3 class="room-group-label" data-anim="up">Pokoje v přízemí</h3>
         ${renderRoomBreakdownItem('p6', 'Pokoj Standard P1', 'standard', 830)}
         ${renderRoomBreakdownItem('p5', 'Pokoj Standard P2', 'standard', 830)}
         ${renderRoomBreakdownItem('pa', 'Pokoj Nadstandard Mahagon', 'nadstandard', 890)}
@@ -1319,7 +1319,7 @@ const getRoomsPageHTML = () => `
         ${renderRoomBreakdownItem('p1', 'Pokoj Turistický P6', 'standard', 830)}
 
         <!-- SKUPINA 2: POKOJE V PATŘE -->
-        <h3 class="room-group-label">Pokoje v patře</h3>
+        <h3 class="room-group-label" data-anim="up">Pokoje v patře</h3>
         ${renderRoomBreakdownItem('p7', 'Pokoj Standard P7', 'standard', 830)}
         ${renderRoomBreakdownItem('a1', 'Pokoj Nadstandard Motýl', 'nadstandard', 890)}
         ${renderRoomBreakdownItem('zen', 'Pokoj Nadstandard Zen', 'nadstandard', 890)}
@@ -1338,15 +1338,15 @@ const getRoomsPageHTML = () => `
   <!-- 6. STRAVOVÁNÍ V HOTELU -->
   <section class="room-detail-dining-section">
     <div class="room-detail-dining-inner">
-      <h2 class="room-detail-dining-title">Jak je to se stravováním?</h2>
+      <h2 class="room-detail-dining-title" data-anim="up">Jak je to se stravováním?</h2>
 
-      <div class="services-cards-wrap">
+      <div class="services-cards-wrap" data-anim-group>
         <!-- Karta 1: Snídaně -->
-        <div class="service-card service-card-left">
-          <div class="service-card-img-wrap">
+        <div class="service-card service-card-left" data-anim="up">
+          <div class="service-card-img-wrap" data-anim="left">
             <img src="/Uvodni stranka/stravovani.webp" alt="Snídaně v Hotelu u Můstku" loading="lazy" decoding="async">
           </div>
-          <div class="service-card-body">
+          <div class="service-card-body" data-anim="right">
             <h3 class="service-card-title">Snídaně</h3>
             <div class="service-card-desc-wrap">
               <p class="service-card-desc">
@@ -1359,11 +1359,11 @@ const getRoomsPageHTML = () => `
         </div>
 
         <!-- Karta 2: Polopenze (Večeře) -->
-        <div class="service-card service-card-right">
-          <div class="service-card-img-wrap">
+        <div class="service-card service-card-right" data-anim="up">
+          <div class="service-card-img-wrap" data-anim="left">
             <img src="/Polopenze vecere.webp" alt="Polopenze v Hotelu u Můstku" loading="lazy" decoding="async">
           </div>
-          <div class="service-card-body">
+          <div class="service-card-body" data-anim="right">
             <h3 class="service-card-title">Polopenze (Večeře)</h3>
             <div class="service-card-desc-wrap">
               <p class="service-card-desc">
@@ -1381,10 +1381,10 @@ const getRoomsPageHTML = () => `
   <!-- 7. VÝHODY UBYTOVÁNÍ U NÁS -->
   <section class="room-detail-features-section" id="vyhody-ubytovani">
     <div class="room-detail-features-inner">
-      <h2 class="room-detail-features-title">Výhody ubytování u nás</h2>
+      <h2 class="room-detail-features-title" data-anim="up">Výhody ubytování u nás</h2>
 
-      <div class="room-features-cards-grid">
-        <div class="room-feature-card">
+      <div class="room-features-cards-grid" data-anim-group>
+        <div class="room-feature-card" data-anim="up">
           <div class="room-feature-img-wrap">
             <img src="/IMG_1458 1.webp" alt="Máte Mazlíčka?" loading="lazy" decoding="async">
           </div>
@@ -1394,7 +1394,7 @@ const getRoomsPageHTML = () => `
             <span class="mobile-sub-text">150 Kč / den hotel je dog-friendly, nutné vodítko v areálu.</span>
           </p>
         </div>
-        <div class="room-feature-card">
+        <div class="room-feature-card" data-anim="up">
           <div class="room-feature-img-wrap">
             <img src="/IMG_1437 1.webp" alt="Nabíjení Elektrokola" loading="lazy" decoding="async">
           </div>
@@ -1404,7 +1404,7 @@ const getRoomsPageHTML = () => `
             <span class="mobile-sub-text">15 Kč / den - dobíjení v kolárně pod zámkem.</span>
           </p>
         </div>
-        <div class="room-feature-card">
+        <div class="room-feature-card" data-anim="up">
           <div class="room-feature-img-wrap">
             <img src="/desna_parkovani.webp" alt="Parkování" loading="lazy" decoding="async">
           </div>
@@ -1423,9 +1423,9 @@ const getRoomsPageHTML = () => `
     <div class="room-terms-inner">
       <div class="room-terms-content-wrap">
         <!-- Levý blok: Storno podmínky (Tabulka) -->
-        <div class="storno-table-container">
+        <div class="storno-table-container" data-anim-group>
           <!-- Řádek 1 -->
-          <div class="storno-table-row">
+          <div class="storno-table-row" data-anim="up">
             <div class="storno-label-group">
               <span class="storno-time-label">Více než 3 dny před příjezdem:</span>
             </div>
@@ -1436,7 +1436,7 @@ const getRoomsPageHTML = () => `
           </div>
 
           <!-- Řádek 2 -->
-          <div class="storno-table-row">
+          <div class="storno-table-row" data-anim="up">
             <div class="storno-label-group">
               <span class="storno-time-label">Méně než 3 dny před příjezdem:</span>
               <span class="storno-time-sub">(nebo nedojezd)</span>
@@ -1450,11 +1450,11 @@ const getRoomsPageHTML = () => `
 
         <!-- Pravý blok: Tlačítko & Check-in / Check-out -->
         <div class="room-terms-right-side">
-          <button class="btn btn-booking btn-terms-cta">Rezervovat pobyt</button>
+          <button class="btn btn-booking btn-terms-cta" data-anim="up">Rezervovat pobyt</button>
 
-          <div class="check-times-container">
+          <div class="check-times-container" data-anim-group>
             <!-- Check-in -->
-            <div class="check-time-item">
+            <div class="check-time-item" data-anim="up">
               <div class="check-icon-wrap">
                 <img src="/Icons/Ikony/arrival.png" alt="Příjezd (Check-in)" width="28" height="28">
               </div>
@@ -1462,7 +1462,7 @@ const getRoomsPageHTML = () => `
             </div>
 
             <!-- Check-out -->
-            <div class="check-time-item">
+            <div class="check-time-item" data-anim="up">
               <div class="check-icon-wrap">
                 <img src="/Icons/Ikony/tourist.png" alt="Odjezd (Check-out)" width="28" height="28">
               </div>
@@ -2637,6 +2637,17 @@ const initInteractivity = () => {
       const targetItem = document.querySelector(`.room-breakdown-item[data-room="${targetRoomId}"]`);
       if (!targetItem) return;
 
+      // Cílový pokoj musí být vidět okamžitě, nečekat na animaci
+      const skupinaCile = targetItem.closest('[data-anim-group]');
+      if (skupinaCile) {
+        skupinaCile.classList.add('anim-group-done');
+        skupinaCile.querySelectorAll('[data-anim]').forEach((n) => {
+          n.style.transitionDelay = '0s';
+          n.classList.add('is-in');
+        });
+      }
+      targetItem.classList.add('is-in');
+
       const toggleBtn = targetItem.querySelector('.btn-toggle-details');
       const toggleText = targetItem.querySelector('.toggle-text');
 
@@ -3121,14 +3132,14 @@ const getStravovaniPageHTML = () => `
   <!-- 2. SNÍDANĚ FORUMU ŠVÉDSKÉHO STOLU -->
   <section class="dining-feature-section dining-buffet-section" id="snidane">
     <div class="dining-feature-inner">
-      <div class="dining-section-header">
+      <div class="dining-section-header" data-anim="right">
         <h2 class="dining-section-title">Snídaně formou švédského stolu</h2>
         <p class="dining-section-lead">
           Běžně podáváme snídaně formou švédských stolů v rozmezí od 8:00 do 9:00 hod. ranních.<br>Těšit se můžete na čerstvé pečivo, sýry, uzeniny, cereálie i teplé pokrmy.
         </p>
       </div>
 
-      <div class="dining-single-img-wrap">
+      <div class="dining-single-img-wrap" data-anim="left">
         <img src="/stravovani/snidane.webp" alt="Snídaně formou švédského stolu" loading="lazy" decoding="async">
       </div>
     </div>
@@ -3137,14 +3148,14 @@ const getStravovaniPageHTML = () => `
   <!-- 3. VEČEŘE FORUMU POLOPENZE -->
   <section class="dining-feature-section dining-dinner-section" id="vecere">
     <div class="dining-feature-inner">
-      <div class="dining-section-header">
+      <div class="dining-section-header" data-anim="left">
         <h2 class="dining-section-title">Večeře formou polopenze</h2>
         <p class="dining-section-lead">
           Užijte si poctivou českou kuchyni formou dvouchodového menu, které pro vás vaříme z čerstvých sezónních surovin. Jelikož nejsme veřejná restaurace, večeře podáváme ubytovaným hostům společně v 18:00 hodin. Při pozdním návratu z výletu či túry vám jídlo po předchozí domluvě rádi uchováme a ohřejeme.
         </p>
       </div>
 
-      <div class="dining-single-img-wrap">
+      <div class="dining-single-img-wrap" data-anim="right">
         <img src="/stravovani/vecere.webp" alt="Večeře formou polopenze" loading="lazy" decoding="async">
       </div>
     </div>
@@ -3152,7 +3163,7 @@ const getStravovaniPageHTML = () => `
 
   <!-- 4. PANORAMA KRB RESTAURACE -->
   <section class="dining-fireplace-section" id="krb-restaurace">
-    <div class="dining-fireplace-img-wrap">
+    <div class="dining-fireplace-img-wrap" data-anim="up">
       <img src="/stravovani/krb_restaurace.webp" alt="Restaurace s krbem v Hotelu u Můstku" loading="lazy" decoding="async">
     </div>
   </section>
@@ -3162,7 +3173,7 @@ const getStravovaniPageHTML = () => `
     <div class="dining-terrace-inner">
       <div class="dining-2col-layout">
         <!-- Levý sloupec: Informace s ikonami -->
-        <div class="dining-2col-content">
+        <div class="dining-2col-content" data-anim="up">
           <h2 class="dining-col-title">Letní restaurační zahrádka nad splavem</h2>
 
           <div class="dining-info-list">
@@ -3193,7 +3204,7 @@ const getStravovaniPageHTML = () => `
         </div>
 
         <!-- Pravý sloupec: Fotka terásky -->
-        <div class="dining-2col-image">
+        <div class="dining-2col-image" data-anim="up">
           <img src="/stravovani/zahradka.webp" alt="Letní restaurační zahrádka nad splavem" loading="lazy" decoding="async">
         </div>
       </div>
@@ -3205,12 +3216,12 @@ const getStravovaniPageHTML = () => `
     <div class="dining-grill-inner">
       <div class="dining-2col-layout dining-2col-reversed">
         <!-- Levý sloupec: Fotka ohniště -->
-        <div class="dining-2col-image">
+        <div class="dining-2col-image" data-anim="up">
           <img src="/stravovani/ohniste.webp" alt="Venkovní grilování a uzení" loading="lazy" decoding="async">
         </div>
 
         <!-- Pravý sloupec: Text a ikony -->
-        <div class="dining-2col-content">
+        <div class="dining-2col-content" data-anim="up">
           <h2 class="dining-col-title">Venkovní grilování a uzení</h2>
           <p class="dining-col-lead">Pro milovníky venkovního posezení jsme v areálu zahrady u splavu vybudovali zázemí pro letní relaxaci.</p>
 
@@ -3239,7 +3250,7 @@ const getStravovaniPageHTML = () => `
   <!-- 7. RODINNÉ OSLAVY, SVATBY ČI FIREMNÍ AKCE -->
   <section class="dining-events-banner-section" id="oslavy-akce">
     <img src="/Decoration/Hory - dekorace.webp" alt="" class="dining-events-contour-img" aria-hidden="true" loading="lazy" decoding="async">
-    <div class="dining-events-inner">
+    <div class="dining-events-inner" data-anim="fade">
       <div class="dining-events-content">
         <h2 class="dining-events-title">Rodinné oslavy, svatby či firemní akce?</h2>
         <p class="dining-events-p1">Plánujete skupinovou akci?</p>
@@ -3312,7 +3323,7 @@ const getEventsPageHTML = () => `
   <!-- 2. CELÝ HOTEL JEN PRO VÁS A VAŠE HOSTY (1:1 Identická kopie sekce Zázemí z úvodní stránky) -->
   <section class="about-section events-about-section" id="celay-hotel">
     <div class="about-inner">
-      <div class="about-content">
+      <div class="about-content" data-anim="up">
         <h2 class="about-title">Celý hotel jen pro vás a vaše hosty</h2>
         <div class="about-text">
           <p>Plánujete skupinovou akci? Po předchozí dohodě pro vás zajistíme kompletní pronájem celého hotelu — ubytování, společenské prostory i pohoštění na jednom místě.</p>
@@ -3321,11 +3332,11 @@ const getEventsPageHTML = () => `
         <a href="/kontakt#form-sekce" class="btn btn-about btn-events-about-cta" id="events-about-cta-btn">Nezávazně poptat termín</a>
       </div>
       
-      <div class="about-img-top">
+      <div class="about-img-top" data-anim="left">
         <img src="/akce/zahradka.webp" alt="Restaurační zahrádka u řeky Desné" loading="lazy" decoding="async">
       </div>
 
-      <div class="about-img-bottom">
+      <div class="about-img-bottom" data-anim="left">
         <img src="/akce/restaurace.webp" alt="Restaurace a interiér Hotelu u Můstku" loading="lazy" decoding="async">
       </div>
 
@@ -3338,11 +3349,11 @@ const getEventsPageHTML = () => `
   <!-- 3. JAKÉ AKCE U NÁS MŮŽETE NAPLÁNOVAT? -->
   <section class="events-types-section" id="typy-akci">
     <div class="events-types-inner">
-      <h2 class="events-types-title">Jaké akce u nás můžete naplánovat?</h2>
+      <h2 class="events-types-title" data-anim="up">Jaké akce u nás můžete naplánovat?</h2>
 
-      <div class="events-types-grid">
+      <div class="events-types-grid" data-anim-group>
         <!-- Kartička 1: Svatby -->
-        <div class="events-type-card">
+        <div class="events-type-card" data-anim="up">
           <div class="events-type-img-wrap">
             <img src="/akce/svatby.webp" alt="Svatby v Hotelu u Můstku" loading="lazy" decoding="async">
           </div>
@@ -3353,7 +3364,7 @@ const getEventsPageHTML = () => `
         </div>
 
         <!-- Kartička 2: Firemní Akce -->
-        <div class="events-type-card">
+        <div class="events-type-card" data-anim="up">
           <div class="events-type-img-wrap">
             <img src="/akce/firemni_akce.webp" alt="Firemní akce a teambuilding" loading="lazy" decoding="async">
           </div>
@@ -3364,7 +3375,7 @@ const getEventsPageHTML = () => `
         </div>
 
         <!-- Kartička 3: Rodinné Oslavy -->
-        <div class="events-type-card">
+        <div class="events-type-card" data-anim="up">
           <div class="events-type-img-wrap">
             <img src="/akce/rodinne_oslavy.webp" alt="Rodinné oslavy a jubilea" loading="lazy" decoding="async">
           </div>
@@ -3375,7 +3386,7 @@ const getEventsPageHTML = () => `
         </div>
 
         <!-- Kartička 4: Klubová Soustředění -->
-        <div class="events-type-card">
+        <div class="events-type-card" data-anim="up">
           <div class="events-type-img-wrap">
             <img src="/akce/soustredeni.webp" alt="Klubová a sportovní soustředění" loading="lazy" decoding="async">
           </div>
@@ -3391,13 +3402,13 @@ const getEventsPageHTML = () => `
   <!-- 4. CO PRO VAŠI AKCI ZAŘÍDÍME (1:1 DLE SEKCE VÍCE NEŽ JEN UBYTOVÁNÍ) -->
   <section class="features-section events-features-section" id="zaridime">
     <div class="features-inner">
-      <h2 class="features-title">Co pro vaši akci zařídíme</h2>
+      <h2 class="features-title" data-anim="up">Co pro vaši akci zařídíme</h2>
       
-      <div class="features-grid">
+      <div class="features-grid" data-anim-group>
         <!-- Horní řada (3 položky) -->
         <div class="features-row">
           <!-- Položka 1 -->
-          <div class="feature-item">
+          <div class="feature-item" data-anim="up">
             <div class="feature-icon">
               <img src="/Icons/Ikony/Kuchařská ilustrace s transparentním pozadím.webp" alt="Pohoštění na míru" loading="lazy" decoding="async">
             </div>
@@ -3407,7 +3418,7 @@ const getEventsPageHTML = () => `
           </div>
 
           <!-- Položka 2 -->
-          <div class="feature-item">
+          <div class="feature-item" data-anim="up">
             <div class="feature-icon">
               <img src="/Icons/Ikony/Autobus se zavazadly na transparentním pozadí.webp" alt="Zajistíme dopravu" loading="lazy" decoding="async">
             </div>
@@ -3417,7 +3428,7 @@ const getEventsPageHTML = () => `
           </div>
 
           <!-- Položka 3 -->
-          <div class="feature-item">
+          <div class="feature-item" data-anim="up">
             <div class="feature-icon">
               <img src="/Icons/Ikony/parking-monitoring-illustration-transparent.webp" alt="Parkování pod dohledem kamerového záznamu" loading="lazy" decoding="async">
             </div>
@@ -3433,7 +3444,7 @@ const getEventsPageHTML = () => `
         <!-- Spodní řada (3 položky) -->
         <div class="features-row">
           <!-- Položka 4 -->
-          <div class="feature-item">
+          <div class="feature-item" data-anim="up">
             <div class="feature-icon">
               <img src="/Icons/Ikona - spolecenska herna.webp" alt="Společenská místnost" loading="lazy" decoding="async">
             </div>
@@ -3443,7 +3454,7 @@ const getEventsPageHTML = () => `
           </div>
 
           <!-- Položka 5 -->
-          <div class="feature-item">
+          <div class="feature-item" data-anim="up">
             <div class="feature-icon">
               <img src="/Icons/Ikona - ohniste.webp" alt="Posezení u ohniště" loading="lazy" decoding="async">
             </div>
@@ -3453,7 +3464,7 @@ const getEventsPageHTML = () => `
           </div>
 
           <!-- Položka 6 -->
-          <div class="feature-item">
+          <div class="feature-item" data-anim="up">
             <div class="feature-icon">
               <img src="/Icons/Ikony/Výsledný obrázek s transparentním pozadím.webp" alt="Živá hudba" loading="lazy" decoding="async">
             </div>
@@ -3755,13 +3766,13 @@ const getNewsPageHTML = async () => {
       <section class="news-main-section" id="seznam-aktualit">
         <div class="news-main-inner">
           ${activeItems.length === 0 ? `
-            <div class="news-empty-state">
+            <div class="news-empty-state" data-anim="up">
               <div class="news-empty-icon">📰</div>
               <h3 class="news-empty-title">Aktuálně nemáme žádné novinky</h3>
               <p class="news-empty-desc">Sledujte náš web pro nadcházející akce a sezónní oznámení.</p>
             </div>
           ` : `
-            <div class="news-cards-list">
+            <div class="news-cards-list" data-anim-group>
               ${activeItems.map((item, index) => {
                 const hasImage = Boolean(item.image_url);
                 const formattedContent = (item.content || '').replace(/\n/g, '<br>');
@@ -3769,7 +3780,7 @@ const getNewsPageHTML = async () => {
 
                 if (hasImage) {
                   return `
-                    <article class="news-card news-card-with-image ${isReverse ? 'news-card-reverse' : ''}">
+                    <article class="news-card news-card-with-image ${isReverse ? 'news-card-reverse' : ''}" data-anim="up">
                       <div class="news-card-content">
                         <div class="news-card-date">🗓️ ${formatDate(item.updated_at)}</div>
                         <h2 class="news-card-title">${item.title}</h2>
@@ -3782,7 +3793,7 @@ const getNewsPageHTML = async () => {
                   `;
                 } else {
                   return `
-                    <article class="news-card news-card-without-image">
+                    <article class="news-card news-card-without-image" data-anim="up">
                       <div class="news-card-centered-header">
                         <div class="news-card-date">🗓️ ${formatDate(item.updated_at)}</div>
                         <h2 class="news-card-title">${item.title}</h2>
@@ -4529,9 +4540,9 @@ const getContactPageHTML = () => `
       <div class="contact-main-inner">
         <!-- Levý sloupec: Kontakty -->
         <div class="contact-info-column">
-          <div class="contact-info-list">
+          <div class="contact-info-list" data-anim-group>
             <!-- Item 1: Adresa -->
-            <div class="contact-info-item">
+            <div class="contact-info-item" data-anim="up">
               <div class="contact-info-icon-wrap">
                 <img src="/Icons/Ikony/location.png" alt="" class="contact-info-icon">
               </div>
@@ -4543,7 +4554,7 @@ const getContactPageHTML = () => `
             </div>
 
             <!-- Item 2: Telefon -->
-            <div class="contact-info-item">
+            <div class="contact-info-item" data-anim="up">
               <div class="contact-info-icon-wrap">
                 <img src="/Icons/Ikony/phone-flip.png" alt="" class="contact-info-icon">
               </div>
@@ -4555,7 +4566,7 @@ const getContactPageHTML = () => `
             </div>
 
             <!-- Item 3: E-mail -->
-            <div class="contact-info-item">
+            <div class="contact-info-item" data-anim="up">
               <div class="contact-info-icon-wrap">
                 <img src="/Icons/Ikony/envelope.png" alt="" class="contact-info-icon">
               </div>
@@ -4567,7 +4578,7 @@ const getContactPageHTML = () => `
             </div>
 
             <!-- Item 4: Provoz -->
-            <div class="contact-info-item">
+            <div class="contact-info-item" data-anim="up">
               <div class="contact-info-icon-wrap">
                 <img src="/Icons/Ikony/clock.png" alt="" class="contact-info-icon">
               </div>
@@ -4581,7 +4592,7 @@ const getContactPageHTML = () => `
         </div>
 
         <!-- Pravý sloupec: Formulář -->
-        <div class="contact-form-column" id="form-sekce">
+        <div class="contact-form-column" id="form-sekce" data-anim="right">
           <h2 class="contact-form-title">Napište nám</h2>
           <form id="contact-page-form" class="contact-form-element">
             <div class="contact-form-row">
@@ -4631,11 +4642,11 @@ const getContactPageHTML = () => `
     <!-- 4. JAK SE K NÁM DOSTAT? -->
     <section class="contact-directions-section">
       <div class="contact-directions-inner">
-        <h2 class="directions-main-title">Jak se k nám dostat?</h2>
+        <h2 class="directions-main-title" data-anim="up">Jak se k nám dostat?</h2>
 
-        <div class="directions-grid">
+        <div class="directions-grid" data-anim-group>
           <!-- Levá část: Parkování -->
-          <div class="directions-left-col">
+          <div class="directions-left-col" data-anim="up">
             <h3 class="directions-parking-title">Parkování v létě zdarma přímo u hotelu</h3>
             <p class="directions-parking-desc">
               Uzamykatelné a hlídané kamerovým systémem, bez nutnosti rezervace místa.
@@ -4645,7 +4656,7 @@ const getContactPageHTML = () => `
           <!-- Pravá část: Autem a Vlakem -->
           <div class="directions-right-col">
             <!-- Autem -->
-            <div class="directions-mode-item">
+            <div class="directions-mode-item" data-anim="up">
               <div class="directions-icon-wrap">
                 <img src="/Icons/Ikony/car.png" alt="" class="directions-icon">
               </div>
@@ -4658,7 +4669,7 @@ const getContactPageHTML = () => `
             </div>
 
             <!-- Vlakem -->
-            <div class="directions-mode-item">
+            <div class="directions-mode-item" data-anim="up">
               <div class="directions-icon-wrap">
                 <img src="/Icons/Ikony/train.png" alt="" class="directions-icon">
               </div>
@@ -4676,7 +4687,7 @@ const getContactPageHTML = () => `
 
     <!-- 5. SEKCE MAPA -->
     <section class="contact-map-section" id="mapa">
-      <div class="contact-map-inner">
+      <div class="contact-map-inner" data-anim="up">
         <div class="contact-map-wrapper">
           <iframe 
             src="https://maps.google.com/maps?q=Hotel%20u%20M%C5%AFstku%20Desn%C3%A1%20368&t=&z=15&ie=UTF8&iwloc=&output=embed" 

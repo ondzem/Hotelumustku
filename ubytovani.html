@@ -537,14 +537,14 @@
   <!-- 2. DETAILY POKOJŮ (SPECS SEKCE - 14 POLOŽEK) -->
   <section class="room-specs-section" id="detaily-pokoju">
     <div class="room-specs-inner">
-      <h2 class="room-specs-main-title">Detaily Pokojů</h2>
+      <h2 class="room-specs-main-title" data-anim="up">Detaily Pokojů</h2>
 
       <div class="room-specs-grid">
         <!-- Levý sloupec: Seznam parametrů -->
         <div class="room-specs-content">
-          <ul class="room-specs-list">
+          <ul class="room-specs-list" data-anim-group>
             <!-- 1. Max. počet osob -->
-            <li class="room-spec-item">
+            <li class="room-spec-item" data-anim="up">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/group.png" alt="" class="spec-icon-img">
               </div>
@@ -554,7 +554,7 @@
             </li>
 
             <!-- 2. 2 postele -->
-            <li class="room-spec-item spec-item-with-subtext">
+            <li class="room-spec-item spec-item-with-subtext" data-anim="up">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/double-bed.png" alt="" class="spec-icon-img">
               </div>
@@ -565,7 +565,7 @@
             </li>
 
             <!-- 3. Dětská postýlka -->
-            <li class="room-spec-item">
+            <li class="room-spec-item" data-anim="up">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/cot.png" alt="" class="spec-icon-img">
               </div>
@@ -575,7 +575,7 @@
             </li>
 
             <!-- 4. Vytápění je ústřední -->
-            <li class="room-spec-item">
+            <li class="room-spec-item" data-anim="up">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/air.png" alt="" class="spec-icon-img">
               </div>
@@ -585,7 +585,7 @@
             </li>
 
             <!-- 5. Wi-Fi zdarma -->
-            <li class="room-spec-item">
+            <li class="room-spec-item" data-anim="up">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/wifi.png" alt="" class="spec-icon-img">
               </div>
@@ -595,7 +595,7 @@
             </li>
 
             <!-- 6. Máte mazlíčka? -->
-            <li class="room-spec-item">
+            <li class="room-spec-item" data-anim="up">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/pawprint.png" alt="" class="spec-icon-img">
               </div>
@@ -606,7 +606,7 @@
 
             <!-- EXTENZE DETAILŮ (Zobrazí se plynule po kliknutí na Přečíst více) -->
             <!-- 7. Vlastní koupelna -->
-            <li class="room-spec-item spec-extra-item">
+            <li class="room-spec-item spec-extra-item" data-anim="up">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/bathroom.png" alt="" class="spec-icon-img">
               </div>
@@ -616,7 +616,7 @@
             </li>
 
             <!-- 8. TV na pokoji -->
-            <li class="room-spec-item spec-extra-item">
+            <li class="room-spec-item spec-extra-item" data-anim="up">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/television.png" alt="" class="spec-icon-img">
               </div>
@@ -626,7 +626,7 @@
             </li>
 
             <!-- 9. Nekuřácké prostředí -->
-            <li class="room-spec-item spec-extra-item">
+            <li class="room-spec-item spec-extra-item" data-anim="up">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/no-smoking.png" alt="" class="spec-icon-img">
               </div>
@@ -636,7 +636,7 @@
             </li>
 
             <!-- 10. Zakázkové povlečení -->
-            <li class="room-spec-item spec-extra-item">
+            <li class="room-spec-item spec-extra-item" data-anim="up">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/folding.png" alt="" class="spec-icon-img">
               </div>
@@ -646,7 +646,7 @@
             </li>
 
             <!-- 11. Ručníky -->
-            <li class="room-spec-item spec-extra-item">
+            <li class="room-spec-item spec-extra-item" data-anim="up">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/towel.png" alt="" class="spec-icon-img">
               </div>
@@ -656,7 +656,7 @@
             </li>
 
             <!-- 12. Minibar -->
-            <li class="room-spec-item spec-extra-item">
+            <li class="room-spec-item spec-extra-item" data-anim="up">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/mini.png" alt="" class="spec-icon-img">
               </div>
@@ -666,7 +666,7 @@
             </li>
 
             <!-- 13. Šatní skříň -->
-            <li class="room-spec-item spec-extra-item">
+            <li class="room-spec-item spec-extra-item" data-anim="up">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/wardrobe.png" alt="" class="spec-icon-img">
               </div>
@@ -676,7 +676,7 @@
             </li>
 
             <!-- 14. Fén -->
-            <li class="room-spec-item spec-extra-item">
+            <li class="room-spec-item spec-extra-item" data-anim="up">
               <div class="spec-icon-wrap">
                 <img src="/Icons/Ikony/hair-dryer.png" alt="" class="spec-icon-img">
               </div>
@@ -693,7 +693,7 @@
         </div>
 
         <!-- Pravý sloupec: Fotka pokoje -->
-        <div class="room-specs-image-wrap">
+        <div class="room-specs-image-wrap" data-anim="right">
           <img src="/hezky pokoj 1.webp" alt="Detaily Pokojů v Hotelu u Můstku" loading="eager" fetchpriority="high" decoding="async">
         </div>
       </div>
@@ -703,7 +703,7 @@
   <!-- 3. PANORAMATICKÝ BANNER POKOJE -->
   <section class="room-banner-section">
     <div class="room-banner-overlay"></div>
-    <div class="room-banner-inner">
+    <div class="room-banner-inner" data-anim="fade">
       <p class="room-banner-text">Pokoje hotelu U Můstků nabízejí útulné a pohodlné ubytování.<br>Disponují vlastním balkónem či terasou s výhledem.</p>
     </div>
   </section>
@@ -712,15 +712,15 @@
   <section class="room-breakdown-section" id="rozdeleni-pokoju">
     <div class="room-breakdown-inner">
       <div class="room-breakdown-header">
-        <h2 class="room-breakdown-title">Rozdělení pokojů</h2>
+        <h2 class="room-breakdown-title" data-anim="up">Rozdělení pokojů</h2>
         <button class="btn btn-booking btn-breakdown-cta">Rezervovat pobyt</button>
       </div>
 
-      <div class="room-breakdown-list">
+      <div class="room-breakdown-list" data-anim-group>
         <!-- SKUPINA 1: POKOJE V PŘÍZEMÍ -->
-        <h3 class="room-group-label">Pokoje v přízemí</h3>
+        <h3 class="room-group-label" data-anim="up">Pokoje v přízemí</h3>
         
-    <div class="room-breakdown-item" data-room="p6">
+    <div class="room-breakdown-item" data-room="p6" data-anim="up">
       <div class="room-breakdown-row">
         <span class="room-breakdown-name"><strong>Pokoj Standard P1</strong> <span class="room-meal">(se snídaní)</span></span>
         <button class="btn-toggle-details" aria-expanded="false">
@@ -769,7 +769,7 @@
     </div>
   
         
-    <div class="room-breakdown-item" data-room="p5">
+    <div class="room-breakdown-item" data-room="p5" data-anim="up">
       <div class="room-breakdown-row">
         <span class="room-breakdown-name"><strong>Pokoj Standard P2</strong> <span class="room-meal">(se snídaní)</span></span>
         <button class="btn-toggle-details" aria-expanded="false">
@@ -846,7 +846,7 @@
     </div>
   
         
-    <div class="room-breakdown-item" data-room="pa">
+    <div class="room-breakdown-item" data-room="pa" data-anim="up">
       <div class="room-breakdown-row">
         <span class="room-breakdown-name"><strong>Pokoj Nadstandard Mahagon</strong> <span class="room-meal">(se snídaní)</span></span>
         <button class="btn-toggle-details" aria-expanded="false">
@@ -920,7 +920,7 @@
   
         
         <!-- Pokoj 4: Turistický P4 (v rekonstrukci) -->
-        <div class="room-breakdown-item" data-room="p3">
+        <div class="room-breakdown-item" data-room="p3" data-anim="up">
           <div class="room-breakdown-row">
             <span class="room-breakdown-name"><strong>Pokoj Turistický P4</strong> <span class="room-meal">(se snídaní)</span></span>
             <button class="btn-toggle-details" aria-expanded="false">
@@ -951,7 +951,7 @@
         </div>
 
         <!-- Pokoj 5: Turistický P5 (v rekonstrukci) -->
-        <div class="room-breakdown-item" data-room="p2">
+        <div class="room-breakdown-item" data-room="p2" data-anim="up">
           <div class="room-breakdown-row">
             <span class="room-breakdown-name"><strong>Pokoj Turistický P5</strong> <span class="room-meal">(se snídaní)</span></span>
             <button class="btn-toggle-details" aria-expanded="false">
@@ -982,7 +982,7 @@
         </div>
 
         <!-- Pokoj 6: Turistický P6 (v rekonstrukci) -->
-        <div class="room-breakdown-item" data-room="p1">
+        <div class="room-breakdown-item" data-room="p1" data-anim="up">
           <div class="room-breakdown-row">
             <span class="room-breakdown-name"><strong>Pokoj Turistický P6</strong> <span class="room-meal">(se snídaní)</span></span>
             <button class="btn-toggle-details" aria-expanded="false">
@@ -1013,9 +1013,9 @@
         </div>
 
         <!-- SKUPINA 2: POKOJE V PATŘE -->
-        <h3 class="room-group-label">Pokoje v patře</h3>
+        <h3 class="room-group-label" data-anim="up">Pokoje v patře</h3>
         
-    <div class="room-breakdown-item" data-room="p7">
+    <div class="room-breakdown-item" data-room="p7" data-anim="up">
       <div class="room-breakdown-row">
         <span class="room-breakdown-name"><strong>Pokoj Standard P7</strong> <span class="room-meal">(se snídaní)</span></span>
         <button class="btn-toggle-details" aria-expanded="false">
@@ -1100,7 +1100,7 @@
     </div>
   
         
-    <div class="room-breakdown-item" data-room="a1">
+    <div class="room-breakdown-item" data-room="a1" data-anim="up">
       <div class="room-breakdown-row">
         <span class="room-breakdown-name"><strong>Pokoj Nadstandard Motýl</strong> <span class="room-meal">(se snídaní)</span></span>
         <button class="btn-toggle-details" aria-expanded="false">
@@ -1173,7 +1173,7 @@
     </div>
   
         
-    <div class="room-breakdown-item" data-room="zen">
+    <div class="room-breakdown-item" data-room="zen" data-anim="up">
       <div class="room-breakdown-row">
         <span class="room-breakdown-name"><strong>Pokoj Nadstandard Zen</strong> <span class="room-meal">(se snídaní)</span></span>
         <button class="btn-toggle-details" aria-expanded="false">
@@ -1246,7 +1246,7 @@
     </div>
   
         
-    <div class="room-breakdown-item" data-room="p10">
+    <div class="room-breakdown-item" data-room="p10" data-anim="up">
       <div class="room-breakdown-row">
         <span class="room-breakdown-name"><strong>Pokoj Standard P10</strong> <span class="room-meal">(se snídaní)</span></span>
         <button class="btn-toggle-details" aria-expanded="false">
@@ -1323,7 +1323,7 @@
     </div>
   
         
-    <div class="room-breakdown-item" data-room="p11">
+    <div class="room-breakdown-item" data-room="p11" data-anim="up">
       <div class="room-breakdown-row">
         <span class="room-breakdown-name"><strong>Pokoj Standard P11</strong> <span class="room-meal">(se snídaní)</span></span>
         <button class="btn-toggle-details" aria-expanded="false">
@@ -1404,7 +1404,7 @@
     </div>
   
         
-    <div class="room-breakdown-item" data-room="p12">
+    <div class="room-breakdown-item" data-room="p12" data-anim="up">
       <div class="room-breakdown-row">
         <span class="room-breakdown-name"><strong>Pokoj Standard P12</strong> <span class="room-meal">(se snídaní)</span></span>
         <button class="btn-toggle-details" aria-expanded="false">
@@ -1499,12 +1499,12 @@
   <!-- SEKCE RECENZE (1:1 REPLIKA DLE SVG PŘEDLOHY + INTERAKTIVNÍ INFINITY SLIDER) -->
   <section class="reviews-section" id="recenze">
     <div class="reviews-inner">
-      <h2 class="reviews-title" style="margin-bottom: 24px;">Co o nás říkají sami hosté?</h2>
+      <h2 class="reviews-title" style="margin-bottom: 24px;" data-anim="up">Co o nás říkají sami hosté?</h2>
       
       <div class="reviews-slider-viewport" id="reviews-viewport">
-        <div class="reviews-slider-track" id="reviews-track">
+        <div class="reviews-slider-track" id="reviews-track" data-anim-group>
           
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Úžasně vstřícný personál, ochotný, usměvavý. Dlouho budeme vzpomínat na žampionovou polévku, kulajdu a domácí jogurt, který dělá paní majitelka.</p>
               <div class="review-contour-bg">
@@ -1516,7 +1516,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Strávili jsme tady s manželem nádherný víkend. Krásné prostředí, útulný hotel, výborná kuchyně, i když vaří jenom jedno menu. Úschovna kol, kde jsme si mohli elektrokola nabít, a co bylo super v těchto vedrech — pod terasou nádherný splav, kde jsme se mohli koupat. Posezení na zahrádce u dobrého piva bylo super. Určitě ještě přijedeme.</p>
               <div class="review-contour-bg">
@@ -1528,7 +1528,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">V hotelu jsme byli moc spokojeni. Pokoj měl starší vybavení, ale byl udržovaný a čistý. Ocenili jsme balkónek, který měl krásný výhled na můstky a na říčku Bílá Desná. Snídaně byly dostatečné. Večeři, která zahrnovala polévku a hlavní jídlo, si bylo možné předem objednat. Dalším bonusem je poloha hotelu — Jizerská magistrála se nachází zhruba 2 km od ubytování.</p>
               <div class="review-contour-bg">
@@ -1540,7 +1540,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Hotel na klidném pěkném místě. Vybavení starší, ale vše plně funkční a čisté. Velmi příjemný personál. Snídaně dostačující, možnost objednání večeří (jednotné menu — polévka, hlavní chod). Byli jsme velmi spokojeni.</p>
               <div class="review-contour-bg">
@@ -1552,7 +1552,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Děkujeme za příjemně strávenou dovolenou v útulných, velmi čistých pokojích. Majitelé jsou pohodoví a ochotní, velký výběr domácích produktů ve snídaňovém bufetu, večeře výborné za lidové ceny. Určitě doporučujeme všem, kdo stojí o dovolenou v hezkém, klidném prostředí. Stoprocentní spokojenost, vřele doporučujeme. Děkujeme.</p>
               <div class="review-contour-bg">
@@ -1564,7 +1564,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Byli jsme jen na tři dny, ale naprostá spokojenost. Tak čistý pokoj jsme snad ještě nezažili, majitelé vstřícní a jídlo také nemělo chybu. Pokud pojedeme do těchto končin znovu, určitě se ubytujeme opět tady.</p>
               <div class="review-contour-bg">
@@ -1576,7 +1576,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Spokojenost, doporučuji.</p>
               <div class="review-contour-bg">
@@ -1588,7 +1588,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Příjemné, klidné místo, dobré jídlo, přátelský personál, parkování u hotelu. Vzhledem k tomu, že je hotel starší, tak se mi vybavily příjemné vzpomínky na obdobná ubytování v 90. letech.</p>
               <div class="review-contour-bg">
@@ -1600,7 +1600,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Pobyt se nám u vás moc líbil. Milý přístup, krásně čisto, výborné jídlo, pěkné okolí hotelu a večer jsme se nenudili (kulečník, fotbálek, stolní tenis). Děkujeme :-)</p>
               <div class="review-contour-bg">
@@ -1612,7 +1612,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">V současné době můžu pochválit ceny, krásně čisto, příjemný personál, klidné místo. Vřele doporučuji.</p>
               <div class="review-contour-bg">
@@ -1624,7 +1624,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Hotel je ve velmi klidné části Desné daleko od veškerého ruchu, ale ne zase příliš daleko od centra, nádraží nebo přírody. Pokoj prostorný, postel i gauč vskutku pohodlné. U snídaně dostatečný výběr a možnost domluvit si za pár korun i svačinu s sebou. Dále byla možnost objednat večeři — tradiční česká kuchyně, která byla vynikající. Majitelé hotelu jsou velmi milí lidé a není problém vyřešit jakoukoliv situaci. Dále je možné zahrát si stolní fotbal nebo například kulečník.</p>
               <div class="review-contour-bg">
@@ -1636,7 +1636,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Pokud chcete dovolenou v klidném prostředí, tak vřele doporučuji. Na hotelu klid, v noci klid a okolí krásné a klidné. Výborné večeře, sice bez výběru, jedno menu, ale kvalita, se kterou se hned tak nesetkáte. Podotýkám česká kuchyně. Rádi se sem vrátíme.</p>
               <div class="review-contour-bg">
@@ -1648,7 +1648,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Obrovská spokojenost, ceny stejné jako před třemi lety. Pořád krásně čisto, výborné jídlo a ochotný personál. Díky.</p>
               <div class="review-contour-bg">
@@ -1660,7 +1660,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Super místo, Silvestr neměl chybu. Perfektní jídlo, snídaně — velký výběr. V létě určitě přijedeme. Velice příjemný a ochotný personál. Určitě v létě přijedeme na kola.</p>
               <div class="review-contour-bg">
@@ -1672,7 +1672,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Krásné místo, útulný hotýlek, všude čisto, příjemní a milí majitelé, výhled přímo na můstky, snídaně výborná, zkrátka úžasný odpočinek v nádherném prostředí.</p>
               <div class="review-contour-bg">
@@ -1684,7 +1684,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Na dovolené jsme zde byli už počtvrté a opět stoprocentní spokojenost. Ochotní majitelé, výborná kuchyně, čisté pokoje a hlavně klid a pohoda. Děkujeme za příjemně strávenou dovolenou. Těšíme se na příště.</p>
               <div class="review-contour-bg">
@@ -1696,7 +1696,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Příjemné klidné prostředí s chutnou domácí stravou a personálem ochotným vyhovět specifickým požadavkům. Pokoje útulné a všude čisto. Pobyt byl milým překvapením a můžeme jen doporučit.</p>
               <div class="review-contour-bg">
@@ -1708,7 +1708,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Jezdíme pravidelně každý rok už od roku 2015. Dovolená je každý rok lepší a lepší. Skvělá kuchyně, výborné snídaně s domácími jogurty a chlebem, všude čisto, klid a pohoda. Vřele doporučujeme a těšíme se na příští léto. Děkujeme za krásnou dovolenou.</p>
               <div class="review-contour-bg">
@@ -1720,7 +1720,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Tak jako každý rok, byl ten týden u Vás v hotelu úplný balzám na tělo i duši. Škoda jen, že to vždy tak rychle uteče. Děkujeme a už nyní se těšíme na příští rok.</p>
               <div class="review-contour-bg">
@@ -1732,7 +1732,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Děkujeme za příjemný pobyt v útulném prostředí a skvělou domácí kuchyni. V létě přijedeme zase.</p>
               <div class="review-contour-bg">
@@ -1744,7 +1744,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Stále stejně super hotel v klidném prostředí s výbornou kuchyní. Užili jsme si to my i děti. Příští rok se chystáme znovu. Děkujeme za nádhernou dovolenou.</p>
               <div class="review-contour-bg">
@@ -1756,7 +1756,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Vše tak, jak má být. Stoprocentní spokojenost. Děkujeme.</p>
               <div class="review-contour-bg">
@@ -1768,7 +1768,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Už čtvrtý pobyt a je to čím dál tím lepší. Doporučujeme.</p>
               <div class="review-contour-bg">
@@ -1780,7 +1780,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Děkujeme vám za příjemně strávenou dovolenou ve vašem klidném, čistém a útulném hotelu s výbornou kuchyní. Moc se nám u vás líbilo. Všem doporučujeme.</p>
               <div class="review-contour-bg">
@@ -1792,7 +1792,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Klid, čisto, pohodlí, snídaně i večeře super. Přestože se vaří jednotné jídlo, s takovou kvalitou se setkáváme málokde. Doporučujeme.</p>
               <div class="review-contour-bg">
@@ -1804,7 +1804,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Letos jsme se vrátili už potřetí a určitě ne naposledy. Vřele doporučujeme — dovolená tady nemá chybu. Děkujeme.</p>
               <div class="review-contour-bg">
@@ -1816,7 +1816,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">S velmi dobrým pocitem odjíždíme z týdenního pobytu v tomto hotelu s velice příjemným a čistým prostředím, výbornou kuchyní a úžasnými majiteli. Velké díky za příjemné prožití letní dovolené a někdy zase na shledanou v hotelu U Můstků.</p>
               <div class="review-contour-bg">
@@ -1828,7 +1828,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Moc Vám děkujeme za příjemný pobyt, dobré ubytování, výbornou domácí kuchyni a moc příjemné majitele. Určitě všem doporučujeme.</p>
               <div class="review-contour-bg">
@@ -1840,7 +1840,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Einfach, praktisch, super nette Leute und preiswert, super Frühstück und wer wollte exzellentes Abendbrot.</p>
               <div class="review-contour-bg">
@@ -1852,7 +1852,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Děkujeme za úžasný týdenní pobyt nejen v příjemném hotelu s úžasnými majiteli, ale také za krásná místa v okolí. Hotel U Můstků můžeme všem jen doporučit. Ještě jednou děkujeme.</p>
               <div class="review-contour-bg">
@@ -1864,7 +1864,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Děkujeme majitelům hotelu za příjemně strávený pobyt a vše, co pro nás dělali. Ještě jednou vřelý dík. Všem vřele doporučujeme.</p>
               <div class="review-contour-bg">
@@ -1876,7 +1876,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Všem doporučujeme — pěkný hotel a hlavně úžasní majitelé a výborná kuchyně. Letos jsme byli už podruhé, vrátili jsme se po roce a bylo to snad ještě lepší než loni :-) Děkujeme za nádhernou dovolenou.</p>
               <div class="review-contour-bg">
@@ -1888,7 +1888,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Krásný hotel v krásné krajině, možnost mnoha výletů a procházek, skvělá kuchyně a velice milí a ochotní majitelé. Dovolená se nám moc líbila, ani odjíždět se nám nechtělo. Určitě se ještě někdy vrátíme.</p>
               <div class="review-contour-bg">
@@ -1900,7 +1900,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">V hotelu jsme strávili týden a vřele ho doporučujeme všem návštěvníkům — levné a skvěle připravené jídlo, velice příjemní a ochotní majitelé.</p>
               <div class="review-contour-bg">
@@ -1912,7 +1912,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Zdejší hotel hodnotíme s manželkou — za slušné peníze hodně muziky. Výborné ubytování, služby, kuchyně, čistota a slušní majitelé. Procestovali jsme toho hodně a tento hotel s klidem můžeme doporučit.</p>
               <div class="review-contour-bg">
@@ -1924,7 +1924,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Silvestrovský pobyt super. Děkujeme za krásný vstup do nového roku 2016.</p>
               <div class="review-contour-bg">
@@ -1936,7 +1936,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Pobyt v hotelu se nám moc líbil. Na pokoji nám nic nechybělo — vše mají promyšleno do detailů. Jídlo bylo moc dobré. Majitelé jsou velmi příjemní a ochotní. Vhodné i pro rodinu s malými dětmi. Byli jsme moc spokojení. Doporučujeme!</p>
               <div class="review-contour-bg">
@@ -1948,7 +1948,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">V neděli jsme měli oslavu narozenin ve zdejším hotelu. Všichni jsme byli velice mile překvapeni kvalitou a chutí jídla, zároveň příjemným, přitom profesionálním personálem. Vřele doporučujeme.</p>
               <div class="review-contour-bg">
@@ -1960,7 +1960,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">V sobotu jsme se vrátili z týdenní dovolené, vše bylo super! Včetně vynikajícího personálu (tímto jej zdravíme) a domácí kuchyně! Ještě jednou díky za příjemně strávený týden. Vřele všem doporučujeme!</p>
               <div class="review-contour-bg">
@@ -1972,7 +1972,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Naprosto bezchybný týden dovolené, vše už zde bylo napsáno, naše hodnocení: jednička s hvězdou. Vše super, doporučujeme.</p>
               <div class="review-contour-bg">
@@ -1984,7 +1984,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Příjemný hotel, výborná domácí kuchyně, domácí atmosféra. Dovolenou tady vřele všem doporučujeme. Nádherná dovolená — děkujeme a moc rádi se vrátíme.</p>
               <div class="review-contour-bg">
@@ -1996,7 +1996,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Klidné prostředí, pohoda. Doporučuji.</p>
               <div class="review-contour-bg">
@@ -2008,7 +2008,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Příjemně strávený pobyt v hotelu, všem doporučuji a hlavně dobrá kuchyně. Pozdrav provozovatelům.</p>
               <div class="review-contour-bg">
@@ -2020,7 +2020,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">S rodinou jsme byli v hotelu U Můstků v Desné, prostě paráda. Domácí strava a příjemná obsluha, palec nahoru.</p>
               <div class="review-contour-bg">
@@ -2032,7 +2032,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Na začátku ledna jsme se s rodinou ubytovali v hotelu, kde jsme strávili pět dnů. Byli jsme spokojeni. Doporučuji.</p>
               <div class="review-contour-bg">
@@ -2044,7 +2044,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">O prázdninách jsme navštívili s kamarády Jizerské hory a ubytování v hotelu U Můstků bylo super. Určitě pojedeme znovu i v zimě na lyže. Tímto pozdravuji provozovatele.</p>
               <div class="review-contour-bg">
@@ -2056,7 +2056,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Rodinný hotel v klidném prostředí, výborná domácí kuchyně a příjemní lidé... :-) Parádní dovolená.</p>
               <div class="review-contour-bg">
@@ -2068,7 +2068,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">S přítelem jsme strávili tři dny a byli jsme velice spokojeni.</p>
               <div class="review-contour-bg">
@@ -2080,7 +2080,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Minulý týden jsme se s rodinou ubytovali v hotelu U Můstků a můžu jenom doporučit. Velice příjemní lidé, výborná domácí kuchyně. Všude čisto. Opravdu doporučuji.</p>
               <div class="review-contour-bg">
@@ -2092,7 +2092,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Přespali jsme sice jenom jednu noc a musím konstatovat, že jsme spokojeni s přístupem a hlavně nádherně čistě uklizenými pokoji. Snídaně formou bufetu bez sebemenších připomínek.</p>
               <div class="review-contour-bg">
@@ -2104,7 +2104,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Za profesionální přístup personálu a příjemné prostředí palec nahoru. Mohu všem jen doporučit. Zároveň si přeji, aby takto fungovala všechna podobná zařízení v Desné. Majitelům a personálu přeji plno slušných hostů a hodně elánu do jejich další práce.</p>
               <div class="review-contour-bg">
@@ -2116,7 +2116,7 @@
               </div>
             </div>
   
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">Krásné prostředí, příjemná obsluha a výborná domácí kuchyně. Také jsme měli možnost ochutnat domácí uzený bůček a různé dobroty z grilu. Můžu jenom doporučit.</p>
               <div class="review-contour-bg">
@@ -2156,15 +2156,15 @@
   <!-- 6. STRAVOVÁNÍ V HOTELU -->
   <section class="room-detail-dining-section">
     <div class="room-detail-dining-inner">
-      <h2 class="room-detail-dining-title">Jak je to se stravováním?</h2>
+      <h2 class="room-detail-dining-title" data-anim="up">Jak je to se stravováním?</h2>
 
-      <div class="services-cards-wrap">
+      <div class="services-cards-wrap" data-anim-group>
         <!-- Karta 1: Snídaně -->
-        <div class="service-card service-card-left">
-          <div class="service-card-img-wrap">
+        <div class="service-card service-card-left" data-anim="up">
+          <div class="service-card-img-wrap" data-anim="left">
             <img src="/Uvodni stranka/stravovani.webp" alt="Snídaně v Hotelu u Můstku" loading="lazy" decoding="async">
           </div>
-          <div class="service-card-body">
+          <div class="service-card-body" data-anim="right">
             <h3 class="service-card-title">Snídaně</h3>
             <div class="service-card-desc-wrap">
               <p class="service-card-desc">
@@ -2177,11 +2177,11 @@
         </div>
 
         <!-- Karta 2: Polopenze (Večeře) -->
-        <div class="service-card service-card-right">
-          <div class="service-card-img-wrap">
+        <div class="service-card service-card-right" data-anim="up">
+          <div class="service-card-img-wrap" data-anim="left">
             <img src="/Polopenze vecere.webp" alt="Polopenze v Hotelu u Můstku" loading="lazy" decoding="async">
           </div>
-          <div class="service-card-body">
+          <div class="service-card-body" data-anim="right">
             <h3 class="service-card-title">Polopenze (Večeře)</h3>
             <div class="service-card-desc-wrap">
               <p class="service-card-desc">
@@ -2199,10 +2199,10 @@
   <!-- 7. VÝHODY UBYTOVÁNÍ U NÁS -->
   <section class="room-detail-features-section" id="vyhody-ubytovani">
     <div class="room-detail-features-inner">
-      <h2 class="room-detail-features-title">Výhody ubytování u nás</h2>
+      <h2 class="room-detail-features-title" data-anim="up">Výhody ubytování u nás</h2>
 
-      <div class="room-features-cards-grid">
-        <div class="room-feature-card">
+      <div class="room-features-cards-grid" data-anim-group>
+        <div class="room-feature-card" data-anim="up">
           <div class="room-feature-img-wrap">
             <img src="/IMG_1458 1.webp" alt="Máte Mazlíčka?" loading="lazy" decoding="async">
           </div>
@@ -2212,7 +2212,7 @@
             <span class="mobile-sub-text">150 Kč / den hotel je dog-friendly, nutné vodítko v areálu.</span>
           </p>
         </div>
-        <div class="room-feature-card">
+        <div class="room-feature-card" data-anim="up">
           <div class="room-feature-img-wrap">
             <img src="/IMG_1437 1.webp" alt="Nabíjení Elektrokola" loading="lazy" decoding="async">
           </div>
@@ -2222,7 +2222,7 @@
             <span class="mobile-sub-text">15 Kč / den - dobíjení v kolárně pod zámkem.</span>
           </p>
         </div>
-        <div class="room-feature-card">
+        <div class="room-feature-card" data-anim="up">
           <div class="room-feature-img-wrap">
             <img src="/desna_parkovani.webp" alt="Parkování" loading="lazy" decoding="async">
           </div>
@@ -2241,9 +2241,9 @@
     <div class="room-terms-inner">
       <div class="room-terms-content-wrap">
         <!-- Levý blok: Storno podmínky (Tabulka) -->
-        <div class="storno-table-container">
+        <div class="storno-table-container" data-anim-group>
           <!-- Řádek 1 -->
-          <div class="storno-table-row">
+          <div class="storno-table-row" data-anim="up">
             <div class="storno-label-group">
               <span class="storno-time-label">Více než 3 dny před příjezdem:</span>
             </div>
@@ -2254,7 +2254,7 @@
           </div>
 
           <!-- Řádek 2 -->
-          <div class="storno-table-row">
+          <div class="storno-table-row" data-anim="up">
             <div class="storno-label-group">
               <span class="storno-time-label">Méně než 3 dny před příjezdem:</span>
               <span class="storno-time-sub">(nebo nedojezd)</span>
@@ -2268,11 +2268,11 @@
 
         <!-- Pravý blok: Tlačítko & Check-in / Check-out -->
         <div class="room-terms-right-side">
-          <button class="btn btn-booking btn-terms-cta">Rezervovat pobyt</button>
+          <button class="btn btn-booking btn-terms-cta" data-anim="up">Rezervovat pobyt</button>
 
-          <div class="check-times-container">
+          <div class="check-times-container" data-anim-group>
             <!-- Check-in -->
-            <div class="check-time-item">
+            <div class="check-time-item" data-anim="up">
               <div class="check-icon-wrap">
                 <img src="/Icons/Ikony/arrival.png" alt="Příjezd (Check-in)" width="28" height="28">
               </div>
@@ -2280,7 +2280,7 @@
             </div>
 
             <!-- Check-out -->
-            <div class="check-time-item">
+            <div class="check-time-item" data-anim="up">
               <div class="check-icon-wrap">
                 <img src="/Icons/Ikony/tourist.png" alt="Odjezd (Check-out)" width="28" height="28">
               </div>

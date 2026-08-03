@@ -1907,11 +1907,11 @@ h3 {
   align-items: center;
   justify-content: center;
   white-space: nowrap;
-  transition: background-color 0.2s ease, transform 0.2s ease;
+  transition: background-color 0.2s ease;
 }
 
 .btn-add-review-trigger:hover {
-  background-color: #556338;
+  background-color: #566438;
 }
 
 @media (max-width: 767px) {
@@ -13152,8 +13152,8 @@ input:checked + .cookie-slider:before {
   padding: 0 28px;
   font-size: 17px;
   font-weight: 500;
-  background-color: #4A5A24;
-  color: #FFFFFF;
+  background-color: #697947;
+  color: #ffffff;
   border: none;
   border-radius: 1px;
   display: inline-flex;
@@ -13162,16 +13162,16 @@ input:checked + .cookie-slider:before {
   gap: 8px;
   cursor: pointer;
   white-space: nowrap;
-  transition: background-color 0.2s ease, transform 0.15s ease;
+  transition: background-color 0.2s ease;
   box-sizing: border-box;
 }
 
 .btn-add-review:hover {
-  background-color: #38451b;
+  background-color: #566438;
 }
 
 .btn-add-review:focus-visible {
-  outline: 2px solid #4A5A24;
+  outline: 2px solid #697947;
   outline-offset: 2px;
 }
 
@@ -13571,13 +13571,13 @@ input:checked + .cookie-slider:before {
 
 html.anim-ready [data-anim] {
   opacity: 0;
-  transition: opacity 0.85s cubic-bezier(0.22, 0.61, 0.36, 1),
-              transform 0.85s cubic-bezier(0.22, 0.61, 0.36, 1);
+  transition: opacity 1.10s cubic-bezier(0.33, 1, 0.68, 1),
+              transform 1.60s cubic-bezier(0.33, 1, 0.68, 1);
 }
 
-html.anim-ready [data-anim="up"]    { transform: translateY(28px); }
-html.anim-ready [data-anim="left"]  { transform: translateX(-32px); }
-html.anim-ready [data-anim="right"] { transform: translateX(32px); }
+html.anim-ready [data-anim="up"]    { transform: translateY(56px); }
+html.anim-ready [data-anim="left"]  { transform: translateX(-64px); }
+html.anim-ready [data-anim="right"] { transform: translateX(64px); }
 html.anim-ready [data-anim="fade"]  { transform: none; }
 
 html.anim-ready [data-anim].is-in {
@@ -13591,6 +13591,103 @@ html.anim-ready [data-anim].is-in {
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
+  }
+}
+
+/* ===== Náběh hero sekce a navbaru po načtení stránky =====
+   Čisté CSS bez závislosti na JS — kdyby se skript nenačetl,
+   animace i tak proběhne a obsah je vidět.
+   Používá translate (ne transform), aby nekolidovalo
+   s transform: none !important na hero nadpisech. */
+
+@keyframes navNastup {
+  from { opacity: 0; translate: 0 -14px; }
+  to   { opacity: 1; translate: none; }
+}
+
+@keyframes heroNastup {
+  from { opacity: 0; translate: 0 26px; }
+  to   { opacity: 1; translate: none; }
+}
+
+/* --- Navbar: logo, odkazy, tlačítko --- */
+.site-header .header-logo,
+.site-header .nav-link,
+.site-header .btn-header-booking,
+.site-header .mobile-menu-btn {
+  animation: navNastup 0.85s cubic-bezier(0.33, 1, 0.68, 1) backwards;
+}
+
+.site-header .header-logo   { animation-delay: 0.10s; }
+.site-header .nav-link:nth-of-type(1) { animation-delay: 0.20s; }
+.site-header .nav-link:nth-of-type(2) { animation-delay: 0.26s; }
+.site-header .nav-link:nth-of-type(3) { animation-delay: 0.32s; }
+.site-header .nav-link:nth-of-type(4) { animation-delay: 0.38s; }
+.site-header .nav-link:nth-of-type(5) { animation-delay: 0.44s; }
+.site-header .nav-link:nth-of-type(6) { animation-delay: 0.50s; }
+.site-header .btn-header-booking { animation-delay: 0.58s; }
+.site-header .mobile-menu-btn    { animation-delay: 0.20s; }
+
+/* --- Hero: nadpis, podtitulek, tlačítka, šipka --- */
+.hero-title,
+.room-detail-hero-title,
+.booking-hero-main-title,
+.hero-subtitle,
+.room-detail-hero-subtitle,
+.booking-hero-subtitle,
+.hero-buttons,
+.room-detail-hero-btn,
+.btn-news-hero-btn,
+.btn-contact-hero-btn,
+.dining-hero-buttons-wrap,
+.events-hero-buttons-wrap,
+.activities-hero-buttons-wrap,
+.category-hero-buttons-wrap,
+.rooms-date-picker-bar,
+.hero-section .scroll-down-btn,
+.room-detail-hero .scroll-down-btn,
+.rooms-hero-section .scroll-down-btn,
+.booking-hero-section .scroll-down-btn {
+  animation: heroNastup 1.15s cubic-bezier(0.33, 1, 0.68, 1) backwards;
+}
+
+.hero-title,
+.room-detail-hero-title,
+.booking-hero-main-title      { animation-delay: 0.55s; }
+
+.hero-subtitle,
+.room-detail-hero-subtitle,
+.booking-hero-subtitle        { animation-delay: 0.72s; }
+
+.hero-buttons,
+.room-detail-hero-btn,
+.btn-news-hero-btn,
+.btn-contact-hero-btn,
+.dining-hero-buttons-wrap,
+.events-hero-buttons-wrap,
+.activities-hero-buttons-wrap,
+.category-hero-buttons-wrap,
+.rooms-date-picker-bar        { animation-delay: 0.88s; }
+
+.hero-section .scroll-down-btn,
+.room-detail-hero .scroll-down-btn,
+.rooms-hero-section .scroll-down-btn,
+.booking-hero-section .scroll-down-btn { animation-delay: 1.10s; }
+
+/* Přístupnost */
+@media (prefers-reduced-motion: reduce) {
+  .site-header .header-logo,
+  .site-header .nav-link,
+  .site-header .btn-header-booking,
+  .site-header .mobile-menu-btn,
+  .hero-title, .room-detail-hero-title, .booking-hero-main-title,
+  .hero-subtitle, .room-detail-hero-subtitle, .booking-hero-subtitle,
+  .hero-buttons, .room-detail-hero-btn, .btn-news-hero-btn, .btn-contact-hero-btn,
+  .dining-hero-buttons-wrap, .events-hero-buttons-wrap, .activities-hero-buttons-wrap,
+  .category-hero-buttons-wrap, .rooms-date-picker-bar,
+  .hero-section .scroll-down-btn, .room-detail-hero .scroll-down-btn,
+  .rooms-hero-section .scroll-down-btn, .booking-hero-section .scroll-down-btn {
+    animation: none !important;
   }
 }
 

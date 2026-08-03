@@ -325,9 +325,9 @@
       <div class="contact-main-inner">
         <!-- Levý sloupec: Kontakty -->
         <div class="contact-info-column">
-          <div class="contact-info-list">
+          <div class="contact-info-list" data-anim-group>
             <!-- Item 1: Adresa -->
-            <div class="contact-info-item">
+            <div class="contact-info-item" data-anim="up">
               <div class="contact-info-icon-wrap">
                 <img src="/Icons/Ikony/location.png" alt="" class="contact-info-icon">
               </div>
@@ -339,7 +339,7 @@
             </div>
 
             <!-- Item 2: Telefon -->
-            <div class="contact-info-item">
+            <div class="contact-info-item" data-anim="up">
               <div class="contact-info-icon-wrap">
                 <img src="/Icons/Ikony/phone-flip.png" alt="" class="contact-info-icon">
               </div>
@@ -351,7 +351,7 @@
             </div>
 
             <!-- Item 3: E-mail -->
-            <div class="contact-info-item">
+            <div class="contact-info-item" data-anim="up">
               <div class="contact-info-icon-wrap">
                 <img src="/Icons/Ikony/envelope.png" alt="" class="contact-info-icon">
               </div>
@@ -363,7 +363,7 @@
             </div>
 
             <!-- Item 4: Provoz -->
-            <div class="contact-info-item">
+            <div class="contact-info-item" data-anim="up">
               <div class="contact-info-icon-wrap">
                 <img src="/Icons/Ikony/clock.png" alt="" class="contact-info-icon">
               </div>
@@ -377,7 +377,7 @@
         </div>
 
         <!-- Pravý sloupec: Formulář -->
-        <div class="contact-form-column" id="form-sekce">
+        <div class="contact-form-column" id="form-sekce" data-anim="right">
           <h2 class="contact-form-title">Napište nám</h2>
           <form id="contact-page-form" class="contact-form-element">
             <div class="contact-form-row">
@@ -427,11 +427,11 @@
     <!-- 4. JAK SE K NÁM DOSTAT? -->
     <section class="contact-directions-section">
       <div class="contact-directions-inner">
-        <h2 class="directions-main-title">Jak se k nám dostat?</h2>
+        <h2 class="directions-main-title" data-anim="up">Jak se k nám dostat?</h2>
 
-        <div class="directions-grid">
+        <div class="directions-grid" data-anim-group>
           <!-- Levá část: Parkování -->
-          <div class="directions-left-col">
+          <div class="directions-left-col" data-anim="up">
             <h3 class="directions-parking-title">Parkování v létě zdarma přímo u hotelu</h3>
             <p class="directions-parking-desc">
               Uzamykatelné a hlídané kamerovým systémem, bez nutnosti rezervace místa.
@@ -441,7 +441,7 @@
           <!-- Pravá část: Autem a Vlakem -->
           <div class="directions-right-col">
             <!-- Autem -->
-            <div class="directions-mode-item">
+            <div class="directions-mode-item" data-anim="up">
               <div class="directions-icon-wrap">
                 <img src="/Icons/Ikony/car.png" alt="" class="directions-icon">
               </div>
@@ -454,7 +454,7 @@
             </div>
 
             <!-- Vlakem -->
-            <div class="directions-mode-item">
+            <div class="directions-mode-item" data-anim="up">
               <div class="directions-icon-wrap">
                 <img src="/Icons/Ikony/train.png" alt="" class="directions-icon">
               </div>
@@ -472,7 +472,7 @@
 
     <!-- 5. SEKCE MAPA -->
     <section class="contact-map-section" id="mapa">
-      <div class="contact-map-inner">
+      <div class="contact-map-inner" data-anim="up">
         <div class="contact-map-wrapper">
           <iframe 
             src="https://maps.google.com/maps?q=Hotel%20u%20M%C5%AFstku%20Desn%C3%A1%20368&t=&z=15&ie=UTF8&iwloc=&output=embed" 
@@ -496,7 +496,7 @@
   <!-- CTA SEKCE (1:1 REPLIKA DLE SVG PŘEDLOHY) -->
   <section class="cta-section">
     <div class="cta-overlay"></div>
-    <div class="cta-inner">
+    <div class="cta-inner" data-anim="up">
       <h2 class="cta-title">Dopřejte si zasloužený<br>odpočinek v Jizerských horách</h2>
       <button class="btn btn-cta" id="cta-booking-btn">Rezervovat pobyt</button>
     </div>
