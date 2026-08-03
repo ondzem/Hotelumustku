@@ -3476,7 +3476,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 /* Přestupní den — dopoledne obsazeno, odpoledne volno */
 .cal-day.is-turnover-day {
   position: relative;
-  background: linear-gradient(135deg, #fef5e7 0 50%, #ffffff 50% 100%) !important;
+  z-index: 0;
+  background: linear-gradient(to bottom right, #fef5e7 0 50%, #ffffff 50% 100%) !important;
   color: #1c1c19 !important;
   border-style: solid !important;
   border-width: 1px !important;
@@ -3485,12 +3486,14 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   border-right-color: #ddd9cf !important;
   border-bottom-color: #ddd9cf !important;
   cursor: pointer !important;
-  text-shadow: 0 1px 4px rgba(255, 255, 255, 0.95), 0 0 2px rgba(255, 255, 255, 0.9);
+  text-shadow: none !important;
 }
 
 /* Přestupní den vybraný jako PŘÍJEZDU — dopoledne obsazeno, odpoledne váš */
 .cal-day.is-turnover-day.is-from {
-  background: linear-gradient(135deg, #fef5e7 0 50%, #697947 50% 100%) !important;
+  position: relative;
+  z-index: 0;
+  background: linear-gradient(to bottom right, #fef5e7 0 50%, #697947 50% 100%) !important;
   color: #1c1c19 !important;
   border-style: solid !important;
   border-width: 1px !important;
@@ -3498,12 +3501,14 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   border-left-color: #e67e22 !important;
   border-right-color: #697947 !important;
   border-bottom-color: #697947 !important;
-  text-shadow: 0 1px 4px rgba(255, 255, 255, 0.95), 0 0 2px rgba(255, 255, 255, 0.9);
+  text-shadow: none !important;
 }
 
 /* Váš den ODJEZDU — dopoledne jste tu vy, odpoledne je volno */
 .cal-day.is-to {
-  background: linear-gradient(135deg, #697947 0 50%, #ffffff 50% 100%) !important;
+  position: relative;
+  z-index: 0;
+  background: linear-gradient(to bottom right, #697947 0 50%, #ffffff 50% 100%) !important;
   color: #1c1c19 !important;
   border-style: solid !important;
   border-width: 1px !important;
@@ -3511,19 +3516,38 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   border-left-color: #697947 !important;
   border-right-color: #ddd9cf !important;
   border-bottom-color: #ddd9cf !important;
-  text-shadow: 0 1px 4px rgba(255, 255, 255, 0.95), 0 0 2px rgba(255, 255, 255, 0.9);
+  text-shadow: none !important;
 }
 
 /* Váš odjezd, který je zároveň přestupní pro dalšího hosta */
 .cal-day.is-to.is-turnover-day {
-  background: linear-gradient(135deg, #697947 0 50%, #ffffff 50% 100%) !important;
+  position: relative;
+  z-index: 0;
+  background: linear-gradient(to bottom right, #697947 0 50%, #ffffff 50% 100%) !important;
+  color: #1c1c19 !important;
   border-style: solid !important;
   border-width: 1px !important;
   border-top-color: #697947 !important;
   border-left-color: #697947 !important;
   border-right-color: #ddd9cf !important;
   border-bottom-color: #ddd9cf !important;
-  text-shadow: 0 1px 4px rgba(255, 255, 255, 0.95), 0 0 2px rgba(255, 255, 255, 0.9);
+  text-shadow: none !important;
+}
+
+.cal-day.is-turnover-day::before,
+.cal-day.is-turnover-day.is-from::before,
+.cal-day.is-to::before,
+.cal-day.is-to.is-turnover-day::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #ffffff;
+  z-index: -1;
 }
 
 .cal-day.is-turnover-day::after {
