@@ -1898,7 +1898,7 @@ export class AdminDashboard {
 
       if (isStart || isEnd) {
         dayClass += ' is-selected';
-        dayStyle = 'background-color: #eef3e6 !important; color: #1c1c19 !important; font-weight: 700 !important; border: none; border-radius: 4px;';
+        dayStyle = 'background-color: #eef3e6 !important; color: #1c1c19 !important; font-weight: 700 !important; border: none; border-radius: 1px;';
       } else if (isBetween) {
         dayClass += ' in-range';
         dayStyle = 'background-color: #eef3e6 !important; color: #697947 !important; font-weight: 600 !important; border: none; border-radius: 0;';
@@ -1906,7 +1906,7 @@ export class AdminDashboard {
         dayClass += ' is-disabled';
         dayStyle = 'color: #a0a098; font-weight: 400;';
       } else {
-        dayStyle = 'color: #1c1c19; font-weight: 500;';
+        dayStyle = 'color: #1a1a1a; font-weight: 500;';
       }
 
       daysHtml += `
@@ -1930,20 +1930,22 @@ export class AdminDashboard {
 
     return `
       <div class="cal-modal-overlay" id="admin-cal-modal-overlay" style="z-index: 100000;">
-        <div class="cal-modal-card" style="max-width: 380px; padding: 20px;">
-          <div class="cal-modal-header">
-            <button type="button" class="cal-nav-btn" id="admin-cal-prev-month" aria-label="Předchozí měsíc">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="15 18 9 12 15 6"></polyline>
-              </svg>
-            </button>
-            <h4 class="cal-month-title">${monthNames[month - 1]} ${year}</h4>
-            <button type="button" class="cal-nav-btn" id="admin-cal-next-month" aria-label="Následující měsíc">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="9 18 15 12 9 6"></polyline>
-              </svg>
-            </button>
-            <button type="button" class="cal-close-btn" id="admin-cal-close-btn" aria-label="Zavřít">&times;</button>
+        <div class="cal-modal-card">
+          <div class="cal-modal-header" style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="cal-month-title">${monthNames[month - 1]} ${year}</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <button type="button" class="btn btn-cal-nav cal-nav-btn" id="admin-cal-prev-month" title="Předchozí měsíc">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              </button>
+              <button type="button" class="btn btn-cal-nav cal-nav-btn" id="admin-cal-next-month" title="Následující měsíc">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+              <button type="button" class="btn btn-cal-close cal-close-btn" id="admin-cal-close-btn" title="Zavřít kalendář">
+                &times;
+              </button>
+            </div>
           </div>
 
           <div class="cal-week-days">
@@ -1954,16 +1956,16 @@ export class AdminDashboard {
             ${daysHtml}
           </div>
 
-          <div class="cal-modal-footer" style="display: flex; flex-direction: column; gap: 12px; padding-top: 14px; border-top: 1px solid #e8e7de; margin-top: 12px;">
-            <div style="font-size: 12.5px; color: #444440; line-height: 1.4; text-align: center;">
+          <div class="cal-modal-footer" style="padding: 16px 20px 20px 20px; border-top: 1px solid #e2e6d8; display: flex; flex-direction: column; gap: 14px; background: #ffffff;">
+            <div style="font-size: 13.5px; color: #444440; line-height: 1.4; text-align: center;">
               ${summaryText}
             </div>
 
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
-              <button type="button" id="btn-clear-admin-date" style="background: none; border: none; font-size: 12.5px; font-weight: 600; color: #c62828; cursor: pointer; text-decoration: underline; padding: 0;">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+              <button type="button" id="btn-clear-admin-date" style="background: none; border: none; font-size: 13.5px; font-weight: 600; color: #c62828; cursor: pointer; text-decoration: underline; padding: 0;">
                 Vynulovat výběr
               </button>
-              <button type="button" id="btn-confirm-admin-date-range" class="btn btn-booking-submit" style="height: 36px; padding: 0 16px; font-size: 13px; font-weight: 700; border-radius: 4px; background: #697947; color: #ffffff; border: none; cursor: pointer;">
+              <button type="button" id="btn-confirm-admin-date-range" class="btn btn-booking-submit" style="height: 42px; padding: 0 22px; font-size: 14.5px; font-weight: 700; border-radius: 2px; background: #697947; color: #ffffff; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;">
                 Potvrdit platnost
               </button>
             </div>
