@@ -1856,6 +1856,54 @@ const initStickyHeader = () => {
   prepocitat();   // nastavit správný stav hned po načtení
 };
 
+// Šipka dolů v hero sekci → cílová sekce pod ní.
+// Klíč je id šipky, hodnota je id sekce, kam se má odrolovat.
+const SIPKY_DOLU = {
+  'scroll-btn':            'ubytovani',
+  'scroll-btn-pokoje':     'detaily-pokoju',
+  'scroll-btn-stravovani': 'snidane',
+  'scroll-btn-activities': 'aktivity-v-hotelu',
+  'scroll-btn-category':   'seznam-aktivit',
+  'scroll-btn-events':     'celay-hotel',
+  'scroll-btn-aktuality':  'seznam-aktualit',
+  'scroll-btn-kontakt':    'kontaktní-udaje',
+};
+
+const initSipkyDolu = () => {
+  Object.keys(SIPKY_DOLU).forEach((idSipky) => {
+    const sipka = document.getElementById(idSipky);
+    if (!sipka) return;
+
+    // Ochrana proti dvojímu navěšení při překreslení stránky
+    if (sipka.dataset.sipkaInit === '1') return;
+    sipka.dataset.sipkaInit = '1';
+
+    // Je to <div>, ne <button> — doplníme přístupnost z kódu,
+    // ať se nemusí sahat do jedenácti HTML souborů
+    sipka.setAttribute('role', 'button');
+    sipka.setAttribute('tabindex', '0');
+    sipka.setAttribute('aria-label', 'Přejít na obsah stránky');
+
+    const skoc = (e) => {
+      if (e) e.preventDefault();
+      const cil = document.getElementById(SIPKY_DOLU[idSipky]);
+      if (!cil) return;
+
+      // Lepící hlavička má 88–110 px a zakryla by nadpis sekce,
+      // proto scrollujeme s odstupem, ne přes scrollIntoView.
+      const hlavicka = document.querySelector('.site-header');
+      const odstup = hlavicka ? hlavicka.offsetHeight + 12 : 100;
+      const y = cil.getBoundingClientRect().top + window.pageYOffset - odstup;
+      window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+    };
+
+    sipka.addEventListener('click', skoc);
+    sipka.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') skoc(e);
+    });
+  });
+};
+
 // Inicializace událostí a interaktivity po vykreslení
 const initInteractivity = () => {
   // Aplikace sezónního režimu (Léto / Zima)
@@ -1865,6 +1913,7 @@ const initInteractivity = () => {
   initProgressiveLazyLoading();
   initCategoryHoverPreload();
   initStickyHeader();
+  initSipkyDolu();
   initScrollReveal();
 
   const closeMobileMenu = () => {
@@ -2730,28 +2779,6 @@ const initInteractivity = () => {
         targetSec.scrollIntoView({ behavior: 'smooth' });
       } else {
         navigateTo('/ubytovani#rozdeleni-pokoju');
-      }
-    });
-  }
-
-  const scrollBtnStravovani = document.getElementById('scroll-btn-stravovani');
-  if (scrollBtnStravovani) {
-    scrollBtnStravovani.addEventListener('click', (e) => {
-      e.preventDefault();
-      const targetSec = document.getElementById('snidane');
-      if (targetSec) {
-        targetSec.scrollIntoView({ behavior: 'smooth' });
-      }
-    });
-  }
-
-  const scrollBtnEvents = document.getElementById('scroll-btn-events');
-  if (scrollBtnEvents) {
-    scrollBtnEvents.addEventListener('click', (e) => {
-      e.preventDefault();
-      const targetSec = document.getElementById('celay-hotel');
-      if (targetSec) {
-        targetSec.scrollIntoView({ behavior: 'smooth' });
       }
     });
   }
@@ -4753,16 +4780,6 @@ const initContactPageInteractivity = () => {
       const formSec = document.getElementById('form-sekce') || document.getElementById('contact-page-form');
       if (formSec) {
         formSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    });
-  }
-
-  const scrollBtn = document.getElementById('scroll-btn-kontakt');
-  if (scrollBtn) {
-    scrollBtn.addEventListener('click', () => {
-      const targetSec = document.getElementById('kontaktní-udaje');
-      if (targetSec) {
-        targetSec.scrollIntoView({ behavior: 'smooth' });
       }
     });
   }
