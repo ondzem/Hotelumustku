@@ -38,6 +38,18 @@ export const initScrollReveal = () => {
     rootMargin: '0px 0px -22% 0px'
   });
 
+  // Skupina už byla odhalena, ale mohly do ní mezitím
+  // přibýt nové prvky (např. recenze načtené z databáze).
+  // Ty je nutné odhalit rovnou, jinak zůstanou neviditelné.
+  document.querySelectorAll('[data-anim-group].anim-group-done')
+    .forEach((skupina) => {
+      skupina.querySelectorAll('[data-anim]:not(.is-in)')
+        .forEach((dite, i) => {
+          dite.style.transitionDelay = (Math.min(i, 6) * 0.16).toFixed(2) + 's';
+          dite.classList.add('is-in');
+        });
+    });
+
   // 1) Skupiny — spouští se jako jeden celek
   document.querySelectorAll('[data-anim-group]:not(.anim-group-done)')
     .forEach((g) => observer.observe(g));
