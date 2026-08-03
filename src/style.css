@@ -6817,7 +6817,7 @@ h3 {
 .desktop-title-text {
   display: inline-block;
   text-align: center;
-  white-space: normal;
+  white-space: nowrap;
   max-width: 100%;
 }
 
@@ -7739,6 +7739,22 @@ h3 {
   }
 }
 
+@media (min-width: 1029px) {
+  .room-detail-hero-center {
+    width: 95% !important;
+    max-width: 1240px !important;
+  }
+
+  .room-detail-hero-title {
+    white-space: nowrap !important;
+    font-size: clamp(21px, 2.3vw, 36px) !important;
+  }
+
+  .desktop-title-text {
+    white-space: nowrap !important;
+  }
+}
+
 @media (min-width: 1029px) and (max-width: 1500px) {
   .room-banner-text {
     font-size: 22px !important;
@@ -7749,14 +7765,15 @@ h3 {
 
 @media (min-width: 1750px) {
   .room-detail-hero-center {
-    max-width: 920px !important;
+    max-width: 1280px !important;
   }
 
   .room-detail-hero-title {
     font-family: 'Outfit', sans-serif !important;
-    font-size: clamp(28px, 3.2vw, 36px) !important;
+    font-size: clamp(28px, 2.3vw, 36px) !important;
     margin-bottom: 2px !important;
     line-height: 1.2 !important;
+    white-space: nowrap !important;
   }
 
   .room-detail-hero-subtitle {
@@ -7840,14 +7857,15 @@ h3 {
 
 @media (min-width: 2200px) {
   .room-detail-hero-center {
-    max-width: 1080px !important;
+    max-width: 1360px !important;
   }
 
   .room-detail-hero-title {
     font-family: 'Outfit', sans-serif !important;
-    font-size: clamp(28px, 3.2vw, 36px) !important;
+    font-size: clamp(28px, 2.3vw, 36px) !important;
     margin-bottom: 2px !important;
     line-height: 1.2 !important;
+    white-space: nowrap !important;
   }
 
   .room-detail-hero-subtitle {
