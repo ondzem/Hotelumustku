@@ -89,10 +89,11 @@ export class BookingSystem {
     this.currentStep = 1;
     this.state = {
       selectedRoomId: '',
+      pendingRoomId: null,
       isCustomDropdownOpen: false,
       preselectedFromExternal: false,
-      dateFrom: getTomorrowDateString(),
-      dateTo: getDayAfterTomorrowDateString(),
+      dateFrom: null,
+      dateTo: null,
       tempDateFrom: null,
       tempDateTo: null,
       selectingStep: 1, // 1 = picking arrival, 2 = picking departure
@@ -133,6 +134,14 @@ export class BookingSystem {
     };
   }
 
+  hasValidDates() {
+    if (!this.state.dateFrom || !this.state.dateTo) return false;
+    const start = new Date(this.state.dateFrom);
+    const end = new Date(this.state.dateTo);
+    if (isNaN(start) || isNaN(end)) return false;
+    return Math.ceil((end - start) / 86400000) >= 2;
+  }
+
   syncGuestsArray() {
     const totalCount = this.state.adults;
     while (this.state.guests.length < totalCount) {
@@ -153,10 +162,14 @@ export class BookingSystem {
     }
   }
 
-  async init(initialRoomId) {
+  async init(initialRoomId, openCalendar) {
     if (initialRoomId && this.roomsList.some(r => r.id === initialRoomId)) {
-      this.state.selectedRoomId = initialRoomId;
-      this.state.preselectedFromExternal = true;
+      if (this.hasValidDates()) {
+        this.state.selectedRoomId = initialRoomId;
+        this.state.preselectedFromExternal = true;
+      } else {
+        this.state.pendingRoomId = initialRoomId;
+      }
     }
     this.syncGuestsArray();
 
@@ -186,6 +199,13 @@ export class BookingSystem {
       ]);
     } catch (err) {
       console.error('BookingSystem init fetch error:', err);
+    }
+
+    if (openCalendar && !this.hasValidDates()) {
+      this.state.showCalendarModal = true;
+      this.state.tempDateFrom = null;
+      this.state.tempDateTo = null;
+      this.state.selectingStep = 1;
     }
 
     this.render();
@@ -1012,8 +1032,7 @@ export class BookingSystem {
   renderCustomCalendarModal() {
     if (!this.state.showCalendarModal) return '';
 
-    const room = this.getSelectedRoom();
-    const roomIdForCal = room ? room.id : 'all';
+    const roomIdForCal = this.state.selectedRoomId || this.state.pendingRoomId || 'all';
 
     const effectiveFrom = this.state.tempDateFrom;
     const effectiveTo = this.state.tempDateTo;
@@ -1383,8 +1402,8 @@ export class BookingSystem {
                 </div>
               ` : ''}
 
-              <div class="custom-room-dropdown ${this.state.isCustomDropdownOpen ? 'is-open' : ''}" id="custom-room-dropdown">
-                <label for="custom-dropdown-trigger" class="form-label">Vyberte si pokoj ze seznamu:</label>
+              <div class="custom-room-dropdown ${this.hasValidDates() ? '' : 'is-locked'} ${this.state.isCustomDropdownOpen ? 'is-open' : ''}" id="custom-room-dropdown">
+                <label for="custom-dropdown-trigger" class="form-label">${this.hasValidDates() ? 'Vyberte si pokoj ze seznamu:' : 'Nejprve zvolte termín pobytu ↑'}</label>
                 
                 <button type="button" id="custom-dropdown-trigger" class="dropdown-trigger-btn ${room ? 'has-selection' : ''}" aria-expanded="${this.state.isCustomDropdownOpen ? 'true' : 'false'}" aria-haspopup="listbox">
                   ${room ? `
@@ -1401,14 +1420,14 @@ export class BookingSystem {
                       </div>
                     </div>
                   ` : `
-                    <span class="trigger-placeholder">-- Vyberte si pokoj pro tento termín --</span>
+                    <span class="trigger-placeholder">${this.hasValidDates() ? '-- Vyberte si pokoj pro tento termín --' : '-- Nejprve zvolte termín pobytu --'}</span>
                   `}
                   <span class="trigger-chevron">${this.state.isCustomDropdownOpen ? '▲' : '▼'}</span>
                 </button>
 
                 <div class="dropdown-options-panel ${this.state.isCustomDropdownOpen ? 'is-visible' : ''}" role="listbox" id="custom-dropdown-options">
                   <div class="dropdown-panel-header">
-                    <span>Dostupnost pokojů pro termín ${formattedFrom} – ${formattedTo}</span>
+                    <span>${this.hasValidDates() ? `Dostupnost pokojů pro termín ${formattedFrom} – ${formattedTo}` : 'Nejprve zvolte termín pobytu v kalendáři'}</span>
                   </div>
                   <div class="dropdown-options-list">
                     ${roomItems.map(item => {
@@ -1418,7 +1437,7 @@ export class BookingSystem {
                       const isAvailable = item.isAvailable;
                       const statusClass = isAvailable ? 'status-available' : (item.isDisabled ? 'status-blocked' : 'status-occupied');
                       const statusDotClass = isAvailable ? 'dot-available' : (item.isDisabled ? 'dot-blocked' : 'dot-occupied');
-                      const statusBadgeText = isAvailable ? 'Volno' : (item.isDisabled ? 'Nedostupné' : 'Obsazeno');
+                      const statusBadgeText = isAvailable ? 'Volno' : (item.isDisabled ? 'Nedostupné' : 'Obsazeno v tomto termínu');
                       
                       return `
                         <div class="custom-dropdown-option ${isSelected ? 'is-selected' : ''} ${!isAvailable ? 'is-disabled' : ''}" 
@@ -1449,6 +1468,7 @@ export class BookingSystem {
                   </div>
                 </div>
               </div>
+              ${this.hasValidDates() ? '' : '<div class="room-select-hint">Jakmile zvolíte termín, ukážeme vám pouze pokoje, které jsou v tomto termínu volné.</div>'}
 
               ${room ? `
                 <div class="room-mini-preview" style="margin-top: 16px;">
@@ -2296,6 +2316,12 @@ export class BookingSystem {
         dropdownTrigger.addEventListener('click', (e) => {
           e.preventDefault();
           e.stopPropagation();
+          if (!this.hasValidDates()) {
+            this.state.errorMessage = 'Nejprve si prosím zvolte termín pobytu. Podle něj vám ukážeme, které pokoje jsou volné.';
+            this.render();
+            document.getElementById('date-range-btn')?.focus();
+            return;
+          }
           this.state.isCustomDropdownOpen = !this.state.isCustomDropdownOpen;
           if (this.state.isCustomDropdownOpen) {
             dropdownWrap.classList.add('is-open');
@@ -2312,6 +2338,12 @@ export class BookingSystem {
           optionEl.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
+            if (!this.hasValidDates()) {
+              this.state.errorMessage = 'Nejprve si prosím zvolte termín pobytu. Podle něj vám ukážeme, které pokoje jsou volné.';
+              this.render();
+              document.getElementById('date-range-btn')?.focus();
+              return;
+            }
             if (optionEl.classList.contains('is-disabled')) return;
             const roomId = optionEl.dataset.roomId;
             if (roomId) {
@@ -2646,6 +2678,16 @@ export class BookingSystem {
     if (calOverlay) {
       const closeCal = () => {
         this.state.showCalendarModal = false;
+        if (!this.hasValidDates()) {
+          this.state.selectedRoomId = '';
+          if (this.state.pendingRoomId) {
+            this.state.errorMessage = 'Termín jste nezvolili, proto jsme výběr pokoje zrušili. Vyberte prosím nejprve termín pobytu.';
+            this.state.pendingRoomId = null;
+          }
+        } else if (this.state.pendingRoomId) {
+          this.state.selectedRoomId = this.state.pendingRoomId;
+          this.state.pendingRoomId = null;
+        }
         this.render();
       };
 
@@ -2709,6 +2751,28 @@ export class BookingSystem {
             this.state.dateTo = null;
           }
           this.state.showCalendarModal = false;
+
+          if (!this.hasValidDates()) {
+            this.state.selectedRoomId = '';
+            if (this.state.pendingRoomId) {
+              this.state.errorMessage = 'Termín jste nezvolili, proto jsme výběr pokoje zrušili. Vyberte prosím nejprve termín pobytu.';
+              this.state.pendingRoomId = null;
+            }
+          } else {
+            if (this.state.pendingRoomId) {
+              this.state.selectedRoomId = this.state.pendingRoomId;
+              this.state.pendingRoomId = null;
+            }
+            if (this.state.selectedRoomId) {
+              const kolize = this.checkReservationOverlap(
+                this.state.selectedRoomId, this.state.dateFrom, this.state.dateTo);
+              if (kolize) {
+                this.state.selectedRoomId = '';
+                this.state.errorMessage = 'V novém termínu už není původně zvolený pokoj volný. Vyberte prosím jiný z nabídky.';
+              }
+            }
+          }
+
           this.render();
           const card1 = this.container.querySelector('.card-step-1');
           if (card1) {

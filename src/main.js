@@ -2933,7 +2933,7 @@ const initInteractivity = () => {
 
       const roomItem = btn.closest('.room-breakdown-item');
       const roomId = roomItem ? roomItem.dataset.room : '';
-      const targetHash = roomId ? `#rezervace?room=${roomId}` : '#rezervace';
+      const targetHash = roomId ? `#rezervace?room=${roomId}&pickdates=1` : '#rezervace';
 
       if (window.location.hash === targetHash) {
         route(false);
@@ -5772,7 +5772,8 @@ const route = (isInitial = false) => {
     initInteractivity();
     const urlParams = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
     const roomId = urlParams.get('room') || '';
-    new BookingSystem('booking-container').init(roomId);
+    const openCal = urlParams.get('pickdates') === '1';
+    new BookingSystem('booking-container').init(roomId, openCal);
   } else if (pageKey === 'admin') {
     app.innerHTML = getAdminPageHTML();
     initInteractivity();
