@@ -13,6 +13,17 @@ function formatCzechDateStr(dateStr) {
   return dateStr;
 }
 
+function getDiscountValidityDisplay(validFrom, validUntil) {
+  if (validFrom && validUntil) {
+    return `${formatCzechDateStr(validFrom)} – ${formatCzechDateStr(validUntil)}`;
+  } else if (validFrom) {
+    return `od ${formatCzechDateStr(validFrom)}`;
+  } else if (validUntil) {
+    return `do ${formatCzechDateStr(validUntil)}`;
+  }
+  return '';
+}
+
 function groupContiguousDateRanges(dates) {
   if (!dates || dates.length === 0) return [];
   const sorted = [...dates].sort();
@@ -71,6 +82,8 @@ export class AdminDashboard {
     this.showAdminCalendarModal = false;
     this.adminActiveDateField = 'valid_from';
     this.adminCalYearMonth = null;
+    this.tempValidFrom = '';
+    this.tempValidUntil = '';
     this.blockForm = { room_id: 'all', reason: '' };
     this.blockSelectedDates = [];
     this.calYearMonth = null;
@@ -1320,37 +1333,28 @@ export class AdminDashboard {
                   </div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px;" class="block-form-grid">
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 12px; margin-bottom: 16px;" class="block-form-grid">
                   <div>
-                    <label style="font-size: 12px; font-weight: 700; color: #444; display: block; margin-bottom: 5px;">Platnost OD (Volitelné)</label>
-                    <div style="position: relative; display: flex; align-items: center;" id="btn-trigger-valid-from">
-                      <input type="text" id="discount-valid-from-input" class="admin-discount-input" readonly placeholder="dd.mm.yyyy" value="${this.newDiscountForm.valid_from ? formatCzechDateStr(this.newDiscountForm.valid_from) : ''}" style="padding-right: 34px; cursor: pointer;">
-                      <span style="position: absolute; right: 10px; pointer-events: none; color: #4a5a24; display: flex; align-items: center;">
-                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                          <line x1="16" y1="2" x2="16" y2="6"></line>
-                          <line x1="8" y1="2" x2="8" y2="6"></line>
-                          <line x1="3" y1="10" x2="21" y2="10"></line>
-                        </svg>
-                      </span>
+                    <label style="font-size: 12.5px; font-weight: 700; color: #444; display: block; margin-bottom: 5px;">Platnost kódu (Volitelné)</label>
+                    <div style="position: relative; display: flex; align-items: center;" id="btn-trigger-discount-validity">
+                      <input type="text" id="discount-validity-input" class="admin-discount-input" readonly placeholder="Vyberte platnost kódu" value="${getDiscountValidityDisplay(this.newDiscountForm.valid_from, this.newDiscountForm.valid_until)}" style="padding-right: 56px; cursor: pointer;">
+                      <div style="position: absolute; right: 10px; display: flex; align-items: center; gap: 6px;">
+                        ${(this.newDiscountForm.valid_from || this.newDiscountForm.valid_until) ? `
+                          <button type="button" id="btn-clear-discount-validity-inline" title="Vymazat platnost" style="background: none; border: none; font-size: 15px; font-weight: 700; color: #c62828; cursor: pointer; padding: 2px 4px; line-height: 1;">&times;</button>
+                        ` : ''}
+                        <span style="pointer-events: none; color: #4a5a24; display: flex; align-items: center;">
+                          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                          </svg>
+                        </span>
+                      </div>
                     </div>
                   </div>
                   <div>
-                    <label style="font-size: 12px; font-weight: 700; color: #444; display: block; margin-bottom: 5px;">Platnost DO (Volitelné)</label>
-                    <div style="position: relative; display: flex; align-items: center;" id="btn-trigger-valid-until">
-                      <input type="text" id="discount-valid-until-input" class="admin-discount-input" readonly placeholder="dd.mm.yyyy" value="${this.newDiscountForm.valid_until ? formatCzechDateStr(this.newDiscountForm.valid_until) : ''}" style="padding-right: 34px; cursor: pointer;">
-                      <span style="position: absolute; right: 10px; pointer-events: none; color: #4a5a24; display: flex; align-items: center;">
-                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                          <line x1="16" y1="2" x2="16" y2="6"></line>
-                          <line x1="8" y1="2" x2="8" y2="6"></line>
-                          <line x1="3" y1="10" x2="21" y2="10"></line>
-                        </svg>
-                      </span>
-                    </div>
-                  </div>
-                  <div>
-                    <label style="font-size: 12px; font-weight: 700; color: #444; display: block; margin-bottom: 5px;">Max. použití (Např. 20)</label>
+                    <label style="font-size: 12.5px; font-weight: 700; color: #444; display: block; margin-bottom: 5px;">Max. použití (Např. 20)</label>
                     <input type="number" id="discount-max-uses-input" class="admin-discount-input" placeholder="Neomezeně" min="1" value="${this.newDiscountForm.max_uses || ''}">
                   </div>
                 </div>
@@ -1853,8 +1857,7 @@ export class AdminDashboard {
   renderAdminCalendarModal() {
     if (!this.showAdminCalendarModal) return '';
 
-    const targetField = this.adminActiveDateField || 'valid_from';
-    const currentDateStr = this.newDiscountForm[targetField] || new Date().toISOString().split('T')[0];
+    const currentDateStr = this.tempValidFrom || this.newDiscountForm.valid_from || new Date().toISOString().split('T')[0];
 
     if (!this.adminCalYearMonth) {
       const parts = (currentDateStr || '').split('-').map(Number);
@@ -1873,6 +1876,10 @@ export class AdminDashboard {
     const firstDayIndex = (new Date(year, month - 1, 1).getDay() + 6) % 7; // Mon = 0
     const daysInMonth = new Date(year, month, 0).getDate();
 
+    const todayStr = new Date().toISOString().split('T')[0];
+    const from = this.tempValidFrom;
+    const until = this.tempValidUntil;
+
     let daysHtml = '';
     for (let i = 0; i < firstDayIndex; i++) {
       daysHtml += `<div class="cal-day cal-day-empty"></div>`;
@@ -1880,21 +1887,50 @@ export class AdminDashboard {
 
     for (let day = 1; day <= daysInMonth; day++) {
       const dayStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-      const isSelected = dayStr === this.newDiscountForm[targetField];
+
+      const isStart = dayStr === from;
+      const isEnd = dayStr === until;
+      const isBetween = Boolean(from && until && dayStr > from && dayStr < until);
+      const isPast = dayStr < todayStr;
 
       let dayClass = 'cal-day';
-      if (isSelected) dayClass += ' is-selected';
+      let dayStyle = '';
+
+      if (isStart || isEnd) {
+        dayClass += ' is-selected';
+        dayStyle = 'background-color: #eef3e6 !important; color: #1c1c19 !important; font-weight: 700 !important; border: none; border-radius: 4px;';
+      } else if (isBetween) {
+        dayClass += ' in-range';
+        dayStyle = 'background-color: #eef3e6 !important; color: #697947 !important; font-weight: 600 !important; border: none; border-radius: 0;';
+      } else if (isPast) {
+        dayClass += ' is-disabled';
+        dayStyle = 'color: #a0a098; font-weight: 400;';
+      } else {
+        dayStyle = 'color: #1c1c19; font-weight: 500;';
+      }
 
       daysHtml += `
-        <button type="button" class="${dayClass}" data-date="${dayStr}">
+        <button type="button" class="${dayClass}" data-date="${dayStr}" style="${dayStyle}">
           ${day}
         </button>
       `;
     }
 
+    let summaryText = '';
+    if (from && until) {
+      const d1 = new Date(from);
+      const d2 = new Date(until);
+      const diffDays = Math.round((d2 - d1) / (1000 * 60 * 60 * 24)) + 1;
+      summaryText = `Platí od: <strong>${formatCzechDateStr(from)}</strong> | do: <strong>${formatCzechDateStr(until)}</strong> (${diffDays} ${diffDays === 1 ? 'den' : (diffDays < 5 ? 'dny' : 'dnů')})`;
+    } else if (from) {
+      summaryText = `Platí od: <strong>${formatCzechDateStr(from)}</strong> (vyberte konec platnosti)`;
+    } else {
+      summaryText = `Není vybráno žádné omezení (kód bude platit neomezeně)`;
+    }
+
     return `
       <div class="cal-modal-overlay" id="admin-cal-modal-overlay" style="z-index: 100000;">
-        <div class="cal-modal-card">
+        <div class="cal-modal-card" style="max-width: 380px; padding: 20px;">
           <div class="cal-modal-header">
             <button type="button" class="cal-nav-btn" id="admin-cal-prev-month" aria-label="Předchozí měsíc">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -1918,9 +1954,19 @@ export class AdminDashboard {
             ${daysHtml}
           </div>
 
-          <div class="cal-modal-footer" style="display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid #eee;">
-            <span class="cal-hint-text">Vyberte ${targetField === 'valid_from' ? 'platnost OD' : 'platnost DO'}</span>
-            <button type="button" id="btn-clear-admin-date" style="background: none; border: none; font-size: 12.5px; font-weight: 700; color: #c62828; cursor: pointer; text-decoration: underline;">Smazat datum</button>
+          <div class="cal-modal-footer" style="display: flex; flex-direction: column; gap: 12px; padding-top: 14px; border-top: 1px solid #e8e7de; margin-top: 12px;">
+            <div style="font-size: 12.5px; color: #444440; line-height: 1.4; text-align: center;">
+              ${summaryText}
+            </div>
+
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+              <button type="button" id="btn-clear-admin-date" style="background: none; border: none; font-size: 12.5px; font-weight: 600; color: #c62828; cursor: pointer; text-decoration: underline; padding: 0;">
+                Vynulovat výběr
+              </button>
+              <button type="button" id="btn-confirm-admin-date-range" class="btn btn-booking-submit" style="height: 36px; padding: 0 16px; font-size: 13px; font-weight: 700; border-radius: 4px; background: #697947; color: #ffffff; border: none; cursor: pointer;">
+                Potvrdit platnost
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -2006,24 +2052,24 @@ export class AdminDashboard {
       });
     }
 
-    const btnValidFrom = this.container.querySelector('#btn-trigger-valid-from');
-    if (btnValidFrom) {
-      btnValidFrom.addEventListener('click', () => {
-        this.adminActiveDateField = 'valid_from';
-        const curDate = this.newDiscountForm.valid_from || new Date().toISOString().split('T')[0];
-        const [y, m] = curDate.split('-').map(Number);
-        this.adminCalYearMonth = { year: y || new Date().getFullYear(), month: m || (new Date().getMonth() + 1) };
-        this.showAdminCalendarModal = true;
-        this.render();
-      });
-    }
+    const btnDiscountValidity = this.container.querySelector('#btn-trigger-discount-validity');
+    if (btnDiscountValidity) {
+      btnDiscountValidity.addEventListener('click', (e) => {
+        if (e.target.closest('#btn-clear-discount-validity-inline')) {
+          e.preventDefault();
+          e.stopPropagation();
+          this.newDiscountForm.valid_from = '';
+          this.newDiscountForm.valid_until = '';
+          this.tempValidFrom = '';
+          this.tempValidUntil = '';
+          this.render();
+          return;
+        }
 
-    const btnValidUntil = this.container.querySelector('#btn-trigger-valid-until');
-    if (btnValidUntil) {
-      btnValidUntil.addEventListener('click', () => {
-        this.adminActiveDateField = 'valid_until';
-        const curDate = this.newDiscountForm.valid_until || new Date().toISOString().split('T')[0];
-        const [y, m] = curDate.split('-').map(Number);
+        this.tempValidFrom = this.newDiscountForm.valid_from || '';
+        this.tempValidUntil = this.newDiscountForm.valid_until || '';
+        const initialDate = this.tempValidFrom || new Date().toISOString().split('T')[0];
+        const [y, m] = initialDate.split('-').map(Number);
         this.adminCalYearMonth = { year: y || new Date().getFullYear(), month: m || (new Date().getMonth() + 1) };
         this.showAdminCalendarModal = true;
         this.render();
@@ -2036,6 +2082,7 @@ export class AdminDashboard {
       const btnNext = adminCalOverlay.querySelector('#admin-cal-next-month');
       const btnClose = adminCalOverlay.querySelector('#admin-cal-close-btn');
       const btnClear = adminCalOverlay.querySelector('#btn-clear-admin-date');
+      const btnConfirmRange = adminCalOverlay.querySelector('#btn-confirm-admin-date-range');
 
       if (btnPrev) {
         btnPrev.addEventListener('click', (e) => {
@@ -2070,20 +2117,49 @@ export class AdminDashboard {
       if (btnClear) {
         btnClear.addEventListener('click', (e) => {
           e.preventDefault();
-          const targetField = this.adminActiveDateField || 'valid_from';
-          this.newDiscountForm[targetField] = '';
+          this.tempValidFrom = '';
+          this.tempValidUntil = '';
+          this.newDiscountForm.valid_from = '';
+          this.newDiscountForm.valid_until = '';
+          this.render();
+        });
+      }
+
+      if (btnConfirmRange) {
+        btnConfirmRange.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.newDiscountForm.valid_from = this.tempValidFrom || '';
+          this.newDiscountForm.valid_until = this.tempValidUntil || '';
           this.showAdminCalendarModal = false;
           this.render();
         });
       }
 
+      adminCalOverlay.addEventListener('click', (e) => {
+        if (e.target === adminCalOverlay) {
+          this.showAdminCalendarModal = false;
+          this.render();
+        }
+      });
+
       adminCalOverlay.querySelectorAll('.cal-day:not(.cal-day-empty)').forEach(dayBtn => {
         dayBtn.addEventListener('click', (e) => {
           e.preventDefault();
           const selectedDate = dayBtn.dataset.date;
-          const targetField = this.adminActiveDateField || 'valid_from';
-          this.newDiscountForm[targetField] = selectedDate;
-          this.showAdminCalendarModal = false;
+          if (!this.tempValidFrom) {
+            this.tempValidFrom = selectedDate;
+            this.tempValidUntil = '';
+          } else if (this.tempValidFrom && !this.tempValidUntil) {
+            if (selectedDate > this.tempValidFrom) {
+              this.tempValidUntil = selectedDate;
+            } else {
+              this.tempValidFrom = selectedDate;
+              this.tempValidUntil = '';
+            }
+          } else {
+            this.tempValidFrom = selectedDate;
+            this.tempValidUntil = '';
+          }
           this.render();
         });
       });
