@@ -1302,17 +1302,25 @@ export const updateStoredReviewStatus = async (reviewId, status) => {
   // Update localStorage
   safeSetLocalStorage(REVIEWS_LOCAL_KEY, inMemoryReviews);
 
+  let dbError = null;
   // Update Supabase
   if (isSupabaseConfigured && supabase) {
     try {
       if (status === 'rejected') {
-        await supabase.from('reviews').delete().eq('id', reviewId);
+        const { error } = await supabase.from('reviews').delete().eq('id', reviewId);
+        if (error) dbError = error;
       } else {
-        await supabase.from('reviews').update({ status }).eq('id', reviewId);
+        const { error } = await supabase.from('reviews').update({ status }).eq('id', reviewId);
+        if (error) dbError = error;
       }
     } catch (err) {
       console.warn('Supabase update review status failed:', err);
+      dbError = err;
     }
+  }
+
+  if (dbError) {
+    return { success: false, error: dbError };
   }
 
   return { success: true };

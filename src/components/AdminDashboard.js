@@ -90,6 +90,8 @@ export class AdminDashboard {
     this.showCropModal = false;
     this.cropImageSrc = null;
     this.showReviewsModal = false;
+    this.showDeleteReviewModal = false;
+    this.pendingDeleteReview = null;
     this.reviews = [];
     this.reviewsTab = 'pending';
   }
@@ -1730,6 +1732,30 @@ export class AdminDashboard {
 
         ${this.showReviewsModal ? this.renderReviewsModalMarkup(pendingReviewsCount, approvedReviewsCount) : ''}
 
+        ${this.showDeleteReviewModal && this.pendingDeleteReview ? `
+          <div class="admin-modal-overlay admin-modal-overlay-delete-review" style="z-index: 10070;">
+            <div class="admin-confirm-modal" style="max-width: 460px; width: 92%; padding: 24px; border-radius: 12px; background: #ffffff; box-shadow: 0 10px 30px rgba(0,0,0,0.25);">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #ece8dd; padding-bottom: 12px;">
+                <h3 class="admin-modal-title" style="margin: 0; font-size: 18px; font-weight: 800; color: #c62828;">🗑️ Potvrzení smazání recenze</h3>
+                <button type="button" class="btn-cancel-delete-review" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #888; padding: 0; line-height: 1;">&times;</button>
+              </div>
+
+              <p style="font-size: 14px; color: #444440; line-height: 1.5; margin: 0 0 20px 0;">
+                Opravdu chcete smazat / neschválit recenzi od hosta <strong>„${this.pendingDeleteReview.author_name || this.pendingDeleteReview.full_name || 'Host'}“</strong>? Záznam bude odstraněn z webu i databáze.
+              </p>
+
+              <div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
+                <button type="button" class="btn-cancel-delete-review" style="background: none; border: 1px solid #d8d5c9; border-radius: 4px; padding: 9px 18px; font-size: 13.5px; font-weight: 600; color: #444; cursor: pointer;">
+                  Zrušit
+                </button>
+                <button type="button" class="btn-confirm-delete-review" style="background: #c62828; border: none; border-radius: 4px; padding: 9px 20px; font-size: 13.5px; font-weight: 700; color: #ffffff; cursor: pointer;">
+                  🗑️ Ano, smazat recenzi
+                </button>
+              </div>
+            </div>
+          </div>
+        ` : ''}
+
         ${this.adminToastMessage ? `
           <div class="admin-toast-bottom-widget ${this.toastExiting ? 'is-exiting' : ''}">
             <div class="toast-inner-content">
@@ -2431,22 +2457,67 @@ export class AdminDashboard {
     this.container.querySelectorAll('.btn-approve-review').forEach(btn => {
       btn.addEventListener('click', async () => {
         const id = btn.dataset.id;
-        await updateStoredReviewStatus(id, 'approved');
+        const res = await updateStoredReviewStatus(id, 'approved');
         await this.fetchReviews();
-        this.showAdminToast('Recenze byla schválena a přidána na web.');
+        if (res && res.error) {
+          this.showAdminToast(`⚠️ Schválení selhalo: ${res.error.message || res.error}`);
+        } else {
+          this.showAdminToast('Recenze byla schválena a přidána na web.');
+        }
         this.render();
       });
     });
 
     this.container.querySelectorAll('.btn-reject-review').forEach(btn => {
-      btn.addEventListener('click', async () => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
         const id = btn.dataset.id;
-        await updateStoredReviewStatus(id, 'rejected');
-        await this.fetchReviews();
-        this.showAdminToast('Recenze byla odstraněna.');
+        const review = (this.reviews || []).find(r => String(r.id) === String(id));
+        if (review) {
+          this.pendingDeleteReview = review;
+          this.showDeleteReviewModal = true;
+          this.render();
+        }
+      });
+    });
+
+    this.container.querySelectorAll('.btn-cancel-delete-review').forEach(btn => {
+      btn.addEventListener('click', () => {
+        this.showDeleteReviewModal = false;
+        this.pendingDeleteReview = null;
         this.render();
       });
     });
+
+    const overlayDeleteReview = this.container.querySelector('.admin-modal-overlay-delete-review');
+    if (overlayDeleteReview) {
+      overlayDeleteReview.addEventListener('click', (e) => {
+        if (e.target === overlayDeleteReview) {
+          this.showDeleteReviewModal = false;
+          this.pendingDeleteReview = null;
+          this.render();
+        }
+      });
+    }
+
+    const btnConfirmDeleteReview = this.container.querySelector('.btn-confirm-delete-review');
+    if (btnConfirmDeleteReview) {
+      btnConfirmDeleteReview.addEventListener('click', async () => {
+        if (this.pendingDeleteReview) {
+          const id = this.pendingDeleteReview.id;
+          this.showDeleteReviewModal = false;
+          this.pendingDeleteReview = null;
+          const res = await updateStoredReviewStatus(id, 'rejected');
+          await this.fetchReviews();
+          if (res && res.error) {
+            this.showAdminToast(`⚠️ Odstranění selhalo: ${res.error.message || res.error}`);
+          } else {
+            this.showAdminToast('Recenze byla úspěšně odstraněna.');
+          }
+          this.render();
+        }
+      });
+    }
 
     // ====================================================
     // HANDLERY PRO SPRÁVU AKTUALIT & 16:9 OŘEZÁVÁTKO
