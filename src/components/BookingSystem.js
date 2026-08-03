@@ -1132,7 +1132,7 @@ export class BookingSystem {
                 Obsazeno
               </span>
               <span class="cal-legend-item">
-                <i class="cal-legend-box" style="background:linear-gradient(to bottom,#fef5e7 50%,#ffffff 50%); border:1px solid #e67e22;"></i>
+                <i class="cal-legend-box" style="background:linear-gradient(135deg, #fef5e7 0 50%, #ffffff 50% 100%); border-style:solid; border-width:1px; border-top-color:#e67e22; border-left-color:#e67e22; border-right-color:#ddd9cf; border-bottom-color:#ddd9cf;"></i>
                 Odjezd do 10:00, příjezd od 15:00
               </span>
               <span class="cal-legend-item">
