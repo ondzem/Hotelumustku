@@ -421,6 +421,7 @@ export class BookingSystem {
   }
 
   checkReservationOverlap(roomId, dateFrom, dateTo) {
+    if (!dateFrom || !dateTo) return null;
     if (this.blockedDates && this.blockedDates.length > 0) {
       const blockedConflict = this.blockedDates.find(b => {
         if (b.room_id !== 'all' && b.room_id !== roomId) return false;
@@ -1151,13 +1152,16 @@ export class BookingSystem {
               </div>
             ` : `
               <div class="cal-range-summary" style="display: flex; flex-direction: column; gap: 2px;">
-                <span class="cal-summary-label" style="font-size: 14px; font-weight: 700; color: #666660;">
-                  Klikněte v kalendáři na datum příjezdu (Check-in)
+                <span class="cal-summary-label" style="font-size: 14px; font-weight: 700; color: #1C1C19;">
+                  Žádný termín není vybraný
                 </span>
-                <span class="cal-summary-sub" style="font-size: 12.5px; color: #888880; font-weight: 500;">
-                  Minimální délka pobytu jsou 2 noci.
+                <span class="cal-summary-sub" style="font-size: 13px; color: #666660; font-weight: 500;">
+                  Klikněte v kalendáři na datum příjezdu, nebo uložte prázdný výběr.
                 </span>
               </div>
+              <button type="button" class="btn btn-confirm-cal-dates" id="cal-confirm-dates-btn" style="height: 42px; padding: 0 24px; font-size: 15px; font-weight: 600; color: #FFFFFF; background-color: #4A5A24; border: none; border-radius: 2px; cursor: pointer; width: 100%; display: inline-flex; align-items: center; justify-content: center; transition: background 0.15s ease;">
+                Uložit a zavřít
+              </button>
             `)}
           </div>
         </div>
@@ -1317,8 +1321,12 @@ export class BookingSystem {
                       <line x1="3" y1="10" x2="21" y2="10"></line>
                     </svg>
                     <div class="date-range-text-group">
-                      <span class="date-range-main">${formattedFrom} – ${formattedTo}</span>
-                      <span class="date-range-nights-pill">${nights} ${nights === 1 ? 'noc' : (nights < 5 ? 'noci' : 'nocí')}</span>
+                      ${this.state.dateFrom && this.state.dateTo ? `
+                        <span class="date-range-main">${formattedFrom} – ${formattedTo}</span>
+                        <span class="date-range-nights-pill">${nights} ${nights === 1 ? 'noc' : (nights < 5 ? 'noci' : 'nocí')}</span>
+                      ` : `
+                        <span class="date-range-main" style="color: #888880;">Vyberte termín pobytu</span>
+                      `}
                     </div>
                   </div>
                   <span class="date-range-action-text"><span class="action-text-full">Změnit termín v kalendáři</span><span class="action-text-short">Změnit</span> &rarr;</span>
@@ -1553,8 +1561,12 @@ export class BookingSystem {
                 <div class="recap-clean-item">
                   <span class="recap-clean-label">Termín pobytu:</span>
                   <div class="recap-clean-val-group">
-                    <span class="recap-clean-val"><strong>${formattedFrom} – ${formattedTo}</strong></span>
-                    <span class="recap-sub-val">(${nights} ${nights === 1 ? 'noc' : (nights >= 2 && nights <= 4 ? 'noci' : 'nocí')}${pricing.nightBreakdownLabel ? ` • ${pricing.nightBreakdownLabel}` : ''})</span>
+                    ${this.state.dateFrom && this.state.dateTo ? `
+                      <span class="recap-clean-val"><strong>${formattedFrom} – ${formattedTo}</strong></span>
+                      <span class="recap-sub-val">(${nights} ${nights === 1 ? 'noc' : (nights >= 2 && nights <= 4 ? 'noci' : 'nocí')}${pricing.nightBreakdownLabel ? ` • ${pricing.nightBreakdownLabel}` : ''})</span>
+                    ` : `
+                      <span class="recap-clean-val"><strong style="color: #888880;">nevybrán</strong></span>
+                    `}
                   </div>
                 </div>
 
@@ -2440,6 +2452,12 @@ export class BookingSystem {
       const btnNext = this.container.querySelector('.btn-next-step-1');
       if (btnNext) {
         btnNext.addEventListener('click', () => {
+          if (!this.state.dateFrom || !this.state.dateTo) {
+            this.state.errorMessage = 'Prosíme, vyberte nejprve termín pobytu.';
+            this.render();
+            this.scrollToErrorMessage();
+            return;
+          }
           if (!this.state.selectedRoomId) {
             this.state.errorMessage = 'Prosíme, vyberte si nejprve pokoj v rozevírací nabídce v bodu 2.';
             this.render();
@@ -2663,6 +2681,10 @@ export class BookingSystem {
             if (diffDays < 2) return;
             this.state.dateFrom = this.state.tempDateFrom;
             this.state.dateTo = this.state.tempDateTo;
+          } else if (!this.state.tempDateFrom && !this.state.tempDateTo) {
+            // uživatel vynuloval výběr a potvrdil to
+            this.state.dateFrom = null;
+            this.state.dateTo = null;
           }
           this.state.showCalendarModal = false;
           this.render();
