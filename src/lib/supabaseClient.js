@@ -71,7 +71,7 @@ export function sanitizeReservationForSupabase(raw) {
     sanitized.id = raw.code || ('res-' + Date.now());
   }
 
-  // Preserve winter parking inside guests list if present
+  // Preserve winter parking & archive state inside guests list
   let guestsArr = Array.isArray(raw.guests) ? [...raw.guests] : [];
   if (raw.has_winter_parking || raw.parking_cars_count) {
     let metaIdx = guestsArr.findIndex(g => g && g._winter_parking !== undefined);
@@ -84,6 +84,15 @@ export function sanitizeReservationForSupabase(raw) {
       guestsArr[metaIdx] = { ...guestsArr[metaIdx], _winter_parking: winterMeta };
     } else {
       guestsArr.push({ _winter_parking: winterMeta });
+    }
+  }
+  if (raw.is_archived !== undefined || raw.isArchived !== undefined) {
+    const isArchVal = Boolean(raw.is_archived || raw.isArchived);
+    let metaIdx = guestsArr.findIndex(g => g && g._is_archived !== undefined);
+    if (metaIdx >= 0) {
+      guestsArr[metaIdx] = { ...guestsArr[metaIdx], _is_archived: isArchVal };
+    } else {
+      guestsArr.push({ _is_archived: isArchVal });
     }
   }
   sanitized.guests = guestsArr;
@@ -139,6 +148,41 @@ export const updateStoredReservationStatus = (id, newStatus) => {
   }
 
   return target || current[0];
+};
+
+export const toggleStoredReservationArchive = (id, isArchived) => {
+  const current = getStoredReservations();
+  const targetStr = String(id).trim();
+  let target = current.find(r => (r.id && String(r.id).trim() === targetStr) || (r.code && String(r.code).trim() === targetStr));
+  if (target) {
+    target.is_archived = Boolean(isArchived);
+    target.isArchived = Boolean(isArchived);
+    let guestsArr = Array.isArray(target.guests) ? [...target.guests] : [];
+    let metaIdx = guestsArr.findIndex(g => g && g._is_archived !== undefined);
+    if (metaIdx >= 0) {
+      guestsArr[metaIdx] = { ...guestsArr[metaIdx], _is_archived: Boolean(isArchived) };
+    } else {
+      guestsArr.push({ _is_archived: Boolean(isArchived) });
+    }
+    target.guests = guestsArr;
+  }
+
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(current));
+    }
+  } catch (err) {
+    console.error('Failed to update reservation archive state locally:', err);
+  }
+
+  if (isSupabaseConfigured && supabase && id) {
+    const guestsArr = target ? target.guests : [{ _is_archived: Boolean(isArchived) }];
+    supabase.from('reservations').update({ guests: guestsArr }).or(`id.eq.${targetStr},code.eq.${targetStr}`).then(({ error }) => {
+      if (error) console.error('Supabase update archive state error:', error);
+    }).catch(err => console.error('Supabase update archive state exception:', err));
+  }
+
+  return target || (current.length > 0 ? current[0] : null);
 };
 
 export const deleteStoredReservation = (targetIdOrCode) => {

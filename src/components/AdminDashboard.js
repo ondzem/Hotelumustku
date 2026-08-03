@@ -1,4 +1,4 @@
-import { MOCK_ROOMS, getStoredReservations, updateStoredReservationStatus, deleteStoredReservation, getStoredBlockedDates, saveStoredBlockedDate, deleteStoredBlockedDate, getStoredDiscountCodes, saveStoredDiscountCode, deleteStoredDiscountCode, getStoredRoomPrices, saveStoredRoomPrice, getStoredCustomRoomNames, saveStoredCustomRoomName, getStoredDisabledRooms, saveStoredDisabledRoom, getStoredNewsItems, saveStoredNewsItem, deleteStoredNewsItem, reorderNewsItem, uploadNewsImage, isSupabaseConfigured, supabase, getStoredReviews, updateStoredReviewStatus } from '../lib/supabaseClient.js';
+import { MOCK_ROOMS, getStoredReservations, updateStoredReservationStatus, toggleStoredReservationArchive, deleteStoredReservation, getStoredBlockedDates, saveStoredBlockedDate, deleteStoredBlockedDate, getStoredDiscountCodes, saveStoredDiscountCode, deleteStoredDiscountCode, getStoredRoomPrices, saveStoredRoomPrice, getStoredCustomRoomNames, saveStoredCustomRoomName, getStoredDisabledRooms, saveStoredDisabledRoom, getStoredNewsItems, saveStoredNewsItem, deleteStoredNewsItem, reorderNewsItem, uploadNewsImage, isSupabaseConfigured, supabase, getStoredReviews, updateStoredReviewStatus } from '../lib/supabaseClient.js';
 import { calculateReservationPrice, generateSpaydQrUrl, BANK_ACCOUNT, formatCzechPrice, getVariableSymbol } from '../utils/pricing.js';
 import { sendEmail, generateEmail2ApprovalAndPaymentRequest, generateEmail3FinalConfirmation, generateEmailCancellation, getEmailLogs, sendAllTestEmailsTo } from '../utils/emailService.js';
 import { checkAndProcessExpiredUnpaidReservations } from '../utils/reservationExpiryService.js';
@@ -877,6 +877,22 @@ export class AdminDashboard {
       this.showDeleteModal = false;
       this.pendingDeleteReservation = null;
       this.showAdminToast(`🗑️ Rezervace ${resCode || id} byla trvale vymazána z databáze.`);
+    } else if (targetAction === 'archive') {
+      const resId = reservation.id || id;
+      const resCode = reservation.code || id;
+      toggleStoredReservationArchive(resId || resCode, true);
+      this.showAdminToast(`📦 Rezervace ${resCode || id} byla přesunuta do archivu.`);
+      await this.fetchReservations();
+      this.render();
+      return;
+    } else if (targetAction === 'unarchive') {
+      const resId = reservation.id || id;
+      const resCode = reservation.code || id;
+      toggleStoredReservationArchive(resId || resCode, false);
+      this.showAdminToast(`📤 Rezervace ${resCode || id} byla obnovena z archivu do aktivních objednávek.`);
+      await this.fetchReservations();
+      this.render();
+      return;
     }
 
     await this.fetchReservations();
@@ -950,14 +966,18 @@ export class AdminDashboard {
       document.body.classList.remove('modal-open');
     }
 
-    const pendingCount = this.reservations.filter(r => r.status === 'pending_approval').length;
-    const awaitingDepositCount = this.reservations.filter(r => r.status === 'awaiting_deposit').length;
-    const confirmedCount = this.reservations.filter(r => r.status === 'confirmed').length;
-    const cancelledCount = this.reservations.filter(r => r.status === 'cancelled').length;
+    const activeReservations = this.reservations.filter(r => !r.is_archived && !r.isArchived);
+    const archivedReservations = this.reservations.filter(r => Boolean(r.is_archived || r.isArchived));
 
-    const filteredReservations = this.reservations.filter(r => {
+    const pendingCount = activeReservations.filter(r => r.status === 'pending_approval').length;
+    const awaitingDepositCount = activeReservations.filter(r => r.status === 'awaiting_deposit').length;
+    const confirmedCount = activeReservations.filter(r => r.status === 'confirmed').length;
+    const cancelledCount = activeReservations.filter(r => r.status === 'cancelled').length;
+    const archivedCount = archivedReservations.length;
+
+    const filteredReservations = (this.statusFilter === 'archived' ? archivedReservations : activeReservations).filter(r => {
       const matchRoom = this.selectedRoomFilter === 'all' || r.room_id === this.selectedRoomFilter;
-      const matchStatus = this.statusFilter === 'all' || r.status === this.statusFilter;
+      const matchStatus = this.statusFilter === 'all' || this.statusFilter === 'archived' || r.status === this.statusFilter;
       return matchRoom && matchStatus;
     });
 
@@ -973,6 +993,9 @@ export class AdminDashboard {
             <p>Správa rezervací a obsluha 30% záloh pro Hotel u Můstku</p>
           </div>
           <div class="admin-top-actions">
+            <button type="button" class="btn btn-specs-secondary btn-admin-archive-tab" style="${this.statusFilter === 'archived' ? 'background-color: #2e3524 !important; color: #ffffff !important; font-weight: 700;' : ''}">
+              📂 Archiv ${archivedCount > 0 ? `<span style="background: ${this.statusFilter === 'archived' ? '#ffffff' : '#4a5a24'}; color: ${this.statusFilter === 'archived' ? '#2e3524' : '#ffffff'}; border-radius: 99px; padding: 2px 7px; font-size: 11px; font-weight: 700; margin-left: 4px;">${archivedCount}</span>` : ''}
+            </button>
             <button type="button" class="btn btn-specs-secondary btn-admin-reviews">
               ⭐ Správa recenzí ${pendingReviewsCount > 0 ? `<span style="background: #e67e22; color: #ffffff; border-radius: 99px; padding: 2px 7px; font-size: 11px; font-weight: 700; margin-left: 4px;">${pendingReviewsCount}</span>` : ''}
             </button>
@@ -997,7 +1020,7 @@ export class AdminDashboard {
           <div class="admin-status-tabs">
             <button type="button" class="status-tab-btn ${this.statusFilter === 'all' ? 'active' : ''}" data-status="all">
               <span>Všechny</span>
-              <span class="tab-count">${this.reservations.length}</span>
+              <span class="tab-count">${activeReservations.length}</span>
             </button>
             <button type="button" class="status-tab-btn tab-pending ${pendingCount > 0 ? 'has-pending' : ''} ${this.statusFilter === 'pending_approval' ? 'active' : ''}" data-status="pending_approval">
               <span>1. Ke schválení</span>
@@ -1014,6 +1037,10 @@ export class AdminDashboard {
             <button type="button" class="status-tab-btn ${this.statusFilter === 'cancelled' ? 'active' : ''}" data-status="cancelled">
               <span>Stornováno</span>
               <span class="tab-count">${cancelledCount}</span>
+            </button>
+            <button type="button" class="status-tab-btn ${this.statusFilter === 'archived' ? 'active' : ''}" data-status="archived">
+              <span>📂 Archiv</span>
+              <span class="tab-count">${archivedCount}</span>
             </button>
           </div>
 
@@ -1104,6 +1131,16 @@ export class AdminDashboard {
                       <button type="button" class="res-btn-secondary btn-details-toggle" data-id="${r.id || r.code}">
                         ${isExpanded ? 'Skrýt podrobnosti' : 'Podrobnosti'}
                       </button>
+
+                      ${r.is_archived || r.isArchived ? `
+                        <button type="button" class="res-btn-unarchive-soft btn-admin-action" data-id="${r.id || r.code}" data-act="unarchive" style="background: #eef3e6; color: #2e3524; border: 1px solid #cce0b8; padding: 6px 12px; border-radius: 2px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+                          📤 Odarchivovat
+                        </button>
+                      ` : `
+                        <button type="button" class="res-btn-archive-soft btn-admin-action" data-id="${r.id || r.code}" data-act="archive" style="background: #f4f2eb; color: #55554e; border: 1px solid #dcd7c5; padding: 6px 12px; border-radius: 2px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+                          📦 Do archivu
+                        </button>
+                      `}
 
                       ${r.status !== 'cancelled' ? `
                         <button type="button" class="res-btn-cancel-soft btn-admin-action" data-id="${r.id || r.code}" data-act="cancel">
@@ -1197,8 +1234,17 @@ export class AdminDashboard {
                       </div>
                     </div>
 
-                    <!-- VYMAZÁNÍ REZERVAČNÍHO ZÁZNAMU -->
-                    <div class="drawer-delete-bar" style="display: flex; justify-content: flex-end; align-items: center;">
+                    <!-- ARCHIVACE A VYMAZÁNÍ REZERVAČNÍHO ZÁZNAMU -->
+                    <div class="drawer-delete-bar" style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+                      ${r.is_archived || r.isArchived ? `
+                        <button type="button" class="btn-drawer-unarchive btn-admin-action" data-id="${r.id || r.code}" data-act="unarchive" style="background: #eef3e6; color: #2e3524; border: 1px solid #cce0b8; padding: 7px 14px; border-radius: 2px; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                          📤 Odarchivovat rezervaci (vrátit do aktivních)
+                        </button>
+                      ` : `
+                        <button type="button" class="btn-drawer-archive btn-admin-action" data-id="${r.id || r.code}" data-act="archive" style="background: #f4f2eb; color: #55554e; border: 1px solid #dcd7c5; padding: 7px 14px; border-radius: 2px; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                          📦 Archivovat tuto rezervaci
+                        </button>
+                      `}
                       <button type="button" class="btn-drawer-delete-clean btn-admin-action" data-id="${r.id || r.code}" data-act="delete">
                         Vymazat rezervaci z databáze
                       </button>
@@ -2407,6 +2453,14 @@ export class AdminDashboard {
       btnCancelDelete.addEventListener('click', () => {
         this.showDeleteModal = false;
         this.pendingDeleteReservation = null;
+        this.render();
+      });
+    }
+
+    const btnArchiveTab = this.container.querySelector('.btn-admin-archive-tab');
+    if (btnArchiveTab) {
+      btnArchiveTab.addEventListener('click', () => {
+        this.statusFilter = 'archived';
         this.render();
       });
     }
