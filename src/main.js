@@ -2620,23 +2620,35 @@ const initInteractivity = () => {
     }
   });
 
-  // Automatické rozbalení pokoje při přechodu z rezervačního formuláře ("Zobrazit pokoj")
-  if (window.pendingAutoOpenRoom) {
-    const targetRoomId = window.pendingAutoOpenRoom;
+  // Automatické rozbalení pokoje — id z URL (?open=) nebo z paměti
+  const otevritZUrl = (() => {
+    const h = window.location.hash;
+    if (!h.includes('?')) return null;
+    return new URLSearchParams(h.split('?')[1]).get('open');
+  })();
+
+  const targetRoomId = otevritZUrl || window.pendingAutoOpenRoom;
+
+  if (targetRoomId) {
     window.pendingAutoOpenRoom = null;
     requestAnimationFrame(() => {
       const targetItem = document.querySelector(`.room-breakdown-item[data-room="${targetRoomId}"]`);
-      if (targetItem) {
-        const toggleBtn = targetItem.querySelector('.btn-toggle-details');
-        const toggleText = targetItem.querySelector('.toggle-text');
-        
-        targetItem.classList.add('is-open');
-        if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'true');
-        if (toggleText) toggleText.textContent = 'Skrýt podrobnosti';
+      if (!targetItem) return;
 
-        const yOffset = -90;
-        const y = targetItem.getBoundingClientRect().top + window.pageYOffset + yOffset;
-        window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+      const toggleBtn = targetItem.querySelector('.btn-toggle-details');
+      const toggleText = targetItem.querySelector('.toggle-text');
+
+      targetItem.classList.add('is-open');
+      if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'true');
+      if (toggleText) toggleText.textContent = 'Skrýt podrobnosti';
+
+      const yOffset = -90;
+      const y = targetItem.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+
+      // Uklidit parametr z adresy, ať při obnovení stránky nestraší
+      if (otevritZUrl) {
+        history.replaceState(null, '', '/ubytovani#rozdeleni-pokoju');
       }
     });
   }
@@ -5961,18 +5973,9 @@ document.addEventListener('click', (e) => {
       navigateTo('/aktuality');
       return;
     }
-    if (clean === '#pokoj-prizemi' || clean === '#pokoje-prizemi' || clean === '#prizemi') {
+    if (clean === '#pokoj-prizemi' || clean === '#pokoje-prizemi' || clean === '#prizemi' || clean === '#pokoj-vyhled' || clean === '#pokoje-vyhled' || clean === '#vyhled') {
       e.preventDefault();
-      window.location.hash = '#prizemi';
-      route(false);
-      window.scrollTo(0, 0);
-      return;
-    }
-    if (clean === '#pokoj-vyhled' || clean === '#pokoje-vyhled' || clean === '#vyhled') {
-      e.preventDefault();
-      window.location.hash = '#vyhled';
-      route(false);
-      window.scrollTo(0, 0);
+      navigateTo('/ubytovani#rozdeleni-pokoju');
       return;
     }
 

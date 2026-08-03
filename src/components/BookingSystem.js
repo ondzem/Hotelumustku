@@ -2401,11 +2401,8 @@ export class BookingSystem {
         btnViewRoom.addEventListener('click', (e) => {
           e.preventDefault();
           const room = this.getSelectedRoom();
-          if (room) {
-            const targetHash = room.floor === 'prizemi' ? '#pokoje-prizemi' : '#pokoje-vyhled';
-            window.pendingAutoOpenRoom = room.id;
-            window.location.hash = targetHash;
-          }
+          if (!room) return;
+          window.location.href = '/ubytovani#rozdeleni-pokoju?open=' + encodeURIComponent(room.id);
         });
       }
 
