@@ -5886,6 +5886,8 @@ h3 {
   margin: 0 0 2px 0 !important;
   line-height: 1.2 !important;
   letter-spacing: -0.015em !important;
+  white-space: normal !important;
+  width: 100% !important;
 }
 
 .room-detail-hero-subtitle {
@@ -6813,7 +6815,10 @@ h3 {
 }
 
 .desktop-title-text {
-  display: inline;
+  display: inline-block;
+  text-align: center;
+  white-space: normal;
+  max-width: 100%;
 }
 
 .mobile-tablet-title-text {
