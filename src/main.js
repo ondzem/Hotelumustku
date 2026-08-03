@@ -2323,7 +2323,14 @@ const initInteractivity = () => {
       const alertArea = document.getElementById('review-modal-alert-area');
       if (alertArea) alertArea.innerHTML = '';
       const submitBtn = document.getElementById('btn-submit-review');
-      if (submitBtn) submitBtn.disabled = false;
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        delete submitBtn.dataset.hasSubmitted;
+        submitBtn.innerHTML = '<span>Odeslat recenzi ke schválení →</span>';
+      }
+      if (reviewForm) {
+        reviewForm.dataset.isSubmitting = 'false';
+      }
     }
   };
 
@@ -2352,10 +2359,28 @@ const initInteractivity = () => {
     reviewForm.dataset.submitInit = '1';
     reviewForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+      const alertArea = document.getElementById('review-modal-alert-area');
+      const submitBtn = document.getElementById('btn-submit-review');
+
+      // Tlačítko ve stavu "Napsat novou recenzi" → resetovat formulář a zprávy pro novou recenzi
+      if (submitBtn && submitBtn.dataset.hasSubmitted === 'true') {
+        delete submitBtn.dataset.hasSubmitted;
+        if (reviewForm) reviewForm.reset();
+        if (reviewTextCount) {
+          reviewTextCount.textContent = '0 / 500';
+          reviewTextCount.style.color = '#666660';
+        }
+        if (alertArea) alertArea.innerHTML = '';
+        submitBtn.innerHTML = '<span>Odeslat recenzi ke schválení →</span>';
+        reviewForm.dataset.isSubmitting = 'false';
+        const nameInput = document.getElementById('review-fullname-input');
+        if (nameInput) nameInput.focus();
+        return;
+      }
+
       if (reviewForm.dataset.isSubmitting === 'true') return;
       reviewForm.dataset.isSubmitting = 'true';
 
-      const alertArea = document.getElementById('review-modal-alert-area');
       const hpField = document.getElementById('hp-review-field');
       if (hpField && hpField.value) {
         reviewForm.dataset.isSubmitting = 'false';
@@ -2405,8 +2430,6 @@ const initInteractivity = () => {
       }
 
       const gdprName = formatGDPRName(fullName);
-      const submitBtn = document.getElementById('btn-submit-review');
-      const originalBtnHTML = submitBtn ? submitBtn.innerHTML : '';
       if (submitBtn) {
         submitBtn.disabled = true;
         submitBtn.style.opacity = '0.75';
@@ -2455,10 +2478,11 @@ const initInteractivity = () => {
       }
 
       if (submitBtn) {
-        submitBtn.innerHTML = originalBtnHTML;
+        submitBtn.innerHTML = '<span>Napsat novou recenzi</span>';
         submitBtn.disabled = false;
         submitBtn.style.opacity = '';
-        submitBtn.style.cursor = '';
+        submitBtn.style.cursor = 'pointer';
+        submitBtn.dataset.hasSubmitted = 'true';
       }
 
       if (alertArea) {
@@ -2470,10 +2494,7 @@ const initInteractivity = () => {
         `;
       }
 
-      setTimeout(() => {
-        reviewForm.dataset.isSubmitting = 'false';
-        toggleReviewModal(false);
-      }, 3500);
+      reviewForm.dataset.isSubmitting = 'false';
     });
   }
 
