@@ -13565,5 +13565,34 @@ input:checked + .cookie-slider:before {
   overflow-y: auto;
 }
 
+/* ===== Scrollovací animace =====
+   Skrytí se zapíná až třídou .anim-ready, kterou nasadí JS.
+   Kdyby se skript nenačetl, obsah je normálně viditelný. */
+
+html.anim-ready [data-anim] {
+  opacity: 0;
+  transition: opacity 0.85s cubic-bezier(0.22, 0.61, 0.36, 1),
+              transform 0.85s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+html.anim-ready [data-anim="up"]    { transform: translateY(28px); }
+html.anim-ready [data-anim="left"]  { transform: translateX(-32px); }
+html.anim-ready [data-anim="right"] { transform: translateX(32px); }
+html.anim-ready [data-anim="fade"]  { transform: none; }
+
+html.anim-ready [data-anim].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Přístupnost — kdo má v systému vypnuté animace, vidí vše rovnou */
+@media (prefers-reduced-motion: reduce) {
+  html.anim-ready [data-anim] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
 
 

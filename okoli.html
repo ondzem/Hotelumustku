@@ -362,12 +362,12 @@
     <!-- 2. AKTIVITY V NAŠEM HOTELU -->
     <section class="hotel-activities-section surroundings-section" id="aktivity-v-hotelu">
       <div class="hotel-activities-inner surroundings-inner">
-        <h2 class="hotel-activities-title surroundings-title">Aktivity v našem hotelu</h2>
+        <h2 class="hotel-activities-title surroundings-title" data-anim="up">Aktivity v našem hotelu</h2>
 
         <div class="surroundings-slider-viewport" id="hotel-activities-viewport">
-          <div class="surroundings-cards-grid" id="hotel-activities-track">
+          <div class="surroundings-cards-grid" id="hotel-activities-track" data-anim-group>
             <!-- Karta 1: Otužování U Splavu -->
-            <div class="hotel-activity-card hotel-activity-card-otuzovani surrounding-card">
+            <div class="hotel-activity-card hotel-activity-card-otuzovani surrounding-card" data-anim="up">
               <div class="hotel-activity-img-wrap surrounding-card-img-wrap">
                 <img src="/Aktivity v hotelu/otuzovani.webp" alt="Otužování U Splavu" loading="lazy" decoding="async">
               </div>
@@ -375,7 +375,7 @@
             </div>
 
             <!-- Karta 2: Kulečník -->
-            <div class="hotel-activity-card hotel-activity-card-kulecnik surrounding-card">
+            <div class="hotel-activity-card hotel-activity-card-kulecnik surrounding-card" data-anim="up">
               <div class="hotel-activity-img-wrap surrounding-card-img-wrap">
                 <img src="/Aktivity v hotelu/kulecnik.webp" alt="Kulečník v Hotelu u Můstku" loading="lazy" decoding="async">
               </div>
@@ -383,7 +383,7 @@
             </div>
 
             <!-- Karta 3: Fotbálek -->
-            <div class="hotel-activity-card hotel-activity-card-fotbalek surrounding-card">
+            <div class="hotel-activity-card hotel-activity-card-fotbalek surrounding-card" data-anim="up">
               <div class="hotel-activity-img-wrap surrounding-card-img-wrap">
                 <img src="/Aktivity v hotelu/fotbalek.webp" alt="Stolní fotbálek" loading="lazy" decoding="async">
               </div>
@@ -391,7 +391,7 @@
             </div>
 
             <!-- Karta 4: Šipky -->
-            <div class="hotel-activity-card hotel-activity-card-sipky surrounding-card">
+            <div class="hotel-activity-card hotel-activity-card-sipky surrounding-card" data-anim="up">
               <div class="hotel-activity-img-wrap surrounding-card-img-wrap">
                 <img src="/Aktivity v hotelu/sipky.webp" alt="Elektronické šipky" loading="lazy" decoding="async">
               </div>
@@ -399,7 +399,7 @@
             </div>
 
             <!-- Karta 5: Společenská Místnost -->
-            <div class="hotel-activity-card hotel-activity-card-spolecenska surrounding-card">
+            <div class="hotel-activity-card hotel-activity-card-spolecenska surrounding-card" data-anim="up">
               <div class="hotel-activity-img-wrap surrounding-card-img-wrap">
                 <img src="/Aktivity v hotelu/spolecenska mistnost.webp" alt="Společenská místnost" loading="lazy" decoding="async">
               </div>
@@ -424,12 +424,12 @@
     <!-- 3. AKTIVITY V OKOLÍ HOTELU -->
     <section class="surroundings-activities-section surroundings-section" id="aktivity-v-okoli">
       <div class="surroundings-activities-inner surroundings-inner">
-        <h2 class="surroundings-activities-title surroundings-title">Aktivity v okolí hotelu</h2>
+        <h2 class="surroundings-activities-title surroundings-title" data-anim="up">Aktivity v okolí hotelu</h2>
 
         <div class="surroundings-slider-viewport" id="surroundings-activities-viewport">
-          <div class="surroundings-cards-grid" id="surroundings-activities-track">
+          <div class="surroundings-cards-grid" id="surroundings-activities-track" data-anim-group>
             <!-- Karta 1: Turistika -->
-            <div class="surrounding-activity-card surrounding-card">
+            <div class="surrounding-activity-card surrounding-card" data-anim="up">
               <a href="#turistika" class="surrounding-card-link-wrapper">
                 <div class="surrounding-activity-img-wrap surrounding-card-img-wrap">
                   <img src="/Aktivity v hotelu/turistika.webp" alt="Turistika v Jizerských horách" loading="lazy" decoding="async">
@@ -442,7 +442,7 @@
             </div>
 
             <!-- Karta 2: Cyklistika -->
-            <div class="surrounding-activity-card surrounding-card">
+            <div class="surrounding-activity-card surrounding-card" data-anim="up">
               <a href="#cyklistika" class="surrounding-card-link-wrapper">
                 <div class="surrounding-activity-img-wrap surrounding-card-img-wrap">
                   <img src="/Aktivity v hotelu/cyklistika.webp" alt="Cyklistika a cyklotrasy" loading="lazy" decoding="async">
@@ -455,7 +455,7 @@
             </div>
 
             <!-- Karta 3: Zimní výlety -->
-            <div class="surrounding-activity-card surrounding-card">
+            <div class="surrounding-activity-card surrounding-card" data-anim="up">
               <a href="#zimni-vylety" class="surrounding-card-link-wrapper">
                 <div class="surrounding-activity-img-wrap surrounding-card-img-wrap">
                   <img src="/Aktivity v hotelu/zimni vylety.webp" alt="Zimní výlety a běžkování" loading="lazy" decoding="async">
@@ -468,7 +468,7 @@
             </div>
 
             <!-- Karta 4: Výlety autem -->
-            <div class="surrounding-activity-card surrounding-card">
+            <div class="surrounding-activity-card surrounding-card" data-anim="up">
               <a href="#vylety-autem" class="surrounding-card-link-wrapper">
                 <div class="surrounding-activity-img-wrap surrounding-card-img-wrap">
                   <img src="/Aktivity v hotelu/vylety autem.webp" alt="Výlety autem po okolí" loading="lazy" decoding="async">
@@ -477,6 +477,7 @@
               <div class="surrounding-activity-card-footer">
                 <h3 class="surrounding-activity-card-title surrounding-card-title">Výlety autem</h3>
                 <a href="#vylety-autem" class="surrounding-activity-link btn-category-explore">Prohlédnout aktivity &rsaquo;</a>
+              </div>
             </div>
           </div>
         </div>
@@ -494,18 +495,14 @@
       </div>
     </section>
 
-    
-
-    <!-- 5. REUSED SEKCE: CTA BANNER -->
-    
     <!-- 4. ČASTO KLADENÉ DOTAZY (FAQ) -->
     <section class="activities-faq-section" id="faq">
       <div class="activities-faq-inner">
-        <h2 class="activities-faq-title">Často kladené dotazy</h2>
+        <h2 class="activities-faq-title" data-anim="up">Často kladené dotazy</h2>
 
-        <div class="activities-faq-list">
+        <div class="activities-faq-list" data-anim-group>
           <!-- FAQ Dotaz 1 -->
-          <div class="faq-item">
+          <div class="faq-item" data-anim="up">
             <button class="faq-question-btn" aria-expanded="false">
               <span class="faq-question-text">Které výlety zvládneme bez velkého stoupání?</span>
               <span class="faq-action-text">Zobrazit odpověď <span class="faq-arrow">&rsaquo;</span></span>
@@ -516,7 +513,7 @@
           </div>
 
           <!-- FAQ Dotaz 2 -->
-          <div class="faq-item">
+          <div class="faq-item" data-anim="up">
             <button class="faq-question-btn" aria-expanded="false">
               <span class="faq-question-text">Kdy je nejlepší čas přijet?</span>
               <span class="faq-action-text">Zobrazit odpověď <span class="faq-arrow">&rsaquo;</span></span>
@@ -527,7 +524,7 @@
           </div>
 
           <!-- FAQ Dotaz 3 -->
-          <div class="faq-item">
+          <div class="faq-item" data-anim="up">
             <button class="faq-question-btn" aria-expanded="false">
               <span class="faq-question-text">Dá se do okolí vyrazit i vlakem?</span>
               <span class="faq-action-text">Zobrazit odpověď <span class="faq-arrow">&rsaquo;</span></span>
@@ -540,11 +537,10 @@
       </div>
     </section>
 
-    
   <!-- CTA SEKCE (1:1 REPLIKA DLE SVG PŘEDLOHY) -->
   <section class="cta-section">
     <div class="cta-overlay"></div>
-    <div class="cta-inner">
+    <div class="cta-inner" data-anim="up">
       <h2 class="cta-title">Dopřejte si zasloužený<br>odpočinek v Jizerských horách</h2>
       <button class="btn btn-cta" id="cta-booking-btn">Rezervovat pobyt</button>
     </div>

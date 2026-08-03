@@ -4,6 +4,7 @@ import { BookingSystem } from './components/BookingSystem.js';
 import { AdminDashboard } from './components/AdminDashboard.js';
 import { getStoredRoomPrices, getStoredDisabledRooms, MOCK_ROOMS, saveContactMessage, getStoredNewsItems, getStoredReviews, saveStoredReview, formatGDPRName } from './lib/supabaseClient.js';
 import { sendEmail, generateEmailContactNotification, generateEmailNewReviewNotification } from './utils/emailService.js';
+import { initScrollReveal } from './utils/scrollReveal.js';
 
 export function syncCustomRoomNamesToDOM() {
   const roomItems = document.querySelectorAll('.room-breakdown-item[data-room]');
@@ -1850,6 +1851,7 @@ const initInteractivity = () => {
   initProgressiveLazyLoading();
   initCategoryHoverPreload();
   initStickyHeader();
+  initScrollReveal();
 
   const closeMobileMenu = () => {
     const mobileOverlay = document.getElementById('mobile-menu-overlay');
@@ -3526,12 +3528,12 @@ const getActivitiesPageHTML = () => `
     <!-- 2. AKTIVITY V NAŠEM HOTELU -->
     <section class="hotel-activities-section surroundings-section" id="aktivity-v-hotelu">
       <div class="hotel-activities-inner surroundings-inner">
-        <h2 class="hotel-activities-title surroundings-title">Aktivity v našem hotelu</h2>
+        <h2 class="hotel-activities-title surroundings-title" data-anim="up">Aktivity v našem hotelu</h2>
 
         <div class="surroundings-slider-viewport" id="hotel-activities-viewport">
-          <div class="surroundings-cards-grid" id="hotel-activities-track">
+          <div class="surroundings-cards-grid" id="hotel-activities-track" data-anim-group>
             <!-- Karta 1: Otužování U Splavu -->
-            <div class="hotel-activity-card hotel-activity-card-otuzovani surrounding-card">
+            <div class="hotel-activity-card hotel-activity-card-otuzovani surrounding-card" data-anim="up">
               <div class="hotel-activity-img-wrap surrounding-card-img-wrap">
                 <img src="/Aktivity v hotelu/otuzovani.webp" alt="Otužování U Splavu" loading="lazy" decoding="async">
               </div>
@@ -3539,7 +3541,7 @@ const getActivitiesPageHTML = () => `
             </div>
 
             <!-- Karta 2: Kulečník -->
-            <div class="hotel-activity-card hotel-activity-card-kulecnik surrounding-card">
+            <div class="hotel-activity-card hotel-activity-card-kulecnik surrounding-card" data-anim="up">
               <div class="hotel-activity-img-wrap surrounding-card-img-wrap">
                 <img src="/Aktivity v hotelu/kulecnik.webp" alt="Kulečník v Hotelu u Můstku" loading="lazy" decoding="async">
               </div>
@@ -3547,7 +3549,7 @@ const getActivitiesPageHTML = () => `
             </div>
 
             <!-- Karta 3: Fotbálek -->
-            <div class="hotel-activity-card hotel-activity-card-fotbalek surrounding-card">
+            <div class="hotel-activity-card hotel-activity-card-fotbalek surrounding-card" data-anim="up">
               <div class="hotel-activity-img-wrap surrounding-card-img-wrap">
                 <img src="/Aktivity v hotelu/fotbalek.webp" alt="Stolní fotbálek" loading="lazy" decoding="async">
               </div>
@@ -3555,7 +3557,7 @@ const getActivitiesPageHTML = () => `
             </div>
 
             <!-- Karta 4: Šipky -->
-            <div class="hotel-activity-card hotel-activity-card-sipky surrounding-card">
+            <div class="hotel-activity-card hotel-activity-card-sipky surrounding-card" data-anim="up">
               <div class="hotel-activity-img-wrap surrounding-card-img-wrap">
                 <img src="/Aktivity v hotelu/sipky.webp" alt="Elektronické šipky" loading="lazy" decoding="async">
               </div>
@@ -3563,7 +3565,7 @@ const getActivitiesPageHTML = () => `
             </div>
 
             <!-- Karta 5: Společenská Místnost -->
-            <div class="hotel-activity-card hotel-activity-card-spolecenska surrounding-card">
+            <div class="hotel-activity-card hotel-activity-card-spolecenska surrounding-card" data-anim="up">
               <div class="hotel-activity-img-wrap surrounding-card-img-wrap">
                 <img src="/Aktivity v hotelu/spolecenska mistnost.webp" alt="Společenská místnost" loading="lazy" decoding="async">
               </div>
@@ -3588,12 +3590,12 @@ const getActivitiesPageHTML = () => `
     <!-- 3. AKTIVITY V OKOLÍ HOTELU -->
     <section class="surroundings-activities-section surroundings-section" id="aktivity-v-okoli">
       <div class="surroundings-activities-inner surroundings-inner">
-        <h2 class="surroundings-activities-title surroundings-title">Aktivity v okolí hotelu</h2>
+        <h2 class="surroundings-activities-title surroundings-title" data-anim="up">Aktivity v okolí hotelu</h2>
 
         <div class="surroundings-slider-viewport" id="surroundings-activities-viewport">
-          <div class="surroundings-cards-grid" id="surroundings-activities-track">
+          <div class="surroundings-cards-grid" id="surroundings-activities-track" data-anim-group>
             <!-- Karta 1: Turistika -->
-            <div class="surrounding-activity-card surrounding-card">
+            <div class="surrounding-activity-card surrounding-card" data-anim="up">
               <a href="#turistika" class="surrounding-card-link-wrapper">
                 <div class="surrounding-activity-img-wrap surrounding-card-img-wrap">
                   <img src="/Aktivity v hotelu/turistika.webp" alt="Turistika v Jizerských horách" loading="lazy" decoding="async">
@@ -3606,7 +3608,7 @@ const getActivitiesPageHTML = () => `
             </div>
 
             <!-- Karta 2: Cyklistika -->
-            <div class="surrounding-activity-card surrounding-card">
+            <div class="surrounding-activity-card surrounding-card" data-anim="up">
               <a href="#cyklistika" class="surrounding-card-link-wrapper">
                 <div class="surrounding-activity-img-wrap surrounding-card-img-wrap">
                   <img src="/Aktivity v hotelu/cyklistika.webp" alt="Cyklistika a cyklotrasy" loading="lazy" decoding="async">
@@ -3619,7 +3621,7 @@ const getActivitiesPageHTML = () => `
             </div>
 
             <!-- Karta 3: Zimní výlety -->
-            <div class="surrounding-activity-card surrounding-card">
+            <div class="surrounding-activity-card surrounding-card" data-anim="up">
               <a href="#zimni-vylety" class="surrounding-card-link-wrapper">
                 <div class="surrounding-activity-img-wrap surrounding-card-img-wrap">
                   <img src="/Aktivity v hotelu/zimni vylety.webp" alt="Zimní výlety a běžkování" loading="lazy" decoding="async">
@@ -3632,7 +3634,7 @@ const getActivitiesPageHTML = () => `
             </div>
 
             <!-- Karta 4: Výlety autem -->
-            <div class="surrounding-activity-card surrounding-card">
+            <div class="surrounding-activity-card surrounding-card" data-anim="up">
               <a href="#vylety-autem" class="surrounding-card-link-wrapper">
                 <div class="surrounding-activity-img-wrap surrounding-card-img-wrap">
                   <img src="/Aktivity v hotelu/vylety autem.webp" alt="Výlety autem po okolí" loading="lazy" decoding="async">
@@ -3641,6 +3643,7 @@ const getActivitiesPageHTML = () => `
               <div class="surrounding-activity-card-footer">
                 <h3 class="surrounding-activity-card-title surrounding-card-title">Výlety autem</h3>
                 <a href="#vylety-autem" class="surrounding-activity-link btn-category-explore">Prohlédnout aktivity &rsaquo;</a>
+              </div>
             </div>
           </div>
         </div>
@@ -3658,18 +3661,14 @@ const getActivitiesPageHTML = () => `
       </div>
     </section>
 
-    
-
-    <!-- 5. REUSED SEKCE: CTA BANNER -->
-    
     <!-- 4. ČASTO KLADENÉ DOTAZY (FAQ) -->
     <section class="activities-faq-section" id="faq">
       <div class="activities-faq-inner">
-        <h2 class="activities-faq-title">Často kladené dotazy</h2>
+        <h2 class="activities-faq-title" data-anim="up">Často kladené dotazy</h2>
 
-        <div class="activities-faq-list">
+        <div class="activities-faq-list" data-anim-group>
           <!-- FAQ Dotaz 1 -->
-          <div class="faq-item">
+          <div class="faq-item" data-anim="up">
             <button class="faq-question-btn" aria-expanded="false">
               <span class="faq-question-text">Které výlety zvládneme bez velkého stoupání?</span>
               <span class="faq-action-text">Zobrazit odpověď <span class="faq-arrow">&rsaquo;</span></span>
@@ -3680,7 +3679,7 @@ const getActivitiesPageHTML = () => `
           </div>
 
           <!-- FAQ Dotaz 2 -->
-          <div class="faq-item">
+          <div class="faq-item" data-anim="up">
             <button class="faq-question-btn" aria-expanded="false">
               <span class="faq-question-text">Kdy je nejlepší čas přijet?</span>
               <span class="faq-action-text">Zobrazit odpověď <span class="faq-arrow">&rsaquo;</span></span>
@@ -3691,7 +3690,7 @@ const getActivitiesPageHTML = () => `
           </div>
 
           <!-- FAQ Dotaz 3 -->
-          <div class="faq-item">
+          <div class="faq-item" data-anim="up">
             <button class="faq-question-btn" aria-expanded="false">
               <span class="faq-question-text">Dá se do okolí vyrazit i vlakem?</span>
               <span class="faq-action-text">Zobrazit odpověď <span class="faq-arrow">&rsaquo;</span></span>
