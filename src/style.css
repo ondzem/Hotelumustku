@@ -115,6 +115,7 @@ a {
   position: relative;
   width: 100%;
   height: 95vh;
+  min-height: min(760px, 88vh);
   min-height: min(760px, 88svh);
   background-color: #1c1c19;
   background-size: cover;
@@ -2627,6 +2628,7 @@ h3 {
 @media (max-width: 768px) {
   .hero-section {
     height: 95vh;
+    min-height: min(540px, 88vh);
     min-height: min(540px, 88svh);
     max-height: 750px;
   }
@@ -2651,6 +2653,7 @@ h3 {
     height: 68px;
   }
 
+  .header-nav-left,
   .header-nav-right,
   .nav-left,
   .nav-right {
@@ -2711,7 +2714,15 @@ h3 {
     z-index: 9999;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    /* Vystředění řešíme automatickými okraji na prvním a posledním
+       potomkovi (viz .mobile-menu-nav a .mobile-season-toggle níže),
+       NE přes justify-content: center.
+       Důvod: center u rolovatelného panelu vytlačí přetékající obsah
+       nad horní hranu okna a nejde tam doscrollovat. Automatické
+       okraje se při přetečení samy zmenší na nulu — a na rozdíl
+       od safe center to funguje ve všech prohlížečích s flexboxem,
+       tedy i na starších telefonech. */
+    justify-content: flex-start;
     padding: 40px 20px;
     box-sizing: border-box;
     opacity: 0;
@@ -2721,6 +2732,28 @@ h3 {
     transition: opacity 0.3s ease;
   }
 
+  /* Nízké displeje (telefon na šířku) — stáhnout rozestupy,
+     ať se menu vejde bez rolování */
+  @media (max-height: 640px) {
+    .mobile-menu-overlay {
+      padding: 24px 20px;
+    }
+    .mobile-menu-nav {
+      gap: 13px;
+      margin-bottom: 24px;
+    }
+    .mobile-nav-link {
+      font-size: 19px;
+    }
+    .mobile-season-toggle {
+      margin-top: 20px;
+    }
+    .mobile-menu-overlay .mobile-menu-booking {
+      height: 42px !important;
+      font-size: 18px !important;
+    }
+  }
+
   .mobile-menu-overlay.is-active {
     opacity: 1;
     pointer-events: auto;
@@ -2728,14 +2761,21 @@ h3 {
 
   .mobile-menu-close {
     position: absolute;
-    top: 24px;
-    right: 24px;
+    top: 16px;
+    right: 16px;
+    /* Dotyková plocha nejméně 44 × 44 px — samotný znak × měl jen 21 px */
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 38px;
     color: #ffffff;
     background: none;
     border: none;
     cursor: pointer;
     line-height: 1;
+    z-index: 20;
   }
 
   .mobile-menu-nav {
@@ -2744,6 +2784,9 @@ h3 {
     align-items: center;
     gap: 22px;
     margin-bottom: 56px;
+    flex-shrink: 0;
+    /* horní polovina vystředění — při přetečení se sama zmenší na 0 */
+    margin-top: auto;
   }
 
   .mobile-nav-link {
@@ -2758,15 +2801,20 @@ h3 {
     opacity: 0.8;
   }
 
-  /* Spodní přepínání Léto / Zima v mobilním hamburger menu (posunuté výše) */
+  /* Přepínání Léto / Zima v mobilním hamburger menu.
+     Dřív bylo position: absolute s odsazením ode dna — na nízkém
+     displeji (320×568) sedlo přesně na tlačítko Rezervovat pobyt.
+     Teď je v běžném toku pod tlačítkem, takže se překrýt nemůže. */
   .mobile-season-toggle {
-    position: absolute;
-    bottom: clamp(76px, 12vh, 110px);
-    left: 50%;
-    transform: translateX(-50%);
+    position: static;
+    transform: none;
     display: flex;
     align-items: center;
     gap: 24px;
+    margin-top: clamp(26px, 7vh, 70px);
+    /* spodní polovina vystředění — při přetečení se sama zmenší na 0 */
+    margin-bottom: auto;
+    flex-shrink: 0;
     z-index: 10;
   }
 
@@ -3909,6 +3957,7 @@ h3 {
 @media (min-width: 769px) and (max-width: 1028px) {
   .hero-section {
     height: 90vh;
+    min-height: min(600px, 88vh);
     min-height: min(600px, 88svh);
   }
 
@@ -4013,6 +4062,7 @@ h3 {
   /* Specifická pravidla pro Rooms Hero na tabletu (769px - 1028px) */
   .rooms-hero-section {
     height: 90vh;
+    min-height: min(560px, 88vh);
     min-height: min(560px, 88svh);
     max-height: 700px;
   }
@@ -5182,6 +5232,7 @@ h3 {
   position: relative;
   width: 100%;
   height: 90vh;
+  min-height: min(700px, 88vh);
   min-height: min(700px, 88svh);
   background-image: url('/nabidka-pokoju.webp') !important;
   background-size: cover;
@@ -5209,6 +5260,7 @@ h3 {
   position: relative;
   width: 100%;
   height: 90vh;
+  min-height: min(700px, 88vh);
   min-height: min(700px, 88svh);
   background-size: cover;
   background-position: center;
@@ -5476,6 +5528,7 @@ h3 {
     position: relative;
     width: 100%;
     height: 95vh;
+    min-height: min(540px, 88vh);
     min-height: min(540px, 88svh);
     max-height: 750px;
     background-image: url('/nabidka-pokoju.webp') !important;
@@ -5677,6 +5730,7 @@ h3 {
 @media (min-width: 769px) and (max-width: 1028px) {
   .rooms-hero-section {
     height: 90vh !important;
+    min-height: min(560px, 88vh) !important;
     min-height: min(560px, 88svh) !important;
     max-height: 720px !important;
   }
@@ -5883,6 +5937,7 @@ h3 {
   position: relative;
   width: 100%;
   height: 90vh;
+  min-height: min(700px, 88vh);
   min-height: min(700px, 88svh);
   background-image: url('/balkony 1 copy.webp');
   background-size: cover;
@@ -6875,6 +6930,7 @@ h3 {
     position: relative !important;
     width: 100% !important;
     height: 95vh !important;
+    min-height: min(540px, 88vh) !important;
     min-height: min(540px, 88svh) !important;
     max-height: 750px !important;
     background-image: url('/mobile_hero_prizemi.webp') !important;
@@ -9045,6 +9101,7 @@ html.is-route-loading #app {
   .room-detail-hero,
   .dining-hero-section {
     height: 100vh !important;
+    min-height: min(520px, 88vh) !important;
     min-height: min(520px, 88svh) !important;
   }
 
@@ -10240,6 +10297,7 @@ html.is-route-loading #app {
 @media (min-width: 768px) and (max-width: 1028.98px) {
   .activities-hero-section {
     height: 100vh !important;
+    min-height: min(600px, 88vh) !important;
     min-height: min(600px, 88svh) !important;
   }
 
@@ -10391,6 +10449,7 @@ html.is-route-loading #app {
 @media (max-width: 767.98px) {
   .activities-hero-section {
     height: 100vh !important;
+    min-height: min(520px, 88vh) !important;
     min-height: min(520px, 88svh) !important;
   }
 
@@ -10894,6 +10953,7 @@ html.is-route-loading #app {
   position: relative;
   width: 100%;
   height: 90vh;
+  min-height: min(700px, 88vh);
   min-height: min(700px, 88svh);
   background-image: none !important;
   background-color: #1c1c19;
@@ -10904,6 +10964,7 @@ html.is-route-loading #app {
   #uvod-kontakt,
   .contact-hero-section {
     height: 95vh !important;
+    min-height: min(540px, 88vh) !important;
     min-height: min(540px, 88svh) !important;
     max-height: 750px !important;
     background-image: none !important;
@@ -11475,6 +11536,7 @@ html.is-route-loading #app {
   #uvod-kontakt,
   .contact-hero-section {
     height: 100vh !important;
+    min-height: min(520px, 88vh) !important;
     min-height: min(520px, 88svh) !important;
   }
 
@@ -12445,6 +12507,10 @@ input:checked + .cookie-slider:before {
 
 .legal-info-table {
   width: 100%;
+  /* table-layout: fixed drží tabulku na šířce rodiče. Bez toho si
+     tabulka roztáhne sloupce podle nejdelšího slova (názvy cookies
+     jsou dlouhé nedělitelné řetězce) a na telefonu přetekla ven. */
+  table-layout: fixed;
   border-collapse: collapse;
   margin: 24px 0;
   border: 1px solid #e2ded4;
@@ -12455,6 +12521,19 @@ input:checked + .cookie-slider:before {
   text-align: left;
   border-bottom: 1px solid #eae6dc;
   font-size: 15px;
+  /* dlouhé identifikátory cookies se musí umět zalomit */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+/* Na telefonech užší odsazení a menší písmo, ať se vejdou 4 sloupce */
+@media (max-width: 560px) {
+  .legal-info-table th, .legal-info-table td {
+    padding: 9px 7px;
+    font-size: 13px;
+    line-height: 1.4;
+  }
 }
 
 .legal-info-table th {
@@ -12877,6 +12956,7 @@ input:checked + .cookie-slider:before {
   border-bottom-left-radius: 6px;
   border-bottom-right-radius: 6px;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+  max-height: min(420px, 55vh);
   max-height: min(420px, 55svh);
   overflow-y: auto;
   box-sizing: border-box;
@@ -13511,6 +13591,7 @@ input:checked + .cookie-slider:before {
   .hero-title,
   .room-detail-hero-title { font-size: min(clamp(24px, 3.2vw, 32px), 5.6vh) !important; }
   .booking-hero-section,
+  .admin-hero-section { height: 38vh !important; height: 38vh !important; }
   .admin-hero-section { height: 38vh !important; height: 38svh !important; }
 
   .booking-hero-section .hero-inner,
@@ -13590,6 +13671,7 @@ input:checked + .cookie-slider:before {
 [class*="-modal-card"],
 [class*="-modal-container"],
 [class*="-modal-content"] {
+  max-height: 92vh;
   max-height: min(92svh, 92vh);
   overflow-y: auto;
 }
@@ -13722,3 +13804,128 @@ html.anim-ready [data-anim].is-in {
 
 
 
+
+/* =====================================================================
+   DOTYKOVÉ PLOCHY NA MOBILU A TABLETU
+   Doporučené minimum je 44 × 44 px. Řada odkazů měla jen 16–24 px
+   na výšku, takže se do nich na telefonu špatně trefovalo.
+
+   Plocha se zvětšuje neviditelným pseudoprvkem — rozvržení, rozestupy
+   ani velikost písma se tím NEMĚNÍ, roste jen citlivá oblast.
+   ===================================================================== */
+@media (hover: none), (max-width: 1028px) {
+
+  .site-footer li > a,
+  .footer-contact-link,
+  .footer-author a,
+  .contact-link,
+  .spec-link,
+  .btn-terms-link,
+  .btn-toggle-details {
+    position: relative;
+  }
+
+  .site-footer li > a::after,
+  .footer-contact-link::after,
+  .footer-author a::after,
+  .contact-link::after,
+  .spec-link::after,
+  .btn-terms-link::after,
+  .btn-toggle-details::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    /* Rozšíření o 8 px nahoru i dolů. Naměřeno: odkazy v patičce mají
+       19 px a mezi sebou 19 px, takže 8 px na každou stranu nechá
+       3 px volné a plochy sousedů se nepřekryjí. Pevných 44 px by
+       se u nich překrývalo a klikalo by se na špatný odkaz. */
+    top: -8px;
+    bottom: -8px;
+    height: auto;
+    z-index: 1;
+  }
+
+  /* Zavírací tlačítka oken — skutečná velikost, ne jen znak × */
+  .terms-modal-close,
+  .review-modal-close,
+  .cookie-modal-close,
+  .admin-modal-close,
+  .lightbox-close {
+    min-width: 44px !important;
+    min-height: 44px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  /* Kroky rezervačního průvodce */
+  .step-item.btn-step-nav {
+    min-height: 36px;
+  }
+}
+
+/* =====================================================================
+   ZÁLOHA PRO STARŠÍ TELEFONY — aspect-ratio
+   Obaly fotek mají height: auto a výšku jim dává aspect-ratio.
+   Prohlížeče bez podpory (iOS 14 a starší, Safari < 15) tu vlastnost
+   zahodí, obal se složí na nulu a FOTKA ZMIZÍ ÚPLNĚ.
+
+   Blok níže je uvnitř @supports not, takže v žádném současném
+   prohlížeči neplatí a nemůže nic změnit. Aktivuje se jen tam,
+   kde by se jinak obsah nezobrazil, a dá obalům náhradní výšku.
+   Poměr stran nebude přesný, ale fotky budou vidět.
+   ===================================================================== */
+@supports not (aspect-ratio: 1 / 1) {
+
+  .about-img-top,
+  .about-img-bottom,
+  .panoramic-img,
+  .room-card-right,
+  .room-card-left,
+  .room-photo-card,
+  .service-img-wrap,
+  .surrounding-card-img-wrap,
+  .room-card-image-wrap,
+  .room-specs-image-wrap,
+  .announcement-modal-image,
+  .news-card-image-wrap {
+    min-height: 220px;
+  }
+
+  .about-img-top,
+  .about-img-bottom,
+  .panoramic-img,
+  .room-photo-card {
+    min-height: 300px;
+  }
+
+  .header-logo {
+    min-height: 44px;
+  }
+
+  /* Obrázky uvnitř mají height: 100 %, což bez pevné výšky rodiče
+     nefunguje — proto jim dáme vlastní minimum. */
+  .about-img-top img,
+  .about-img-bottom img,
+  .panoramic-img img,
+  .room-card-right img,
+  .room-card-left img,
+  .room-photo-card img,
+  .service-img-wrap img,
+  .surrounding-card-img-wrap img,
+  .room-card-image-wrap img,
+  .room-specs-image-wrap img,
+  .news-card-image-wrap img {
+    min-height: inherit;
+    object-fit: cover;
+  }
+
+  /* Bez podpory aspect-ratio chybí i mezery ve flexboxu
+     (stejná generace prohlížečů) — aspoň ať se prvky nedotýkají. */
+  .surroundings-cards-grid > *,
+  .services-cards-wrap > *,
+  .features-grid > * {
+    margin: 0 8px 16px 0;
+  }
+}

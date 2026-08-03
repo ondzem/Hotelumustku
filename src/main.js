@@ -1734,8 +1734,9 @@ export function setSeasonMode(mode, savePreference = true) {
   }
 
   // 2. Sekce Zázemí (O nás pouze na úvodní stránce, ať se nepřepisují fotky v sekci Celý hotel na /akce)
-  const aboutTopImg = document.querySelector('#about .about-img-top img');
-  const aboutBottomImg = document.querySelector('#about .about-img-bottom img');
+  const homeAboutSection = document.querySelector('.about-section:not(.events-about-section)');
+  const aboutTopImg = homeAboutSection ? homeAboutSection.querySelector('.about-img-top img') : null;
+  const aboutBottomImg = homeAboutSection ? homeAboutSection.querySelector('.about-img-bottom img') : null;
   if (aboutTopImg) {
     aboutTopImg.src = mode === 'winter'
       ? '/Zimni rezim/Zima - prijezdova fotka.webp'
