@@ -701,8 +701,8 @@ const getReviewsHTML = () => `
     <div class="reviews-inner">
       <h2 class="reviews-title" style="margin-bottom: 24px;" data-anim="up">Co o nás říkají sami hosté?</h2>
       
-      <div class="reviews-slider-viewport" id="reviews-viewport">
-        <div class="reviews-slider-track" id="reviews-track" data-anim-group>
+      <div class="reviews-slider-viewport" id="reviews-viewport" data-anim-group>
+        <div class="reviews-slider-track" id="reviews-track">
           ${GUEST_REVIEWS.map(r => `
             <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
@@ -2065,7 +2065,7 @@ const initInteractivity = () => {
         const approved = (stored || []).filter(r => r.status === 'approved');
         if (approved.length > 0) {
           reviewsTrack.innerHTML = approved.map(r => `
-            <div class="review-card">
+            <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
               <p class="review-quote">${r.text}</p>
               <div class="review-contour-bg">
@@ -2093,6 +2093,8 @@ const initInteractivity = () => {
         const cloneStart = card.cloneNode(true);
         reviewsTrack.insertBefore(cloneStart, reviewsTrack.firstChild);
       });
+
+      initScrollReveal();
 
       const allCards = Array.from(reviewsTrack.children);
       let currentIndex = totalOriginal;
