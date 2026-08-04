@@ -5296,7 +5296,7 @@ const CATEGORIES_DATA = {
         id: 'ski-u-capa-prichovice',
         title: 'Ski areál U Čápa v Příchovicích',
         subtitle: '6,7 km od hotelu · 13 minut autem',
-        img: '/Fotky Aktivit/_doplnit-fotku.svg',
+        img: '/skiareal-u-capa-prichovice-enhanced.webp',
         alt: 'Sjezdovka lyžařského areálu U Čápa v Příchovicích v Jizerských horách',
         desc: 'Areál U Čápa leží v Příchovicích nad Kořenovem, tedy kousek za hotelem. Je to menší jizerskohorské středisko, kam se jezdí spíš za klidným lyžováním než za velkým provozem.\n\nSvahy jsou přehledné a hodí se pro rodiny i pro lyžaře, kteří se zrovna rozjíždějí. Autem jste tam za necelou čtvrthodinu, takže se dá vyrazit i jen na půl dne.'
       },
@@ -5304,7 +5304,7 @@ const CATEGORIES_DATA = {
         id: 'ski-rejdice',
         title: 'Ski areál Rejdice',
         subtitle: '10 km od hotelu · 16 minut autem',
-        img: '/Fotky Aktivit/_doplnit-fotku.svg',
+        img: '/skiareal rejdice.webp',
         alt: 'Zasněžený lyžařský areál Rejdice v Jizerských horách',
         desc: 'Rejdice jsou malý areál na okraji Jizerských hor u Kořenova. Patří k té klidnější kategorii středisek, kde se nestojí dlouhé fronty.\n\nJe to dobrá volba na den, kdy nechcete řešit dav a parkování. Z hotelu je to zhruba čtvrt hodiny jízdy autem.'
       },
@@ -5312,7 +5312,7 @@ const CATEGORIES_DATA = {
         id: 'ski-harrachov',
         title: 'Ski areál Harrachov',
         subtitle: '17 km od hotelu · 21 minut autem',
-        img: '/Fotky Aktivit/_doplnit-fotku.svg',
+        img: '/skiareal harrachov.webp',
         alt: 'Sjezdovky a skokanské můstky v lyžařském areálu Harrachov',
         desc: 'Harrachov je jedno z nejznámějších středisek v Krkonoších a od hotelu je to jen přes kopec. Kromě sjezdovek jsou tu i slavné skokanské můstky, které stojí za prohlídku i mimo závody.\n\nStředisko je větší než okolní jizerskohorské areály, takže si vyberou začátečníci i zkušenější lyžaři. Autem jste tam zhruba za dvacet minut.'
       },
@@ -5320,7 +5320,7 @@ const CATEGORIES_DATA = {
         id: 'ski-rokytnice-nad-jizerou',
         title: 'Ski areál Rokytnice nad Jizerou',
         subtitle: '22 km od hotelu · 30 minut autem',
-        img: '/Fotky Aktivit/_doplnit-fotku.svg',
+        img: '/skiareal-rokytnice-nad-jizerou-enhanced.webp',
         alt: 'Rozlehlé sjezdovky lyžařského areálu Rokytnice nad Jizerou v Krkonoších',
         desc: 'Rokytnice nad Jizerou patří k největším krkonošským střediskům a nabízí nejdelší sjezdy v dosahu hotelu. Převýšení je tu poctivé, takže si přijdou na své i náročnější lyžaři.\n\nJe to nejvzdálenější z areálů, které od nás doporučujeme, ale rozsahem to vynahradí. Počítejte s půlhodinou jízdy autem a spíš celodenním výletem.'
       },
@@ -5517,7 +5517,7 @@ const CATEGORIES_DATA = {
       {
         id: 'mumlavske-vodopady',
         title: 'Mumlavské vodopády v Harrachově',
-        subtitle: '16 km od hotelu | Harrachov',
+        subtitle: '16 km od hotelu · 19 minut autem',
         img: '/Fotky Aktivit/mumlavske-vodopady-3.webp',
         alt: 'Mumlavské vodopády v Harrachově padající přes skalní stupeň',
         desc: 'Řeka Mumlava se tu přelévá přes skalní stupeň vysoký deset metrů a rozstřikuje se do širokého vějíře. Po jarním tání nebo po vydatném dešti je to působivá podívaná.\n\nK vodopádu vede z Harrachova široká lesní cesta, dlouhá zhruba dva kilometry, bez prudkého stoupání. Kousek nad vodopádem stojí restaurace, kde se dá dát oběd. Autem z hotelu asi dvacet minut.'
@@ -5525,7 +5525,7 @@ const CATEGORIES_DATA = {
       {
         id: 'lanovy-park-bedrichov',
         title: 'Lanový park Bedřichov',
-        subtitle: '20 km od hotelu | Bedřichov',
+        subtitle: '20 km od hotelu · 28 minut autem',
         img: '/Fotky Aktivit/lanovy-park-bedrichov.jpg',
         alt: 'Lanové překážky mezi stromy v lanovém parku v Bedřichově',
         desc: 'Mezi stromy jsou natažené lanové překážky v několika výškových úrovních. Trasy jsou rozdělené podle náročnosti, takže si vybere i menší dítě i dospělý, který si chce vyzkoušet něco náročnějšího.\n\nO bezpečnost se stará obsluha a každý dostane jistící postroj. Nemusíte být sportovec — jde spíš o odvahu než o sílu. Autem z hotelu asi půl hodiny, ideální program na půl dne.'
