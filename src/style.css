@@ -10036,6 +10036,7 @@ html.is-route-loading #app {
 
 .hotel-activity-card-fotbalek .hotel-activity-img-wrap img,
 .hotel-activity-card-sipky .hotel-activity-img-wrap img,
+.hotel-activity-card-pingpong .hotel-activity-img-wrap img,
 .hotel-activity-card-spolecenska .hotel-activity-img-wrap img {
   filter: contrast(1.06) saturate(1.04) brightness(1.0);
 }

@@ -3656,7 +3656,15 @@ const getActivitiesPageHTML = () => `
               <h3 class="hotel-activity-card-title surrounding-card-title">Šipky</h3>
             </div>
 
-            <!-- Karta 5: Společenská Místnost -->
+            <!-- Karta 5: Ping Pong -->
+            <div class="hotel-activity-card hotel-activity-card-pingpong surrounding-card" data-anim="up">
+              <div class="hotel-activity-img-wrap surrounding-card-img-wrap">
+                <img src="/ping pong.webp" alt="Stolní tenis - Ping Pong" loading="lazy" decoding="async">
+              </div>
+              <h3 class="hotel-activity-card-title surrounding-card-title">Ping Pong</h3>
+            </div>
+
+            <!-- Karta 6: Společenská Místnost -->
             <div class="hotel-activity-card hotel-activity-card-spolecenska surrounding-card" data-anim="up">
               <div class="hotel-activity-img-wrap surrounding-card-img-wrap">
                 <img src="/Aktivity v hotelu/spolecenska mistnost.webp" alt="Společenská místnost" loading="lazy" decoding="async">
