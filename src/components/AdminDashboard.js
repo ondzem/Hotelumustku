@@ -687,8 +687,8 @@ export class AdminDashboard {
 
     // SHA-256 cryptographic hashes (No plain text passwords stored in client source code)
     const validHashes = [
-      '9b0ff4347547f372b1a3e770f486a380e2f81655219914b3bb28ac6279221f35', // 'mustku2026'
-      '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918'  // 'admin'
+      '9b0ff4347547f372b1a3e770f486a380e2f81655219914b3bb28ac6279221f35',
+      '3155fd625056427feaa42b58d5e27f4f3b778fe28540b8c7a0c7ffccdf1ecc25'
     ];
 
     if (validHashes.includes(inputHash)) {
