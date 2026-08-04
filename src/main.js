@@ -5472,6 +5472,14 @@ const CATEGORIES_DATA = {
         desc: 'Sychrov je novogotický zámek, který po generace patřil francouzskému rodu Rohanů. Interiéry jsou dochované v původním stavu — dřevěné obklady, portréty, knihovna.\n\nProhlídky vede průvodce a trvají zhruba hodinu. Kolem zámku je rozsáhlý anglický park s rybníkem a starými stromy, kterým se dá projít i bez vstupenky. Autem z hotelu necelou hodinu.'
       },
       {
+        id: 'zamek-frydlant',
+        title: 'Státní zámek Frýdlant',
+        subtitle: '35 km od hotelu · 50 minut autem',
+        img: '/zamek frydlant.webp',
+        alt: 'Hrad a zámek Frýdlant v Libereckém kraji',
+        desc: 'Frýdlant je ojedinělá dvojice — středověký hrad a renesanční zámek stojí těsně vedle sebe na jedné skále nad městem. Právě proto se mu říká hrad a zámek Frýdlant a patří k nejnavštěvovanějším památkám Libereckého kraje.\n\nProhlídkové okruhy vedou hradním jádrem i zámeckými interiéry, k vidění jsou zbrojnice, historické kuchyně i zařízené pokoje. Je to nejvzdálenější z našich tipů na výlet autem, počítejte se zhruba padesáti minutami cesty a spíš celým dnem.'
+      },
+      {
         id: 'dinopark-auto',
         title: 'Dinopark Liberec',
         subtitle: '26 km od hotelu · 40 minut autem',
