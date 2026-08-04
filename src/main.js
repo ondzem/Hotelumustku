@@ -3156,7 +3156,7 @@ const preloadHeroImages = (pageKey) => {
     const img = new Image();
     img.src = src;
   } else if (pageKey === 'activities') {
-    const src = '/Aktivity v hotelu/vyhled na krajinu desktop.webp';
+    const src = isMobile ? '/Aktivity v hotelu/vyhled na krajinu mobil.webp' : '/Aktivity v hotelu/vyhled na krajinu desktop.webp';
     const img = new Image();
     img.src = src;
   } else if (pageKey === 'rooms') {
@@ -3164,11 +3164,11 @@ const preloadHeroImages = (pageKey) => {
     const img = new Image();
     img.src = src;
   } else if (pageKey === 'contact') {
-    const src = '/vyhled-na-mustky.webp';
+    const src = '/kontakt/vyhled-na-mustky.webp';
     const img = new Image();
     img.src = src;
   } else if (pageKey === 'news') {
-    const src = '/Aktuality hero sekce.webp';
+    const src = '/Fotky Aktivit/Aktulity hero sekce.webp';
     const img = new Image();
     img.src = src;
   } else if (pageKey === 'gdpr' || pageKey === 'cookies' || pageKey === 'podminky') {
@@ -3810,22 +3810,68 @@ const getActivitiesPageHTML = () => `
   </div>
 `;
 
-// Render Funkce Pro Stránku "Aktuality"
-const getNewsPageHTML = async () => {
-  const allItems = await getStoredNewsItems();
-  const activeItems = (allItems || []).filter(item => item.is_active);
-
+const renderNewsCardsHTML = (activeItems) => {
   const formatDate = (dateStr) => {
     if (!dateStr) return '';
     const d = new Date(dateStr);
     return isNaN(d.getTime()) ? dateStr : d.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' });
   };
 
+  if (!activeItems || activeItems.length === 0) {
+    return `
+      <div class="news-empty-state" data-anim="up">
+        <div class="news-empty-icon">📰</div>
+        <h3 class="news-empty-title">Aktuálně nemáme žádné novinky</h3>
+        <p class="news-empty-desc">Sledujte náš web pro nadcházející akce a sezónní oznámení.</p>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="news-cards-list" data-anim-group>
+      ${activeItems.map((item, index) => {
+        const hasImage = Boolean(item.image_url);
+        const formattedContent = (item.content || '').replace(/\n/g, '<br>');
+        const isReverse = index % 2 === 1;
+
+        if (hasImage) {
+          return `
+            <article class="news-card news-card-with-image ${isReverse ? 'news-card-reverse' : ''}" data-anim="up">
+              <div class="news-card-content">
+                <div class="news-card-date">🗓️ ${formatDate(item.updated_at)}</div>
+                <h2 class="news-card-title">${item.title}</h2>
+                <div class="news-card-text">${formattedContent}</div>
+              </div>
+              <div class="news-card-image-wrap">
+                <img src="${item.image_url}" alt="${item.title}" class="news-card-image" loading="lazy" decoding="async">
+              </div>
+            </article>
+          `;
+        } else {
+          return `
+            <article class="news-card news-card-without-image" data-anim="up">
+              <div class="news-card-centered-header">
+                <div class="news-card-date">🗓️ ${formatDate(item.updated_at)}</div>
+                <h2 class="news-card-title">${item.title}</h2>
+              </div>
+              <div class="news-card-text news-card-text-readable">${formattedContent}</div>
+            </article>
+          `;
+        }
+      }).join('')}
+    </div>
+  `;
+};
+
+// Render Funkce Pro Stránku "Aktuality" (SYNCHRONNÍ INSTANTNÍ RENDERING HERO SEKCE)
+const getNewsPageHTML = (allItems = []) => {
+  const activeItems = (allItems || []).filter(item => item.is_active);
+
   return `
     <div class="news-page-wrapper">
       <!-- 1. HERO SEKCE AKTUALIT -->
       <section class="hero-section rooms-hero-section room-detail-hero news-hero-section" id="uvod-aktuality">
-        <img class="hero-news-poster" src="/Fotky Aktivit/Aktulity hero sekce.webp" alt="Aktuality Hotel u Můstku" fetchpriority="high" loading="eager" decoding="async" fetchpriority="high" loading="eager" decoding="async" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+        <img class="hero-news-poster" src="/Fotky Aktivit/Aktulity hero sekce.webp" alt="Aktuality Hotel u Můstku" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
         <div class="hero-overlay"></div>
         <div class="hero-inner">
           ${getHeaderHTML()}
@@ -3853,47 +3899,8 @@ const getNewsPageHTML = async () => {
 
       <!-- 2. HLAVNÍ SEKCE VÝPISU AKTUALIT -->
       <section class="news-main-section" id="seznam-aktualit">
-        <div class="news-main-inner">
-          ${activeItems.length === 0 ? `
-            <div class="news-empty-state" data-anim="up">
-              <div class="news-empty-icon">📰</div>
-              <h3 class="news-empty-title">Aktuálně nemáme žádné novinky</h3>
-              <p class="news-empty-desc">Sledujte náš web pro nadcházející akce a sezónní oznámení.</p>
-            </div>
-          ` : `
-            <div class="news-cards-list" data-anim-group>
-              ${activeItems.map((item, index) => {
-                const hasImage = Boolean(item.image_url);
-                const formattedContent = (item.content || '').replace(/\n/g, '<br>');
-                const isReverse = index % 2 === 1;
-
-                if (hasImage) {
-                  return `
-                    <article class="news-card news-card-with-image ${isReverse ? 'news-card-reverse' : ''}" data-anim="up">
-                      <div class="news-card-content">
-                        <div class="news-card-date">🗓️ ${formatDate(item.updated_at)}</div>
-                        <h2 class="news-card-title">${item.title}</h2>
-                        <div class="news-card-text">${formattedContent}</div>
-                      </div>
-                      <div class="news-card-image-wrap">
-                        <img src="${item.image_url}" alt="${item.title}" class="news-card-image" loading="lazy" decoding="async">
-                      </div>
-                    </article>
-                  `;
-                } else {
-                  return `
-                    <article class="news-card news-card-without-image" data-anim="up">
-                      <div class="news-card-centered-header">
-                        <div class="news-card-date">🗓️ ${formatDate(item.updated_at)}</div>
-                        <h2 class="news-card-title">${item.title}</h2>
-                      </div>
-                      <div class="news-card-text news-card-text-readable">${formattedContent}</div>
-                    </article>
-                  `;
-                }
-              }).join('')}
-            </div>
-          `}
+        <div class="news-main-inner" id="news-main-inner-container">
+          ${renderNewsCardsHTML(activeItems)}
         </div>
       </section>
 
@@ -5889,7 +5896,7 @@ const route = (isInitial = false) => {
 
   // Ověření, zda domovský HTML v #app odpovídá cílové stránce pageKey
   let isPreRenderedMatch = false;
-  if (isInitial && app && app.children && app.children.length > 0 && !hash) {
+  if (isInitial && app && app.children && app.children.length > 0) {
     if (pageKey === 'home' && app.querySelector('.hero-section:not(.news-hero-section):not(.contact-hero-section):not(.dining-hero-section):not(.events-hero-section):not(.activities-hero-section):not(.rooms-hero-section)')) {
       isPreRenderedMatch = true;
     } else if (pageKey === 'category-detail' && app.querySelector('.surrounding-detail-hero, .category-detail-section, .category-hero-section')) {
@@ -5937,15 +5944,21 @@ const route = (isInitial = false) => {
     initInteractivity();
   } else if (pageKey === 'news') {
     if (!isPreRenderedMatch) {
-      getNewsPageHTML().then(html => {
-        app.innerHTML = html;
-        initInteractivity();
-        const btnGoto = document.getElementById('btn-goto-news-list');
-        if (btnGoto) {
-          btnGoto.addEventListener('click', () => {
-            const listSec = document.getElementById('seznam-aktualit');
-            if (listSec) listSec.scrollIntoView({ behavior: 'smooth' });
-          });
+      app.innerHTML = getNewsPageHTML([]);
+      initInteractivity();
+      const btnGoto = document.getElementById('btn-goto-news-list');
+      if (btnGoto) {
+        btnGoto.addEventListener('click', () => {
+          const listSec = document.getElementById('seznam-aktualit');
+          if (listSec) listSec.scrollIntoView({ behavior: 'smooth' });
+        });
+      }
+      getStoredNewsItems().then(allItems => {
+        const container = document.getElementById('news-main-inner-container');
+        if (container) {
+          const activeItems = (allItems || []).filter(item => item.is_active);
+          container.innerHTML = renderNewsCardsHTML(activeItems);
+          initScrollReveal();
         }
       });
     }
