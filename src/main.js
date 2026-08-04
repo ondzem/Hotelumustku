@@ -6169,12 +6169,29 @@ const initGA4 = () => {
   gtag('config', 'G-X62MWWL0FV', { anonymize_ip: true });
 };
 
+/**
+ * Microsoft Clarity — teplotní mapy a nahrávky sezení.
+ * Spouští se STEJNĚ jako GA4, tedy až po souhlasu s analytickými cookies.
+ * Bez souhlasu se skript vůbec nenačte.
+ */
+const initClarity = () => {
+  if (window.clarityInitialized) return;
+  window.clarityInitialized = true;
+
+  (function (c, l, a, r, i, t, y) {
+    c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments); };
+    t = l.createElement(r); t.async = 1; t.src = 'https://www.clarity.ms/tag/' + i;
+    y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+  })(window, document, 'clarity', 'script', 'xx0xccp00j');
+};
+
 const initCookieManager = () => {
   const currentConsent = getStoredConsent();
 
   // If consent already given and analytics allowed, start GA4
   if (currentConsent && currentConsent.analytics) {
     initGA4();
+    initClarity();
   }
 
   // Ensure Banner DOM elements exist
@@ -6260,6 +6277,7 @@ const initCookieManager = () => {
     btnAcceptAll.addEventListener('click', () => {
       saveStoredConsent(true);
       initGA4();
+      initClarity();
       hideBanner();
       closeModal();
     });
@@ -6289,7 +6307,7 @@ const initCookieManager = () => {
     btnSaveSettings.addEventListener('click', () => {
       const isAnalyticsChecked = toggleAnalytics ? toggleAnalytics.checked : false;
       saveStoredConsent(isAnalyticsChecked);
-      if (isAnalyticsChecked) initGA4();
+      if (isAnalyticsChecked) { initGA4(); initClarity(); }
       hideBanner();
       closeModal();
     });
