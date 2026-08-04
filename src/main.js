@@ -1758,7 +1758,7 @@ export function setSeasonMode(mode, savePreference = true) {
   const panoramicImg = document.querySelector('.panoramic-section .panoramic-img');
   if (panoramicImg) {
     panoramicImg.src = mode === 'winter'
-      ? '/Zimni rezim/Zima - zadni vchod.webp'
+      ? '/rampouchy v zime.webp'
       : '/Uvodni stranka/Fotka Zahrady a Terasy.webp';
   }
 
@@ -3458,7 +3458,7 @@ const getEventsPageHTML = () => `
         <!-- Kartička 3: Rodinné Oslavy -->
         <div class="events-type-card" data-anim="up">
           <div class="events-type-img-wrap">
-            <img src="/akce/rodinne_oslavy.webp" alt="Rodinné oslavy a jubilea" loading="lazy" decoding="async">
+            <img src="/rodinne oslavy.webp" alt="Rodinné oslavy a jubilea" loading="lazy" decoding="async">
           </div>
           <div class="events-type-card-content">
             <h3 class="events-type-card-title">Rodinné Oslavy</h3>
@@ -3627,7 +3627,7 @@ const getActivitiesPageHTML = () => `
             <!-- Karta 1: Otužování U Splavu -->
             <div class="hotel-activity-card hotel-activity-card-otuzovani surrounding-card" data-anim="up">
               <div class="hotel-activity-img-wrap surrounding-card-img-wrap">
-                <img src="/Aktivity v hotelu/otuzovani.webp" alt="Otužování U Splavu" loading="lazy" decoding="async">
+                <img src="/otuzovani.webp" alt="Otužování U Splavu" loading="lazy" decoding="async">
               </div>
               <h3 class="hotel-activity-card-title surrounding-card-title">Otužování U Splavu</h3>
             </div>
@@ -5257,7 +5257,7 @@ const CATEGORIES_DATA = {
         id: 'hrebenova-cyklotrasa-smedava',
         title: 'Hřebenová cyklotrasa na Smědavu',
         subtitle: '15 km od hotelu | Smědava',
-        img: '/Fotky Aktivit/smedava-2.webp',
+        img: '/chata smedava.webp',
         alt: 'Horská chata Smědava na hřebeni Jizerských hor',
         desc: 'Trasa vede po hřebeni Jizerských hor a patří k náročnějším. Stoupání je delší, ale odměnou jsou otevřené výhledy do krajiny na obě strany.\n\nNa Smědavě stojí horská chata, kde se dá najíst a odpočinout před cestou zpátky. Je to klasický cíl jizerskohorských cyklistů. Počítejte s celým dnem a s tím, že je potřeba nějaká kondice. Pohodlnější varianta: dojeďte autem s koly přímo na Smědavu, je to asi dvacet minut, a pak už jezděte po náhorní plošině bez velkých převýšení.'
       },
