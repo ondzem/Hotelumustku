@@ -277,7 +277,7 @@ export async function refreshActiveBanner() {
 
 export function getTopAnnouncementBarHTML() {
   if (!activeBannerCache) return '';
-  
+
   const text = activeBannerCache.banner_text || activeBannerCache.title || '';
   const dateStr = activeBannerCache.updated_at || activeBannerCache.created_at;
   let formattedDate = '';
@@ -288,12 +288,12 @@ export function getTopAnnouncementBarHTML() {
     }
   }
 
-  const imageHTML = activeBannerCache.image_url 
+  const imageHTML = activeBannerCache.image_url
     ? `<div class="announcement-modal-image"><img src="${activeBannerCache.image_url}" alt="${activeBannerCache.title || ''}" loading="lazy"></div>`
     : '';
 
   const paragraphs = (activeBannerCache.content || '').split('\n\n').filter(Boolean);
-  const contentHTML = paragraphs.length > 0 
+  const contentHTML = paragraphs.length > 0
     ? paragraphs.map(p => `<p class="announcement-modal-p">${p.replace(/\n/g, '<br>')}</p>`).join('')
     : `<p class="announcement-modal-p">${text}</p>`;
 
@@ -1429,7 +1429,7 @@ const getRoomsPageHTML = () => `
           </div>
           <h3 class="room-feature-card-title">Parkování</h3>
           <p class="room-feature-card-desc">
-            <span class="desktop-sub-text">Zdarma na vlastním oploceném parkovišti se závorou pod kamerami.</span>
+            <span class="desktop-sub-text">Zdarma v létě na vlastním parkovišti pod kamerami.</span>
             <span class="mobile-sub-text">Zdarma na vlastním oploceném parkovišti.</span>
           </p>
         </div>
@@ -1734,7 +1734,7 @@ export function setSeasonMode(mode, savePreference = true) {
         homeHeroSection.insertBefore(heroVideo, homeHeroSection.firstChild);
       } else {
         heroVideo.style.display = 'block';
-        heroVideo.play().catch(() => {});
+        heroVideo.play().catch(() => { });
       }
     }
   }
@@ -1816,8 +1816,8 @@ const initStickyHeader = () => {
   header.dataset.stickyInit = '1';
 
   const heroSel = '.hero-section, .rooms-hero-section, .room-detail-hero,' +
-                  '.contact-hero-section, .activities-hero-section,' +
-                  '.dining-hero-section, .news-hero-section, .booking-hero-section';
+    '.contact-hero-section, .activities-hero-section,' +
+    '.dining-hero-section, .news-hero-section, .booking-hero-section';
 
   let lastY = window.scrollY;
   let ticking = false;
@@ -1865,14 +1865,14 @@ const initStickyHeader = () => {
 // Šipka dolů v hero sekci → cílová sekce pod ní.
 // Klíč je id šipky, hodnota je id sekce, kam se má odrolovat.
 const SIPKY_DOLU = {
-  'scroll-btn':            'ubytovani',
-  'scroll-btn-pokoje':     'detaily-pokoju',
+  'scroll-btn': 'ubytovani',
+  'scroll-btn-pokoje': 'detaily-pokoju',
   'scroll-btn-stravovani': 'snidane',
   'scroll-btn-activities': 'aktivity-v-hotelu',
-  'scroll-btn-category':   'seznam-aktivit',
-  'scroll-btn-events':     'celay-hotel',
-  'scroll-btn-aktuality':  'seznam-aktualit',
-  'scroll-btn-kontakt':    'kontaktní-udaje',
+  'scroll-btn-category': 'seznam-aktivit',
+  'scroll-btn-events': 'celay-hotel',
+  'scroll-btn-aktuality': 'seznam-aktualit',
+  'scroll-btn-kontakt': 'kontaktní-udaje',
 };
 
 const initSipkyDolu = () => {
@@ -2113,101 +2113,101 @@ const initInteractivity = () => {
         return cardWidth + gap;
       };
 
-    const updatePosition = (animated = true) => {
-      const step = getCardStep();
-      if (animated) {
-        reviewsTrack.style.transition = 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)';
-      } else {
-        reviewsTrack.style.transition = 'none';
-      }
-      reviewsTrack.style.transform = `translateX(-${currentIndex * step}px)`;
-    };
+      const updatePosition = (animated = true) => {
+        const step = getCardStep();
+        if (animated) {
+          reviewsTrack.style.transition = 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)';
+        } else {
+          reviewsTrack.style.transition = 'none';
+        }
+        reviewsTrack.style.transform = `translateX(-${currentIndex * step}px)`;
+      };
 
-    const syncReviewCardsHeight = () => {
-      allCards.forEach(c => c.style.height = 'auto');
-      let maxHeight = 0;
-      allCards.forEach(c => {
-        if (c.offsetHeight > maxHeight) maxHeight = c.offsetHeight;
-      });
-      if (maxHeight > 0) {
-        const finalHeight = maxHeight + 28;
-        allCards.forEach(c => c.style.height = `${finalHeight}px`);
-      }
-    };
+      const syncReviewCardsHeight = () => {
+        allCards.forEach(c => c.style.height = 'auto');
+        let maxHeight = 0;
+        allCards.forEach(c => {
+          if (c.offsetHeight > maxHeight) maxHeight = c.offsetHeight;
+        });
+        if (maxHeight > 0) {
+          const finalHeight = maxHeight + 28;
+          allCards.forEach(c => c.style.height = `${finalHeight}px`);
+        }
+      };
 
-    syncReviewCardsHeight();
-    updatePosition(false);
-
-    window.addEventListener('resize', () => {
       syncReviewCardsHeight();
       updatePosition(false);
-    });
 
-    const checkBoundary = () => {
-      if (currentIndex >= totalOriginal * 2) {
-        currentIndex = totalOriginal;
+      window.addEventListener('resize', () => {
+        syncReviewCardsHeight();
         updatePosition(false);
-      } else if (currentIndex < totalOriginal) {
-        currentIndex = totalOriginal * 2 - 1;
-        updatePosition(false);
-      }
-    };
+      });
 
-    reviewsTrack.addEventListener('transitionend', checkBoundary);
-
-    if (nextBtn) nextBtn.addEventListener('click', () => { currentIndex++; updatePosition(true); });
-    if (prevBtn) prevBtn.addEventListener('click', () => { currentIndex--; updatePosition(true); });
-
-    let startX = 0;
-    let startY = 0;
-    let isDragging = false;
-
-    reviewsViewport.addEventListener('touchstart', (e) => {
-      if (e.touches.length > 1) return;
-      startX = e.touches[0].clientX;
-      startY = e.touches[0].clientY;
-      isDragging = true;
-    }, { passive: true });
-
-    reviewsViewport.addEventListener('touchend', (e) => {
-      if (!isDragging) return;
-      isDragging = false;
-      const deltaX = startX - e.changedTouches[0].clientX;
-      const deltaY = startY - e.changedTouches[0].clientY;
-      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 30) {
-        if (deltaX > 0) {
-          currentIndex++;
-        } else {
-          currentIndex--;
+      const checkBoundary = () => {
+        if (currentIndex >= totalOriginal * 2) {
+          currentIndex = totalOriginal;
+          updatePosition(false);
+        } else if (currentIndex < totalOriginal) {
+          currentIndex = totalOriginal * 2 - 1;
+          updatePosition(false);
         }
-        updatePosition(true);
-      }
-    }, { passive: true });
+      };
 
-    reviewsViewport.addEventListener('mousedown', (e) => {
-      startX = e.clientX;
-      startY = e.clientY;
-      isDragging = true;
-    });
+      reviewsTrack.addEventListener('transitionend', checkBoundary);
 
-    reviewsViewport.addEventListener('mouseup', (e) => {
-      if (!isDragging) return;
-      isDragging = false;
-      const deltaX = startX - e.clientX;
-      const deltaY = startY - e.clientY;
-      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 30) {
-        if (deltaX > 0) {
-          currentIndex++;
-        } else {
-          currentIndex--;
+      if (nextBtn) nextBtn.addEventListener('click', () => { currentIndex++; updatePosition(true); });
+      if (prevBtn) prevBtn.addEventListener('click', () => { currentIndex--; updatePosition(true); });
+
+      let startX = 0;
+      let startY = 0;
+      let isDragging = false;
+
+      reviewsViewport.addEventListener('touchstart', (e) => {
+        if (e.touches.length > 1) return;
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        isDragging = true;
+      }, { passive: true });
+
+      reviewsViewport.addEventListener('touchend', (e) => {
+        if (!isDragging) return;
+        isDragging = false;
+        const deltaX = startX - e.changedTouches[0].clientX;
+        const deltaY = startY - e.changedTouches[0].clientY;
+        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 30) {
+          if (deltaX > 0) {
+            currentIndex++;
+          } else {
+            currentIndex--;
+          }
+          updatePosition(true);
         }
-        updatePosition(true);
-      }
-    });
+      }, { passive: true });
 
-    reviewsViewport.addEventListener('mouseleave', () => {
-      isDragging = false;
-    });
+      reviewsViewport.addEventListener('mousedown', (e) => {
+        startX = e.clientX;
+        startY = e.clientY;
+        isDragging = true;
+      });
+
+      reviewsViewport.addEventListener('mouseup', (e) => {
+        if (!isDragging) return;
+        isDragging = false;
+        const deltaX = startX - e.clientX;
+        const deltaY = startY - e.clientY;
+        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 30) {
+          if (deltaX > 0) {
+            currentIndex++;
+          } else {
+            currentIndex--;
+          }
+          updatePosition(true);
+        }
+      });
+
+      reviewsViewport.addEventListener('mouseleave', () => {
+        isDragging = false;
+      });
     })();
   }
 
@@ -3830,12 +3830,12 @@ const renderNewsCardsHTML = (activeItems) => {
   return `
     <div class="news-cards-list" data-anim-group>
       ${activeItems.map((item, index) => {
-        const hasImage = Boolean(item.image_url);
-        const formattedContent = (item.content || '').replace(/\n/g, '<br>');
-        const isReverse = index % 2 === 1;
+    const hasImage = Boolean(item.image_url);
+    const formattedContent = (item.content || '').replace(/\n/g, '<br>');
+    const isReverse = index % 2 === 1;
 
-        if (hasImage) {
-          return `
+    if (hasImage) {
+      return `
             <article class="news-card news-card-with-image ${isReverse ? 'news-card-reverse' : ''}" data-anim="up">
               <div class="news-card-content">
                 <div class="news-card-date">🗓️ ${formatDate(item.updated_at)}</div>
@@ -3847,8 +3847,8 @@ const renderNewsCardsHTML = (activeItems) => {
               </div>
             </article>
           `;
-        } else {
-          return `
+    } else {
+      return `
             <article class="news-card news-card-without-image" data-anim="up">
               <div class="news-card-centered-header">
                 <div class="news-card-date">🗓️ ${formatDate(item.updated_at)}</div>
@@ -3857,8 +3857,8 @@ const renderNewsCardsHTML = (activeItems) => {
               <div class="news-card-text news-card-text-readable">${formattedContent}</div>
             </article>
           `;
-        }
-      }).join('')}
+    }
+  }).join('')}
     </div>
   `;
 };
@@ -4862,7 +4862,7 @@ const initContactPageInteractivity = () => {
 
     requiredInputs.forEach(inp => {
       if (!inp) return;
-      inp.addEventListener('invalid', function() {
+      inp.addEventListener('invalid', function () {
         if (this.validity.valueMissing) {
           this.setCustomValidity('Vyplňte prosím toto pole.');
         } else if (this.validity.typeMismatch || this.validity.patternMismatch) {
@@ -4870,7 +4870,7 @@ const initContactPageInteractivity = () => {
         }
       });
 
-      inp.addEventListener('input', function() {
+      inp.addEventListener('input', function () {
         this.setCustomValidity('');
         this.classList.remove('input-field-error');
       });
@@ -4878,12 +4878,12 @@ const initContactPageInteractivity = () => {
 
     const gdprInput = document.getElementById('contact-gdpr-check');
     if (gdprInput) {
-      gdprInput.addEventListener('invalid', function() {
+      gdprInput.addEventListener('invalid', function () {
         if (this.validity.valueMissing) {
           this.setCustomValidity('Zaškrtněte prosím toto pole, pokud chcete pokračovat.');
         }
       });
-      gdprInput.addEventListener('change', function() {
+      gdprInput.addEventListener('change', function () {
         this.setCustomValidity('');
       });
     }
@@ -4891,77 +4891,77 @@ const initContactPageInteractivity = () => {
     if (contactForm && !contactForm.dataset.submitInit) {
       contactForm.dataset.submitInit = '1';
       contactForm.addEventListener('submit', async (e) => {
-      const submitBtn = contactForm.querySelector('button[type="submit"]');
-      const statusEl = document.getElementById('contact-form-status');
+        const submitBtn = contactForm.querySelector('button[type="submit"]');
+        const statusEl = document.getElementById('contact-form-status');
 
-      // 1. Kontrola a zobrazení českého obláčku přímo u pole + plynulé odskrolování
-      for (const inp of requiredInputs) {
-        if (!inp) continue;
-        applyCzechCustomValidity(inp);
-        if (!inp.checkValidity()) {
+        // 1. Kontrola a zobrazení českého obláčku přímo u pole + plynulé odskrolování
+        for (const inp of requiredInputs) {
+          if (!inp) continue;
+          applyCzechCustomValidity(inp);
+          if (!inp.checkValidity()) {
+            e.preventDefault();
+            inp.classList.add('input-field-error');
+            inp.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => {
+              inp.reportValidity();
+              inp.focus();
+            }, 250);
+            return;
+          }
+        }
+
+        if (gdprInput && !gdprInput.checked) {
           e.preventDefault();
-          inp.classList.add('input-field-error');
-          inp.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          gdprInput.setCustomValidity('Zaškrtněte prosím toto pole, pokud chcete pokračovat.');
+          gdprInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
           setTimeout(() => {
-            inp.reportValidity();
-            inp.focus();
+            gdprInput.reportValidity();
+            gdprInput.focus();
           }, 250);
+          if (statusEl) {
+            statusEl.style.display = 'block';
+            statusEl.style.color = '#d93025';
+            statusEl.style.marginTop = '16px';
+            statusEl.style.fontWeight = '500';
+            statusEl.innerHTML = '⚠️ Pro odeslání zprávy je nutné potvrdit souhlas se zpracováním osobních údajů.';
+          }
           return;
         }
-      }
 
-      if (gdprInput && !gdprInput.checked) {
         e.preventDefault();
-        gdprInput.setCustomValidity('Zaškrtněte prosím toto pole, pokud chcete pokračovat.');
-        gdprInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        setTimeout(() => {
-          gdprInput.reportValidity();
-          gdprInput.focus();
-        }, 250);
-        if (statusEl) {
-          statusEl.style.display = 'block';
-          statusEl.style.color = '#d93025';
-          statusEl.style.marginTop = '16px';
-          statusEl.style.fontWeight = '500';
-          statusEl.innerHTML = '⚠️ Pro odeslání zprávy je nutné potvrdit souhlas se zpracováním osobních údajů.';
+
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.style.opacity = '0.7';
+          submitBtn.innerHTML = 'Odesílání...';
         }
-        return;
-      }
+        if (statusEl) {
+          statusEl.style.display = 'none';
+        }
 
-      e.preventDefault();
+        try {
+          const name = (nameInput?.value || '').trim();
+          const surname = (surnameInput?.value || '').trim();
+          const email = (emailInput?.value || '').trim();
+          const phone = (document.getElementById('contact-phone')?.value || '').trim();
+          const message = (document.getElementById('contact-message')?.value || '').trim();
 
-      if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.style.opacity = '0.7';
-        submitBtn.innerHTML = 'Odesílání...';
-      }
-      if (statusEl) {
-        statusEl.style.display = 'none';
-      }
+          const payload = { name, surname, email, phone, message };
 
-      try {
-        const name = (nameInput?.value || '').trim();
-        const surname = (surnameInput?.value || '').trim();
-        const email = (emailInput?.value || '').trim();
-        const phone = (document.getElementById('contact-phone')?.value || '').trim();
-        const message = (document.getElementById('contact-message')?.value || '').trim();
+          // 1. Uložení do Supabase databáze
+          await saveContactMessage(payload);
 
-        const payload = { name, surname, email, phone, message };
+          // 2. Odeslání hezkého HTML e-mailu adminovi (ondra.zeman05@gmail.com)
+          const emailTemplate = generateEmailContactNotification(payload);
+          sendEmail({
+            to: 'ondra.zeman05@gmail.com',
+            subject: emailTemplate.subject,
+            html: emailTemplate.html,
+            type: 'contact_form_message'
+          });
 
-        // 1. Uložení do Supabase databáze
-        await saveContactMessage(payload);
-
-        // 2. Odeslání hezkého HTML e-mailu adminovi (ondra.zeman05@gmail.com)
-        const emailTemplate = generateEmailContactNotification(payload);
-        sendEmail({
-          to: 'ondra.zeman05@gmail.com',
-          subject: emailTemplate.subject,
-          html: emailTemplate.html,
-          type: 'contact_form_message'
-        });
-
-        // 3. UI úspěch s animovaným zaškrtávátkem a tlačítkem pro novou zprávu
-        contactForm.innerHTML = `
+          // 3. UI úspěch s animovaným zaškrtávátkem a tlačítkem pro novou zprávu
+          contactForm.innerHTML = `
           <div class="contact-success-wrapper">
             <div class="success-checkmark-circle">
               <svg class="checkmark-svg" viewBox="0 0 52 52">
@@ -4977,12 +4977,12 @@ const initContactPageInteractivity = () => {
           </div>
         `;
 
-        const resetBtn = document.getElementById('btn-reset-contact-form');
-        if (resetBtn) {
-          resetBtn.addEventListener('click', () => {
-            const formContainer = document.getElementById('form-sekce');
-            if (formContainer) {
-              formContainer.innerHTML = `
+          const resetBtn = document.getElementById('btn-reset-contact-form');
+          if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+              const formContainer = document.getElementById('form-sekce');
+              if (formContainer) {
+                formContainer.innerHTML = `
                 <h2 class="contact-form-title">Napište nám</h2>
                 <form id="contact-page-form" class="contact-form-element">
                   <div class="contact-form-row">
@@ -5026,29 +5026,29 @@ const initContactPageInteractivity = () => {
                   <div id="contact-form-status" class="contact-form-status" style="display: none;"></div>
                 </form>
               `;
-              initContactPageInteractivity();
-            }
-          });
+                initContactPageInteractivity();
+              }
+            });
+          }
+        } catch (err) {
+          console.error('Chyba při odesílání kontaktního formuláře:', err);
+          if (statusEl) {
+            statusEl.style.display = 'block';
+            statusEl.style.color = '#d93025';
+            statusEl.style.marginTop = '16px';
+            statusEl.style.fontWeight = '500';
+            statusEl.innerHTML = '❌ Omlouváme se, při odesílání došlo k chybě. Zkuste to prosím znovu.';
+          }
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+            submitBtn.innerHTML = 'Odeslat zprávu';
+          }
         }
-      } catch (err) {
-        console.error('Chyba při odesílání kontaktního formuláře:', err);
-        if (statusEl) {
-          statusEl.style.display = 'block';
-          statusEl.style.color = '#d93025';
-          statusEl.style.marginTop = '16px';
-          statusEl.style.fontWeight = '500';
-          statusEl.innerHTML = '❌ Omlouváme se, při odesílání došlo k chybě. Zkuste to prosím znovu.';
-        }
-      } finally {
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.style.opacity = '1';
-          submitBtn.innerHTML = 'Odeslat zprávu';
-        }
-      }
-    });
+      });
+    }
   }
-}
 
   initContactMap();
 };
@@ -5197,7 +5197,7 @@ const CATEGORIES_DATA = {
         alt: 'Roubené chalupy v horské osadě Jizerka obklopené loukami',
         desc: 'Jizerka je hrstka roubených chalup rozesetých v široké horské kotlině. Bývá tu naměřená nejnižší teplota v celé republice — v mrazivých nocích tu klesá hluboko pod nulu.\n\nKolem osady jsou louky a rašeliniště, procházky vedou po rovině. Je tu muzeum i pár míst, kde se dá najíst. Auto se nechává na parkovišti před osadou, dovnitř se chodí pěšky. Z hotelu je to asi dvacet minut jízdy autem, pěšky zhruba dvě hodiny a čtyřicet minut s převýšením.'
       }
-      ]
+    ]
   },
   'cyklistika': {
     title: 'Cyklistika',
@@ -5552,7 +5552,7 @@ const CATEGORIES_DATA = {
 // Generování HTML pro detailní stránky jednotlivých kategorií
 const getCategoryPageHTML = (catId) => {
   const cat = CATEGORIES_DATA[catId] || CATEGORIES_DATA['turistika'];
-  
+
   const cardsHTML = cat.items.map((item, idx) => `
     <div class="category-destination-card" data-category="${catId}" data-id="${item.id}">
       <div class="category-destination-img-wrap">
@@ -5667,7 +5667,7 @@ const initDestinationModal = () => {
   });
 
   // Globální handler pro boční záložku a pop-up modal oznámení
-  
+
   // Global Delegation for FAQ Accordion (Full Area Clickable)
   document.addEventListener('click', (e) => {
     const faqItem = e.target && e.target.closest('.faq-item');
@@ -5777,7 +5777,7 @@ const route = (isInitial = false) => {
   let cleanHash = hash.split('?')[0];
   try {
     cleanHash = decodeURIComponent(cleanHash).toLowerCase();
-  } catch (e) {}
+  } catch (e) { }
 
   const knownHomeHashes = [
     '', '#', '#domu', '#uvod', '#o-nas', '#zazemi', '#sleva', '#promo',
@@ -6176,7 +6176,7 @@ const initGA4 = () => {
   document.head.appendChild(script);
 
   window.dataLayer = window.dataLayer || [];
-  function gtag(){ window.dataLayer.push(arguments); }
+  function gtag() { window.dataLayer.push(arguments); }
   window.gtag = gtag;
   gtag('js', new Date());
   gtag('config', 'G-X62MWWL0FV', { anonymize_ip: true });
@@ -6354,7 +6354,7 @@ window.addEventListener('load', () => {
     if (!(c && (c.saveData || /2g/.test(c.effectiveType || '')))) {
       v.preload = 'auto';
       v.load();
-      v.play().catch(() => {});
+      v.play().catch(() => { });
     }
   }
 });

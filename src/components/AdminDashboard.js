@@ -24,27 +24,65 @@ function getDiscountValidityDisplay(validFrom, validUntil) {
   return '';
 }
 
+/**
+ * Posune datum ve tvaru YYYY-MM-DD o daný počet dnů.
+ * Počítá v UTC, aby letní čas neposunul výsledek o den.
+ */
+function posunDatum(datumStr, dny) {
+  const [r, m, d] = String(datumStr).split('-').map(Number);
+  const dt = new Date(Date.UTC(r, m - 1, d));
+  dt.setUTCDate(dt.getUTCDate() + dny);
+  return dt.toISOString().split('T')[0];
+}
+
+/**
+ * Seskupí vybrané dny do souvislých rozsahů.
+ *
+ * POZOR NA KONVENCI: date_to je VÝLUČNÉ, tedy první den, který se
+ * už neblokuje — stejně jako u rezervací, kde date_to je den odjezdu.
+ * Rezervační systém čte blokace pravidlem
+ *     datum >= date_from && datum < date_to
+ * takže kdyby se ukládal poslední blokovaný den, vždy by o jeden den
+ * blokovalo méně. Jednodenní blokace by neblokovala vůbec nic.
+ *
+ * Příklad: vybrané dny 10., 11., 12. a 16. srpna dají
+ *     { date_from: '2026-08-10', date_to: '2026-08-13' }
+ *     { date_from: '2026-08-16', date_to: '2026-08-17' }
+ */
 function groupContiguousDateRanges(dates) {
   if (!dates || dates.length === 0) return [];
-  const sorted = [...dates].sort();
+  const sorted = [...new Set(dates)].sort();
   const ranges = [];
-  let currentStart = sorted[0];
-  let currentEnd = sorted[0];
+  let zacatek = sorted[0];
+  let posledni = sorted[0];
 
   for (let i = 1; i < sorted.length; i++) {
-    const prev = new Date(currentEnd);
-    prev.setDate(prev.getDate() + 1);
-    const nextStr = prev.toISOString().split('T')[0];
-    if (sorted[i] === nextStr) {
-      currentEnd = sorted[i];
+    if (sorted[i] === posunDatum(posledni, 1)) {
+      posledni = sorted[i];
     } else {
-      ranges.push({ date_from: currentStart, date_to: currentEnd });
-      currentStart = sorted[i];
-      currentEnd = sorted[i];
+      ranges.push({ date_from: zacatek, date_to: posunDatum(posledni, 1) });
+      zacatek = sorted[i];
+      posledni = sorted[i];
     }
   }
-  ranges.push({ date_from: currentStart, date_to: currentEnd });
+  ranges.push({ date_from: zacatek, date_to: posunDatum(posledni, 1) });
   return ranges;
+}
+
+/**
+ * Vypíše blokaci lidsky. V databázi je date_to výlučné (první neblokovaný
+ * den), obsluze se ale ukazuje poslední SKUTEČNĚ blokovaný den.
+ */
+function zobrazRozsahBlokace(dateFrom, dateTo) {
+  if (!dateFrom) return '';
+  const posledni = dateTo ? posunDatum(dateTo, -1) : dateFrom;
+  if (posledni === dateFrom) {
+    return formatCzechDateStr(dateFrom) + ' (1 den)';
+  }
+  const [r1, m1, d1] = dateFrom.split('-').map(Number);
+  const [r2, m2, d2] = posledni.split('-').map(Number);
+  const pocet = Math.round((Date.UTC(r2, m2 - 1, d2) - Date.UTC(r1, m1 - 1, d1)) / 86400000) + 1;
+  return `${formatCzechDateStr(dateFrom)} – ${formatCzechDateStr(posledni)} (${pocet} dnů)`;
 }
 
 const ADMIN_SESSION_KEY = 'hotel_mustku_admin_auth_v1';
@@ -521,7 +559,7 @@ export class AdminDashboard {
     this.blockedDates = getStoredBlockedDates();
   }
 
-  async addBlockedDate(room_id, date_from, date_to, reason) {
+  async addBlockedDate(room_id, date_from, date_to, reason, tichy = false) {
     const newItem = {
       id: 'blk-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
       room_id: room_id || 'all',
@@ -549,7 +587,7 @@ export class AdminDashboard {
 
     saveStoredBlockedDate(newItem);
     await this.fetchBlockedDates();
-    this.showAdminToast('Termín byl úspěšně zablokován.');
+    if (!tichy) this.showAdminToast('Termín byl úspěšně zablokován.');
   }
 
   async removeBlockedDate(id) {
@@ -1313,7 +1351,7 @@ export class AdminDashboard {
                         <div style="background: #ffffff; border: 1px solid #e0dfd5; border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
                           <div>
                             <div style="font-weight: 700; font-size: 14px; color: #1c1c19;">${rmName}</div>
-                            <div style="font-size: 13px; color: #4a5a24; font-weight: 600; margin-top: 2px;">📅 ${b.date_from} → ${b.date_to}</div>
+                            <div style="font-size: 13px; color: #4a5a24; font-weight: 600; margin-top: 2px;">📅 ${zobrazRozsahBlokace(b.date_from, b.date_to)}</div>
                             ${b.reason ? `<div style="font-size: 12.5px; color: #777; margin-top: 2px;">📝 ${b.reason}</div>` : ''}
                           </div>
                           <button type="button" class="btn-cancel-block-item" data-id="${b.id}" style="background: none; border: 1px solid #d8d5c9; border-radius: 1px; padding: 6px 12px; font-size: 12.5px; font-weight: 600; color: #c62828; cursor: pointer;">
@@ -2419,13 +2457,19 @@ export class AdminDashboard {
         const room_id = this.blockForm.room_id || 'all';
         const reason = this.blockForm.reason || 'Uzávěrka recepce';
 
+        const pocetDnu = this.blockSelectedDates.length;
+
         for (const r of ranges) {
-          await this.addBlockedDate(room_id, r.date_from, r.date_to, reason);
+          await this.addBlockedDate(room_id, r.date_from, r.date_to, reason, true);
         }
 
         this.blockSelectedDates = [];
         this.blockConflicts = [];
-        this.showAdminToast('Vybrané dny byly úspěšně zablokovány.');
+        this.showAdminToast(
+          ranges.length === 1
+            ? `Zablokováno ${pocetDnu} ${pocetDnu === 1 ? 'den' : pocetDnu < 5 ? 'dny' : 'dnů'}.`
+            : `Zablokováno ${pocetDnu} dnů ve ${ranges.length} obdobích.`
+        );
         this.render();
       });
     }
