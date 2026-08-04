@@ -37,7 +37,8 @@
 #  API PROXY
 # =====================================================================
 
-/api/resend/*   https://api.resend.com/:splat   200!
+# Proxy na Resend ZRUŠENA — posílala klíč z prohlížeče.
+# Odesílání obstarává netlify/functions/send-email.js.
 
 # =====================================================================
 #  HEZKÉ URL (rewrite, ne přesměrování — URL v adresním řádku zůstává)

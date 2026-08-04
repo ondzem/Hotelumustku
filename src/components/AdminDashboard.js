@@ -1,4 +1,4 @@
-import { MOCK_ROOMS, getStoredReservations, updateStoredReservationStatus, toggleStoredReservationArchive, deleteStoredReservation, getStoredBlockedDates, saveStoredBlockedDate, deleteStoredBlockedDate, getStoredDiscountCodes, saveStoredDiscountCode, deleteStoredDiscountCode, getStoredRoomPrices, saveStoredRoomPrice, getStoredCustomRoomNames, saveStoredCustomRoomName, getStoredDisabledRooms, saveStoredDisabledRoom, getStoredNewsItems, saveStoredNewsItem, deleteStoredNewsItem, reorderNewsItem, uploadNewsImage, isSupabaseConfigured, supabase, getStoredReviews, updateStoredReviewStatus } from '../lib/supabaseClient.js';
+import { MOCK_ROOMS, getStoredReservations, updateStoredReservationStatus, toggleStoredReservationArchive, deleteStoredReservation, getStoredBlockedDates, saveStoredBlockedDate, deleteStoredBlockedDate, getStoredDiscountCodes, saveStoredDiscountCode, deleteStoredDiscountCode, getStoredRoomPrices, saveStoredRoomPrice, getStoredCustomRoomNames, saveStoredCustomRoomName, getStoredDisabledRooms, saveStoredDisabledRoom, getStoredNewsItems, saveStoredNewsItem, deleteStoredNewsItem, reorderNewsItem, uploadNewsImage, isSupabaseConfigured, supabase, getStoredReviews, updateStoredReviewStatus, doplnPriznakyZeStarychDat, ocistiHosty } from '../lib/supabaseClient.js';
 import { calculateReservationPrice, generateSpaydQrUrl, BANK_ACCOUNT, formatCzechPrice, getVariableSymbol } from '../utils/pricing.js';
 import { sendEmail, generateEmail2ApprovalAndPaymentRequest, generateEmail3FinalConfirmation, generateEmailCancellation, getEmailLogs, sendAllTestEmailsTo } from '../utils/emailService.js';
 import { checkAndProcessExpiredUnpaidReservations } from '../utils/reservationExpiryService.js';
@@ -485,19 +485,9 @@ export class AdminDashboard {
       try {
         const { data, error } = await supabase.from('reservations').select('*').order('created_at', { ascending: false });
         if (!error && data) {
-          this.reservations = data.map(r => {
-            let winterMeta = null;
-            if (Array.isArray(r.guests)) {
-              const metaObj = r.guests.find(g => g && g._winter_parking !== undefined);
-              if (metaObj) winterMeta = metaObj._winter_parking;
-            }
-            return {
-              ...r,
-              has_winter_parking: r.has_winter_parking !== undefined ? r.has_winter_parking : (winterMeta ? winterMeta.has_winter_parking : false),
-              parking_cars_count: r.parking_cars_count || (winterMeta ? winterMeta.parking_cars_count : 1),
-              winter_parking_price_total: r.winter_parking_price_total || (winterMeta ? winterMeta.winter_parking_price_total : 0)
-            };
-          });
+          // doplnPriznakyZeStarychDat zároveň vyčistí pole guests od
+          // technických položek, které tam zapsala starší verze archivace
+          this.reservations = data.map(doplnPriznakyZeStarychDat);
 
           // Sync clean list into localStorage so browser wipes out any stale orphan items
           try {
@@ -993,8 +983,8 @@ export class AdminDashboard {
             <p>Správa rezervací a obsluha 30% záloh pro Hotel u Můstku</p>
           </div>
           <div class="admin-top-actions">
-            <button type="button" class="btn btn-specs-secondary btn-admin-archive-tab" style="${this.statusFilter === 'archived' ? 'background-color: #2e3524 !important; color: #ffffff !important; font-weight: 700;' : ''}">
-              📂 Archiv ${archivedCount > 0 ? `<span style="background: ${this.statusFilter === 'archived' ? '#ffffff' : '#4a5a24'}; color: ${this.statusFilter === 'archived' ? '#2e3524' : '#ffffff'}; border-radius: 99px; padding: 2px 7px; font-size: 11px; font-weight: 700; margin-left: 4px;">${archivedCount}</span>` : ''}
+            <button type="button" class="btn btn-specs-secondary btn-admin-archive-tab${this.statusFilter === 'archived' ? ' is-active' : ''}">
+              📂 Archiv ${archivedCount > 0 ? `<span style="background: #4a5a24; color: #ffffff; border-radius: 99px; padding: 2px 7px; font-size: 11px; font-weight: 700; margin-left: 4px;">${archivedCount}</span>` : ''}
             </button>
             <button type="button" class="btn btn-specs-secondary btn-admin-reviews">
               ⭐ Správa recenzí ${pendingReviewsCount > 0 ? `<span style="background: #e67e22; color: #ffffff; border-radius: 99px; padding: 2px 7px; font-size: 11px; font-weight: 700; margin-left: 4px;">${pendingReviewsCount}</span>` : ''}
@@ -1133,12 +1123,12 @@ export class AdminDashboard {
                       </button>
 
                       ${r.is_archived || r.isArchived ? `
-                        <button type="button" class="res-btn-unarchive-soft btn-admin-action" data-id="${r.id || r.code}" data-act="unarchive" style="background: #eef3e6; color: #2e3524; border: 1px solid #cce0b8; padding: 6px 12px; border-radius: 2px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
-                          📤 Odarchivovat
+                        <button type="button" class="res-btn-archive-soft btn-admin-action" data-id="${r.id || r.code}" data-act="unarchive">
+                          Vrátit z archivu
                         </button>
                       ` : `
-                        <button type="button" class="res-btn-archive-soft btn-admin-action" data-id="${r.id || r.code}" data-act="archive" style="background: #f4f2eb; color: #55554e; border: 1px solid #dcd7c5; padding: 6px 12px; border-radius: 2px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
-                          📦 Do archivu
+                        <button type="button" class="res-btn-archive-soft btn-admin-action" data-id="${r.id || r.code}" data-act="archive">
+                          Do archivu
                         </button>
                       `}
 
@@ -1237,12 +1227,12 @@ export class AdminDashboard {
                     <!-- ARCHIVACE A VYMAZÁNÍ REZERVAČNÍHO ZÁZNAMU -->
                     <div class="drawer-delete-bar" style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
                       ${r.is_archived || r.isArchived ? `
-                        <button type="button" class="btn-drawer-unarchive btn-admin-action" data-id="${r.id || r.code}" data-act="unarchive" style="background: #eef3e6; color: #2e3524; border: 1px solid #cce0b8; padding: 7px 14px; border-radius: 2px; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
-                          📤 Odarchivovat rezervaci (vrátit do aktivních)
+                        <button type="button" class="btn-drawer-archive-clean btn-admin-action" data-id="${r.id || r.code}" data-act="unarchive">
+                          Vrátit z archivu mezi aktivní
                         </button>
                       ` : `
-                        <button type="button" class="btn-drawer-archive btn-admin-action" data-id="${r.id || r.code}" data-act="archive" style="background: #f4f2eb; color: #55554e; border: 1px solid #dcd7c5; padding: 7px 14px; border-radius: 2px; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
-                          📦 Archivovat tuto rezervaci
+                        <button type="button" class="btn-drawer-archive-clean btn-admin-action" data-id="${r.id || r.code}" data-act="archive">
+                          Přesunout do archivu
                         </button>
                       `}
                       <button type="button" class="btn-drawer-delete-clean btn-admin-action" data-id="${r.id || r.code}" data-act="delete">

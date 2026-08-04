@@ -1,6 +1,15 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => {
+  // Načte i proměnné BEZ předpony VITE_ (prázdný třetí parametr).
+  // Zůstávají jen tady na serveru, do prohlížeče se nedostanou —
+  // Vite do balíčku vkládá výhradně proměnné s předponou VITE_.
+  const env = loadEnv(mode, process.cwd(), '');
+  if (env.RESEND_API_KEY && !process.env.RESEND_API_KEY) {
+    process.env.RESEND_API_KEY = env.RESEND_API_KEY;
+  }
+
+  return {
   server: {
     port: 5173,
     strictPort: true
@@ -61,45 +70,42 @@ export default defineConfig({
       }
     },
     {
-      name: 'resend-api-middleware',
+      /**
+       * Zpřístupní serverovou funkci pro odesílání e-mailů i při
+       * běžném `npm run dev`. Vývojový server Vite serverové funkce
+       * nezná, takže by adresa /.netlify/functions/send-email vracela
+       * 404 a e-maily by lokálně nechodily.
+       *
+       * Volá se PŘESNĚ TÁŽ funkce jako na produkci, takže se chování
+       * nemůže rozejít. Klíč zůstává na serveru, prohlížeč ho nevidí.
+       */
+      name: 'serverova-funkce-emailu-ve-vyvoji',
       configureServer(server) {
-        server.middlewares.use('/api/resend/emails', async (req, res) => {
-          if (req.method === 'POST') {
-            let body = '';
-            req.on('data', chunk => {
-              body += chunk;
-            });
-            req.on('end', async () => {
-              try {
-                const fallbackKey = ['re', '_RHeiWx3u', '_GoYkaNeZg9kggfPtrxtJkSs6'].join('');
-                const apiKey = process.env.VITE_RESEND_API_KEY || process.env.RESEND_API_KEY || fallbackKey;
-                const reqAuth = req.headers['authorization'];
-                const authHeader = (reqAuth && reqAuth !== 'Bearer undefined' && reqAuth.length > 10) ? reqAuth : `Bearer ${apiKey}`;
-                const resendResponse = await fetch('https://api.resend.com/emails', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': authHeader
-                  },
-                  body: body
-                });
-                const data = await resendResponse.json();
-                res.statusCode = resendResponse.status;
-                res.setHeader('Content-Type', 'application/json');
-                res.end(JSON.stringify(data));
-              } catch (err) {
-                console.error('Vite Resend Middleware Error:', err);
-                res.statusCode = 500;
-                res.setHeader('Content-Type', 'application/json');
-                res.end(JSON.stringify({ error: err.message }));
-              }
-            });
-          } else {
-            res.statusCode = 405;
-            res.end('Method Not Allowed');
-          }
+        server.middlewares.use('/.netlify/functions/send-email', async (req, res) => {
+          let telo = '';
+          req.on('data', (kus) => { telo += kus; });
+          req.on('end', async () => {
+            try {
+              const { default: handler } = await import('./netlify/functions/send-email.js');
+              const pozadavek = new Request('http://localhost/.netlify/functions/send-email', {
+                method: req.method || 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: (req.method === 'GET' || req.method === 'HEAD') ? undefined : telo
+              });
+              const odpoved = await handler(pozadavek);
+              res.statusCode = odpoved.status;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(await odpoved.text());
+            } catch (err) {
+              console.error('Chyba serverové funkce e-mailu ve vývoji:', err);
+              res.statusCode = 500;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify({ error: String(err && err.message) }));
+            }
+          });
         });
       }
     }
   ]
+  };
 });

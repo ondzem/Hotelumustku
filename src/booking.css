@@ -4701,3 +4701,79 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   margin-top: 8px;
   line-height: 1.5;
 }
+
+/* =====================================================================
+   ARCHIV REZERVACÍ
+   Tlačítka přebírají tvar od ostatních akcí v recepčním portálu —
+   výška 36 px, border-radius 1px podle .agents/AGENTS.md, bílý podklad.
+   Dřív byla nastylovaná napevno v HTML s radiusem 2px a barevnými
+   podklady, což se z celého portálu vymykalo.
+   ===================================================================== */
+.res-btn-archive-soft {
+  flex: 1;
+  height: 36px;
+  padding: 0 12px;
+  background-color: #ffffff;
+  color: #55554e;
+  border: 1px solid #d8d5c9;
+  border-radius: 1px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.res-btn-archive-soft:hover {
+  background-color: #f7f6f0;
+  border-color: #c8c5b5;
+  color: #1c1c19;
+}
+
+/* V rozbalených podrobnostech — stejný civilní tvar jako „Vymazat" */
+.btn-drawer-archive-clean {
+  background: none;
+  border: none;
+  color: #55554e;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s ease;
+}
+
+.btn-drawer-archive-clean:hover {
+  color: #1c1c19;
+  text-decoration: underline;
+}
+
+/* Zvýraznění tlačítka Archiv v hlavičce, když je archiv otevřený */
+.btn-admin-archive-tab.is-active {
+  background-color: #2e3524 !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+/* Řádek archivované rezervace — jemné odlišení bez barevného boxu */
+.admin-res-card.is-archived-card {
+  opacity: 0.88;
+}
+
+@media (max-width: 767.98px) {
+  .res-btn-archive-soft {
+    flex: 1 1 100%;
+  }
+  .drawer-delete-bar {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+  .drawer-delete-bar .btn-drawer-archive-clean,
+  .drawer-delete-bar .btn-drawer-delete-clean {
+    text-align: left;
+  }
+}

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" width="640" height="420" role="img" aria-label="Fotografie bude doplněna">
+  <rect width="640" height="420" fill="#e7e5dc"/>
+  <g fill="none" stroke="#a9a692" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="238" y="150" width="164" height="120" rx="6"/>
+    <path d="M238 236l44-38 34 28 40-46 46 50"/>
+  </g>
+  <circle cx="286" cy="186" r="13" fill="#a9a692"/>
+  <text x="320" y="316" text-anchor="middle"
+        font-family="Outfit, Helvetica, Arial, sans-serif" font-size="26" font-weight="600" fill="#6f6c5c">
+    Fotografie bude doplněna
+  </text>
+  <text x="320" y="350" text-anchor="middle"
+        font-family="Outfit, Helvetica, Arial, sans-serif" font-size="18" fill="#8d8a78">
+    Zástupný obrázek — nahraďte fotkou areálu
+  </text>
+</svg>

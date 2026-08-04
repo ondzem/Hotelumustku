@@ -13,40 +13,39 @@ export const supabase = isSupabaseConfigured
 // Initial Mock Rooms Data
 // Initial Mock Rooms Data with Dual-Rate Pricing (Weekday vs Weekend)
 export const MOCK_ROOMS = [
-  { id: 'p6', name: 'Pokoj Standard P1', type: 'standard', floor: 'prizemi', capacity: 2, extraBeds: 0, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, image: '/hezky pokoj 1.webp' },
-  { id: 'p5', name: 'Pokoj Standard P2', type: 'standard', floor: 'prizemi', capacity: 2, extraBeds: 0, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, image: '/pokoje/p5/1.webp' },
-  { id: 'pa', name: 'Pokoj Nadstandard Mahagon', type: 'nadstandard', floor: 'prizemi', capacity: 2, extraBeds: 1, basePrice: 890, weekdayPrice: 890, weekendPrice: 990, image: '/pokoje/mahagon/1.webp' },
-  { id: 'p3', name: 'Pokoj Turistický P4', type: 'turisticky', floor: 'prizemi', capacity: 2, extraBeds: 0, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, isDisabled: true, image: '/balkony 1 copy.webp' },
-  { id: 'p2', name: 'Pokoj Turistický P5', type: 'turisticky', floor: 'prizemi', capacity: 2, extraBeds: 0, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, isDisabled: true, image: '/balkony 1 copy.webp' },
-  { id: 'p1', name: 'Pokoj Turistický P6', type: 'turisticky', floor: 'prizemi', capacity: 2, extraBeds: 0, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, isDisabled: true, image: '/balkony 1 copy.webp' },
-  { id: 'p7', name: 'Pokoj Standard P7', type: 'standard', floor: 'vyhled', capacity: 2, extraBeds: 0, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, image: '/pokoje/p7/1.webp' },
-  { id: 'a1', name: 'Pokoj Nadstandard Motýl', type: 'nadstandard', floor: 'vyhled', capacity: 2, extraBeds: 1, basePrice: 890, weekdayPrice: 890, weekendPrice: 990, image: '/pokoje/motyl/1.webp' },
-  { id: 'zen', name: 'Pokoj Nadstandard Zen', type: 'nadstandard', floor: 'vyhled', capacity: 2, extraBeds: 0, basePrice: 890, weekdayPrice: 890, weekendPrice: 990, image: '/pokoje/zen/1.webp' },
-  { id: 'p10', name: 'Pokoj Standard P10', type: 'standard', floor: 'vyhled', capacity: 2, extraBeds: 0, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, image: '/pokoje/p10/1.webp' },
-  { id: 'p11', name: 'Pokoj Standard P11', type: 'standard', floor: 'vyhled', capacity: 2, extraBeds: 0, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, image: '/pokoje/p11/1.webp' },
-  { id: 'p12', name: 'Pokoj Standard P12', type: 'standard', floor: 'vyhled', capacity: 2, extraBeds: 0, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, image: '/pokoje/p12/1.webp' },
+  { id: 'p6', name: 'Pokoj 1 - Standard', type: 'standard', floor: 'prizemi', capacity: 2, extraBeds: 0, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, image: '/pokoje/p6/1.webp' },
+  { id: 'p5', name: 'Pokoj 2 - Standard', type: 'standard', floor: 'prizemi', capacity: 2, extraBeds: 0, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, image: '/pokoje/p5/1.webp' },
+  { id: 'pa', name: 'Pokoj 3 - Nadstandard - Mahagon', type: 'nadstandard', floor: 'prizemi', capacity: 2, extraBeds: 1, basePrice: 890, weekdayPrice: 890, weekendPrice: 990, image: '/pokoje/mahagon/1.webp' },
+  { id: 'p3', name: 'Pokoj 4 - Turistický', type: 'turisticky', floor: 'prizemi', capacity: 2, extraBeds: 0, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, isDisabled: true, image: '/balkony 1 copy.webp' },
+  { id: 'p2', name: 'Pokoj 5 - Turistický', type: 'turisticky', floor: 'prizemi', capacity: 2, extraBeds: 0, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, isDisabled: true, image: '/balkony 1 copy.webp' },
+  { id: 'p1', name: 'Pokoj 6 - Turistický', type: 'turisticky', floor: 'prizemi', capacity: 2, extraBeds: 0, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, isDisabled: true, image: '/balkony 1 copy.webp' },
+  { id: 'p7', name: 'Pokoj 7 - Standard', type: 'standard', floor: 'vyhled', capacity: 2, extraBeds: 0, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, image: '/pokoje/p7/1.webp' },
+  { id: 'a1', name: 'Pokoj 8 - Nadstandard - Motýl', type: 'nadstandard', floor: 'vyhled', capacity: 2, extraBeds: 1, basePrice: 890, weekdayPrice: 890, weekendPrice: 990, image: '/pokoje/motyl/1.webp' },
+  { id: 'zen', name: 'Pokoj 9 - Nadstandard - Zen', type: 'nadstandard', floor: 'vyhled', capacity: 2, extraBeds: 0, basePrice: 890, weekdayPrice: 890, weekendPrice: 990, image: '/pokoje/zen/1.webp' },
+  { id: 'p10', name: 'Pokoj 10 - Standard', type: 'standard', floor: 'vyhled', capacity: 2, extraBeds: 0, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, image: '/pokoje/p10/1.webp' },
+  { id: 'p11', name: 'Pokoj 11 - Standard', type: 'standard', floor: 'vyhled', capacity: 2, extraBeds: 0, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, image: '/pokoje/p11/1.webp' },
+  { id: 'p12', name: 'Pokoj 12 - Standard', type: 'standard', floor: 'vyhled', capacity: 2, extraBeds: 0, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, image: '/pokoje/p12/1.webp' },
 ];
 
 // Local Storage / Memory Reservations Store
 const LOCAL_STORAGE_KEY = 'hotel_umustku_reservations_v1';
 
-const INITIAL_MOCK_RESERVATIONS = [];
+let inMemoryReservations = [];
 
 export const getStoredReservations = () => {
   try {
-    if (typeof localStorage === 'undefined') return [];
+    if (typeof localStorage === 'undefined') return inMemoryReservations;
     const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) {
-        // Filter out legacy mock data (res-seed-* or static demo records)
         const clean = parsed.filter(r => r && r.id && !String(r.id).startsWith('res-seed-'));
         return clean;
       }
     }
-    return [];
+    return inMemoryReservations;
   } catch {
-    return [];
+    return inMemoryReservations;
   }
 };
 
@@ -56,8 +55,60 @@ const ALLOWED_SUPABASE_COLUMNS = new Set([
   'guest_note', 'guest_street', 'guest_city', 'guest_zip', 'guest_country', 'guests',
   'has_dog', 'has_ebike', 'ebike_count', 'has_half_board', 'half_board_count',
   'total_price', 'deposit_price', 'remaining_price', 'accommodation_price',
-  'city_tax', 'addons_price', 'status', 'created_at'
+  'city_tax', 'addons_price', 'status', 'created_at',
+  // Archiv a zimní parkování — skutečné sloupce v databázi.
+  // Dřív se ukládaly jako falešný host uvnitř pole guests, což rozbíjelo
+  // počet hostů v ubytovací knize, v e-mailu i na tištěném lístku.
+  'is_archived', 'archived_at',
+  'has_winter_parking', 'parking_cars_count', 'winter_parking_price_total'
 ]);
+
+/**
+ * Odstraní z pole hostů technické položky, které tam zapsala starší verze
+ * ({ _is_archived: … } a { _winter_parking: … }). Skutečný host má jméno.
+ */
+export function ocistiHosty(guests) {
+  if (!Array.isArray(guests)) return [];
+  return guests.filter((g) => {
+    if (!g || typeof g !== 'object') return false;
+    if (g._is_archived !== undefined || g._winter_parking !== undefined) {
+      // ponech jen pokud je to zároveň opravdový host se jménem
+      return Boolean(g.name && String(g.name).trim());
+    }
+    return true;
+  }).map((g) => {
+    if (g._is_archived === undefined && g._winter_parking === undefined) return g;
+    const kopie = { ...g };
+    delete kopie._is_archived;
+    delete kopie._winter_parking;
+    return kopie;
+  });
+}
+
+/**
+ * Dopočítá příznaky ze staršího způsobu uložení, aby se rezervace
+ * uložené před migrací zobrazovaly správně i bez zásahu do databáze.
+ */
+export function doplnPriznakyZeStarychDat(r) {
+  if (!r) return r;
+  const hoste = Array.isArray(r.guests) ? r.guests : [];
+  const archMeta = hoste.find((g) => g && g._is_archived !== undefined);
+  const parkMeta = hoste.find((g) => g && g._winter_parking !== undefined);
+  const wp = parkMeta ? parkMeta._winter_parking : null;
+
+  return {
+    ...r,
+    guests: ocistiHosty(hoste),
+    is_archived: r.is_archived !== undefined && r.is_archived !== null
+      ? Boolean(r.is_archived)
+      : Boolean(archMeta ? archMeta._is_archived : false),
+    has_winter_parking: r.has_winter_parking !== undefined && r.has_winter_parking !== null
+      ? Boolean(r.has_winter_parking)
+      : Boolean(wp ? wp.has_winter_parking : false),
+    parking_cars_count: r.parking_cars_count || (wp ? wp.parking_cars_count : 1),
+    winter_parking_price_total: r.winter_parking_price_total || (wp ? wp.winter_parking_price_total : 0)
+  };
+}
 
 export function sanitizeReservationForSupabase(raw) {
   if (!raw) return {};
@@ -71,31 +122,24 @@ export function sanitizeReservationForSupabase(raw) {
     sanitized.id = raw.code || ('res-' + Date.now());
   }
 
-  // Preserve winter parking & archive state inside guests list
-  let guestsArr = Array.isArray(raw.guests) ? [...raw.guests] : [];
-  if (raw.has_winter_parking || raw.parking_cars_count) {
-    let metaIdx = guestsArr.findIndex(g => g && g._winter_parking !== undefined);
-    const winterMeta = {
-      has_winter_parking: Boolean(raw.has_winter_parking),
-      parking_cars_count: parseInt(raw.parking_cars_count || 1),
-      winter_parking_price_total: parseInt(raw.winter_parking_price_total || 0)
-    };
-    if (metaIdx >= 0) {
-      guestsArr[metaIdx] = { ...guestsArr[metaIdx], _winter_parking: winterMeta };
-    } else {
-      guestsArr.push({ _winter_parking: winterMeta });
-    }
-  }
+  // Pole guests obsahuje VÝHRADNĚ skutečné hosty. Technické příznaky
+  // se ukládají do vlastních sloupců — jinak by falešný host zvýšil
+  // počet osob v ubytovací knize, v e-mailu i na tištěném lístku.
+  sanitized.guests = ocistiHosty(raw.guests);
+
   if (raw.is_archived !== undefined || raw.isArchived !== undefined) {
-    const isArchVal = Boolean(raw.is_archived || raw.isArchived);
-    let metaIdx = guestsArr.findIndex(g => g && g._is_archived !== undefined);
-    if (metaIdx >= 0) {
-      guestsArr[metaIdx] = { ...guestsArr[metaIdx], _is_archived: isArchVal };
-    } else {
-      guestsArr.push({ _is_archived: isArchVal });
-    }
+    sanitized.is_archived = Boolean(raw.is_archived || raw.isArchived);
+    sanitized.archived_at = sanitized.is_archived
+      ? (raw.archived_at || new Date().toISOString())
+      : null;
   }
-  sanitized.guests = guestsArr;
+
+  if (raw.has_winter_parking !== undefined || raw.parking_cars_count !== undefined) {
+    sanitized.has_winter_parking = Boolean(raw.has_winter_parking);
+    sanitized.parking_cars_count = parseInt(raw.parking_cars_count || 1, 10);
+    sanitized.winter_parking_price_total = parseInt(raw.winter_parking_price_total || 0, 10);
+  }
+
   return sanitized;
 }
 
@@ -107,6 +151,7 @@ export const saveStoredReservation = (reservation) => {
   } else {
     current.unshift(reservation);
   }
+  inMemoryReservations = current;
   try {
     if (typeof localStorage !== 'undefined') {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(current));
@@ -133,6 +178,7 @@ export const updateStoredReservationStatus = (id, newStatus) => {
   } else if (current.length > 0 && (id === undefined || id === 'undefined')) {
     current[0].status = newStatus;
   }
+  inMemoryReservations = current;
   try {
     if (typeof localStorage !== 'undefined') {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(current));
@@ -154,18 +200,15 @@ export const toggleStoredReservationArchive = (id, isArchived) => {
   const current = getStoredReservations();
   const targetStr = String(id).trim();
   let target = current.find(r => (r.id && String(r.id).trim() === targetStr) || (r.code && String(r.code).trim() === targetStr));
+  const casArchivace = isArchived ? new Date().toISOString() : null;
   if (target) {
     target.is_archived = Boolean(isArchived);
     target.isArchived = Boolean(isArchived);
-    let guestsArr = Array.isArray(target.guests) ? [...target.guests] : [];
-    let metaIdx = guestsArr.findIndex(g => g && g._is_archived !== undefined);
-    if (metaIdx >= 0) {
-      guestsArr[metaIdx] = { ...guestsArr[metaIdx], _is_archived: Boolean(isArchived) };
-    } else {
-      guestsArr.push({ _is_archived: Boolean(isArchived) });
-    }
-    target.guests = guestsArr;
+    target.archived_at = casArchivace;
+    // Pole hostů se archivací NESMÍ měnit — je podkladem pro ubytovací knihu.
+    target.guests = ocistiHosty(target.guests);
   }
+  inMemoryReservations = current;
 
   try {
     if (typeof localStorage !== 'undefined') {
@@ -176,10 +219,18 @@ export const toggleStoredReservationArchive = (id, isArchived) => {
   }
 
   if (isSupabaseConfigured && supabase && id) {
-    const guestsArr = target ? target.guests : [{ _is_archived: Boolean(isArchived) }];
-    supabase.from('reservations').update({ guests: guestsArr }).or(`id.eq.${targetStr},code.eq.${targetStr}`).then(({ error }) => {
-      if (error) console.error('Supabase update archive state error:', error);
-    }).catch(err => console.error('Supabase update archive state exception:', err));
+    supabase.from('reservations')
+      .update({ is_archived: Boolean(isArchived), archived_at: casArchivace })
+      .or(`id.eq.${targetStr},code.eq.${targetStr}`)
+      .then(({ error }) => {
+        if (error) {
+          console.error('Supabase update archive state error:', error);
+          if (typeof window !== 'undefined' && window.alert && /column .* does not exist/i.test(error.message || '')) {
+            window.alert('Archivace se neuložila do databáze — chybí sloupec is_archived.\nSpusť prosím soubor supabase-archiv.sql v Supabase → SQL Editor.');
+          }
+        }
+      })
+      .catch(err => console.error('Supabase update archive state exception:', err));
   }
 
   return target || (current.length > 0 ? current[0] : null);
@@ -194,6 +245,7 @@ export const deleteStoredReservation = (targetIdOrCode) => {
     const rCode = r.code ? String(r.code).trim() : '';
     return rId !== targetStr && rCode !== targetStr;
   });
+  inMemoryReservations = filtered;
   try {
     if (typeof localStorage !== 'undefined') {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(filtered));

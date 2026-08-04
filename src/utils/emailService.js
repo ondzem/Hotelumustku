@@ -34,106 +34,44 @@ export function logSentEmail(emailRecord) {
 export async function sendEmail({ to, subject, html, type, reservationCode }) {
   console.log(`📧 [EMAIL INITIATED] Type: ${type} | To: ${to} | Subject: ${subject}`);
 
-  const fallbackKey = ['re', '_RHeiWx3u', '_GoYkaNeZg9kggfPtrxtJkSs6'].join('');
-  const resendApiKey = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_RESEND_API_KEY) ||
-    (typeof process !== 'undefined' && process.env && (process.env.VITE_RESEND_API_KEY || process.env.RESEND_API_KEY)) ||
-    (typeof window !== 'undefined' && window.RESEND_API_KEY) ||
-    fallbackKey;
-
+  // Klíč k Resendu už NENÍ v prohlížeči. Odesílání obstarává serverová
+  // funkce netlify/functions/send-email.js, která klíč čte z proměnné
+  // RESEND_API_KEY v prostředí Netlify. Dřív byl klíč natvrdo v tomto
+  // souboru a skončil v dist/assets/main-*.js u každého návštěvníka.
   let finalStatus = 'pending';
   let liveResendId = null;
   let deliveryNote = '';
 
-  if (resendApiKey) {
-    const senders = [
-      'Hotel u Můstku <onboarding@resend.dev>',
-      'Hotel u Můstku <hotel@umustku.cz>'
-    ];
-    const endpoints = (typeof window !== 'undefined')
-      ? ['/api/resend/emails', 'https://api.resend.com/emails']
-      : ['https://api.resend.com/emails'];
+  try {
+    const response = await fetch('/.netlify/functions/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ to, subject, html, type })
+    });
 
-    let dispatched = false;
+    if (response.status === 404) {
+      // Místní vývoj přes `npm run dev` serverové funkce nezná.
+      // Pro skutečné odeslání spusť `netlify dev`.
+      console.warn('✉️ Serverová funkce není dostupná (běží vývojový server). E-mail se neodeslal, jen zaznamenal.');
+      deliveryNote = 'Neodesláno — vývojový režim bez serverových funkcí';
+    } else {
+      let data = null;
+      const contentType = response.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) data = await response.json();
 
-    for (const sender of senders) {
-      if (dispatched) break;
-
-      for (const endpoint of endpoints) {
-        try {
-          const response = await fetch(endpoint, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${resendApiKey}`
-            },
-            body: JSON.stringify({
-              from: sender,
-              to: [to],
-              subject: subject,
-              html: html
-            })
-          });
-
-          let data = null;
-          const contentType = response.headers.get('content-type') || '';
-          if (contentType.includes('application/json')) {
-            data = await response.json();
-          }
-
-          if (data && data.id) {
-            console.log(`✅ Resend Live Email Dispatched to [${to}] via ${sender} (ID: ${data.id})`);
-            liveResendId = data.id;
-            finalStatus = 'delivered';
-            dispatched = true;
-            break;
-          } else if (data && data.message && (data.message.includes('only send testing emails') || data.message.includes('validation_error'))) {
-            // Resend Sandbox / Testing Mode restriction: forward email to owner with clear header notice
-            console.warn(`⚠️ Resend Sandbox/Domain Restriction: Forwarding email for [${to}] to owner email ondra.zeman05@gmail.com`);
-            const fallbackSubject = `[Určeno pro: ${to}] ${subject}`;
-            const fallbackHtml = `
-              <div style="background:#fff3cd; color:#856404; padding:14px 18px; border:1px solid #ffeeba; border-radius:6px; margin-bottom:20px; font-family:sans-serif; font-size:14px; line-height:1.5;">
-                ⚠️ <strong>Upozornění systému Hotel u Můstku:</strong> Tento e-mail byl doručen na recepci/vlastníka, protože doména nebo příjemce <strong>${to}</strong> vyžaduje dokončení ověření domény v Resend. E-mail pro klienta byl úspěšně vygenerován a uchován.
-              </div>
-              ${html}
-            `;
-
-            try {
-              const fbResponse = await fetch('https://api.resend.com/emails', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${resendApiKey}`
-                },
-                body: JSON.stringify({
-                  from: 'Hotel u Můstku <onboarding@resend.dev>',
-                  to: ['ondra.zeman05@gmail.com'],
-                  subject: fallbackSubject,
-                  html: fallbackHtml
-                })
-              });
-              let fbData = null;
-              const fbContentType = fbResponse.headers.get('content-type') || '';
-              if (fbContentType.includes('application/json')) {
-                fbData = await fbResponse.json();
-              }
-              if (fbData && fbData.id) {
-                liveResendId = fbData.id;
-                finalStatus = 'delivered_to_reception';
-                deliveryNote = `Doručeno na recepci (Cílový klient: ${to})`;
-                dispatched = true;
-                break;
-              }
-            } catch (fbErr) {
-              console.error('Fallback send error:', fbErr);
-            }
-          } else {
-            console.warn(`⚠️ Resend response via ${sender} on ${endpoint}:`, data);
-          }
-        } catch (err) {
-          console.error(`❌ Resend fetch error on ${endpoint}:`, err);
-        }
+      if (data && data.id) {
+        liveResendId = data.id;
+        finalStatus = data.status || 'delivered';
+        deliveryNote = data.note || '';
+        console.log(`✅ E-mail odeslán na [${to}] (ID: ${data.id})`);
+      } else {
+        console.warn('⚠️ Odeslání e-mailu selhalo:', data);
+        deliveryNote = (data && data.error) ? data.error : 'Odeslání selhalo';
       }
     }
+  } catch (err) {
+    console.error('❌ Chyba při volání serverové funkce pro e-mail:', err);
+    deliveryNote = 'Server neodpověděl';
   }
 
   const record = logSentEmail({
@@ -581,7 +519,7 @@ export function sendAllTestEmailsTo(recipientEmail = 'ondra.zeman05@gmail.com') 
     id: 'res-test-1',
     code: 'HM-2026-TEST',
     room_id: 'p5',
-    room_name: 'Pokoj Standard P2',
+    room_name: 'Pokoj 2 - Standard',
     date_from: '2026-08-10',
     date_to: '2026-08-13',
     guest_name: 'Ondřej Zeman',
@@ -603,7 +541,7 @@ export function sendAllTestEmailsTo(recipientEmail = 'ondra.zeman05@gmail.com') 
     created_at: new Date().toISOString()
   };
 
-  const mockRoom = { id: 'p5', name: 'Pokoj Standard P2', type: 'standard' };
+  const mockRoom = { id: 'p5', name: 'Pokoj 2 - Standard', type: 'standard' };
   const mockPricing = {
     nights: 3,
     totalGuests: 2,
