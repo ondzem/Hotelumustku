@@ -1422,3 +1422,91 @@ export const updateStoredReviewStatus = async (reviewId, status) => {
   return { success: true };
 };
 
+
+// =====================================================================
+//  CENÍK — sezóny, ceny podle počtu osob, výjimky pro pokoje, příplatky
+//
+//  Stejný režim jako u ostatních dat webu: zdrojem pravdy je Supabase,
+//  localStorage slouží jako záloha, aby rezervační formulář ukázal ceny
+//  i při výpadku sítě.
+// =====================================================================
+
+const CENIK_STORAGE_KEY = 'hotel_umustku_cenik_v1';
+
+/** Prázdný ceník — výchozí stav, než dorazí data. */
+const PRAZDNY = { sezony: [], ceny: [], cenyPokoj: [], nastaveni: {} };
+
+export const getStoredCenik = () => {
+  try {
+    const raw = localStorage.getItem(CENIK_STORAGE_KEY);
+    if (!raw) return { ...PRAZDNY };
+    const c = JSON.parse(raw);
+    return {
+      sezony: Array.isArray(c.sezony) ? c.sezony : [],
+      ceny: Array.isArray(c.ceny) ? c.ceny : [],
+      cenyPokoj: Array.isArray(c.cenyPokoj) ? c.cenyPokoj : [],
+      nastaveni: c.nastaveni && typeof c.nastaveni === 'object' ? c.nastaveni : {},
+    };
+  } catch {
+    return { ...PRAZDNY };
+  }
+};
+
+export const saveStoredCenik = (cenik) => {
+  try {
+    localStorage.setItem(CENIK_STORAGE_KEY, JSON.stringify(cenik));
+  } catch (err) {
+    console.error('Uložení ceníku do prohlížeče selhalo:', err);
+  }
+  return cenik;
+};
+
+/**
+ * Načte celý ceník ze Supabase.
+ *
+ * Když se načtení nepovede nebo tabulky ještě neexistují (majitel
+ * nespustil supabase-cenik.sql), vrátí se poslední známý ceník
+ * z prohlížeče. Výpočet pak sáhne po výchozích cenách v cenik.js,
+ * takže rezervace funguje dál — jen podle základního ceníku.
+ */
+export const fetchCenik = async () => {
+  if (!isSupabaseConfigured || !supabase) {
+    return getStoredCenik();
+  }
+
+  try {
+    const [sezonyRes, cenyRes, cenyPokojRes, nastaveniRes] = await Promise.all([
+      supabase.from('cenik_sezony').select('*'),
+      supabase.from('cenik_ceny').select('*'),
+      supabase.from('cenik_ceny_pokoj').select('*'),
+      supabase.from('cenik_nastaveni').select('*'),
+    ]);
+
+    // Chybějící tabulka není důvod shodit rezervaci — jen o ni přijdeme.
+    const chyba = sezonyRes.error || cenyRes.error || cenyPokojRes.error || nastaveniRes.error;
+    if (chyba && !sezonyRes.data) {
+      console.warn('Ceník se nepodařilo načíst, používám zálohu z prohlížeče:', chyba.message);
+      return getStoredCenik();
+    }
+
+    const nastaveni = {};
+    (nastaveniRes.data || []).forEach(r => {
+      const h = Number(r.hodnota);
+      if (Number.isFinite(h)) nastaveni[r.klic] = h;
+    });
+
+    const cenik = {
+      sezony: sezonyRes.data || [],
+      ceny: cenyRes.data || [],
+      cenyPokoj: cenyPokojRes.data || [],
+      nastaveni,
+      nastaveniRadky: nastaveniRes.data || [],
+    };
+
+    saveStoredCenik(cenik);
+    return cenik;
+  } catch (err) {
+    console.warn('Načtení ceníku selhalo:', err && err.message);
+    return getStoredCenik();
+  }
+};

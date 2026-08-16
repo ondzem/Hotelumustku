@@ -1,5 +1,6 @@
-import { MOCK_ROOMS, isSupabaseConfigured, supabase, getStoredReservations, saveStoredReservation, sanitizeReservationForSupabase, getStoredBlockedDates, getStoredDiscountCodes, getStoredRoomPrices, getStoredDisabledRooms, getDeviceRedeemedDiscountCodes, markDiscountCodeRedeemedOnDevice, incrementDiscountCodeUsage } from '../lib/supabaseClient.js';
+import { MOCK_ROOMS, isSupabaseConfigured, supabase, getStoredReservations, saveStoredReservation, sanitizeReservationForSupabase, getStoredBlockedDates, getStoredDiscountCodes, getStoredRoomPrices, getStoredDisabledRooms, getStoredCenik, fetchCenik, getDeviceRedeemedDiscountCodes, markDiscountCodeRedeemedOnDevice, incrementDiscountCodeUsage } from '../lib/supabaseClient.js';
 import { calculateReservationPrice, generateReservationCode, generateManageToken, BANK_ACCOUNT, BANK_NAME, formatCzechPrice, validateSystemDateIntegrity, isWinterSeason } from '../utils/pricing.js';
+import { maxOsobNaPokoji } from '../utils/cenik.js';
 import { sendEmail, generateEmail1RequestReceived, generateEmail1ReceptionNotification } from '../utils/emailService.js';
 import { checkAndProcessExpiredUnpaidReservations } from '../utils/reservationExpiryService.js';
 
@@ -75,6 +76,7 @@ export class BookingSystem {
     this.disabledRooms = getStoredDisabledRooms();
     this.discountCodes = getStoredDiscountCodes().filter(c => c.is_active);
     this.roomPrices = getStoredRoomPrices();
+    this.cenik = getStoredCenik();
     (this.roomPrices || []).forEach(p => {
       const priceVal = Number(p.base_price || p.basePrice);
       if (p.room_id && !isNaN(priceVal) && priceVal > 0) {
@@ -195,7 +197,8 @@ export class BookingSystem {
         this.fetchBlockedDates(),
         this.fetchDisabledRooms(),
         this.fetchDiscountCodes(),
-        this.fetchRoomPrices()
+        this.fetchRoomPrices(),
+        this.fetchCenik()
       ]);
     } catch (err) {
       console.error('BookingSystem init fetch error:', err);
@@ -209,6 +212,12 @@ export class BookingSystem {
     }
 
     this.render();
+  }
+
+  /** Načte ceník — sezóny, ceny podle počtu osob, příplatky. */
+  async fetchCenik() {
+    this.cenik = await fetchCenik();
+    return this.cenik;
   }
 
   async fetchDisabledRooms() {
@@ -721,13 +730,9 @@ export class BookingSystem {
         winterParkingPriceTotal: 0,
       };
     }
-    const customPriceObj = (this.roomPrices || []).find(p => p.room_id === room.id);
-    const customBaseRate = customPriceObj ? (customPriceObj.base_price || customPriceObj.weekday_price) : (room.weekdayPrice || room.basePrice);
-    const customWeekdayRate = customPriceObj ? (customPriceObj.weekday_price || customPriceObj.base_price) : room.weekdayPrice;
-    const customWeekendRate = customPriceObj ? (customPriceObj.weekend_price || customPriceObj.base_price) : room.weekendPrice;
-
     return calculateReservationPrice({
       roomType: room.type,
+      roomId: room.id,
       nights,
       persons: this.state.adults,
       adults: this.state.adults,
@@ -741,10 +746,36 @@ export class BookingSystem {
       halfBoardCount: this.state.halfBoardCount || this.state.adults || 2,
       hasWinterParking: this.state.hasWinterParking,
       parkingCarsCount: this.state.parkingCarsCount || 1,
-      customBaseRate,
-      customWeekdayRate,
-      customWeekendRate,
+      cenik: this.cenik,
+      nastaveni: this.cenik && this.cenik.nastaveni,
       discountObj: this.appliedDiscount,
+    });
+  }
+
+  /**
+   * Sníží počet osob, když se do vybraného pokoje nevejdou.
+   * Volá se po každé změně pokoje.
+   */
+  osekniPocetOsobNaKapacitu() {
+    const maxOsob = this.maxOsobProPokoj(this.getSelectedRoom());
+    if (this.state.adults > maxOsob) {
+      this.state.adults = maxOsob;
+    }
+    if (this.state.halfBoardCount > this.state.adults) {
+      this.state.halfBoardCount = this.state.adults;
+    }
+  }
+
+  /**
+   * Kolik osob jde na daný pokoj vybrat — stálá lůžka plus přistýlky
+   * podle nastavení v administraci.
+   */
+  maxOsobProPokoj(room) {
+    if (!room) return 4;
+    const p = (this.roomPrices || []).find(x => x.room_id === room.id) || {};
+    return maxOsobNaPokoji({
+      zakladni_luzka: p.zakladni_luzka != null ? p.zakladni_luzka : room.capacity,
+      max_pristylek: p.max_pristylek != null ? p.max_pristylek : room.extraBeds,
     });
   }
 
@@ -1336,16 +1367,17 @@ export class BookingSystem {
       const isDisabled = Boolean(r.isDisabled || (this.disabledRooms && this.disabledRooms.some(d => d.room_id === r.id && d.is_disabled)));
       const isAvailable = !isOccupied && !isDisabled;
 
-      const customPriceObj = (this.roomPrices || []).find(p => p.room_id === r.id);
-      const customBaseRate = customPriceObj ? (customPriceObj.base_price || customPriceObj.weekday_price) : (r.weekdayPrice || r.basePrice);
-      const customWeekdayRate = customPriceObj ? (customPriceObj.weekday_price || customPriceObj.base_price) : r.weekdayPrice;
-      const customWeekendRate = customPriceObj ? (customPriceObj.weekend_price || customPriceObj.base_price) : r.weekendPrice;
+      // Nabídka v rozbalovacím seznamu počítá s tolika osobami,
+      // kolik se na daný pokoj vejde — jinak by u menších pokojů
+      // svítila cena za počet lidí, který tam nejde ubytovat.
+      const osobNaPokoj = Math.min(this.state.adults, this.maxOsobProPokoj(r));
 
       const roomPricing = calculateReservationPrice({
         roomType: r.type,
+        roomId: r.id,
         nights,
-        persons: this.state.adults,
-        adults: this.state.adults,
+        persons: osobNaPokoj,
+        adults: osobNaPokoj,
         children: 0,
         dateFrom: this.state.dateFrom,
         dateTo: this.state.dateTo,
@@ -1354,9 +1386,8 @@ export class BookingSystem {
         ebikeCount: this.state.ebikeCount,
         hasHalfBoard: this.state.hasHalfBoard,
         halfBoardCount: this.state.halfBoardCount,
-        customBaseRate,
-        customWeekdayRate,
-        customWeekendRate,
+        cenik: this.cenik,
+        nastaveni: this.cenik && this.cenik.nastaveni,
         discountObj: this.appliedDiscount,
       });
 
@@ -1509,7 +1540,7 @@ export class BookingSystem {
                       </span>
                     </div>
                     <h4 class="preview-room-title">${room.name}</h4>
-                    <p class="preview-desc">Kapacita: až ${room.capacity + (room.extraBeds || 0)} osoby • Včetně bufetové snídaně a Wi-Fi zdarma</p>
+                    <p class="preview-desc">Kapacita: až ${this.maxOsobProPokoj(room)} ${this.maxOsobProPokoj(room) < 5 ? 'osoby' : 'osob'} • Včetně bufetové snídaně a Wi-Fi zdarma</p>
                   </div>
                   <button type="button" class="btn btn-view-room-details" id="btn-view-room-details" data-room-id="${room.id}">
                     <span>Zobrazit fotky pokoje</span>
@@ -2388,6 +2419,8 @@ export class BookingSystem {
             if (roomId) {
               this.state.selectedRoomId = roomId;
               this.state.isCustomDropdownOpen = false;
+              // Menší pokoj nesmí zůstat s vyšším počtem osob z předchozí volby
+              this.osekniPocetOsobNaKapacitu();
               this.render();
             }
           });
@@ -2451,7 +2484,11 @@ export class BookingSystem {
           const target = btn.dataset.target;
           const isPlus = btn.classList.contains('btn-counter-plus');
           if (target === 'adults') {
-            this.state.adults = isPlus ? Math.min(4, this.state.adults + 1) : Math.max(1, this.state.adults - 1);
+            // Strop dává vybraný pokoj — stálá lůžka plus přistýlky.
+            const maxOsob = this.maxOsobProPokoj(this.getSelectedRoom());
+            this.state.adults = isPlus
+              ? Math.min(maxOsob, this.state.adults + 1)
+              : Math.max(1, this.state.adults - 1);
             if (this.state.halfBoardCount > this.state.adults) {
               this.state.halfBoardCount = this.state.adults;
             }

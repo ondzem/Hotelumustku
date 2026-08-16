@@ -1,8 +1,9 @@
-import { MOCK_ROOMS, getStoredReservations, updateStoredReservationStatus, toggleStoredReservationArchive, deleteStoredReservation, getStoredBlockedDates, saveStoredBlockedDate, deleteStoredBlockedDate, getStoredDiscountCodes, saveStoredDiscountCode, deleteStoredDiscountCode, getStoredRoomPrices, saveStoredRoomPrice, getStoredCustomRoomNames, saveStoredCustomRoomName, getStoredDisabledRooms, saveStoredDisabledRoom, getStoredNewsItems, saveStoredNewsItem, deleteStoredNewsItem, reorderNewsItem, uploadNewsImage, isSupabaseConfigured, supabase, getStoredReviews, updateStoredReviewStatus, doplnPriznakyZeStarychDat, ocistiHosty } from '../lib/supabaseClient.js';
+import { MOCK_ROOMS, getStoredReservations, updateStoredReservationStatus, toggleStoredReservationArchive, deleteStoredReservation, getStoredBlockedDates, saveStoredBlockedDate, deleteStoredBlockedDate, getStoredDiscountCodes, saveStoredDiscountCode, deleteStoredDiscountCode, getStoredRoomPrices, saveStoredRoomPrice, getStoredCustomRoomNames, saveStoredCustomRoomName, getStoredDisabledRooms, saveStoredDisabledRoom, getStoredNewsItems, saveStoredNewsItem, deleteStoredNewsItem, reorderNewsItem, uploadNewsImage, isSupabaseConfigured, supabase, getStoredReviews, updateStoredReviewStatus, getStoredCenik, fetchCenik, doplnPriznakyZeStarychDat, ocistiHosty } from '../lib/supabaseClient.js';
 import { calculateReservationPrice, generateSpaydQrUrl, BANK_ACCOUNT, formatCzechPrice, getVariableSymbol } from '../utils/pricing.js';
 import { sendEmail, generateEmail2ApprovalAndPaymentRequest, generateEmail3FinalConfirmation, generateEmailCancellation, getEmailLogs, sendAllTestEmailsTo } from '../utils/emailService.js';
 import { checkAndProcessExpiredUnpaidReservations } from '../utils/reservationExpiryService.js';
 import { printReservationSheet } from '../utils/printReservationService.js';
+import { renderCenikModal, bindCenikModal } from './AdminCenik.js';
 
 function formatCzechDateStr(dateStr) {
   if (!dateStr) return '';
@@ -107,6 +108,13 @@ export class AdminDashboard {
     this.showBlockModal = false;
     this.showDiscountModal = false;
     this.showPricesModal = false;
+
+    // Ceník — sezóny, ceny podle počtu osob, výjimky, příplatky
+    this.cenik = getStoredCenik();
+    this.cenikSezonaId = null;
+    this.cenikVyjimkyOtevrene = false;
+    this.cenikLuzkaOtevrena = false;
+    this.cenikNahled = {};
     this.showRoomMgmtModal = false;
     this.showDisabledRoomsModal = false;
     this.disabledRooms = getStoredDisabledRooms();
@@ -779,15 +787,24 @@ export class AdminDashboard {
     
     const pricing = calculateReservationPrice({
       roomType: room.type,
+      roomId: room.id,
       nights,
       persons: reservation.adults_count || 2,
       adults: reservation.adults_count || 2,
       children: reservation.children_count || 0,
+      // Bez termínu by se nepoznal víkend ani sezóna a cena v e-mailu
+      // by nesouhlasila s tím, co host viděl při rezervaci.
+      dateFrom: reservation.date_from,
+      dateTo: reservation.date_to,
       hasDog: reservation.has_dog,
       hasEbike: reservation.has_ebike,
       hasHalfBoard: reservation.has_half_board,
       halfBoardCount: reservation.half_board_count,
-      ebikeCount: reservation.ebike_count
+      ebikeCount: reservation.ebike_count,
+      hasWinterParking: reservation.has_winter_parking,
+      parkingCarsCount: reservation.parking_cars_count,
+      cenik: this.cenik,
+      nastaveni: this.cenik && this.cenik.nastaveni
     });
 
     if (targetAction === 'approve_and_request_deposit') {
@@ -1479,60 +1496,7 @@ export class AdminDashboard {
           </div>
         ` : ''}
 
-        ${this.showPricesModal ? `
-          <div class="admin-modal-overlay admin-modal-overlay-block admin-modal-overlay-prices">
-            <div class="admin-confirm-modal admin-block-modal" style="max-width: 660px; padding: 0 24px 24px 24px;">
-              <div class="admin-modal-header-sticky">
-                <h3 class="admin-modal-title" style="margin: 0; font-size: 18px; font-weight: 800; color: #1c1c19;">💰 Ceník pokojů (Týdenní vs. Víkendové ceny)</h3>
-                <button type="button" class="btn-close-prices-modal" style="background: none; border: none; font-size: 26px; cursor: pointer; color: #777; line-height: 1; padding: 4px 8px;">&times;</button>
-              </div>
-              <p class="admin-modal-desc" style="margin-top: 14px; margin-bottom: 16px; font-size: 13.5px; color: #55554e; line-height: 1.5;">
-                Upravte ceny ubytování zvlášť pro <strong>týdenní dny (Po–Čt)</strong> a <strong>víkendové dny (Pá–Ne)</strong>. Systém při rezervaci automaticky rozezná jednotlivé dny a spočítá přesnou cenu pro každý den pobytu.
-              </p>
-
-              <div style="display: flex; flex-direction: column; gap: 12px; max-height: 420px; overflow-y: auto; padding-right: 4px;">
-                ${MOCK_ROOMS.map(rm => {
-                  const customP = (this.roomPrices || []).find(p => p.room_id === rm.id);
-                  const currentWeekdayPrice = customP ? (customP.weekday_price || customP.base_price || customP.basePrice) : (rm.weekdayPrice || rm.basePrice);
-                  const currentWeekendPrice = customP ? (customP.weekend_price || customP.base_price || customP.basePrice) : (rm.weekendPrice || rm.basePrice);
-                  return `
-                    <div class="room-price-card" data-roomid="${rm.id}" style="background: #ffffff; border: 1px solid #e0dfd5; border-radius: 8px; padding: 14px 16px;">
-                      <div style="margin-bottom: 10px;">
-                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 4px;">
-                          <label style="display: block; font-size: 12px; font-weight: 700; color: #1c1c19;">🏷️ Název pokoje:</label>
-                          <span style="font-size: 11px; font-weight: 700; background: #eef2e6; color: #4a5a24; padding: 2px 6px; border-radius: 3px; text-transform: uppercase;">${rm.type}</span>
-                        </div>
-                        <input type="text" class="form-input room-name-input" data-roomid="${rm.id}" value="${rm.name}" placeholder="Název pokoje..." style="width: 100%; height: 38px; font-size: 14px; font-weight: 700; padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; box-sizing: border-box;">
-                      </div>
-
-                      <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; align-items: flex-end;">
-                        <div>
-                          <label style="display: block; font-size: 12px; font-weight: 700; color: #55554e; margin-bottom: 4px;">🏢 Přes týden (Po – Čt):</label>
-                          <div style="display: flex; align-items: center; gap: 4px;">
-                            <input type="number" class="form-input room-weekday-price-input" data-roomid="${rm.id}" value="${currentWeekdayPrice}" style="width: 100%; height: 38px; font-size: 14px; font-weight: 700; text-align: right; padding-right: 8px;">
-                            <span style="font-size: 12.5px; font-weight: 600; color: #777;">Kč/noc</span>
-                          </div>
-                        </div>
-
-                        <div>
-                          <label style="display: block; font-size: 12px; font-weight: 700; color: #4a5a24; margin-bottom: 4px;">🏔️ O víkendu (Pá – Ne):</label>
-                          <div style="display: flex; align-items: center; gap: 4px;">
-                            <input type="number" class="form-input room-weekend-price-input" data-roomid="${rm.id}" value="${currentWeekendPrice}" style="width: 100%; height: 38px; font-size: 14px; font-weight: 700; text-align: right; padding-right: 8px;">
-                            <span style="font-size: 12.5px; font-weight: 600; color: #777;">Kč/noc</span>
-                          </div>
-                        </div>
-
-                        <button type="button" class="btn btn-specs-secondary btn-save-room-price" data-roomid="${rm.id}" style="height: 38px; padding: 0 16px; font-size: 13.5px; font-weight: 700; border-radius: 1px; flex-shrink: 0;">
-                          Uložit
-                        </button>
-                      </div>
-                    </div>
-                  `;
-                }).join('')}
-              </div>
-            </div>
-          </div>
-        ` : ''}
+        ${this.showPricesModal ? renderCenikModal(this) : ''}
 
         ${this.showRoomMgmtModal ? `
           <div class="admin-modal-overlay admin-modal-overlay-mgmt">
@@ -2256,30 +2220,23 @@ export class AdminDashboard {
       });
     });
 
+    const otevriCenik = async () => {
+      await this.fetchRoomPrices();
+      this.cenik = await fetchCenik();
+      this.showPricesModal = true;
+      this.render();
+    };
+
     const btnPrices = this.container.querySelector('.btn-admin-prices, .btn-admin-room-prices');
     if (btnPrices) {
-      btnPrices.addEventListener('click', async () => {
-        await this.fetchRoomPrices();
-        this.showPricesModal = true;
-        this.render();
-      });
-    }
-
-    const btnClosePricesModal = this.container.querySelector('.btn-close-prices-modal');
-    if (btnClosePricesModal) {
-      btnClosePricesModal.addEventListener('click', () => {
-        this.showPricesModal = false;
-        this.render();
-      });
+      btnPrices.addEventListener('click', otevriCenik);
     }
 
     const btnOpenPricesFromMgmt = this.container.querySelector('.btn-open-prices-from-mgmt');
     if (btnOpenPricesFromMgmt) {
       btnOpenPricesFromMgmt.addEventListener('click', async () => {
         this.showRoomMgmtModal = false;
-        await this.fetchRoomPrices();
-        this.showPricesModal = true;
-        this.render();
+        await otevriCenik();
       });
     }
 
@@ -2319,44 +2276,8 @@ export class AdminDashboard {
       });
     });
 
-    const pricesModalOverlay = this.container.querySelector('.admin-modal-overlay-prices');
-    if (pricesModalOverlay) {
-      pricesModalOverlay.addEventListener('click', (e) => {
-        if (e.target === pricesModalOverlay) {
-          this.showPricesModal = false;
-          this.render();
-        }
-      });
-    }
-
-    this.container.querySelectorAll('.btn-save-room-price').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const roomId = e.currentTarget.dataset.roomid;
-        const nameInput = this.container.querySelector(`.room-name-input[data-roomid="${roomId}"]`);
-        const weekdayInput = this.container.querySelector(`.room-weekday-price-input[data-roomid="${roomId}"]`);
-        const weekendInput = this.container.querySelector(`.room-weekend-price-input[data-roomid="${roomId}"]`);
-        if (roomId) {
-          this.updateRoomNameAndPrice(
-            roomId,
-            nameInput ? nameInput.value : '',
-            weekdayInput ? weekdayInput.value : '',
-            weekendInput ? weekendInput.value : ''
-          );
-        }
-      });
-    });
-
-    this.container.querySelectorAll('.room-price-input').forEach(input => {
-      input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          const roomId = e.currentTarget.dataset.roomid;
-          if (input.value) {
-            this.updateRoomPrice(roomId, input.value);
-          }
-        }
-      });
-    });
+    // Okno s ceníkem si obsluhuje vlastní modul (AdminCenik.js)
+    bindCenikModal(this);
 
     const btnCloseBlockModal = this.container.querySelector('.btn-close-block-modal');
     if (btnCloseBlockModal) {

@@ -1,0 +1,254 @@
+/**
+ * CENÍK — určení ceny za osobu a noc
+ *
+ * Cena se skládá ze tří os:
+ *   1. SEZÓNA        — podle data noci (zima / léto / základní / jednorázová)
+ *   2. KATEGORIE     — standard / nadstandard / turistický, s možností
+ *                      výjimky pro jeden konkrétní pokoj
+ *   3. POČET OSOB    — čím víc lidí na pokoji, tím nižší cena za osobu
+ *
+ * Navíc víkendový příplatek (pátek, sobota, neděle), který se nastavuje
+ * jedním číslem na sezónu.
+ *
+ * Tenhle soubor je čistá matematika bez sítě a bez DOM, aby se dal
+ * spolehlivě testovat.
+ */
+
+/** Nejvyšší počet osob, pro který má smysl držet sloupec v ceníku. */
+export const MAX_OSOB_V_CENIKU = 4;
+
+/**
+ * Záchranné ceny, když se ceník nestihne načíst nebo je databáze prázdná.
+ * Opsáno z ceníku na umustku.cz platného od 1. 1. 2026.
+ * Hodnoty jsou v Kč za OSOBU a NOC se snídaní.
+ */
+export const VYCHOZI_CENY = {
+  standard:    { 1: 890, 2: 740, 3: 720, 4: 700 },
+  nadstandard: { 1: 1780, 2: 890, 3: 890, 4: 890 },
+  turisticky:  { 1: 890, 2: 740, 3: 720, 4: 700 },
+};
+
+/** Prázdný ceník — používá se, dokud se nenačtou data. */
+export const PRAZDNY_CENIK = { sezony: [], ceny: [], cenyPokoj: [] };
+
+/**
+ * Vrátí 'MM-DD' z data ve tvaru 'YYYY-MM-DD'.
+ */
+function mesicDen(datumStr) {
+  return String(datumStr).slice(5, 10);
+}
+
+/**
+ * Spadá datum do rozsahu sezóny?
+ *
+ * U opakujících se sezón se porovnává jen měsíc a den, takže platí
+ * každý rok. Rozsah smí přecházet přes Nový rok — zima 1. 11. → 15. 4.
+ * se pozná podle toho, že začátek je později než konec.
+ */
+export function jeVSezone(datumStr, sezona) {
+  if (!sezona) return false;
+  if (sezona.je_zakladni) return true;
+  if (!sezona.datum_od || !sezona.datum_do) return false;
+
+  if (sezona.opakuje_se === false) {
+    return datumStr >= sezona.datum_od && datumStr <= sezona.datum_do;
+  }
+
+  const md = mesicDen(datumStr);
+  const od = String(sezona.datum_od).slice(-5);
+  const doKdy = String(sezona.datum_do).slice(-5);
+
+  if (od <= doKdy) return md >= od && md <= doKdy;
+  return md >= od || md <= doKdy; // rozsah přes Nový rok
+}
+
+/**
+ * Najde sezónu platnou pro dané datum.
+ *
+ * Pořadí přednosti:
+ *   1. jednorázová sezóna (konkrétní rok — Vánoce, Silvestr)
+ *   2. vyšší priorita
+ *   3. základní sezóna jako poslední záchrana
+ */
+export function najdiSezonu(datumStr, sezony = []) {
+  const kandidati = (sezony || []).filter(s => !s.je_zakladni && jeVSezone(datumStr, s));
+
+  if (kandidati.length > 0) {
+    kandidati.sort((a, b) => {
+      const jednorazovaA = a.opakuje_se === false ? 1 : 0;
+      const jednorazovaB = b.opakuje_se === false ? 1 : 0;
+      if (jednorazovaA !== jednorazovaB) return jednorazovaB - jednorazovaA;
+      const prioA = Number(a.priorita) || 0;
+      const prioB = Number(b.priorita) || 0;
+      if (prioA !== prioB) return prioB - prioA;
+      return String(b.updated_at || '').localeCompare(String(a.updated_at || ''));
+    });
+    return kandidati[0];
+  }
+
+  return (sezony || []).find(s => s.je_zakladni) || null;
+}
+
+/**
+ * Ořízne počet osob na sloupec, který ceník opravdu má.
+ * Víc lidí, než kolik je sloupců, platí cenu posledního sloupce.
+ */
+function sloupecOsob(pocetOsob) {
+  const n = Math.max(1, parseInt(pocetOsob, 10) || 1);
+  return Math.min(n, MAX_OSOB_V_CENIKU);
+}
+
+/**
+ * Vyhledá jedno číslo v seznamu cen. Vrací null, když buňka není
+ * vyplněná — volající pak sáhne o úroveň níž.
+ */
+function najdiCenu(seznam, filtr) {
+  const zaznam = (seznam || []).find(filtr);
+  if (!zaznam) return null;
+  const c = Number(zaznam.cena_za_osobu_noc);
+  return Number.isFinite(c) && c > 0 ? c : null;
+}
+
+/**
+ * Vrátí cenu za osobu a noc pro jednu konkrétní noc.
+ *
+ * Hledá se odshora dolů, první vyplněná hodnota vyhrává:
+ *   1. výjimka pro tenhle pokoj v nalezené sezóně
+ *   2. cena kategorie v nalezené sezóně
+ *   3. výjimka pro tenhle pokoj v základní sezóně
+ *   4. cena kategorie v základní sezóně
+ *   5. záchranná výchozí cena
+ *
+ * Díky tomu stačí u nové sezóny vyplnit jen to, co se liší.
+ */
+export function cenaZaOsobuNoc({
+  datumStr,
+  roomId = null,
+  kategorie = 'standard',
+  pocetOsob = 2,
+  cenik = PRAZDNY_CENIK,
+}) {
+  const osob = sloupecOsob(pocetOsob);
+  const sezony = cenik.sezony || [];
+  const sezona = najdiSezonu(datumStr, sezony);
+  const zakladni = sezony.find(s => s.je_zakladni) || null;
+
+  const zkusSezonu = (sez) => {
+    if (!sez) return null;
+    if (roomId) {
+      const vyjimka = najdiCenu(cenik.cenyPokoj,
+        c => c.sezona_id === sez.id && c.room_id === roomId && Number(c.pocet_osob) === osob);
+      if (vyjimka !== null) return vyjimka;
+    }
+    return najdiCenu(cenik.ceny,
+      c => c.sezona_id === sez.id && c.kategorie === kategorie && Number(c.pocet_osob) === osob);
+  };
+
+  const zeSezony = zkusSezonu(sezona);
+  if (zeSezony !== null) return zeSezony;
+
+  if (zakladni && (!sezona || sezona.id !== zakladni.id)) {
+    const zeZakladni = zkusSezonu(zakladni);
+    if (zeZakladni !== null) return zeZakladni;
+  }
+
+  const tabulka = VYCHOZI_CENY[kategorie] || VYCHOZI_CENY.standard;
+  return tabulka[osob] || tabulka[MAX_OSOB_V_CENIKU] || 0;
+}
+
+/**
+ * Víkendový příplatek platný pro danou noc (Kč / osoba / noc).
+ * Bere se ze sezóny, do které noc spadá — i když si sama sezóna
+ * ceny nedrží a dědí je ze základní.
+ */
+export function vikendovyPriplatek(datumStr, cenik = PRAZDNY_CENIK) {
+  const sezona = najdiSezonu(datumStr, cenik.sezony || []);
+  const p = Number(sezona && sezona.vikendovy_priplatek);
+  return Number.isFinite(p) && p > 0 ? p : 0;
+}
+
+/**
+ * Kolik osob se vejde na pokoj — stálá lůžka plus přistýlky.
+ */
+export function maxOsobNaPokoji(pokoj) {
+  if (!pokoj) return 2;
+  const luzka = Number(pokoj.zakladni_luzka ?? pokoj.zakladniLuzka ?? pokoj.capacity ?? 2);
+  const pristylky = Number(pokoj.max_pristylek ?? pokoj.maxPristylek ?? pokoj.extraBeds ?? 0);
+  const celkem = (Number.isFinite(luzka) ? luzka : 2) + (Number.isFinite(pristylky) ? pristylky : 0);
+  return Math.max(1, celkem);
+}
+
+/**
+ * Rozpis cen po nocích pro celý pobyt.
+ *
+ * Vrací pole, kde každá položka je jedna noc — díky tomu se pobyt
+ * přes přelom sezón spočítá sám a v rekapitulaci jde ukázat,
+ * proč cena vyšla právě takhle.
+ */
+export function rozpisNoci({
+  dateFrom,
+  nights,
+  roomId = null,
+  kategorie = 'standard',
+  pocetOsob = 2,
+  cenik = PRAZDNY_CENIK,
+}) {
+  const pocetNoci = Math.max(1, parseInt(nights, 10) || 1);
+  const noci = [];
+  if (!dateFrom) return noci;
+
+  const [r, m, d] = String(dateFrom).split('-').map(Number);
+  if (!r || !m || !d) return noci;
+
+  for (let i = 0; i < pocetNoci; i++) {
+    const dt = new Date(Date.UTC(r, m - 1, d));
+    dt.setUTCDate(dt.getUTCDate() + i);
+    const datumStr = dt.toISOString().split('T')[0];
+    const denVTydnu = dt.getUTCDay(); // 0 = neděle
+    const jeVikend = denVTydnu === 5 || denVTydnu === 6 || denVTydnu === 0;
+
+    const zaklad = cenaZaOsobuNoc({ datumStr, roomId, kategorie, pocetOsob, cenik });
+    const priplatek = jeVikend ? vikendovyPriplatek(datumStr, cenik) : 0;
+    const sezona = najdiSezonu(datumStr, cenik.sezony || []);
+
+    noci.push({
+      datum: datumStr,
+      jeVikend,
+      sezonaId: sezona ? sezona.id : null,
+      sezonaNazev: sezona ? sezona.nazev : 'Základní ceník',
+      cenaZaOsobu: zaklad + priplatek,
+      zakladniCenaZaOsobu: zaklad,
+      vikendovyPriplatek: priplatek,
+      cenaZaNoc: (zaklad + priplatek) * Math.max(1, parseInt(pocetOsob, 10) || 1),
+    });
+  }
+
+  return noci;
+}
+
+/**
+ * Krátký popis rozpisu do rekapitulace, např.
+ * "2× víkendová noc (950 Kč/os) + 1× všední noc (890 Kč/os)".
+ * Seskupuje noci se stejnou cenou, aby popis nenarostl u dlouhých pobytů.
+ */
+export function popisRozpisu(noci, formatuj = (v) => `${v} Kč`) {
+  if (!noci || noci.length === 0) return '';
+
+  const skupiny = new Map();
+  for (const noc of noci) {
+    const klic = `${noc.jeVikend ? 'v' : 't'}|${noc.cenaZaOsobu}|${noc.sezonaNazev}`;
+    const s = skupiny.get(klic) || { pocet: 0, jeVikend: noc.jeVikend, cena: noc.cenaZaOsobu, sezona: noc.sezonaNazev };
+    s.pocet += 1;
+    skupiny.set(klic, s);
+  }
+
+  const viceSezon = new Set(noci.map(n => n.sezonaNazev)).size > 1;
+
+  return [...skupiny.values()]
+    .map(s => {
+      const typ = s.jeVikend ? 'víkendová noc' : 'všední noc';
+      const sezona = viceSezon ? ` – ${s.sezona}` : '';
+      return `${s.pocet}× ${typ} (${formatuj(s.cena)}/os${sezona})`;
+    })
+    .join(' + ');
+}

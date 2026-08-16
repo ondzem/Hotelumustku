@@ -1,13 +1,44 @@
 // Pricing Calculation Engine for Hotel u Můstku
+import {
+  rozpisNoci,
+  cenaZaOsobuNoc,
+  najdiSezonu,
+  popisRozpisu,
+  PRAZDNY_CENIK,
+} from './cenik.js';
+
 export const BANK_ACCOUNT = '293470312/0300';
 export const BANK_NAME = 'ČSOB';
-export const DEPOSIT_PERCENTAGE = 30; // 30 % záloha předem
 
-export const CITY_TAX_PER_ADULT_NIGHT = 20; // 20 Kč / dospělý / noc
-export const HALF_BOARD_PER_PERSON_NIGHT = 195; // 195 Kč / osoba / noc
-export const DOG_PER_DAY = 150; // 150 Kč / den
-export const EBIKE_PER_DAY = 15; // 15 Kč / den
-export const WINTER_PARKING_PER_CAR_NIGHT = 50; // 50 Kč / auto / noc v zimním období
+/**
+ * Výchozí hodnoty příplatků.
+ *
+ * Slouží jen jako záchrana, než se z databáze načte tabulka
+ * cenik_nastaveni — tam si je majitel mění sám v administraci.
+ * Čísla odpovídají ceníku na umustku.cz platnému od 1. 1. 2026.
+ */
+export const VYCHOZI_NASTAVENI = {
+  polopenze: 195,        // Kč / osoba / noc
+  pes: 150,              // Kč / noc
+  elektrokolo: 15,       // Kč / kus / den
+  zimni_parkovani: 50,   // Kč / auto / noc
+  priplatek_1_noc: 200,  // Kč / osoba, jen když je pobyt na jednu noc
+  mestsky_poplatek: 0,   // Kč / osoba / noc, 0 = zahrnuto v ceně
+  zaloha_procent: 30,    // % z celkové ceny
+};
+
+/** Vytáhne číslo z nastavení, s návratem k výchozí hodnotě. */
+function nast(nastaveni, klic) {
+  const v = Number(nastaveni && nastaveni[klic]);
+  return Number.isFinite(v) ? v : VYCHOZI_NASTAVENI[klic];
+}
+
+export const DEPOSIT_PERCENTAGE = VYCHOZI_NASTAVENI.zaloha_procent;
+export const CITY_TAX_PER_ADULT_NIGHT = VYCHOZI_NASTAVENI.mestsky_poplatek;
+export const HALF_BOARD_PER_PERSON_NIGHT = VYCHOZI_NASTAVENI.polopenze;
+export const DOG_PER_DAY = VYCHOZI_NASTAVENI.pes;
+export const EBIKE_PER_DAY = VYCHOZI_NASTAVENI.elektrokolo;
+export const WINTER_PARKING_PER_CAR_NIGHT = VYCHOZI_NASTAVENI.zimni_parkovani;
 
 /**
  * Single source of truth for Variable Symbol generation across Admin & QR codes
@@ -63,10 +94,18 @@ export function validateSystemDateIntegrity() {
 }
 
 /**
- * Calculates exact reservation pricing breakdown including dynamic Weekday vs Weekend per-night rates & 30% deposit
+ * Spočítá kompletní rozpis ceny rezervace.
+ *
+ * Ubytování se počítá po jednotlivých nocích: každá noc si sama najde
+ * svou sezónu a cenu podle kategorie pokoje a počtu osob. Díky tomu
+ * pobyt přes přelom sezón vyjde správně bez zvláštní obsluhy.
+ *
+ * Cena je vždy ZA OSOBU A NOC a s počtem lidí na pokoji klesá —
+ * tak, jak to má hotel ve svém ceníku.
  */
 export function calculateReservationPrice({
   roomType = 'standard', // 'standard' | 'nadstandard' | 'turisticky'
+  roomId = null,
   nights = 2,
   persons = 2,
   adults = 2,
@@ -80,103 +119,92 @@ export function calculateReservationPrice({
   ebikeCount = 1,
   hasWinterParking = false,
   parkingCarsCount = 1,
-  customBaseRate = null,
-  customWeekdayRate = null,
-  customWeekendRate = null,
+  cenik = PRAZDNY_CENIK,
+  nastaveni = null,
   discountObj = null,
 }) {
-  const defaultWeekdayRate = (roomType === 'nadstandard' || roomType === 'kat_a') ? 890 : 830;
-  const defaultWeekendRate = (roomType === 'nadstandard' || roomType === 'kat_a') ? 990 : 890;
-
-  const weekdayRate = customWeekdayRate !== null && customWeekdayRate !== undefined
-    ? Number(customWeekdayRate)
-    : (customBaseRate ? Number(customBaseRate) : defaultWeekdayRate);
-
-  const weekendRate = customWeekendRate !== null && customWeekendRate !== undefined
-    ? Number(customWeekendRate)
-    : Math.max(weekdayRate, defaultWeekendRate);
-
   const safeNights = Math.max(1, parseInt(nights) || 1);
   const totalGuests = Math.max(1, parseInt(persons || adults || 1));
+  const kategorie = (roomType === 'kat_a') ? 'nadstandard' : roomType;
 
-  // 1. Dynamic Per-Night Base Accommodation Calculation (Weekday vs. Weekend)
-  let weekdayNights = 0;
-  let weekendNights = 0;
-  let accommodationPrice = 0;
+  // 1. Ubytování po nocích — každá noc podle své sezóny
+  let noci = rozpisNoci({
+    dateFrom,
+    nights: safeNights,
+    roomId,
+    kategorie,
+    pocetOsob: totalGuests,
+    cenik,
+  });
 
-  if (dateFrom && dateTo) {
-    const startDate = new Date(dateFrom);
-    for (let i = 0; i < safeNights; i++) {
-      const nightDate = new Date(startDate);
-      nightDate.setDate(nightDate.getDate() + i);
-      if (isWeekendNight(nightDate)) {
-        weekendNights++;
-        accommodationPrice += weekendRate * totalGuests;
-      } else {
-        weekdayNights++;
-        accommodationPrice += weekdayRate * totalGuests;
-      }
-    }
-  } else {
-    // Default fallback when dates aren't selected yet
-    weekdayNights = safeNights;
-    accommodationPrice = weekdayRate * totalGuests * safeNights;
+  // Termín ještě není vybraný — ukaž alespoň orientační cenu
+  // podle dnešního data, ať formulář nesvítí nulami.
+  if (noci.length === 0) {
+    const dnes = new Date().toISOString().split('T')[0];
+    const sazba = cenaZaOsobuNoc({ datumStr: dnes, roomId, kategorie, pocetOsob: totalGuests, cenik });
+    noci = Array.from({ length: safeNights }, () => ({
+      datum: dnes,
+      jeVikend: false,
+      sezonaNazev: 'Základní ceník',
+      cenaZaOsobu: sazba,
+      zakladniCenaZaOsobu: sazba,
+      vikendovyPriplatek: 0,
+      cenaZaNoc: sazba * totalGuests,
+    }));
   }
 
-  let nightBreakdownLabel = '';
-  if (weekendNights > 0 && weekdayNights > 0) {
-    nightBreakdownLabel = `${weekendNights}× víkendová noc (${formatCzechPrice(weekendRate)}/noc) + ${weekdayNights}× týdenní noc (${formatCzechPrice(weekdayRate)}/noc)`;
-  } else if (weekendNights > 0) {
-    nightBreakdownLabel = `${weekendNights}× víkendová noc (${formatCzechPrice(weekendRate)}/noc)`;
-  } else {
-    nightBreakdownLabel = `${weekdayNights}× týdenní noc (${formatCzechPrice(weekdayRate)}/noc)`;
-  }
+  let accommodationPrice = noci.reduce((s, n) => s + n.cenaZaNoc, 0);
 
-  // 2. Single night & Single occupancy surcharge calculation:
-  let singleNightRatePerPerson = (roomType === 'nadstandard' || roomType === 'kat_a') ? 300 : 200;
+  const weekendNights = noci.filter(n => n.jeVikend).length;
+  const weekdayNights = noci.length - weekendNights;
+  const prvniVsedni = noci.find(n => !n.jeVikend);
+  const prvniVikend = noci.find(n => n.jeVikend);
+  const weekdayRate = prvniVsedni ? prvniVsedni.cenaZaOsobu : (noci[0] ? noci[0].cenaZaOsobu : 0);
+  const weekendRate = prvniVikend ? prvniVikend.cenaZaOsobu : weekdayRate;
+
+  const nightBreakdownLabel = popisRozpisu(noci, formatCzechPrice);
+  const sezonaAktualni = najdiSezonu(noci[0] ? noci[0].datum : (dateFrom || ''), cenik.sezony || []);
+
+  // 2. Příplatek za pobyt na jednu noc
+  //
+  //    Příplatek za sólo obsazení tu záměrně NENÍ. Dřív se připočítával
+  //    zvlášť, ale v novém ceníku je "1 osoba" vlastní sloupec, takže
+  //    by se stejná věc počítala dvakrát.
+  const singleNightRatePerPerson = nast(nastaveni, 'priplatek_1_noc');
   let singleNightSurchargeTotal = 0;
-  let surchargeReason = ''; // 'single_night' | 'single_occupancy' | 'both' | 'none'
+  let surchargeReason = 'none';
 
-  if (singleNightRatePerPerson > 0) {
-    if (safeNights === 1 && totalGuests === 1) {
-      singleNightSurchargeTotal = singleNightRatePerPerson * 1;
-      surchargeReason = 'both';
-    } else if (safeNights === 1) {
-      singleNightSurchargeTotal = singleNightRatePerPerson * totalGuests;
-      surchargeReason = 'single_night';
-    } else if (totalGuests === 1) {
-      singleNightSurchargeTotal = singleNightRatePerPerson * safeNights;
-      surchargeReason = 'single_occupancy';
-    }
-
-    if (singleNightSurchargeTotal > 0) {
-      accommodationPrice += singleNightSurchargeTotal;
-    }
+  if (singleNightRatePerPerson > 0 && safeNights === 1) {
+    singleNightSurchargeTotal = singleNightRatePerPerson * totalGuests;
+    surchargeReason = 'single_night';
+    accommodationPrice += singleNightSurchargeTotal;
   }
 
-  // 3. City Tax (Včetně v základní ceně ubytování)
-  const cityTax = 0;
+  // 3. Městský poplatek — ve výchozím nastavení 0, protože je v ceně
+  const cityTax = nast(nastaveni, 'mestsky_poplatek') * totalGuests * safeNights;
 
-  // 4. Granular Addons Calculation
+  // 4. Doplňkové služby
   const isWinter = isWinterSeason(dateFrom, dateTo);
   const safeHalfBoardCount = hasHalfBoard
     ? Math.min(totalGuests, Math.max(1, parseInt(halfBoardCount ?? totalGuests)))
     : totalGuests;
-  const halfBoardPriceTotal = hasHalfBoard ? safeHalfBoardCount * HALF_BOARD_PER_PERSON_NIGHT * safeNights : 0;
-  const dogPriceTotal = hasDog ? DOG_PER_DAY * safeNights : 0;
+  const halfBoardPriceTotal = hasHalfBoard
+    ? safeHalfBoardCount * nast(nastaveni, 'polopenze') * safeNights
+    : 0;
+  const dogPriceTotal = hasDog ? nast(nastaveni, 'pes') * safeNights : 0;
   const safeEbikeCount = hasEbike ? Math.max(1, parseInt(ebikeCount || 1)) : 1;
-  const ebikePriceTotal = hasEbike ? safeEbikeCount * EBIKE_PER_DAY * safeNights : 0;
+  const ebikePriceTotal = hasEbike ? safeEbikeCount * nast(nastaveni, 'elektrokolo') * safeNights : 0;
 
   const safeParkingCarsCount = (isWinter && hasWinterParking)
     ? Math.max(1, parseInt(parkingCarsCount || 1))
     : 1;
   const winterParkingPriceTotal = (isWinter && hasWinterParking)
-    ? safeParkingCarsCount * WINTER_PARKING_PER_CAR_NIGHT * safeNights
+    ? safeParkingCarsCount * nast(nastaveni, 'zimni_parkovani') * safeNights
     : 0;
 
   const addonsPrice = halfBoardPriceTotal + dogPriceTotal + ebikePriceTotal + winterParkingPriceTotal;
 
-  // 5. Subtotal & Discount Code Calculation (Sleva se počítá výhradně z ceny ubytování)
+  // 5. Mezisoučet a sleva (sleva se počítá výhradně z ceny ubytování)
   const subtotalPrice = accommodationPrice + cityTax + addonsPrice;
   let discountAmount = 0;
   let discountLabel = '';
@@ -194,11 +222,17 @@ export function calculateReservationPrice({
 
   const totalPrice = Math.max(0, subtotalPrice - discountAmount);
 
-  // 6. 30% Deposit & 70% Remaining
-  const depositPriceTotal = Math.round(totalPrice * (DEPOSIT_PERCENTAGE / 100));
+  // 6. Záloha předem a doplatek
+  const depositPercentage = nast(nastaveni, 'zaloha_procent');
+  const depositPriceTotal = Math.round(totalPrice * (depositPercentage / 100));
   const remainingPriceTotal = totalPrice - depositPriceTotal;
 
   return {
+    // nové údaje z ceníku
+    noci,
+    sezonaNazev: sezonaAktualni ? sezonaAktualni.nazev : 'Základní ceník',
+    cenaZaOsobuNoc: weekdayRate,
+
     baseRatePerPersonNight: weekdayRate,
     weekdayRate,
     weekendRate,
@@ -232,7 +266,7 @@ export function calculateReservationPrice({
     discountAmount,
     discountLabel,
     totalPrice,
-    depositPercentage: DEPOSIT_PERCENTAGE,
+    depositPercentage,
     depositPriceTotal,
     remainingPriceTotal,
     bankAccount: BANK_ACCOUNT,

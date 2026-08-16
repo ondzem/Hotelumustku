@@ -2,7 +2,8 @@ import './style.css';
 import './booking.css';
 import { BookingSystem } from './components/BookingSystem.js';
 import { AdminDashboard } from './components/AdminDashboard.js';
-import { getStoredRoomPrices, getStoredDisabledRooms, MOCK_ROOMS, saveContactMessage, getStoredNewsItems, getStoredReviews, saveStoredReview, formatGDPRName } from './lib/supabaseClient.js';
+import { getStoredRoomPrices, getStoredDisabledRooms, MOCK_ROOMS, saveContactMessage, getStoredNewsItems, getStoredReviews, saveStoredReview, formatGDPRName, getStoredCenik, fetchCenik } from './lib/supabaseClient.js';
+import { cenaZaOsobuNoc, maxOsobNaPokoji } from './utils/cenik.js';
 import { sendEmail, generateEmailContactNotification, generateEmailNewReviewNotification } from './utils/emailService.js';
 import { initScrollReveal } from './utils/scrollReveal.js';
 
@@ -20,24 +21,48 @@ export function syncCustomRoomNamesToDOM() {
 }
 window.syncCustomRoomNamesToDOM = syncCustomRoomNamesToDOM;
 
+/**
+ * Doplní na kartách pokojů cenu „od …“.
+ *
+ * Bere se nejnižší cena za osobu a noc, tedy sloupec pro plně
+ * obsazený pokoj — se snídaní. To odpovídá tomu, co host zaplatí,
+ * když přijede v největším počtu, a je to zároveň nejnižší číslo,
+ * jaké se ho může týkat.
+ */
 export function syncDynamicRoomPricesToDOM() {
+  const cenik = getStoredCenik();
   const roomPrices = getStoredRoomPrices();
-  const roomItems = document.querySelectorAll('.room-breakdown-item[data-room]');
-  roomItems.forEach(item => {
+  const dnes = new Date().toISOString().split('T')[0];
+
+  document.querySelectorAll('.room-breakdown-item[data-room]').forEach(item => {
     const roomId = item.dataset.room;
     const priceAmountEl = item.querySelector('.price-amount');
     if (!priceAmountEl || !roomId) return;
 
-    const customP = roomPrices.find(p => p.room_id === roomId);
-    let priceVal = null;
-    if (customP && (customP.weekday_price || customP.base_price)) {
-      priceVal = customP.weekday_price || customP.base_price;
-    } else {
-      const rmObj = MOCK_ROOMS.find(r => r.id === roomId);
-      if (rmObj && (rmObj.weekdayPrice || rmObj.basePrice)) priceVal = rmObj.weekdayPrice || rmObj.basePrice;
+    const rmObj = MOCK_ROOMS.find(r => r.id === roomId);
+    if (!rmObj) return;
+
+    const ulozene = roomPrices.find(p => p.room_id === roomId) || {};
+    const maxOsob = maxOsobNaPokoji({
+      zakladni_luzka: ulozene.zakladni_luzka != null ? ulozene.zakladni_luzka : rmObj.capacity,
+      max_pristylek: ulozene.max_pristylek != null ? ulozene.max_pristylek : rmObj.extraBeds,
+    });
+
+    // Projdi všechny možné počty osob a vezmi nejnižší cenu za osobu
+    let nejnizsi = null;
+    for (let osob = 1; osob <= maxOsob; osob++) {
+      const c = cenaZaOsobuNoc({
+        datumStr: dnes,
+        roomId,
+        kategorie: rmObj.type,
+        pocetOsob: osob,
+        cenik,
+      });
+      if (c > 0 && (nejnizsi === null || c < nejnizsi)) nejnizsi = c;
     }
-    if (priceVal) {
-      priceAmountEl.textContent = `od ${priceVal} Kč`;
+
+    if (nejnizsi) {
+      priceAmountEl.textContent = `od ${nejnizsi} Kč`;
     }
   });
 }
@@ -1008,7 +1033,7 @@ const getHomePageHTML = () => {
         data-hero-video
         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; background: transparent;"
       >
-        <source src="https://jpvnvjcktpxyxrvsdukm.supabase.co/storage/v1/object/public/hotel-videos/hero_final_v5.mp4" type="video/mp4">
+        <source src="/hotel_hero_video.mp4" type="video/mp4">
       </video>`;
 
   const aboutTopSrc = isWinter
@@ -1725,7 +1750,7 @@ export function setSeasonMode(mode, savePreference = true) {
         heroVideo.setAttribute('data-hero-video', '');
         heroVideo.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; background: transparent;';
         heroVideo.innerHTML = `
-          <source src="https://jpvnvjcktpxyxrvsdukm.supabase.co/storage/v1/object/public/hotel-videos/hero_final_v5.mp4" type="video/mp4">
+          <source src="/hotel_hero_video.mp4" type="video/mp4">
         `;
         homeHeroSection.insertBefore(heroVideo, homeHeroSection.firstChild);
       } else {
@@ -6008,6 +6033,13 @@ const route = (isInitial = false) => {
   syncCustomRoomNamesToDOM();
   syncDynamicRoomPricesToDOM();
   syncDisabledRoomsToDOM();
+
+  // Ceník se načte na pozadí; než dorazí, ukážou se ceny z minulé
+  // návštěvy, případně výchozí ceník ze souboru cenik.js — karty
+  // pokojů tak nikdy neblikají prázdnou cenou.
+  fetchCenik()
+    .then(() => syncDynamicRoomPricesToDOM())
+    .catch(() => {});
 
   // Automatické odskrolování na sekci Nabídka pokojů při přechodu z tlačítka Nabídka pokojů
   if (pageKey === 'rooms' && hash === '#pokoje-nabidka') {

@@ -1,4 +1,4 @@
-import { MOCK_ROOMS } from '../lib/supabaseClient.js';
+import { MOCK_ROOMS, getStoredCenik } from '../lib/supabaseClient.js';
 import { calculateReservationPrice, formatCzechPrice, getVariableSymbol } from './pricing.js';
 
 function formatCzechDateStr(dateStr) {
@@ -92,8 +92,13 @@ export function printReservationSheet(reservation) {
     name: reservation.room_name || 'Pokoj Hotel u Můstku'
   };
 
+  const cenikProTisk = getStoredCenik();
+
   const pricing = calculateReservationPrice({
-    roomType: reservation.room_id,
+    // Dřív se sem posílalo room_id místo kategorie pokoje, takže
+    // se cena počítala vždy podle standardu.
+    roomType: room.type || 'standard',
+    roomId: room.id,
     nights: reservation.nights_count || null,
     persons: reservation.adults_count || 1,
     adults: reservation.adults_count || 1,
@@ -105,7 +110,9 @@ export function printReservationSheet(reservation) {
     hasHalfBoard: reservation.has_half_board,
     halfBoardCount: reservation.half_board_count,
     hasWinterParking: reservation.has_winter_parking,
-    parkingCarsCount: reservation.parking_cars_count
+    parkingCarsCount: reservation.parking_cars_count,
+    cenik: cenikProTisk,
+    nastaveni: cenikProTisk.nastaveni
   });
 
   const printWindow = window.open('', '_blank', 'width=920,height=1100,scrollbars=yes,resizable=yes');
