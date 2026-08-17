@@ -11,7 +11,10 @@ export default defineConfig(({ mode }) => {
 
   return {
   server: {
-    port: 5173,
+    // Port jde přebít proměnnou PORT. Kvůli souběžné práci ve více
+    // pracovních kopiích (git worktree) — na 5173 běží jen ta první,
+    // ostatní by jinak nenastartovaly.
+    port: Number(process.env.PORT) || 5173,
     strictPort: true
   },
   build: {
