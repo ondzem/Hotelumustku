@@ -4834,9 +4834,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   position: relative;
   width: 100%;
   /* Fotky pokojů jsou 4:3. Strop šířky drží výšku snímku v rozumné
-     míře, aniž by se do poměru muselo sahat — jinak by se ořezával. */
+     míře, aniž by se do poměru muselo sahat — jinak by se ořezával.
+     Zarovnáno doleva: na širokém monitoru zbývá vpravo místo a snímek
+     na střed se rozchází se zbytkem formuláře, který začíná vlevo. */
   max-width: 760px;
-  margin: 0 auto;
+  margin-right: auto;
 }
 
 .booking-gallery-viewport {

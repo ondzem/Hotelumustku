@@ -201,6 +201,11 @@ Další věci, které tu byly rozbité a stojí za hlídání:
 - Oznamovací banner se vkládá do `document.body` funkcí
   `vlozOznameniDoStranky()`, ne do šablony patičky: načítá se až po
   vykreslení a na statických stránkách by chyběl úplně.
+- Zapnout ho jde zaškrtnutím **Připnout jako oznámení do boční záložky**
+  ve formuláři aktuality. Ta dvě pole (`is_banner`, `banner_text`)
+  z formuláře kdysi vypadla, i když se dál ukládala a vykreslovala —
+  banner tedy nešlo z administrace vůbec zapnout. Oznámení může být jen
+  jedno, zapnutí ho ostatním aktualitám vypne (řeší `saveStoredNewsItem`).
 
 ### 7. Migrace se spouštějí ručně
 
@@ -356,9 +361,15 @@ Nespoléhej na to, že změna vypadá správně v kódu. Osvědčené postupy:
   migrace v databázi proběhla (základní ceník + letní a zimní sezóna),
   uložení cen i termínu sezóny se propíše do Supabase a zkušební výpočet
   z něj počítá správně. Testovací data byla vrácena do původního stavu.
-- **Video na mobilu.** Stahuje se i tam. Nabízí se ukázat na mobilu jen
-  fotku a video nespouštět. Vyžaduje zásah do `preload`/`autoplay`,
-  takže se to musí ověřit v prohlížeči.
+- ~~**Video na mobilu.**~~ Vyřešeno 17. 8. 2026. `autoplay` přebíjelo
+  `preload="none"` a 4,7 MB se stahovalo hned — na mobilu tím video
+  ubíralo pásmo dotazům do databáze a obsazenost v kalendáři naskakovala
+  se zpožděním. Adresa je teď v `data-src` a video pouští
+  `spustHeroVideo()` v `main.js`: na displeji užším než 768 px a při
+  úsporném nebo pomalém připojení (`saveData`, 2G/3G) se nespustí vůbec,
+  jinak až po `load`. Kdo mění hero sekci, musí to udržet na třech
+  místech — `index.html`, šablona v `main.js` a vytváření videa
+  při přepnutí sezóny.
 - **Texty v `podminky.html`** obsahují údaje, které nikdo nepotvrdil
   (mimo jiné kamery u parkoviště). Majitel je má projít.
 - ~~**Aktuality nespolehlivé.**~~ Opraveno 17. 8. 2026, viz oddíl 6b.

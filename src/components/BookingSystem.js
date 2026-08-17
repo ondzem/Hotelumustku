@@ -1,8 +1,7 @@
-import { MOCK_ROOMS, isSupabaseConfigured, supabase, getStoredReservations, saveStoredReservation, sanitizeReservationForSupabase, getStoredBlockedDates, getStoredDiscountCodes, getStoredRoomPrices, getStoredDisabledRooms, getStoredCenik, fetchCenik, getDeviceRedeemedDiscountCodes, markDiscountCodeRedeemedOnDevice, incrementDiscountCodeUsage } from '../lib/supabaseClient.js';
+import { MOCK_ROOMS, isSupabaseConfigured, supabase, getStoredReservations, saveStoredReservation, sanitizeReservationForSupabase, getStoredBlockedDates, getStoredDiscountCodes, getStoredRoomPrices, getStoredDisabledRooms, getStoredCenik, fetchCenik, fetchRoomPrices, getDeviceRedeemedDiscountCodes, markDiscountCodeRedeemedOnDevice, incrementDiscountCodeUsage } from '../lib/supabaseClient.js';
 import { calculateReservationPrice, generateReservationCode, generateManageToken, BANK_ACCOUNT, BANK_NAME, formatCzechPrice, validateSystemDateIntegrity, isWinterSeason, VYCHOZI_NASTAVENI } from '../utils/pricing.js';
 import { maxOsobNaPokoji, obdobiSOmezenouDostupnosti } from '../utils/cenik.js';
 import { sendEmail, generateEmail1RequestReceived, generateEmail1ReceptionNotification } from '../utils/emailService.js';
-import { checkAndProcessExpiredUnpaidReservations } from '../utils/reservationExpiryService.js';
 import { fotkyPokoje } from '../utils/roomGalleries.js';
 
 function getTodayDateString() {
@@ -166,7 +165,57 @@ export class BookingSystem {
     }
   }
 
+  /**
+   * Zapamatuje si rozdělaný výběr, aby o něj host nepřišel.
+   *
+   * Typický případ: vybere termín a pokoj, klikne na „Detaily pokoje“,
+   * přečte si je na stránce Ubytování a vrátí se zpátky. Bez tohohle
+   * by musel termín i pokoj vybírat znovu — jen za to, že se chtěl
+   * podívat. Sezení, ne trvalé úložiště: příště má začít načisto.
+   */
+  ulozVyberDoSezeni() {
+    try {
+      sessionStorage.setItem('hotel_rozdelana_rezervace', JSON.stringify({
+        dateFrom: this.state.dateFrom,
+        dateTo: this.state.dateTo,
+        adults: this.state.adults,
+        selectedRoomId: this.state.selectedRoomId,
+        ulozeno: Date.now(),
+      }));
+    } catch { /* soukromý režim prohlížeče — bez zapamatování, ale bez pádu */ }
+  }
+
+  nactiVyberZeSezeni() {
+    try {
+      const raw = sessionStorage.getItem('hotel_rozdelana_rezervace');
+      if (!raw) return null;
+      const v = JSON.parse(raw);
+      // Po dvou hodinách už to není „vrátil se z detailu“, ale nová návštěva.
+      if (!v || !v.ulozeno || Date.now() - v.ulozeno > 2 * 60 * 60 * 1000) return null;
+      // Termín v minulosti nemá cenu obnovovat.
+      if (v.dateFrom && v.dateFrom < getTodayDateString()) return null;
+      return v;
+    } catch {
+      return null;
+    }
+  }
+
   async init(initialRoomId, openCalendar) {
+    const zapamatovane = this.nactiVyberZeSezeni();
+    if (zapamatovane) {
+      if (zapamatovane.dateFrom && zapamatovane.dateTo) {
+        this.state.dateFrom = zapamatovane.dateFrom;
+        this.state.dateTo = zapamatovane.dateTo;
+      }
+      if (zapamatovane.adults) this.state.adults = zapamatovane.adults;
+      // Pokoj z adresy (proklik „Zvolit pokoj“) má přednost před
+      // zapamatovaným — host právě řekl, který chce.
+      if (!initialRoomId && zapamatovane.selectedRoomId
+          && this.roomsList.some(r => r.id === zapamatovane.selectedRoomId)) {
+        this.state.selectedRoomId = zapamatovane.selectedRoomId;
+      }
+    }
+
     if (initialRoomId && this.roomsList.some(r => r.id === initialRoomId)) {
       if (this.hasValidDates()) {
         this.state.selectedRoomId = initialRoomId;
@@ -193,26 +242,34 @@ export class BookingSystem {
 
     this.render();
 
-    try {
-      await Promise.allSettled([
-        this.fetchActiveReservations(),
-        this.fetchBlockedDates(),
-        this.fetchDisabledRooms(),
-        this.fetchDiscountCodes(),
-        this.fetchRoomPrices(),
-        this.fetchCenik()
-      ]);
-    } catch (err) {
-      console.error('BookingSystem init fetch error:', err);
-    }
+    // Obsazenost kalendáře se dotahuje zvlášť a překreslí se hned, jak dorazí.
+    // Dřív se čekalo na všech šest dotazů najednou (včetně ceníku, který sám
+    // dělá čtyři), takže vybarvená políčka naskočila až po několika vteřinách
+    // a host mezitím klikal do kalendáře, který vypadal celý volný.
+    const dostupnost = Promise.allSettled([
+      this.fetchActiveReservations(),
+      this.fetchBlockedDates(),
+      this.fetchDisabledRooms(),
+    ]).then(() => this.render())
+      .catch(err => console.error('BookingSystem availability fetch error:', err));
+
+    const zbytek = Promise.allSettled([
+      this.fetchDiscountCodes(),
+      this.fetchRoomPrices(),
+      this.fetchCenik()
+    ]).catch(err => console.error('BookingSystem init fetch error:', err));
+
+    await dostupnost;
 
     if (openCalendar && !this.hasValidDates()) {
       this.state.showCalendarModal = true;
       this.state.tempDateFrom = null;
       this.state.tempDateTo = null;
       this.state.selectingStep = 1;
+      this.render();
     }
 
+    await zbytek;
     this.render();
   }
 
@@ -277,18 +334,15 @@ export class BookingSystem {
   }
 
   async fetchRoomPrices() {
-    if (isSupabaseConfigured && supabase) {
-      try {
-        const { data, error } = await supabase.from('room_prices').select('*');
-        if (!error && data) {
-          this.roomPrices = data;
-          return;
-        }
-      } catch (err) {
-        console.error('Fetch room prices error:', err);
-      }
+    // Přes společnou funkci, ne vlastním dotazem — stránku načítají karty
+    // pokojů i formulář naráz a takhle se z toho stane jeden dotaz.
+    try {
+      const data = await fetchRoomPrices();
+      this.roomPrices = Array.isArray(data) ? data : getStoredRoomPrices();
+    } catch (err) {
+      console.error('Fetch room prices error:', err);
+      this.roomPrices = getStoredRoomPrices();
     }
-    this.roomPrices = getStoredRoomPrices();
   }
 
   async applyDiscountCode(inputCode) {
@@ -396,17 +450,17 @@ export class BookingSystem {
   }
 
   async fetchActiveReservations() {
-    try {
-      await checkAndProcessExpiredUnpaidReservations();
-    } catch (e) {
-      console.error('Error running expiry check in BookingSystem:', e);
-    }
-
+    // Kontrola prošlých lhůt tu schválně NEBĚŽÍ. Dělala dvě věci, které do
+    // prohlížeče hosta nepatří: předřadila kalendáři další dotaz do databáze
+    // (obsazenost se tím načítala dvakrát tak dlouho) a rozesílala stornovací
+    // e-maily z návštěvníkova zařízení. Běží v administraci (AdminDashboard).
     if (isSupabaseConfigured && supabase) {
       try {
+        // Jen sloupce potřebné pro obsazenost — jména, e-maily a telefony
+        // hostů nemá cizí prohlížeč proč stahovat.
         const { data, error } = await supabase
           .from('reservations')
-          .select('*')
+          .select('room_id,date_from,date_to,status')
           .not('status', 'in', '("cancelled","cancelled_unpaid","stornováno")');
         if (!error && data) {
           this.activeReservations = data;
@@ -1213,6 +1267,10 @@ export class BookingSystem {
 
   render() {
     if (!this.container) return;
+
+    // Výběr se ukládá při každém překreslení — pokrývá to změnu termínu,
+    // pokoje i počtu osob bez zvláštní obsluhy u každého ovládacího prvku.
+    this.ulozVyberDoSezeni();
 
     if (this.state.showCalendarModal) {
       document.documentElement.style.overflow = 'hidden';

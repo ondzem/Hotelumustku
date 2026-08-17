@@ -501,7 +501,24 @@ export const getStoredRoomPrices = () => {
  * Volá se na začátku každé stránky, výsledek se rovnou uloží do zálohy,
  * takže při další návštěvě jsou správná data k dispozici hned.
  */
+/**
+ * Rozdělaný dotaz, aby se souběžná volání spojila do jednoho.
+ *
+ * Stránku s rezervací načítají dva kusy kódu naráz — karty pokojů z main.js
+ * a rezervační formulář — a každý si tahal svoje. Prohlížeč tak posílal
+ * stejný dotaz dvakrát a na mobilu se o pásmo prala i další data.
+ * Drží se jen po dobu běhu dotazu, takže pozdější volání (třeba
+ * v administraci po uložení) dostane vždy čerstvá data.
+ */
+let rozdelanePokoje = null;
+
 export const fetchRoomPrices = async () => {
+  if (rozdelanePokoje) return rozdelanePokoje;
+  rozdelanePokoje = nactiPokoje().finally(() => { rozdelanePokoje = null; });
+  return rozdelanePokoje;
+};
+
+const nactiPokoje = async () => {
   if (!isSupabaseConfigured || !supabase) return getStoredRoomPrices();
 
   try {
@@ -1532,7 +1549,17 @@ export const saveStoredCenik = (cenik) => {
  * z prohlížeče. Výpočet pak sáhne po výchozích cenách v cenik.js,
  * takže rezervace funguje dál — jen podle základního ceníku.
  */
+// Stejný důvod jako u fetchRoomPrices — ceník si naráz říkají dvě místa
+// a jde o čtyři dotazy, takže se jich zbytečně posílalo osm.
+let rozdelanyCenik = null;
+
 export const fetchCenik = async () => {
+  if (rozdelanyCenik) return rozdelanyCenik;
+  rozdelanyCenik = nactiCenik().finally(() => { rozdelanyCenik = null; });
+  return rozdelanyCenik;
+};
+
+const nactiCenik = async () => {
   if (!isSupabaseConfigured || !supabase) {
     return getStoredCenik();
   }

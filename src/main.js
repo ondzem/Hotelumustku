@@ -999,17 +999,16 @@ const getHomePageHTML = () => {
         <source media="(max-width: 767px)" srcset="/uvodni_hero_sekce_mobile.webp">
         <img class="hero-summer-poster" src="/uvodni_hero_sekce.webp" alt="Pohled na budovu Hotelu U Můstků se skokanskými můstky v pozadí" fetchpriority="high" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
       </picture>
-       <video 
-        class="hero-video" 
-        autoplay 
-        muted 
-        loop 
-        playsinline 
-        preload="none" 
+      <video
+        class="hero-video"
+        muted
+        loop
+        playsinline
+        preload="none"
         data-hero-video
         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; background: transparent;"
       >
-        <source src="/hotel_hero_video.mp4" type="video/mp4">
+        <source data-src="/hotel_hero_video.mp4" type="video/mp4">
       </video>`;
 
   const aboutTopSrc = isWinter
@@ -1620,6 +1619,56 @@ export function getInitialSeasonMode() {
   return 'winter'; // Listopad až Březen
 }
 
+/**
+ * Spustí úvodní video, ale až když už nikomu nepřekáží.
+ *
+ * Má 4,7 MB. S atributem `autoplay` si ho prohlížeč stahoval hned při
+ * načtení stránky (autoplay přebíjí `preload="none"`) a na mobilním
+ * připojení tím zdržel dotazy do databáze — obsazenost v kalendáři pak
+ * naskočila i po několika vteřinách. Proto:
+ *   • na úzkých displejích a při úsporném nebo pomalém připojení se video
+ *     nestahuje vůbec a zůstane úvodní fotka,
+ *   • jinak se pouští až po dokončení načtení stránky.
+ */
+export function spustHeroVideo() {
+  const video = document.querySelector('.hero-video[data-hero-video]');
+  if (!video || video.dataset.spusteno === '1') return;
+
+  const zdroj = video.querySelector('source[data-src]');
+  if (!zdroj) {
+    // Zdroj už je nastavený z dřívějška, stačí přehrát.
+    video.play().catch(() => { });
+    return;
+  }
+
+  const nastartuj = () => {
+    if (video.dataset.spusteno === '1') return;
+
+    // Rozhoduje se až tady, ne při volání funkce: při prvním průchodu ještě
+    // nemusí být hotové rozvržení a innerWidth vrací 0, což by video vypnulo
+    // i na velké obrazovce. Nula proto znamená „nevím“, ne mobil.
+    const sirka = window.innerWidth || document.documentElement.clientWidth || 0;
+    const sit = navigator.connection || {};
+    const pomaleNeboUsporne = Boolean(sit.saveData)
+      || ['slow-2g', '2g', '3g'].includes(sit.effectiveType);
+    if ((sirka > 0 && sirka < 768) || pomaleNeboUsporne) return;
+
+    video.dataset.spusteno = '1';
+    zdroj.src = zdroj.dataset.src;
+    zdroj.removeAttribute('data-src');
+    video.load();
+    video.play().catch(() => { });
+  };
+
+  // setTimeout, ne requestIdleCallback — na pozadí je rAF/idle zmrazený
+  // a video by se pak nespustilo vůbec.
+  if (document.readyState === 'complete') {
+    setTimeout(nastartuj, 400);
+  } else {
+    window.addEventListener('load', () => setTimeout(nastartuj, 400), { once: true });
+  }
+}
+
 let deferredPreloadTimer = null;
 
 export function scheduleInactiveSeasonPreload(activeMode) {
@@ -1718,21 +1767,20 @@ export function setSeasonMode(mode, savePreference = true) {
       if (!heroVideo) {
         heroVideo = document.createElement('video');
         heroVideo.className = 'hero-video';
-        heroVideo.autoplay = true;
         heroVideo.muted = true;
         heroVideo.loop = true;
         heroVideo.playsInline = true;
-        heroVideo.setAttribute('fetchpriority', 'high');
+        heroVideo.preload = 'none';
         heroVideo.setAttribute('data-hero-video', '');
         heroVideo.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; background: transparent;';
         heroVideo.innerHTML = `
-          <source src="/hotel_hero_video.mp4" type="video/mp4">
+          <source data-src="/hotel_hero_video.mp4" type="video/mp4">
         `;
         homeHeroSection.insertBefore(heroVideo, homeHeroSection.firstChild);
       } else {
         heroVideo.style.display = 'block';
-        heroVideo.play().catch(() => { });
       }
+      spustHeroVideo();
     }
   }
 
@@ -6019,6 +6067,7 @@ const route = (isInitial = false) => {
   syncDynamicRoomPricesToDOM();
   syncDisabledRoomsToDOM();
   vlozOznameniDoStranky();
+  spustHeroVideo();
 
   // Ceník i pokoje se načtou na pozadí; než dorazí, ukážou se data
   // z minulé návštěvy, případně výchozí ceník ze souboru cenik.js —
