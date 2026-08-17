@@ -2378,10 +2378,21 @@ const initInteractivity = () => {
       }
       const alertArea = document.getElementById('review-modal-alert-area');
       if (alertArea) alertArea.innerHTML = '';
+      // Po zavření se poděkování uklidí a formulář se zase odkryje,
+      // ať jde napsat další recenzi bez obnovení stránky.
+      if (reviewForm) {
+        reviewForm.querySelectorAll('.review-success-wrapper').forEach(el => el.remove());
+        const telo = reviewForm.querySelector('.review-modal-body');
+        const pata = reviewForm.querySelector('.review-modal-footer');
+        if (telo) telo.hidden = false;
+        if (pata) pata.hidden = false;
+      }
       const submitBtn = document.getElementById('btn-submit-review');
       if (submitBtn) {
         submitBtn.disabled = false;
         delete submitBtn.dataset.hasSubmitted;
+        submitBtn.style.opacity = '';
+        submitBtn.style.cursor = '';
         submitBtn.innerHTML = '<span>Odeslat recenzi →</span>';
       }
       if (reviewForm) {
@@ -2533,22 +2544,33 @@ const initInteractivity = () => {
         console.warn('E-mail notification failed:', err);
       }
 
-      if (submitBtn) {
-        submitBtn.innerHTML = '<span>Napsat novou recenzi</span>';
-        submitBtn.disabled = false;
-        submitBtn.style.opacity = '';
-        submitBtn.style.cursor = 'pointer';
-        submitBtn.dataset.hasSubmitted = 'true';
-      }
+      // Místo proužku s hláškou se okno promění v poděkování s dokreslovaným
+      // zaškrtnutím — stejně jako u kontaktního formuláře. Pole se jen skryjí,
+      // nemažou: kdyby se formulář přepsal, přišel by o navěšenou obsluhu
+      // a po zavření okna už by nešel použít podruhé.
+      const telo = reviewForm.querySelector('.review-modal-body');
+      const pata = reviewForm.querySelector('.review-modal-footer');
+      if (telo) telo.hidden = true;
+      if (pata) pata.hidden = true;
 
-      if (alertArea) {
-        alertArea.innerHTML = `
-          <div style="background-color: #edf2e4; color: #4a5a24; border-left: 4px solid #697947; padding: 16px; border-radius: 4px; font-size: 14px; line-height: 1.5; margin-bottom: 16px;">
-            ✅ <strong>Děkujeme! Vaše recenze byla odeslána.</strong><br>
-            Vaše hodnocení pod jménem <strong>${gdprName}</strong> jsme přijali. Moc si vaší zpětné vazby vážíme.
+      reviewForm.insertAdjacentHTML('beforeend', `
+        <div class="review-success-wrapper">
+          <div class="success-checkmark-circle">
+            <svg class="checkmark-svg" viewBox="0 0 52 52" aria-hidden="true">
+              <circle class="checkmark-circle-path" cx="26" cy="26" r="23" fill="none" stroke="#5c6748" stroke-width="2.5" />
+              <path class="checkmark-check-path" fill="none" stroke="#5c6748" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+            </svg>
           </div>
-        `;
-      }
+          <h3 class="success-title">Děkujeme za vaši recenzi!</h3>
+          <p class="success-desc">Vaše hodnocení pod jménem <strong>${gdprName}</strong> jsme v pořádku přijali. Moc si vaší zpětné vazby vážíme — pomůže ostatním hostům i nám.</p>
+          <div class="success-action-wrap">
+            <button type="button" id="btn-close-review-success" class="btn btn-booking-submit">Zavřít</button>
+          </div>
+        </div>
+      `);
+
+      const zavrit = document.getElementById('btn-close-review-success');
+      if (zavrit) zavrit.addEventListener('click', () => toggleReviewModal(false));
 
       reviewForm.dataset.isSubmitting = 'false';
     });
@@ -4824,7 +4846,55 @@ const getContactPageHTML = () => `
       </div>
     </section>
 
-    <!-- 4. JAK SE K NÁM DOSTAT? -->
+    <!-- 4. O NÁS -->
+    <section class="contact-about-section" id="o-nas">
+      <div class="contact-about-inner">
+        <div class="contact-about-grid" data-anim-group>
+          <!-- Fotka majitelů -->
+          <figure class="contact-about-figure" data-anim="up">
+            <img src="/spravce-foto.webp" alt="Majitelé horského hotelu u Můstků před vchodem do hotelu v Desné" class="contact-about-photo" width="1050" height="1500" loading="lazy" decoding="async">
+            <figcaption class="contact-about-caption">Majitelé hotelu u Můstků, kteří ho vedou osobně</figcaption>
+          </figure>
+
+          <!-- Text -->
+          <div class="contact-about-text">
+            <span class="contact-about-eyebrow" data-anim="up">O nás</span>
+            <h2 class="contact-about-title" data-anim="up">Hory jsou pro nás poslání, ne jen podnikání</h2>
+
+            <p class="contact-about-p" data-anim="up">
+              Horský hotel u Můstků stojí v Desné v Jizerských horách, v údolí Bílé Desné a pár kroků od areálu skokanských můstků. Vedeme ho sami a osobně — bez anonymní recepce a bez pravidel vymyšlených někým v centrále. Hory jsou pro nás krásné, i když počasí tu umí být nevyzpytatelné, a naši práci bereme spíš jako poslání než jako způsob, jak zbohatnout.
+            </p>
+            <p class="contact-about-p" data-anim="up">
+              Chceme, aby se u nás hosté při odpočinku na horách cítili jako doma. Vaříme poctivou domácí kuchyni z čerstvých surovin, snídani podáváme formou bufetu a večer se dá posedět u krbu v hotelové restauraci. Podle počasí poradíme, kam se vydat, a když nemáte auto, odvoz pomůžeme zařídit.
+            </p>
+            <p class="contact-about-p" data-anim="up">
+              Největší odměnou je pro nás spokojený host, který se rád vrací — ať už je to sportovně založená rodina, parta cyklistů, turisté, nebo manželé, kteří u nás našli klid. Přijeďte pobýt, těšíme se na vás.
+            </p>
+
+            <ul class="contact-about-facts" data-anim="up">
+              <li class="contact-about-fact">
+                <span class="contact-about-fact-value">554 m n. m.</span>
+                <span class="contact-about-fact-label">v CHKO Jizerské hory, v údolí Bílé Desné</span>
+              </li>
+              <li class="contact-about-fact">
+                <span class="contact-about-fact-value">106 km z Prahy</span>
+                <span class="contact-about-fact-label">sjezdovky Tanvaldský Špičák i Černá Říčka do deseti minut autem</span>
+              </li>
+              <li class="contact-about-fact">
+                <span class="contact-about-fact-value">Vlastní restaurace s krbem</span>
+                <span class="contact-about-fact-label">domácí kuchyně, snídaně formou bufetu, večer posezení u ohně</span>
+              </li>
+              <li class="contact-about-fact">
+                <span class="contact-about-fact-value">Cyklostezka za dveřmi</span>
+                <span class="contact-about-fact-label">trasa Járy Cimrmana č. 3019 vede přímo kolem hotelu</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. JAK SE K NÁM DOSTAT? -->
     <section class="contact-directions-section">
       <div class="contact-directions-inner">
         <h2 class="directions-main-title" data-anim="up">Jak se k nám dostat?</h2>

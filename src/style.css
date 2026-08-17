@@ -11370,6 +11370,151 @@ html.is-route-loading #app {
   margin: 0;
 }
 
+/* 4b. Sekce O nás na stránce Kontakt
+   Krémové pozadí ji odděluje od bílého formuláře nad ní i od šedé sekce
+   Jak se k nám dostat pod ní — jinak by tři bloky splynuly v jeden. */
+.contact-about-section {
+  width: 100%;
+  background-color: #ece8dd;
+  padding: clamp(55px, 11.1vh, 100px) 0;
+}
+
+.contact-about-inner {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 48px;
+  box-sizing: border-box;
+}
+
+.contact-about-grid {
+  display: grid;
+  grid-template-columns: minmax(240px, 330px) 1fr;
+  gap: 64px;
+  align-items: start;
+}
+
+.contact-about-figure {
+  margin: 0;
+}
+
+/* Fotka je na výšku (1050 × 1500). Poměr se drží ořezem, ne deformací,
+   a šířka ji zároveň drží na rozumné výšce — přes celou obrazovku by
+   sekci roztáhla a text vedle ní by zůstal viset nahoře. */
+.contact-about-photo {
+  display: block;
+  width: 100%;
+  aspect-ratio: 7 / 10;
+  object-fit: cover;
+  object-position: center 30%;
+  border-radius: 2px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.10);
+}
+
+.contact-about-caption {
+  margin: 14px 0 0 0;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13.5px;
+  color: #6b6b60;
+  line-height: 1.5;
+}
+
+.contact-about-eyebrow {
+  display: block;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #697947;
+  margin-bottom: 14px;
+}
+
+.contact-about-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(28px, 2.8vw, 38px);
+  font-weight: 700;
+  color: #1c1c19;
+  line-height: 1.2;
+  margin: 0 0 28px 0;
+  max-width: 18em;
+}
+
+.contact-about-p {
+  font-size: 16px;
+  color: #55554e;
+  line-height: 1.7;
+  margin: 0 0 18px 0;
+  max-width: 62ch;
+}
+
+.contact-about-p:last-of-type {
+  margin-bottom: 0;
+}
+
+.contact-about-facts {
+  list-style: none;
+  margin: 34px 0 0 0;
+  padding: 26px 0 0 0;
+  border-top: 1px solid #d9d4c4;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px 40px;
+}
+
+.contact-about-fact {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.contact-about-fact-value {
+  font-family: 'Outfit', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: #1c1c19;
+}
+
+.contact-about-fact-label {
+  font-size: 14.5px;
+  color: #6b6b60;
+  line-height: 1.5;
+}
+
+@media (max-width: 1024px) {
+  .contact-about-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  .contact-about-figure {
+    max-width: 300px;
+  }
+
+  .contact-about-inner {
+    padding: 0 32px;
+  }
+}
+
+@media (max-width: 768px) {
+  .contact-about-section {
+    padding: 60px 0;
+  }
+
+  .contact-about-inner {
+    padding: 0 20px;
+  }
+
+  .contact-about-figure {
+    max-width: 260px;
+  }
+
+  .contact-about-facts {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+}
+
 /* 5. Sekce Mapa */
 .contact-map-section {
   width: 100%;
@@ -13438,6 +13583,14 @@ input:checked + .cookie-slider:before {
   transform: scale(1.15);
 }
 
+
+/* Atribut hidden musí přebít display:flex níže — jinak zůstane patička
+   s tlačítky viset i nad poděkováním po odeslání recenze. */
+.review-modal-body[hidden],
+.review-modal-footer[hidden] {
+  display: none !important;
+}
+
 .review-modal-footer {
   padding: 16px 24px;
   border-top: 1px solid #E7E5DC;
@@ -14083,4 +14236,37 @@ html.anim-ready .review-card[data-anim].is-in {
   font-weight: 500;
   font-style: italic;
   opacity: 1;
+}
+
+/* Poděkování po odeslání recenze — stejná animace zaškrtnutí jako
+   u kontaktního formuláře, jen vycentrovaná do okna. */
+.review-success-wrapper {
+  padding: 48px 32px 44px 32px;
+  text-align: center;
+  animation: fadeInSuccess 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.review-success-wrapper .success-checkmark-circle {
+  margin: 0 auto 22px auto;
+}
+
+.review-success-wrapper .success-title {
+  text-align: center;
+  font-size: 23px;
+  margin-bottom: 10px;
+}
+
+.review-success-wrapper .success-desc {
+  text-align: center;
+  margin: 0 auto;
+  max-width: 400px;
+}
+
+.review-success-wrapper .success-action-wrap {
+  margin-top: 28px;
+}
+
+.review-success-wrapper .btn-booking-submit {
+  min-width: 160px;
+  height: 44px;
 }
