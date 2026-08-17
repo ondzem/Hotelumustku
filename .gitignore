@@ -34,3 +34,4 @@ supabase-IMPORT-dat.sql
 # Pracovní soubory nástrojů
 agentdb.rvf
 agentdb.rvf.lock
+.netlify/

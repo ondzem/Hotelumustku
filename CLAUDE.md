@@ -85,11 +85,20 @@ nic. Přesně tahle chyba tu už jednou byla.
 V administraci se obsluze zobrazuje rozsah **včetně** posledního dne
 (funkce `zobrazRozsahBlokace`), aby to dávalo lidský smysl.
 
-### 3. `npm run build` neběží v Linuxu
+### 3. `npm run build` neběží v Linuxu — a proto ani na Netlify
 
 Vite používá `rolldown`, jehož nativní binárka je jen pro macOS. V
 kontejneru nebo na Linuxu build spadne. Ověřuj změny přes `npm run dev`
-a v prohlížeči; finální build spouští uživatel u sebe.
+a v prohlížeči.
+
+**Nasazení NIKDY nespouštět buildem na Netlify.** Jejich server (Linux)
+17\. 8\. 2026 postavil a publikoval nesestavený repozitář — web pak
+odkazoval na `/src/main.js`, který na produkci neexistuje, a stránky
+byly rozbité. Auto-deploy z GitHubu proto zůstává vypnutý (GitHub
+aplikace Netlify nemá k repozitáři přístup — nedávat jí ho).
+
+Nasazuje se výhradně lokálním buildem přes `./nasadit.sh` — pushne na
+GitHub, sestaví web a nahraje hotový `dist` i serverové funkce.
 
 ### 4. Ceny se počítají za osobu a noc, ne za pokoj
 
