@@ -85,20 +85,21 @@ nic. Přesně tahle chyba tu už jednou byla.
 V administraci se obsluze zobrazuje rozsah **včetně** posledního dne
 (funkce `zobrazRozsahBlokace`), aby to dávalo lidský smysl.
 
-### 3. `npm run build` neběží v Linuxu — a proto ani na Netlify
+### 3. Build na Netlify stojí na `netlify.toml`
 
-Vite používá `rolldown`, jehož nativní binárka je jen pro macOS. V
-kontejneru nebo na Linuxu build spadne. Ověřuj změny přes `npm run dev`
-a v prohlížeči.
+Nastavení buildu je schválně v `netlify.toml` v repozitáři, ne jen
+v Netlify. Při přepojení repozitáře 17. 8. 2026 se totiž v jejich
+rozhraní vymazal build příkaz i publikovaná složka a Netlify publikoval
+**nesestavený repozitář** — web odkazoval na `/src/main.js`, který na
+produkci neexistuje, a stránky byly rozbité. Soubor v repozitáři tohle
+přežije, nastavení v rozhraní ne.
 
-**Nasazení NIKDY nespouštět buildem na Netlify.** Jejich server (Linux)
-17\. 8\. 2026 postavil a publikoval nesestavený repozitář — web pak
-odkazoval na `/src/main.js`, který na produkci neexistuje, a stránky
-byly rozbité. Auto-deploy z GitHubu proto zůstává vypnutý (GitHub
-aplikace Netlify nemá k repozitáři přístup — nedávat jí ho).
+Build na jejich Linuxu proběhne v pořádku — `package-lock.json` obsahuje
+i linuxové binárky rolldownu. (Dřívější poznámka, že build mimo macOS
+spadne, už neplatí.)
 
-Nasazuje se výhradně lokálním buildem přes `./nasadit.sh` — pushne na
-GitHub, sestaví web a nahraje hotový `dist` i serverové funkce.
+Nasadit ručně, bez čekání na Netlify, jde přes `./nasadit.sh` — pushne
+na GitHub, sestaví web lokálně a nahraje hotový `dist` i funkce.
 
 ### 4. Ceny se počítají za osobu a noc, ne za pokoj
 
