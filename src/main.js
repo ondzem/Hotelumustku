@@ -2278,8 +2278,11 @@ const initInteractivity = () => {
 
           <form id="add-review-form" class="review-modal-form" novalidate>
             <div class="review-modal-body">
+              <!-- O schvalování recepcí se hostovi schválně nepíše. Kontrola
+                   slouží jen na vulgarity a spam, ale zmínka o schvalování
+                   budí dojem, že si hotel vybírá jen pochvalné recenze. -->
               <p class="review-modal-subtitle">
-                Vaše zkušenost pomůže ostatním hostům. Po odeslání bude recenze schválena recepcí a následně zveřejněna.
+                Vaše zkušenost pomůže ostatním hostům při výběru ubytování. Napište klidně i to, co se vám nelíbilo — pomůže nám to zlepšit se.
               </p>
 
               <div id="review-modal-alert-area"></div>
@@ -2309,7 +2312,7 @@ const initInteractivity = () => {
             <div class="review-modal-footer">
               <button type="button" class="btn btn-specs-secondary" id="btn-cancel-review-modal">Zrušit</button>
               <button type="submit" class="btn btn-booking-submit" id="btn-submit-review">
-                <span>Odeslat recenzi ke schválení →</span>
+                <span>Odeslat recenzi →</span>
               </button>
             </div>
           </form>
@@ -2379,7 +2382,7 @@ const initInteractivity = () => {
       if (submitBtn) {
         submitBtn.disabled = false;
         delete submitBtn.dataset.hasSubmitted;
-        submitBtn.innerHTML = '<span>Odeslat recenzi ke schválení →</span>';
+        submitBtn.innerHTML = '<span>Odeslat recenzi →</span>';
       }
       if (reviewForm) {
         reviewForm.dataset.isSubmitting = 'false';
@@ -2424,7 +2427,7 @@ const initInteractivity = () => {
           reviewTextCount.style.color = '#666660';
         }
         if (alertArea) alertArea.innerHTML = '';
-        submitBtn.innerHTML = '<span>Odeslat recenzi ke schválení →</span>';
+        submitBtn.innerHTML = '<span>Odeslat recenzi →</span>';
         reviewForm.dataset.isSubmitting = 'false';
         const nameInput = document.getElementById('review-fullname-input');
         if (nameInput) nameInput.focus();
@@ -2542,7 +2545,7 @@ const initInteractivity = () => {
         alertArea.innerHTML = `
           <div style="background-color: #edf2e4; color: #4a5a24; border-left: 4px solid #697947; padding: 16px; border-radius: 4px; font-size: 14px; line-height: 1.5; margin-bottom: 16px;">
             ✅ <strong>Děkujeme! Vaše recenze byla odeslána.</strong><br>
-            Vaše hodnocení pod jménem <strong>${gdprName}</strong> bylo předáno recepci ke schválení. Po schválení se zobrazí mezi ostatními recenzemi.
+            Vaše hodnocení pod jménem <strong>${gdprName}</strong> jsme přijali. Moc si vaší zpětné vazby vážíme.
           </div>
         `;
       }
@@ -5635,6 +5638,31 @@ const CATEGORIES_DATA = {
   }
 };
 
+/**
+ * Vzdálenost cíle od hotelu v kilometrech, vytažená z popisku
+ * („3,1 km od hotelu | Desná", „26 km od hotelu · 40 minut autem").
+ *
+ * Popisky bez čísla — „přímo u hotelu", „pár minut od hotelu" — jsou
+ * ty úplně nejbližší, proto nula.
+ */
+function vzdalenostOdHotelu(polozka) {
+  const popis = String((polozka && polozka.subtitle) || '');
+  const nalez = popis.match(/(\d+(?:[.,]\d+)?)\s*km/i);
+  if (!nalez) return 0;
+  const km = parseFloat(nalez[1].replace(',', '.'));
+  return Number.isFinite(km) ? km : 0;
+}
+
+// Karty v kategoriích se řadí od nejbližšího cíle po nejvzdálenější — host
+// tak nahoře najde, kam dojde pěšky, a teprve dole celodenní výlety autem.
+// Řadí se tady, ne ručně v datech, aby nově dopsaný cíl skočil sám na
+// správné místo. Statické stránky okoli-*.html musí mít stejné pořadí.
+Object.values(CATEGORIES_DATA).forEach((kategorie) => {
+  if (Array.isArray(kategorie.items)) {
+    kategorie.items.sort((a, b) => vzdalenostOdHotelu(a) - vzdalenostOdHotelu(b));
+  }
+});
+
 // Generování HTML pro detailní stránky jednotlivých kategorií
 const getCategoryPageHTML = (catId) => {
   const cat = CATEGORIES_DATA[catId] || CATEGORIES_DATA['turistika'];
@@ -5896,7 +5924,13 @@ const route = (isInitial = false) => {
     pageKey = 'dining';
   } else if (pathName === '/akce' || pathName === '/akce.html' || pathName === '/skupinove-akce') {
     pageKey = 'events';
-  } else if (pathName === '/okoli-turistika.html' || pathName === '/okoli/turistika' || pathName === '/okoli-cyklistika.html' || pathName === '/okoli/cyklistika' || pathName === '/okoli-zima.html' || pathName === '/okoli/zima' || pathName === '/okoli-vylety-autem.html' || pathName === '/okoli/vylety-autem') {
+    // Adresy bez „.html" tu chyběly, přestože přesně takhle je servíruje
+    // Netlify. Stránka se sice vykreslila ze statického HTML, ale žádná
+    // obsluha se na ni nenapojila — tlačítko „Zjistit více" nedělalo nic.
+  } else if (pathName === '/okoli-turistika' || pathName === '/okoli-turistika.html' || pathName === '/okoli/turistika'
+    || pathName === '/okoli-cyklistika' || pathName === '/okoli-cyklistika.html' || pathName === '/okoli/cyklistika'
+    || pathName === '/okoli-zima' || pathName === '/okoli-zima.html' || pathName === '/okoli/zima'
+    || pathName === '/okoli-vylety-autem' || pathName === '/okoli-vylety-autem.html' || pathName === '/okoli/vylety-autem') {
     pageKey = 'category-detail';
   } else if (pathName === '/okoli' || pathName === '/okoli.html' || pathName === '/aktivity' || pathName === '/vylety') {
     pageKey = 'activities';
