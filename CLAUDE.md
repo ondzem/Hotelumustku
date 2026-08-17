@@ -353,10 +353,13 @@ Nespoléhej na to, že změna vypadá správně v kódu. Osvědčené postupy:
 
 ## Nedodělky
 
-- ~~**Kapacita pokojů.**~~ Potvrzeno majitelem a zadáno 16. 8. 2026.
-  Stálá lůžka: Pokoj 1, 7, 10, 11, 12 → 3; Pokoj 2 → 4; Mahagon, Motýl,
-  Zen → 2. Přistýlky jsou dopočítané tak, aby se všude došlo na 4 osoby.
-  Turistické pokoje (4, 5, 6) zůstaly na 2 — jsou vyřazené z provozu.
+- ~~**Kapacita pokojů.**~~ Opraveno majitelem 17. 8. 2026 (dřívější
+  zadání z 16. 8. bylo chybné). Všude jsou **dvě stálá lůžka**, liší se
+  jen přistýlky: Pokoj 1, 7, 10, 11, 12 → 1 přistýlka (3 osoby);
+  Pokoj 2 → 2 přistýlky (4 osoby); Mahagon, Motýl, Zen → bez přistýlky
+  (2 osoby). Turistické pokoje (4, 5, 6) 2 osoby, jsou mimo provoz.
+  Nadstandard tedy pojme jen dva lidi — pozor na texty, které slibují
+  čtyři (strukturovaná data v `ubytovani.html` na to už doplatila).
 - ~~**Ceník naživo neověřený.**~~ Ověřeno 16. 8. 2026 v prohlížeči:
   migrace v databázi proběhla (základní ceník + letní a zimní sezóna),
   uložení cen i termínu sezóny se propíše do Supabase a zkušební výpočet

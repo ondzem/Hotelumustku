@@ -534,6 +534,28 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   background-color: #eeeeee;
 }
 
+.btn-counter:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background-color: #f5f4f0;
+}
+
+.btn-counter:disabled:hover {
+  background-color: #f5f4f0;
+}
+
+/* Vysvětlení pod počítadlem osob — proč „+“ dál nejde zmáčknout. */
+.guest-capacity-note {
+  margin: 10px 0 0 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #55554e;
+}
+
+.guest-capacity-note.is-at-limit {
+  color: #a8531f;
+}
+
 .counter-value {
   font-size: 18px;
   font-weight: 700;

@@ -32,7 +32,7 @@
  */
 
 import { MOCK_ROOMS, isSupabaseConfigured, supabase, saveStoredCenik, saveStoredCustomRoomName } from '../lib/supabaseClient.js';
-import { MAX_OSOB_V_CENIKU, jeVSezone, vikendovyPriplatek } from '../utils/cenik.js';
+import { MAX_OSOB_V_CENIKU, jeVSezone, vikendovyPriplatek, VYCHOZI_CENY } from '../utils/cenik.js';
 
 const KATEGORIE = [
   { klic: 'standard', nazev: 'Standard' },
@@ -428,12 +428,22 @@ function obrazovkaCenyTabulka(ad) {
     </div>
   `;
 
-  // U vedlejších sezón ukazujeme v prázdném políčku cenu ze základního
-  // ceníku, aby bylo vidět, co se použije, když se nevyplní nic.
+  /**
+   * Cena, která pro tuhle buňku platí právě teď.
+   *
+   * Ukazuje se šedě v prázdném políčku. Musí to být opravdová částka,
+   * ne pomlčka ani vzorové číslo — recepční pak vidí, kolik se dnes
+   * účtuje, a stačí to přepsat. Postupuje se stejným pořadím jako
+   * ve výpočtu: sezóna → základní ceník → výchozí ceník v cenik.js.
+   */
   const zastupnaHodnota = (kategorie, osob) => {
-    if (jeZakladni || !zakladni) return '—';
-    const z = hodnotaKategorie(ad, zakladni.id, kategorie, osob);
-    return z === '' ? '—' : String(z);
+    if (!jeZakladni && zakladni) {
+      const z = hodnotaKategorie(ad, zakladni.id, kategorie, osob);
+      if (z !== '') return String(z);
+    }
+    const tabulka = VYCHOZI_CENY[kategorie] || VYCHOZI_CENY.standard;
+    const vychozi = tabulka[osob] || tabulka[MAX_OSOB_V_CENIKU];
+    return vychozi ? String(vychozi) : '—';
   };
 
   /**
@@ -451,15 +461,17 @@ function obrazovkaCenyTabulka(ad) {
       const zeZakladni = hodnotaKategorie(ad, zakladni.id, kategorie, osob);
       if (zeZakladni !== '') return String(zeZakladni);
     }
-    return '—';
+    const tabulka = VYCHOZI_CENY[kategorie] || VYCHOZI_CENY.standard;
+    const vychozi = tabulka[osob] || tabulka[MAX_OSOB_V_CENIKU];
+    return vychozi ? String(vychozi) : '—';
   };
 
   return obrazovka({
     krokovnik: 'KROK 2 ZE 2',
     titul: escapuj(sezona.nazev),
     napoveda: jeZakladni
-      ? 'Vyplňte, kolik stojí <strong>jedna osoba na jednu noc</strong>. Čím víc lidí na pokoji, tím nižší cena za osobu — proto ta čísla klesají zleva doprava.'
-      : 'Nahoře nastavíte, kdy období platí, dole kolik v něm stojí nocleh. Vyplňte jen ceny, které se <strong>liší od základního ceníku</strong> — co necháte prázdné, se vezme ze základního; šedé číslo v políčku ukazuje kolik.',
+      ? 'Vyplňte, kolik stojí <strong>jedna osoba na jednu noc</strong>. Čím víc lidí na pokoji, tím nižší cena za osobu — proto ta čísla klesají zleva doprava. <strong>Šedé číslo v prázdném políčku je cena, která platí teď</strong> — přepište ji svou částkou, nebo políčko nechte prázdné a zůstane v platnosti.'
+      : 'Nahoře nastavíte, kdy období platí, dole kolik v něm stojí nocleh. Vyplňte jen ceny, které se <strong>liší od základního ceníku</strong>. <strong>Šedé číslo v prázdném políčku je cena, která platí teď</strong> — přepište ji svou částkou, nebo políčko nechte prázdné a zůstane v platnosti.',
     zpet: { krok: 'ceny-sezona', popis: 'Zpět na výběr období' },
     obsah: `
       <div style="${S.blok}">

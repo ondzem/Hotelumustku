@@ -13,18 +13,18 @@ export const supabase = isSupabaseConfigured
 // Initial Mock Rooms Data
 // Initial Mock Rooms Data with Dual-Rate Pricing (Weekday vs Weekend)
 export const MOCK_ROOMS = [
-  { id: 'p6', name: 'Pokoj 1 - Standard', type: 'standard', floor: 'prizemi', capacity: 2, extraBeds: 0, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, image: '/pokoje/p6/1.webp' },
-  { id: 'p5', name: 'Pokoj 2 - Standard', type: 'standard', floor: 'prizemi', capacity: 2, extraBeds: 0, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, image: '/pokoje/p5/1.webp' },
-  { id: 'pa', name: 'Pokoj 3 - Nadstandard - Mahagon', type: 'nadstandard', floor: 'prizemi', capacity: 2, extraBeds: 1, basePrice: 890, weekdayPrice: 890, weekendPrice: 990, image: '/pokoje/mahagon/1.webp' },
+  { id: 'p6', name: 'Pokoj 1 - Standard', type: 'standard', floor: 'prizemi', capacity: 2, extraBeds: 1, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, image: '/pokoje/p6/1.webp' },
+  { id: 'p5', name: 'Pokoj 2 - Standard', type: 'standard', floor: 'prizemi', capacity: 2, extraBeds: 2, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, image: '/pokoje/p5/1.webp' },
+  { id: 'pa', name: 'Pokoj 3 - Nadstandard - Mahagon', type: 'nadstandard', floor: 'prizemi', capacity: 2, extraBeds: 0, basePrice: 890, weekdayPrice: 890, weekendPrice: 990, image: '/pokoje/mahagon/1.webp' },
   { id: 'p3', name: 'Pokoj 4 - Turistický', type: 'turisticky', floor: 'prizemi', capacity: 2, extraBeds: 0, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, isDisabled: true, image: '/balkony 1 copy.webp' },
   { id: 'p2', name: 'Pokoj 5 - Turistický', type: 'turisticky', floor: 'prizemi', capacity: 2, extraBeds: 0, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, isDisabled: true, image: '/balkony 1 copy.webp' },
   { id: 'p1', name: 'Pokoj 6 - Turistický', type: 'turisticky', floor: 'prizemi', capacity: 2, extraBeds: 0, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, isDisabled: true, image: '/balkony 1 copy.webp' },
-  { id: 'p7', name: 'Pokoj 7 - Standard', type: 'standard', floor: 'vyhled', capacity: 2, extraBeds: 0, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, image: '/pokoje/p7/1.webp' },
-  { id: 'a1', name: 'Pokoj 8 - Nadstandard - Motýl', type: 'nadstandard', floor: 'vyhled', capacity: 2, extraBeds: 1, basePrice: 890, weekdayPrice: 890, weekendPrice: 990, image: '/pokoje/motyl/1.webp' },
+  { id: 'p7', name: 'Pokoj 7 - Standard', type: 'standard', floor: 'vyhled', capacity: 2, extraBeds: 1, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, image: '/pokoje/p7/1.webp' },
+  { id: 'a1', name: 'Pokoj 8 - Nadstandard - Motýl', type: 'nadstandard', floor: 'vyhled', capacity: 2, extraBeds: 0, basePrice: 890, weekdayPrice: 890, weekendPrice: 990, image: '/pokoje/motyl/1.webp' },
   { id: 'zen', name: 'Pokoj 9 - Nadstandard - Zen', type: 'nadstandard', floor: 'vyhled', capacity: 2, extraBeds: 0, basePrice: 890, weekdayPrice: 890, weekendPrice: 990, image: '/pokoje/zen/1.webp' },
-  { id: 'p10', name: 'Pokoj 10 - Standard', type: 'standard', floor: 'vyhled', capacity: 2, extraBeds: 0, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, image: '/pokoje/p10/1.webp' },
-  { id: 'p11', name: 'Pokoj 11 - Standard', type: 'standard', floor: 'vyhled', capacity: 2, extraBeds: 0, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, image: '/pokoje/p11/1.webp' },
-  { id: 'p12', name: 'Pokoj 12 - Standard', type: 'standard', floor: 'vyhled', capacity: 2, extraBeds: 0, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, image: '/pokoje/p12/1.webp' },
+  { id: 'p10', name: 'Pokoj 10 - Standard', type: 'standard', floor: 'vyhled', capacity: 2, extraBeds: 1, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, image: '/pokoje/p10/1.webp' },
+  { id: 'p11', name: 'Pokoj 11 - Standard', type: 'standard', floor: 'vyhled', capacity: 2, extraBeds: 1, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, image: '/pokoje/p11/1.webp' },
+  { id: 'p12', name: 'Pokoj 12 - Standard', type: 'standard', floor: 'vyhled', capacity: 2, extraBeds: 1, basePrice: 830, weekdayPrice: 830, weekendPrice: 890, image: '/pokoje/p12/1.webp' },
 ];
 
 // Local Storage / Memory Reservations Store

@@ -13053,6 +13053,21 @@ input:checked + .cookie-slider:before {
   color: #666660;
 }
 
+/* Kolik lůžek pokoj má — ať host vidí kapacitu už při výběru,
+   ne až když mu formulář sníží počet osob. */
+.option-capacity-tag {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #666660;
+}
+
+.option-capacity-warning {
+  margin-top: 4px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #a8531f;
+}
+
 .option-right-status {
   display: flex;
   align-items: center;
@@ -14057,4 +14072,15 @@ html.anim-ready .review-card[data-anim].is-in {
 
 @keyframes news-nacitani-otaceni {
   to { transform: rotate(360deg); }
+}
+
+/* Šedé číslo v prázdném políčku ceníku je ta cena, která platí teď.
+   Musí být na první pohled poznat, že to není vyplněná hodnota —
+   recepčního mátlo, že v políčku „už něco je“. */
+.cenik-cena-input::placeholder,
+.cenik-vyjimka-input::placeholder {
+  color: #a9a89c;
+  font-weight: 500;
+  font-style: italic;
+  opacity: 1;
 }

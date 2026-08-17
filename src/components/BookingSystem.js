@@ -1004,9 +1004,14 @@ export class BookingSystem {
    * Volá se po každé změně pokoje.
    */
   osekniPocetOsobNaKapacitu() {
-    const maxOsob = this.maxOsobProPokoj(this.getSelectedRoom());
+    const pokoj = this.getSelectedRoom();
+    const maxOsob = this.maxOsobProPokoj(pokoj);
     if (this.state.adults > maxOsob) {
+      const puvodne = this.state.adults;
       this.state.adults = maxOsob;
+      // Tiché snížení počtu osob host nezaznamená a pak se diví ceně,
+      // proto se mu rovnou napíše, co se stalo a proč.
+      this.state.errorMessage = `${pokoj ? pokoj.name : 'Pokoj'} má ${this.popisLuzek(pokoj)}, ubytovat se sem tedy může nejvýš ${maxOsob} ${maxOsob === 1 ? 'osoba' : 'osoby'}. Počet hostů jsme z ${puvodne} snížili na ${maxOsob}. Pro větší skupinu zvolte prostornější pokoj, nebo rezervujte pokoje dva.`;
     }
     if (this.state.halfBoardCount > this.state.adults) {
       this.state.halfBoardCount = this.state.adults;
@@ -1019,11 +1024,29 @@ export class BookingSystem {
    */
   maxOsobProPokoj(room) {
     if (!room) return 4;
+    const { luzka, pristylky } = this.luzkaPokoje(room);
+    return maxOsobNaPokoji({ zakladni_luzka: luzka, max_pristylek: pristylky });
+  }
+
+  /** Stálá lůžka a přistýlky pokoje — z administrace, jinak ze záložního seznamu. */
+  luzkaPokoje(room) {
     const p = (this.roomPrices || []).find(x => x.room_id === room.id) || {};
-    return maxOsobNaPokoji({
-      zakladni_luzka: p.zakladni_luzka != null ? p.zakladni_luzka : room.capacity,
-      max_pristylek: p.max_pristylek != null ? p.max_pristylek : room.extraBeds,
-    });
+    return {
+      luzka: Number(p.zakladni_luzka != null ? p.zakladni_luzka : room.capacity) || 0,
+      pristylky: Number(p.max_pristylek != null ? p.max_pristylek : room.extraBeds) || 0,
+    };
+  }
+
+  /**
+   * Věta typu „2 lůžka + 1 přistýlka“. Host tak vidí, z čeho se kapacita
+   * skládá — ne jen holé číslo, které vypadá jako počet postelí.
+   */
+  popisLuzek(room) {
+    const { luzka, pristylky } = this.luzkaPokoje(room);
+    const slovoLuzka = luzka === 1 ? 'lůžko' : (luzka < 5 ? 'lůžka' : 'lůžek');
+    if (!pristylky) return `${luzka} ${slovoLuzka}`;
+    const slovoPristylka = pristylky === 1 ? 'přistýlka' : (pristylky < 5 ? 'přistýlky' : 'přistýlek');
+    return `${luzka} ${slovoLuzka} + ${pristylky} ${slovoPristylka}`;
   }
 
   async handleFinalBookingSubmit(e) {
@@ -1643,6 +1666,8 @@ export class BookingSystem {
         isAvailable,
         isOccupied,
         isDisabled,
+        maxOsob: this.maxOsobProPokoj(r),
+        maloMista: this.maxOsobProPokoj(r) < this.state.adults,
         pricing: roomPricing
       };
     });
@@ -1760,7 +1785,11 @@ export class BookingSystem {
                             </div>
                             <div class="option-sub-row">
                               ${item.isDisabled ? '' : `<span class="option-price-tag">${formatCzechPrice(p.totalPrice)} <small>/ ${nights} ${nights === 1 ? 'noc' : (nights < 5 ? 'noci' : 'nocí')}</small></span>`}
+                              ${item.isDisabled ? '' : `<span class="option-capacity-tag">${this.popisLuzek(r)}</span>`}
                             </div>
+                            ${item.maloMista ? `
+                              <div class="option-capacity-warning">Pojme nejvýš ${item.maxOsob} ${item.maxOsob === 1 ? 'osobu' : 'osoby'} — pro ${this.state.adults} osoby nestačí.</div>
+                            ` : ''}
                           </div>
 
                           <div class="option-right-status">
@@ -1819,10 +1848,18 @@ export class BookingSystem {
                   <div class="counter-controls">
                     <button type="button" class="btn-counter btn-counter-minus" data-target="adults">-</button>
                     <span class="counter-value">${this.state.adults || 2}</span>
-                    <button type="button" class="btn-counter btn-counter-plus" data-target="adults">+</button>
+                    <button type="button" class="btn-counter btn-counter-plus" data-target="adults" ${room && (this.state.adults || 2) >= this.maxOsobProPokoj(room) ? 'disabled' : ''}>+</button>
                   </div>
                 </div>
               </div>
+              ${room ? `
+                <!-- Bez téhle věty tlačítko „+“ jen přestalo reagovat a host nevěděl proč. -->
+                <p class="guest-capacity-note ${(this.state.adults || 2) >= this.maxOsobProPokoj(room) ? 'is-at-limit' : ''}">
+                  ${(this.state.adults || 2) >= this.maxOsobProPokoj(room)
+                    ? `Víc osob sem ubytovat nejde — <strong>${room.name}</strong> má ${this.popisLuzek(room)}, tedy nejvýš ${this.maxOsobProPokoj(room)} ${this.maxOsobProPokoj(room) === 1 ? 'osobu' : 'osoby'}. Pro větší skupinu zvolte jiný pokoj, nebo si jich rezervujte víc.`
+                    : `${room.name} má ${this.popisLuzek(room)} — ubytovat se sem může nejvýš ${this.maxOsobProPokoj(room)} ${this.maxOsobProPokoj(room) === 1 ? 'osoba' : 'osoby'}.`}
+                </p>
+              ` : ''}
             </div>
 
             <!-- 4. DOPLŇKOVÉ SLUŽBY -->
