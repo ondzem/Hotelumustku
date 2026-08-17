@@ -351,8 +351,15 @@ Nespoléhej na to, že změna vypadá správně v kódu. Osvědčené postupy:
   takže se to musí ověřit v prohlížeči.
 - **Texty v `podminky.html`** obsahují údaje, které nikdo nepotvrdil
   (mimo jiné kamery u parkoviště). Majitel je má projít.
+- ~~**Aktuality nespolehlivé.**~~ Opraveno 17. 8. 2026, viz oddíl 6b.
+  Ověřeno i na nasazeném webu: nahrání fotky přes serverovou funkci
+  projde a stránka se plní z databáze, ne z HTML.
 - **Zrušit přístupový token** `sbp_…`, který byl kdysi vložený do chatu.
-  Supabase → Account → Access Tokens.
+  Supabase → Account → Access Tokens. Pozor, ať nezrušíš ten nový
+  v `.env` (`SUPABASE_ACCESS_TOKEN`) — na tom teď stojí spouštění SQL.
+- **Výpisy dat z databáze se necommitují.** `supabase-EXPORT-dat.sql`
+  a `supabase-IMPORT-dat.sql` obsahují rezervace a kontaktní zprávy,
+  tedy osobní údaje hostů, a repozitář je veřejný. Jsou v `.gitignore`.
 - **Spuštění domény.** Po přepnutí na `umustku.cz` odeslat sitemapu
   a požádat o indexaci.
 
