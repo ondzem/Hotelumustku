@@ -117,8 +117,9 @@ export function printReservationSheet(reservation) {
 
   const printWindow = window.open('', '_blank', 'width=920,height=1100,scrollbars=yes,resizable=yes');
   if (!printWindow) {
-    alert('Prosíme, povolte vyskakovací okna (pop-up) v prohlížeči, aby se mohlo otevřít okno tisku.');
-    return;
+    // Vrací se false, aby si volající zobrazil hlášku svým způsobem —
+    // v administraci toastem, ne nativním oknem prohlížeče.
+    return false;
   }
 
   const vsCode = getVariableSymbol(reservation.code);
@@ -380,7 +381,7 @@ export function printReservationSheet(reservation) {
       <strong>${formatCzechPrice(pricing.totalPrice)} Kč</strong>
     </div>
     <div class="financial-row">
-      <span>Uhrazená záloha (30 % bankovním převodem, VS ${vsCode}):</span>
+      <span>Uhrazená záloha (${pricing.depositPercentage} % bankovním převodem, VS ${vsCode}):</span>
       <strong>${formatCzechPrice(pricing.depositPriceTotal)} Kč ${reservation.status === 'confirmed' ? '(UHRAZENO)' : ''}</strong>
     </div>
     <div class="financial-row total">

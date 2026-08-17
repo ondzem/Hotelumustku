@@ -4777,3 +4777,212 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     text-align: left;
   }
 }
+
+/* ============================================================
+   ROZBALOVACÍ GALERIE POKOJE V REZERVACI
+   Fotky se ukážou přímo ve formuláři, aby host nemusel odcházet
+   na stránku Ubytování a ztratit rozdělanou rezervaci.
+   ============================================================ */
+
+/* Rozbalené tlačítko zůstává jen v obrysu — vyplněné zeleně splývalo
+   s tlačítkem „Detaily pokoje“, které je na mobilu hned pod ním. */
+.btn-room-gallery-arrow {
+  flex-shrink: 0;
+  transition: transform 0.25s ease;
+}
+
+.btn-view-room-details.is-open .btn-room-gallery-arrow {
+  transform: rotate(180deg);
+}
+
+.booking-room-gallery {
+  margin-top: 10px;
+  background-color: #ffffff;
+  border: 1px solid #e0dfd5;
+  border-radius: 10px;
+  padding: 14px;
+  animation: booking-gallery-in 0.28s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+@keyframes booking-gallery-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.booking-gallery-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.booking-gallery-nazev {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1c1c19;
+}
+
+.booking-gallery-pocet {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #96958a;
+  white-space: nowrap;
+}
+
+.booking-gallery-stage {
+  position: relative;
+  width: 100%;
+  /* Fotky pokojů jsou 4:3. Strop šířky drží výšku snímku v rozumné
+     míře, aniž by se do poměru muselo sahat — jinak by se ořezával. */
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.booking-gallery-viewport {
+  width: 100%;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  cursor: grab;
+  user-select: none;
+  border-radius: 6px;
+}
+
+.booking-gallery-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.booking-gallery-viewport:active {
+  cursor: grabbing;
+}
+
+.booking-gallery-track {
+  display: flex;
+  gap: 10px;
+}
+
+/* Jedna fotka na šířku panelu — v úzkém sloupci formuláře je pruh
+   miniatur nečitelný. */
+.booking-gallery-slide {
+  flex: 0 0 100%;
+  min-width: 100%;
+  aspect-ratio: 4 / 3;
+  scroll-snap-align: center;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: #eaeaea;
+}
+
+.booking-gallery-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: brightness(1.04) contrast(1.08) saturate(1.12);
+}
+
+.booking-gallery-sipka {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.94);
+  color: #1c1c19;
+  border: 1px solid #e0dfd5;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 2;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.booking-gallery-sipka:hover {
+  background-color: #697947;
+  color: #ffffff;
+  border-color: #697947;
+}
+
+.booking-gallery-prev { left: 10px; }
+.booking-gallery-next { right: 10px; }
+
+.booking-gallery-citac {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  z-index: 2;
+  padding: 4px 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: rgba(28, 28, 25, 0.72);
+  border-radius: 99px;
+}
+
+.booking-gallery-pata {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #efeee7;
+}
+
+.booking-gallery-popis {
+  font-size: 13px;
+  color: #666660;
+}
+
+.btn-room-detail-odkaz {
+  flex-shrink: 0;
+  height: 38px;
+  padding: 0 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: #697947;
+  border: 1px solid #697947;
+  border-radius: 1px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s ease;
+}
+
+.btn-room-detail-odkaz:hover {
+  background-color: #55632f;
+}
+
+.btn-room-detail-odkaz svg {
+  transition: transform 0.2s ease;
+}
+
+.btn-room-detail-odkaz:hover svg {
+  transform: translateX(3px);
+}
+
+@media (max-width: 768px) {
+  .booking-gallery-sipka {
+    width: 34px;
+    height: 34px;
+  }
+
+  .booking-gallery-pata {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-room-detail-odkaz {
+    justify-content: center;
+  }
+}

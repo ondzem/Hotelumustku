@@ -22,10 +22,26 @@ export const VYCHOZI_NASTAVENI = {
   pes: 150,              // Kč / noc
   elektrokolo: 15,       // Kč / kus / den
   zimni_parkovani: 50,   // Kč / auto / noc
-  priplatek_1_noc: 200,  // Kč / osoba, jen když je pobyt na jednu noc
   mestsky_poplatek: 0,   // Kč / osoba / noc, 0 = zahrnuto v ceně
   zaloha_procent: 30,    // % z celkové ceny
 };
+
+/**
+ * Procento zálohy u konkrétní, už uložené rezervace.
+ *
+ * Počítá se ze zapsaných částek, ne z aktuálního nastavení ceníku.
+ * Kdyby se bralo nastavení, změna zálohy z 30 na 40 % by zpětně
+ * přepsala popisky u všech starých rezervací a recepce by u nich četla
+ * jiné procento, než jaké host doopravdy zaplatil.
+ */
+export function procentoZalohy(reservation) {
+  const celkem = Number(reservation && reservation.total_price);
+  const zaloha = Number(reservation && reservation.deposit_price);
+  if (Number.isFinite(celkem) && celkem > 0 && Number.isFinite(zaloha) && zaloha > 0) {
+    return Math.round((zaloha / celkem) * 100);
+  }
+  return VYCHOZI_NASTAVENI.zaloha_procent;
+}
 
 /** Vytáhne číslo z nastavení, s návratem k výchozí hodnotě. */
 function nast(nastaveni, klic) {
@@ -165,20 +181,14 @@ export function calculateReservationPrice({
   const nightBreakdownLabel = popisRozpisu(noci, formatCzechPrice);
   const sezonaAktualni = najdiSezonu(noci[0] ? noci[0].datum : (dateFrom || ''), cenik.sezony || []);
 
-  // 2. Příplatek za pobyt na jednu noc
+  // 2. Příplatek za jednu noc tu není a nemá být.
   //
-  //    Příplatek za sólo obsazení tu záměrně NENÍ. Dřív se připočítával
-  //    zvlášť, ale v novém ceníku je "1 osoba" vlastní sloupec, takže
-  //    by se stejná věc počítala dvakrát.
-  const singleNightRatePerPerson = nast(nastaveni, 'priplatek_1_noc');
-  let singleNightSurchargeTotal = 0;
-  let surchargeReason = 'none';
-
-  if (singleNightRatePerPerson > 0 && safeNights === 1) {
-    singleNightSurchargeTotal = singleNightRatePerPerson * totalGuests;
-    surchargeReason = 'single_night';
-    accommodationPrice += singleNightSurchargeTotal;
-  }
+  //    Hotel jednonoční pobyty nepřijímá — rezervační formulář vyžaduje
+  //    minimálně dvě noci, takže příplatek by stejně nikdy nenastal.
+  //
+  //    Příplatek za sólo obsazení tu taky NENÍ. Dřív se připočítával
+  //    zvlášť, ale v ceníku je "1 osoba" vlastní sloupec, takže by se
+  //    stejná věc počítala dvakrát.
 
   // 3. Městský poplatek — ve výchozím nastavení 0, protože je v ceně
   const cityTax = nast(nastaveni, 'mestsky_poplatek') * totalGuests * safeNights;
@@ -245,9 +255,6 @@ export function calculateReservationPrice({
     persons: totalGuests,
     totalGuests,
     accommodationPrice,
-    singleNightRatePerPerson,
-    singleNightSurchargeTotal,
-    surchargeReason,
     cityTax,
     hasHalfBoard,
     halfBoardCount: safeHalfBoardCount,

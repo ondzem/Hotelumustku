@@ -5,8 +5,8 @@ export default defineConfig(({ mode }) => {
   // Zůstávají jen tady na serveru, do prohlížeče se nedostanou —
   // Vite do balíčku vkládá výhradně proměnné s předponou VITE_.
   const env = loadEnv(mode, process.cwd(), '');
-  if (env.RESEND_API_KEY && !process.env.RESEND_API_KEY) {
-    process.env.RESEND_API_KEY = env.RESEND_API_KEY;
+  for (const klic of ['RESEND_API_KEY', 'SUPABASE_SERVICE_ROLE_KEY', 'VITE_SUPABASE_URL']) {
+    if (env[klic] && !process.env[klic]) process.env[klic] = env[klic];
   }
 
   return {
@@ -98,6 +98,41 @@ export default defineConfig(({ mode }) => {
               res.end(await odpoved.text());
             } catch (err) {
               console.error('Chyba serverové funkce e-mailu ve vývoji:', err);
+              res.statusCode = 500;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify({ error: String(err && err.message) }));
+            }
+          });
+        });
+      }
+    },
+    {
+      /**
+       * Totéž pro nahrávání fotek aktualit. Bez toho by šlo fotku
+       * přidat jen na produkci a lokálně by administrace hlásila 404.
+       *
+       * Limit těla je vyšší než u e-mailů — fotka jde jako base64,
+       * což je zhruba o třetinu víc znaků než samotný soubor.
+       */
+      name: 'serverova-funkce-fotek-ve-vyvoji',
+      configureServer(server) {
+        server.middlewares.use('/.netlify/functions/upload-news-image', async (req, res) => {
+          const kusy = [];
+          req.on('data', (kus) => kusy.push(kus));
+          req.on('end', async () => {
+            try {
+              const { default: handler } = await import('./netlify/functions/upload-news-image.js');
+              const pozadavek = new Request('http://localhost/.netlify/functions/upload-news-image', {
+                method: req.method || 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: (req.method === 'GET' || req.method === 'HEAD') ? undefined : Buffer.concat(kusy).toString('utf8')
+              });
+              const odpoved = await handler(pozadavek);
+              res.statusCode = odpoved.status;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(await odpoved.text());
+            } catch (err) {
+              console.error('Chyba serverové funkce fotek ve vývoji:', err);
               res.statusCode = 500;
               res.setHeader('Content-Type', 'application/json');
               res.end(JSON.stringify({ error: String(err && err.message) }));

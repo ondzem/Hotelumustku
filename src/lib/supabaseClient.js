@@ -1,8 +1,8 @@
 // Supabase client initialization & Mock Store for offline/demo execution
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_SUPABASE_URL) || (typeof process !== 'undefined' && process.env && process.env.VITE_SUPABASE_URL) || 'https://jpvnvjcktpxyxrvsdukm.supabase.co';
-const supabaseAnonKey = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_SUPABASE_ANON_KEY) || (typeof process !== 'undefined' && process.env && process.env.VITE_SUPABASE_ANON_KEY) || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impwdm52amNrdHB4eXhydnNkdWttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2MjczMzAsImV4cCI6MjEwMDIwMzMzMH0.NV9mI29eo5vUuBqTM2N-vd9GepeoD2iIcOZq5ypIqtY';
+const supabaseUrl = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_SUPABASE_URL) || (typeof process !== 'undefined' && process.env && process.env.VITE_SUPABASE_URL) || 'https://okgbsclaenbxfvxrbjgm.supabase.co';
+const supabaseAnonKey = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_SUPABASE_ANON_KEY) || (typeof process !== 'undefined' && process.env && process.env.VITE_SUPABASE_ANON_KEY) || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rZ2JzY2xhZW5ieGZ2eHJiamdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4NjE1OTYsImV4cCI6MjEwMjQzNzU5Nn0.UmlC5AXnlWvhW4vyoSCYLZ_G1GjfMSjRTEkaBccNwFo';
 
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
 
@@ -490,6 +490,45 @@ export const getStoredRoomPrices = () => {
   }
 };
 
+/**
+ * Načte pokoje z databáze a promítne je do MOCK_ROOMS i do zálohy.
+ *
+ * Bez tohohle znal veřejný web názvy pokojů a počty lůžek jen ze
+ * zálohy v prohlížeči. Kdo přišel poprvé, viděl napevno zapsané názvy
+ * ze souboru a cenu „od" spočítanou pro dvoulůžkový pokoj — přestože
+ * majitel v administraci název i lůžka dávno změnil.
+ *
+ * Volá se na začátku každé stránky, výsledek se rovnou uloží do zálohy,
+ * takže při další návštěvě jsou správná data k dispozici hned.
+ */
+export const fetchRoomPrices = async () => {
+  if (!isSupabaseConfigured || !supabase) return getStoredRoomPrices();
+
+  try {
+    const { data, error } = await supabase.from('room_prices').select('*');
+    if (error || !Array.isArray(data)) return getStoredRoomPrices();
+
+    data.forEach(p => {
+      if (!p.room_id) return;
+      saveStoredRoomPrice(p);
+
+      const rm = MOCK_ROOMS.find(r => r.id === p.room_id);
+      if (!rm) return;
+      if (p.room_name) rm.name = p.room_name;
+      if (p.zakladni_luzka != null) rm.zakladniLuzka = p.zakladni_luzka;
+      if (p.max_pristylek != null) rm.maxPristylek = p.max_pristylek;
+
+      const zaklad = Number(p.base_price);
+      if (Number.isFinite(zaklad) && zaklad > 0) rm.basePrice = zaklad;
+    });
+
+    return data;
+  } catch (err) {
+    console.error('fetchRoomPrices failed:', err);
+    return getStoredRoomPrices();
+  }
+};
+
 export const saveStoredRoomPrice = (priceItem) => {
   const current = getStoredRoomPrices();
   const existingIdx = current.findIndex(p => p.room_id === priceItem.room_id);
@@ -661,20 +700,31 @@ export const saveContactMessage = async (messageData) => {
 // POMOCNÉ FUNKCE PRO PROJEKTOVÝ MODUL "AKTUALITY & OZNAMOVACÍ BANNER"
 // ====================================================
 
-// Načtení všech aktualit
+/**
+ * Načtení všech aktualit.
+ *
+ * Řadí se podle `updated_at` sestupně a při shodě podle `id` — bez toho
+ * druhého kritéria vracel Postgres řádky se stejným časem pokaždé jinak
+ * a aktuality na webu si po každém obnovení stránky prohodily pořadí.
+ *
+ * Při chybě se VYHAZUJE výjimka. Dřív se vracelo prázdné pole, takže
+ * výpadek databáze vypadal jako „hotel nemá žádné novinky“ a nikdo se
+ * o něm nedozvěděl.
+ */
 export const getStoredNewsItems = async () => {
-  if (isSupabaseConfigured && supabase) {
-    try {
-      const { data, error } = await supabase
-        .from('aktuality')
-        .select('*')
-        .order('updated_at', { ascending: false });
-      if (!error && data) return data;
-    } catch (err) {
-      console.error('Chyba při načítání aktualit ze Supabase:', err);
-    }
+  if (!isSupabaseConfigured || !supabase) return [];
+
+  const { data, error } = await supabase
+    .from('aktuality')
+    .select('*')
+    .order('updated_at', { ascending: false })
+    .order('id', { ascending: true });
+
+  if (error) {
+    console.error('Chyba při načítání aktualit ze Supabase:', error);
+    throw new Error(error.message || 'Načtení aktualit selhalo');
   }
-  return [];
+  return data || [];
 };
 
 // Uložení / Úprava aktuality (s vymáháním pravidla: MAXIMÁLNĚ 1 AKTIVNÍ BANNER)
@@ -782,31 +832,41 @@ export const deleteStoredNewsItem = async (id) => {
   return { success: false };
 };
 
-// Nahrání oříznuté fotky aktuality do Supabase Storage bucketu aktuality-images
+/**
+ * Nahrání oříznuté fotky aktuality do úložiště.
+ *
+ * Posílá se přes serverovou funkci, ne přímo do Supabase. Prohlížeč má
+ * jen veřejný anon klíč a povolit s ním zápis do úložiště by znamenalo
+ * pustit tam kohokoli — klíč je vidět ve zdrojáku stránky. Server má
+ * servisní klíč, který se ven nikdy nedostane.
+ */
 export const uploadNewsImage = async (fileOrBlob) => {
-  if (isSupabaseConfigured && supabase) {
-    try {
-      const filename = `news_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.jpg`;
-      const { data, error } = await supabase.storage
-        .from('aktuality-images')
-        .upload(filename, fileOrBlob, {
-          contentType: 'image/jpeg',
-          upsert: true
-        });
+  try {
+    const contentType = fileOrBlob.type || 'image/jpeg';
 
-      if (error) throw error;
+    const base64 = await new Promise((hotovo, chyba) => {
+      const ctecka = new FileReader();
+      ctecka.onload = () => hotovo(String(ctecka.result).split(',').pop());
+      ctecka.onerror = () => chyba(new Error('Fotku se nepodařilo přečíst.'));
+      ctecka.readAsDataURL(fileOrBlob);
+    });
 
-      const { data: publicUrlData } = supabase.storage
-        .from('aktuality-images')
-        .getPublicUrl(filename);
+    const res = await fetch('/.netlify/functions/upload-news-image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ base64, contentType })
+    });
 
-      return { success: true, url: publicUrlData.publicUrl };
-    } catch (err) {
-      console.error('Chyba při nahrávání fotky do aktuality-images storage:', err);
-      return { success: false, error: err };
+    const odpoved = await res.json().catch(() => ({}));
+    if (!res.ok || !odpoved.url) {
+      throw new Error(odpoved.error || `Nahrání selhalo (${res.status})`);
     }
+
+    return { success: true, url: odpoved.url };
+  } catch (err) {
+    console.error('Chyba při nahrávání fotky aktuality:', err);
+    return { success: false, error: err };
   }
-  return { success: false, error: 'Supabase not configured' };
 };
 
 // ====================================================
@@ -1434,7 +1494,7 @@ export const updateStoredReviewStatus = async (reviewId, status) => {
 const CENIK_STORAGE_KEY = 'hotel_umustku_cenik_v1';
 
 /** Prázdný ceník — výchozí stav, než dorazí data. */
-const PRAZDNY = { sezony: [], ceny: [], cenyPokoj: [], nastaveni: {} };
+const PRAZDNY = { sezony: [], ceny: [], cenyPokoj: [], nastaveni: {}, nastaveniRadky: [] };
 
 export const getStoredCenik = () => {
   try {
@@ -1446,6 +1506,9 @@ export const getStoredCenik = () => {
       ceny: Array.isArray(c.ceny) ? c.ceny : [],
       cenyPokoj: Array.isArray(c.cenyPokoj) ? c.cenyPokoj : [],
       nastaveni: c.nastaveni && typeof c.nastaveni === 'object' ? c.nastaveni : {},
+      // Bez řádků by okno Příplatky ukázalo technické klíče („polopenze“)
+      // místo popisků a v náhodném pořadí — dokud nedoteče databáze.
+      nastaveniRadky: Array.isArray(c.nastaveniRadky) ? c.nastaveniRadky : [],
     };
   } catch {
     return { ...PRAZDNY };

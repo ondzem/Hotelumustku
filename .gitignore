@@ -25,3 +25,12 @@ dist-ssr
 *.sw?
 scratch/
 *.db
+
+# Výpisy dat z databáze — obsahují rezervace a kontaktní zprávy, tedy
+# osobní údaje hostů. Repozitář je veřejný, takže sem nesmí.
+supabase-EXPORT-dat.sql
+supabase-IMPORT-dat.sql
+
+# Pracovní soubory nástrojů
+agentdb.rvf
+agentdb.rvf.lock

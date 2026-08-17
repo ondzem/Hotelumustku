@@ -2,10 +2,11 @@ import './style.css';
 import './booking.css';
 import { BookingSystem } from './components/BookingSystem.js';
 import { AdminDashboard } from './components/AdminDashboard.js';
-import { getStoredRoomPrices, getStoredDisabledRooms, MOCK_ROOMS, saveContactMessage, getStoredNewsItems, getStoredReviews, saveStoredReview, formatGDPRName, getStoredCenik, fetchCenik } from './lib/supabaseClient.js';
+import { getStoredRoomPrices, getStoredDisabledRooms, MOCK_ROOMS, saveContactMessage, getStoredNewsItems, getStoredReviews, saveStoredReview, formatGDPRName, getStoredCenik, fetchCenik, fetchRoomPrices } from './lib/supabaseClient.js';
 import { cenaZaOsobuNoc, maxOsobNaPokoji } from './utils/cenik.js';
 import { sendEmail, generateEmailContactNotification, generateEmailNewReviewNotification } from './utils/emailService.js';
 import { initScrollReveal } from './utils/scrollReveal.js';
+import { fotkyPokoje } from './utils/roomGalleries.js';
 
 export function syncCustomRoomNamesToDOM() {
   const roomItems = document.querySelectorAll('.room-breakdown-item[data-room]');
@@ -130,102 +131,9 @@ export function syncDisabledRoomsToDOM() {
 }
 window.syncDisabledRoomsToDOM = syncDisabledRoomsToDOM;
 
-export const ROOM_GALLERIES = {
-  p1: ['/balkony 1 copy.webp'],
-  p2: ['/balkony 1 copy.webp'],
-  p3: ['/balkony 1 copy.webp'],
-  pa: [
-    '/pokoje/mahagon/1.webp',
-    '/pokoje/mahagon/2.webp',
-    '/pokoje/mahagon/3.webp',
-    '/pokoje/mahagon/4.webp',
-    '/pokoje/mahagon/5.webp',
-    '/pokoje/mahagon/7.webp',
-    '/pokoje/mahagon/8.webp'
-  ],
-  p5: [
-    '/pokoje/p5/1.webp',
-    '/pokoje/p5/2.webp',
-    '/pokoje/p5/3.webp',
-    '/pokoje/p5/4.webp',
-    '/pokoje/p5/5.webp',
-    '/pokoje/p5/6.webp',
-    '/pokoje/p5/7.webp',
-    '/pokoje/p5/8.webp'
-  ],
-  p6: [
-    '/pokoje/p6/1.webp',
-    '/pokoje/p6/2.webp',
-    '/pokoje/p6/3.webp',
-    '/pokoje/p6/4.webp',
-    '/pokoje/p6/5.webp',
-    '/pokoje/p6/6.webp',
-    '/pokoje/p6/7.webp'
-  ],
-  p7: [
-    '/pokoje/p7/1.webp',
-    '/pokoje/p7/2.webp',
-    '/pokoje/p7/3.webp',
-    '/pokoje/p7/4.webp',
-    '/pokoje/p7/5.webp',
-    '/pokoje/p7/6.webp',
-    '/pokoje/p7/7.webp',
-    '/pokoje/p7/8.webp',
-    '/pokoje/p7/9.webp',
-    '/pokoje/p7/10.webp'
-  ],
-  a1: [
-    '/pokoje/motyl/1.webp',
-    '/pokoje/motyl/2.webp',
-    '/pokoje/motyl/3.webp',
-    '/pokoje/motyl/4.webp',
-    '/pokoje/motyl/5.webp',
-    '/pokoje/motyl/6.webp',
-    '/pokoje/motyl/7.webp'
-  ],
-  zen: [
-    '/pokoje/zen/1.webp',
-    '/pokoje/zen/2.webp',
-    '/pokoje/zen/3.webp',
-    '/pokoje/zen/4.webp',
-    '/pokoje/zen/5.webp',
-    '/pokoje/zen/6.webp',
-    '/pokoje/zen/7.webp'
-  ],
-  p10: [
-    '/pokoje/p10/1.webp',
-    '/pokoje/p10/2.webp',
-    '/pokoje/p10/3.webp',
-    '/pokoje/p10/4.webp',
-    '/pokoje/p10/6.webp',
-    '/pokoje/p10/7.webp',
-    '/pokoje/p10/8.webp',
-    '/pokoje/p10/9.webp'
-  ],
-  p11: [
-    '/pokoje/p11/1.webp',
-    '/pokoje/p11/2.webp',
-    '/pokoje/p11/3.webp',
-    '/pokoje/p11/4.webp',
-    '/pokoje/p11/5.webp',
-    '/pokoje/p11/7.webp',
-    '/pokoje/p11/8.webp',
-    '/pokoje/p11/9.webp',
-    '/pokoje/p11/10.webp'
-  ],
-  p12: [
-    '/pokoje/p12/1.webp',
-    '/pokoje/p12/2.webp',
-    '/pokoje/p12/3.webp',
-    '/pokoje/p12/4.webp',
-    '/pokoje/p12/5.webp',
-    '/pokoje/p12/6.webp',
-    '/pokoje/p12/8.webp',
-    '/pokoje/p12/9.webp',
-    '/pokoje/p12/10.webp',
-    '/pokoje/p12/11.webp'
-  ]
-};
+// Seznam fotek se přesunul do src/utils/roomGalleries.js, aby ho mohla
+// používat i rezervace. Re-export drží zpětnou vazbu pro starší importy.
+export { ROOM_GALLERIES } from './utils/roomGalleries.js';
 
 export const renderRoomBreakdownItem = (roomId, defaultRoomName, priceType, priceAmount) => {
   const rmObj = MOCK_ROOMS.find(r => r.id === roomId);
@@ -234,7 +142,7 @@ export const renderRoomBreakdownItem = (roomId, defaultRoomName, priceType, pric
   const disabledRooms = getStoredDisabledRooms();
   const isDisabled = isRenovating || (rmObj && rmObj.isDisabled) || disabledRooms.some(d => d.room_id === roomId && d.is_disabled);
 
-  const photos = ROOM_GALLERIES[roomId] || ['/hezky pokoj 1.webp'];
+  const photos = fotkyPokoje(roomId);
   const slidesHtml = photos.map((src, idx) => `
     <div class="room-carousel-slide">
       <img src="${src}" alt="${roomName} - Náhled ${idx + 1}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='/hezky pokoj 1.webp';">
@@ -272,11 +180,11 @@ export const renderRoomBreakdownItem = (roomId, defaultRoomName, priceType, pric
             <div class="drawer-action-btns">
               <div class="room-drawer-price-wrap" data-price="${priceType}" ${isDisabled ? 'style="display: none;"' : ''}>
                 <div class="price-main-block">
-                  <span class="price-amount">${priceAmount} Kč</span>
+                  <span class="price-amount">od ${priceAmount} Kč</span>
                   <span class="price-suffix">/ noc</span>
                 </div>
                 <div class="price-sub-block">
-                  <span class="price-detail">za osobu • včetně snídaně</span>
+                  <span class="price-detail">za osobu • cena dle počtu osob</span>
                 </div>
               </div>
               <button class="btn btn-booking btn-room-reserve">Zvolit pokoj</button>
@@ -298,6 +206,63 @@ export async function refreshActiveBanner() {
   } catch (err) {
     activeBannerCache = null;
   }
+}
+
+/**
+ * Doplní oznámení do už vykreslené stránky.
+ *
+ * Banner se načítá až po prvním vykreslení, takže se do šablony nestihne
+ * dostat — a na staticky předrenderovaných stránkách by se nedostal
+ * vůbec. Tahle funkce ho tam vloží (nebo odebere) sama, ať přijde
+ * kdykoli. Volá se po načtení i po každé změně stránky.
+ */
+export function vlozOznameniDoStranky() {
+  document.querySelectorAll('#announcement-detail-modal, #announcement-side-tab').forEach(el => el.remove());
+  if (!activeBannerCache) return;
+  document.body.insertAdjacentHTML('beforeend', getTopAnnouncementBarHTML());
+}
+
+/**
+ * Otevírání a zavírání okna s oznámením.
+ *
+ * Obsluha byla schovaná uvnitř initDestinationModal(), který běží jen na
+ * stránce s výlety — na zbytku webu tedy na záložku šlo klikat, ale nic
+ * se nestalo. Registruje se jednou pro celý web, proto ta pojistka.
+ */
+let oznameniNapojeno = false;
+export function initOznameni() {
+  if (oznameniNapojeno) return;
+  oznameniNapojeno = true;
+
+  const zavri = () => {
+    const okno = document.getElementById('announcement-detail-modal');
+    if (okno) {
+      okno.classList.remove('is-active');
+      document.body.style.overflow = '';
+    }
+  };
+
+  document.addEventListener('click', (e) => {
+    if (!e.target || !e.target.closest) return;
+
+    if (e.target.closest('#announcement-side-tab') || e.target.closest('#btn-open-announcement-modal')) {
+      e.preventDefault();
+      const okno = document.getElementById('announcement-detail-modal');
+      if (okno) {
+        okno.classList.add('is-active');
+        document.body.style.overflow = 'hidden';
+      }
+      return;
+    }
+
+    if (e.target.closest('#btn-close-announcement-modal') || e.target.closest('#announcement-modal-overlay')) {
+      zavri();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') zavri();
+  });
 }
 
 export function getTopAnnouncementBarHTML() {
@@ -323,6 +288,15 @@ export function getTopAnnouncementBarHTML() {
     : `<p class="announcement-modal-p">${text}</p>`;
 
   return `
+    <!-- Boční záložka, kterou se oznámení otevírá. Chyběla — v CSS
+         i v obsluze kliknutí byla, ale nikdo ji nevykresloval, takže
+         se návštěvník k oznámení neměl jak dostat. -->
+    <button type="button" class="announcement-side-tab" id="announcement-side-tab"
+            aria-label="Zobrazit aktuální oznámení hotelu">
+      <span class="side-tab-dot" aria-hidden="true"></span>
+      <span class="side-tab-text">${text}</span>
+    </button>
+
     <!-- POP-UP MODAL PRO DETAIL OZNÁMENÍ -->
     <div class="announcement-detail-modal" id="announcement-detail-modal" aria-hidden="true" role="dialog">
       <div class="announcement-modal-overlay" id="announcement-modal-overlay"></div>
@@ -988,7 +962,9 @@ const getFooterHTML = () => `
       </div>
     </div>
   </footer>
-  ${getTopAnnouncementBarHTML()}
+  <!-- Oznámení do patičky nepatří: v době vykreslení ještě není načtené
+       a na statických stránkách by chybělo úplně. Vkládá ho na konec
+       stránky vlozOznameniDoStranky() po každé změně stránky. -->
 
   <!-- LIGHTBOX MODAL PRO ZVĚTŠENÍ FOTEK POKOJŮ (PRO SENIORY) -->
   <div class="lightbox-modal" id="lightbox-modal" aria-hidden="true" role="dialog">
@@ -1351,21 +1327,21 @@ const getRoomsPageHTML = () => `
       <div class="room-breakdown-list" data-anim-group>
         <!-- SKUPINA 1: POKOJE V PŘÍZEMÍ -->
         <h3 class="room-group-label" data-anim="up">Pokoje v přízemí</h3>
-        ${renderRoomBreakdownItem('p6', 'Pokoj 1 - Standard', 'standard', 830)}
-        ${renderRoomBreakdownItem('p5', 'Pokoj 2 - Standard', 'standard', 830)}
+        ${renderRoomBreakdownItem('p6', 'Pokoj 1 - Standard', 'standard', 700)}
+        ${renderRoomBreakdownItem('p5', 'Pokoj 2 - Standard', 'standard', 700)}
         ${renderRoomBreakdownItem('pa', 'Pokoj 3 - Nadstandard - Mahagon', 'nadstandard', 890)}
-        ${renderRoomBreakdownItem('p3', 'Pokoj 4 - Turistický', 'standard', 830)}
-        ${renderRoomBreakdownItem('p2', 'Pokoj 5 - Turistický', 'standard', 830)}
-        ${renderRoomBreakdownItem('p1', 'Pokoj 6 - Turistický', 'standard', 830)}
+        ${renderRoomBreakdownItem('p3', 'Pokoj 4 - Turistický', 'standard', 700)}
+        ${renderRoomBreakdownItem('p2', 'Pokoj 5 - Turistický', 'standard', 700)}
+        ${renderRoomBreakdownItem('p1', 'Pokoj 6 - Turistický', 'standard', 700)}
 
         <!-- SKUPINA 2: POKOJE V PATŘE -->
         <h3 class="room-group-label" data-anim="up">Pokoje v patře</h3>
-        ${renderRoomBreakdownItem('p7', 'Pokoj 7 - Standard', 'standard', 830)}
+        ${renderRoomBreakdownItem('p7', 'Pokoj 7 - Standard', 'standard', 700)}
         ${renderRoomBreakdownItem('a1', 'Pokoj 8 - Nadstandard - Motýl', 'nadstandard', 890)}
         ${renderRoomBreakdownItem('zen', 'Pokoj 9 - Nadstandard - Zen', 'nadstandard', 890)}
-        ${renderRoomBreakdownItem('p10', 'Pokoj 10 - Standard', 'standard', 830)}
-        ${renderRoomBreakdownItem('p11', 'Pokoj 11 - Standard', 'standard', 830)}
-        ${renderRoomBreakdownItem('p12', 'Pokoj 12 - Standard', 'standard', 830)}
+        ${renderRoomBreakdownItem('p10', 'Pokoj 10 - Standard', 'standard', 700)}
+        ${renderRoomBreakdownItem('p11', 'Pokoj 11 - Standard', 'standard', 700)}
+        ${renderRoomBreakdownItem('p12', 'Pokoj 12 - Standard', 'standard', 700)}
       </div>
 
       <p class="room-breakdown-footer-note">Pobyt na 1 noc: Příplatek +200 Kč / osoba / noc k základní ceně.</p>
@@ -1451,7 +1427,7 @@ const getRoomsPageHTML = () => `
           <h3 class="room-feature-card-title">Parkování</h3>
           <p class="room-feature-card-desc">
             <span class="desktop-sub-text">Zdarma v létě na vlastním parkovišti pod kamerami.</span>
-            <span class="mobile-sub-text">Zdarma na vlastním oploceném parkovišti.</span>
+            <span class="mobile-sub-text">Zdarma na vlastním parkovišti.</span>
           </p>
         </div>
       </div>
@@ -3838,6 +3814,11 @@ const renderNewsCardsHTML = (activeItems) => {
     return isNaN(d.getTime()) ? dateStr : d.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' });
   };
 
+  // Návštěvníkovi patří datum vydání, ne poslední úpravy. `updated_at`
+  // se mění při každé opravě překlepu a navíc s ním hýbe i přesouvání
+  // aktualit v administraci — datum na webu by pak skákalo bez důvodu.
+  const datumVydani = (item) => formatDate(item.created_at || item.updated_at);
+
   if (!activeItems || activeItems.length === 0) {
     return `
       <div class="news-empty-state" data-anim="up">
@@ -3859,12 +3840,13 @@ const renderNewsCardsHTML = (activeItems) => {
       return `
             <article class="news-card news-card-with-image ${isReverse ? 'news-card-reverse' : ''}" data-anim="up">
               <div class="news-card-content">
-                <div class="news-card-date">🗓️ ${formatDate(item.updated_at)}</div>
+                <div class="news-card-date">🗓️ ${datumVydani(item)}</div>
                 <h2 class="news-card-title">${item.title}</h2>
                 <div class="news-card-text">${formattedContent}</div>
               </div>
               <div class="news-card-image-wrap">
-                <img src="${item.image_url}" alt="${item.title}" class="news-card-image" loading="lazy" decoding="async">
+                <img src="${item.image_url}" alt="${item.title}" class="news-card-image" loading="lazy" decoding="async"
+                     onerror="window.aktualitaBezFotky && window.aktualitaBezFotky(this)">
               </div>
             </article>
           `;
@@ -3872,7 +3854,7 @@ const renderNewsCardsHTML = (activeItems) => {
       return `
             <article class="news-card news-card-without-image" data-anim="up">
               <div class="news-card-centered-header">
-                <div class="news-card-date">🗓️ ${formatDate(item.updated_at)}</div>
+                <div class="news-card-date">🗓️ ${datumVydani(item)}</div>
                 <h2 class="news-card-title">${item.title}</h2>
               </div>
               <div class="news-card-text news-card-text-readable">${formattedContent}</div>
@@ -3883,6 +3865,53 @@ const renderNewsCardsHTML = (activeItems) => {
     </div>
   `;
 };
+
+/**
+ * Nedostupná fotka aktuality — karta se přepne na textovou podobu.
+ *
+ * Fotky se ukládají do Supabase Storage a odkaz na ně žije v databázi.
+ * Když soubor zmizí (přesun projektu, smazaný bucket), zůstal by po něm
+ * na webu prázdný rámeček s ikonou rozbitého obrázku. Text aktuality je
+ * to podstatné, takže ho radši ukážeme samotný.
+ */
+window.aktualitaBezFotky = (img) => {
+  const karta = img.closest('.news-card');
+  const obal = img.closest('.news-card-image-wrap');
+  if (obal) obal.remove();
+  if (karta) {
+    karta.classList.remove('news-card-with-image', 'news-card-reverse');
+    karta.classList.add('news-card-without-image');
+  }
+};
+
+/**
+ * Naplní seznam aktualit daty z databáze.
+ *
+ * Zdrojem je vždy tabulka `aktuality`, nikdy to, co je zapsané v HTML.
+ * Když se načtení nepovede, zůstane na místě hláška o nedostupnosti —
+ * radši to přiznáme, než abychom tvrdili „žádné novinky nemáme“, což
+ * vypadá stejně jako prázdná databáze a nikdo si chyby nevšimne.
+ */
+export async function nactiAktualityDoStranky() {
+  const container = document.getElementById('news-main-inner-container');
+  if (!container) return;
+
+  try {
+    const vsechny = await getStoredNewsItems();
+    const aktivni = (vsechny || []).filter(item => item.is_active);
+    container.innerHTML = renderNewsCardsHTML(aktivni);
+    initScrollReveal();
+  } catch (err) {
+    console.error('Načtení aktualit selhalo:', err);
+    container.innerHTML = `
+      <div class="news-empty-state">
+        <div class="news-empty-icon">⚠️</div>
+        <h3 class="news-empty-title">Aktuality se nepodařilo načíst</h3>
+        <p class="news-empty-desc">Zkuste stránku prosím za chvíli obnovit.</p>
+      </div>
+    `;
+  }
+}
 
 // Render Funkce Pro Stránku "Aktuality" (SYNCHRONNÍ INSTANTNÍ RENDERING HERO SEKCE)
 const getNewsPageHTML = (allItems = []) => {
@@ -4059,7 +4088,7 @@ export const getGdprPageHTML = () => `
                   </tr>
                   <tr>
                     <td><strong>Kamerový systém na parkovišti</strong></td>
-                    <td>Obrazový záznam osob a vozidel v prostoru oploceného parkoviště. Zvuk se nezaznamenává.</td>
+                    <td>Obrazový záznam osob a vozidel v prostoru parkoviště. Zvuk se nezaznamenává.</td>
                     <td>Náš oprávněný zájem na ochraně majetku hostů i hotelu<br><span style="opacity: 0.75;">(čl. 6 odst. 1 písm. f) GDPR)</span></td>
                   </tr>
                   <tr>
@@ -4280,7 +4309,17 @@ export const getPodminkyPageHTML = () => `
 
             <div class="legal-article-card">
               <h2 class="legal-article-title">3. Ceny a co je v nich zahrnuto</h2>
-              <p class="legal-article-text">Ceny jsou uvedeny za osobu a noc a jsou <strong>konečné včetně DPH</strong>. Snídaně formou švédského stolu, parkování na oploceném parkovišti, Wi-Fi, využití společenské herny i <strong>místní poplatek z pobytu</strong> jsou v ceně zahrnuty.</p>
+              <p class="legal-article-text">Ceny za ubytování jsou uvedeny za osobu a noc a jsou <strong>konečné včetně DPH</strong>. Snídaně formou švédského stolu, parkování u hotelu, Wi-Fi, využití společenské herny i <strong>místní poplatek z pobytu</strong> jsou v ceně zahrnuty.</p>
+
+              <p class="legal-article-text"><strong>Jak se cena za ubytování určuje.</strong> Hotel nemá jedinou pevnou sazbu. Cena se počítá za každou noc zvlášť a závisí na třech věcech:</p>
+              <ul style="line-height: 1.7; color: #4a4a46; padding-left: 20px;">
+                <li><strong>Termín pobytu</strong> — sazby se liší podle sezóny (zimní, letní, mezisezóna) a o víkendech může platit příplatek. Pobyt zasahující do dvou sezón se rozpočítá po jednotlivých nocích.</li>
+                <li><strong>Kategorie pokoje</strong> — Standard, Nadstandard (A, A1, Zen) a Turistický pokoj mají odlišné sazby.</li>
+                <li><strong>Počet osob na pokoji</strong> — cena za osobu klesá s počtem ubytovaných. Sazba pro jednoho hosta je nejvyšší, protože pokrývá celý pokoj; <strong>žádný další příplatek za samostatné obsazení se k ní už nepřičítá</strong>.</li>
+              </ul>
+              <p class="legal-article-text">Ubytování se snídaní začíná na <strong>700 Kč za osobu a noc</strong>. Přesnou cenu pro váš konkrétní termín, pokoj a počet osob <strong>spočítá rezervační formulář</strong> ještě před odesláním rezervace — uvidíte ji v rozpisu včetně všech příplatků a doplňkových služeb.</p>
+
+              <p class="legal-article-text"><strong>Příplatky a doplňkové služby.</strong> Tyto položky se sezónou ani počtem osob nemění:</p>
               <table class="legal-info-table">
                 <thead>
                   <tr>
@@ -4290,36 +4329,8 @@ export const getPodminkyPageHTML = () => `
                 </thead>
                 <tbody>
                   <tr>
-                    <td>Pokoj Standard — 1 osoba</td>
-                    <td>830 Kč / osoba / noc</td>
-                  </tr>
-                  <tr>
-                    <td>Pokoj Standard — 2 osoby</td>
-                    <td>740 Kč / osoba / noc</td>
-                  </tr>
-                  <tr>
-                    <td>Pokoj Standard — 3 osoby</td>
-                    <td>720 Kč / osoba / noc</td>
-                  </tr>
-                  <tr>
-                    <td>Pokoj Standard — 4 osoby</td>
-                    <td>700 Kč / osoba / noc</td>
-                  </tr>
-                  <tr>
-                    <td>Pokoj Nadstandard (kategorie A, A1, Zen)</td>
-                    <td>890 Kč / osoba / noc</td>
-                  </tr>
-                  <tr>
                     <td>Polopenze — večeře</td>
-                    <td>+ 195 Kč / osoba / den</td>
-                  </tr>
-                  <tr>
-                    <td>Pobyt na jednu noc nebo samostatné obsazení pokoje jedním hostem<br><span style="opacity: 0.75;">pokoje Standard a Turistický</span></td>
-                    <td>+ 200 Kč / osoba / noc</td>
-                  </tr>
-                  <tr>
-                    <td>Pobyt na jednu noc nebo samostatné obsazení pokoje jedním hostem<br><span style="opacity: 0.75;">pokoje Nadstandard — kategorie A, A1, Zen</span></td>
-                    <td>+ 300 Kč / osoba / noc</td>
+                    <td>+ 195 Kč / osoba / noc</td>
                   </tr>
                   <tr>
                     <td>Pes</td>
@@ -4327,15 +4338,21 @@ export const getPodminkyPageHTML = () => `
                   </tr>
                   <tr>
                     <td>Dobíjení elektrokola</td>
-                    <td>15 Kč / den</td>
+                    <td>15 Kč / kus / den</td>
                   </tr>
                   <tr>
-                    <td>Parkování na oploceném parkovišti</td>
+                    <td>Zimní parkování<br><span style="opacity: 0.75;">1. 11. – 15. 4., volitelná služba</span></td>
+                    <td>50 Kč / auto / noc</td>
+                  </tr>
+                  <tr>
+                    <td>Parkování u hotelu se závorou a kamerovým systémem</td>
                     <td>Zdarma</td>
                   </tr>
                 </tbody>
               </table>
-              <p class="legal-article-text" style="margin-top: 16px;">Závazná je vždy ta cena, kterou máte uvedenou ve finálním potvrzení rezervace. Ubytovatel může ceník do budoucna změnit, na již potvrzené rezervace to však nemá žádný vliv.</p>
+              <p class="legal-article-text" style="margin-top: 16px;">Uvedené částky slouží k představě o struktuře ceny a platí k datu zveřejnění tohoto dokumentu. <strong>Závazná je vždy ta cena, kterou máte uvedenou ve finálním potvrzení rezervace.</strong> Ubytovatel může ceník do budoucna změnit, na již potvrzené rezervace to však nemá žádný vliv.</p>
+
+              <p class="legal-article-text" style="margin-top: 16px;"><strong>Provoz mimo hlavní sezónu.</strong> V jarní a podzimní mezisezóně si dopřáváme kratší provozní přestávky na údržbu a odpočinek, takže hotel nemusí být otevřený každý termín a nabídka pokojů může být omezená. Rezervaci lze podat i na tato období — <strong>ubytovatel vám dostupnost potvrdí před výzvou k úhradě zálohy</strong>. Pokud termín nelze potvrdit, rezervace nevzniká a nic neplatíte.</p>
             </div>
 
             <div class="legal-article-card">
@@ -4427,7 +4444,7 @@ export const getPodminkyPageHTML = () => `
               <p class="legal-article-text">Za věci, které si do hotelu přinesete, odpovídá ubytovatel podle § 2945 a následujících občanského zákoníku.</p>
               <p class="legal-article-text">Za peníze, klenoty a jiné cennosti odpovídá ubytovatel jen do zákonem stanovené výše, pokud je nepřevzal do úschovy. <strong>Cennosti proto doporučujeme uložit u nás v recepci.</strong></p>
               <p class="legal-article-text">Škodu je nutné oznámit <strong>bez zbytečného odkladu, nejpozději do 15 dnů</strong> od chvíle, kdy jste se o ní dozvěděli. Později už nárok bohužel zaniká — plyne to přímo ze zákona.</p>
-              <p class="legal-article-text">Parkoviště je oplocené, se závorou a kamerovým systémem. <strong>Nejde však o hlídané parkoviště</strong> ve smyslu smlouvy o úschově a ubytovatel neodpovídá za věci ponechané ve vozidle.</p>
+              <p class="legal-article-text">Parkoviště je vybavené závorou a kamerovým systémem. <strong>Nejde však o hlídané parkoviště</strong> ve smyslu smlouvy o úschově a ubytovatel neodpovídá za věci ponechané ve vozidle.</p>
             </div>
 
             <div class="legal-article-card">
@@ -5719,37 +5736,6 @@ const initDestinationModal = () => {
   });
 
 
-  document.addEventListener('click', (e) => {
-    // 1. Otevření pop-up modalu z boční záložky nebo tlačítka
-    if (e.target && (e.target.closest('#announcement-side-tab') || e.target.closest('#btn-open-announcement-modal'))) {
-      e.preventDefault();
-      const annModal = document.getElementById('announcement-detail-modal');
-      if (annModal) {
-        annModal.classList.add('is-active');
-        document.body.style.overflow = 'hidden';
-      }
-    }
-
-    // 2. Zavření pop-up modalu tlačítkem ✕ nebo klikem na pozadí
-    if (e.target && (e.target.closest('#btn-close-announcement-modal') || e.target.closest('#announcement-modal-overlay'))) {
-      const annModal = document.getElementById('announcement-detail-modal');
-      if (annModal) {
-        annModal.classList.remove('is-active');
-        document.body.style.overflow = '';
-      }
-    }
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      const annModal = document.getElementById('announcement-detail-modal');
-      if (annModal && annModal.classList.contains('is-active')) {
-        annModal.classList.remove('is-active');
-        document.body.style.overflow = '';
-      }
-    }
-  });
-
   document.querySelectorAll('.category-destination-card, .btn-destination-detail').forEach(el => {
     el.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -5967,22 +5953,21 @@ const route = (isInitial = false) => {
     if (!isPreRenderedMatch) {
       app.innerHTML = getNewsPageHTML([]);
       initInteractivity();
-      const btnGoto = document.getElementById('btn-goto-news-list');
-      if (btnGoto) {
-        btnGoto.addEventListener('click', () => {
-          const listSec = document.getElementById('seznam-aktualit');
-          if (listSec) listSec.scrollIntoView({ behavior: 'smooth' });
-        });
-      }
-      getStoredNewsItems().then(allItems => {
-        const container = document.getElementById('news-main-inner-container');
-        if (container) {
-          const activeItems = (allItems || []).filter(item => item.is_active);
-          container.innerHTML = renderNewsCardsHTML(activeItems);
-          initScrollReveal();
-        }
+    }
+
+    const btnGoto = document.getElementById('btn-goto-news-list');
+    if (btnGoto) {
+      btnGoto.addEventListener('click', () => {
+        const listSec = document.getElementById('seznam-aktualit');
+        if (listSec) listSec.scrollIntoView({ behavior: 'smooth' });
       });
     }
+
+    // Seznam se načítá VŽDY, i když stránka přišla předrenderovaná ze
+    // statického HTML. Dřív se načítal jen při přechodu uvnitř webu,
+    // takže po obnovení stránky zůstaly viset aktuality zapsané v HTML —
+    // včetně těch, které už byly v administraci smazané.
+    nactiAktualityDoStranky();
   } else if (pageKey === 'category-detail') {
     let catId = cleanHash.replace('#', '');
     if (!catId || catId === 'category-detail') {
@@ -6033,12 +6018,19 @@ const route = (isInitial = false) => {
   syncCustomRoomNamesToDOM();
   syncDynamicRoomPricesToDOM();
   syncDisabledRoomsToDOM();
+  vlozOznameniDoStranky();
 
-  // Ceník se načte na pozadí; než dorazí, ukážou se ceny z minulé
-  // návštěvy, případně výchozí ceník ze souboru cenik.js — karty
-  // pokojů tak nikdy neblikají prázdnou cenou.
-  fetchCenik()
-    .then(() => syncDynamicRoomPricesToDOM())
+  // Ceník i pokoje se načtou na pozadí; než dorazí, ukážou se data
+  // z minulé návštěvy, případně výchozí ceník ze souboru cenik.js —
+  // karty pokojů tak nikdy neblikají prázdnou cenou.
+  //
+  // Pokoje musí doběhnout taky, ne jen ceník: nesou názvy a počty lůžek,
+  // a z lůžek se počítá, který sloupec ceníku je ten nejlevnější „od".
+  Promise.all([fetchCenik(), fetchRoomPrices()])
+    .then(() => {
+      syncCustomRoomNamesToDOM();
+      syncDynamicRoomPricesToDOM();
+    })
     .catch(() => {});
 
   // Automatické odskrolování na sekci Nabídka pokojů při přechodu z tlačítka Nabídka pokojů
@@ -6371,9 +6363,8 @@ window.addEventListener('hashchange', () => route(false));
 route(true);
 initCookieManager();
 
-refreshActiveBanner().then(() => {
-  // banner se doplní do už vykreslené stránky
-});
+initOznameni();
+refreshActiveBanner().then(vlozOznameniDoStranky);
 
 window.addEventListener('load', () => {
   const v = document.querySelector('[data-hero-video]');

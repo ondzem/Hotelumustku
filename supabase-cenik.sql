@@ -241,7 +241,9 @@ INSERT INTO public.cenik_nastaveni (klic, hodnota, popis, jednotka, poradi) VALU
   ('zimni_parkovani',   50, 'Zimní parkování',                'Kč / auto / noc',  4),
   ('priplatek_1_noc',  200, 'Příplatek za pobyt na 1 noc',    'Kč / osoba',       5),
   ('mestsky_poplatek',   0, 'Městský poplatek (0 = v ceně)',  'Kč / osoba / noc', 6),
-  ('zaloha_procent',    30, 'Záloha předem',                  '% z celkové ceny', 7)
+  ('zaloha_procent',    30, 'Záloha předem',                  '% z celkové ceny', 7),
+  ('vikend_standard',    60, 'Víkendový příplatek — Standard (pá, so, ne)',    'Kč / osoba / noc', 8),
+  ('vikend_nadstandard', 100, 'Víkendový příplatek — Nadstandard (pá, so, ne)', 'Kč / osoba / noc', 9)
 ON CONFLICT (klic) DO NOTHING;
 
 -- 5d) Lůžka a přistýlky podle současných dat webu.

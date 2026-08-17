@@ -293,7 +293,7 @@ export function generateEmail1RequestReceived({ reservation, room, pricing }) {
     <p style="color: #333333 !important;">děkujeme za zájem o ubytování v Hotelu u Můstku. Vaši žádost o rezervaci jsme v pořádku přijali.</p>
     
     <div class="alert-box" style="background-color: #fff9ed !important; color: #333333 !important;">
-      Rezervaci nyní ověřuje recepce hotelu. Jakmile termín potvrdíme, zašleme vám e-mailem pokyny k úhradě <strong>30% zálohy</strong>.
+      Rezervaci nyní ověřuje recepce hotelu. Jakmile termín potvrdíme, zašleme vám e-mailem pokyny k úhradě <strong>${pricing.depositPercentage}% zálohy</strong>.
     </div>
 
     <table class="info-table" style="background-color: #ffffff !important;">
@@ -302,8 +302,8 @@ export function generateEmail1RequestReceived({ reservation, room, pricing }) {
       <tr><td style="color: #555555 !important;">Termín:</td><td style="color: #1a1a1a !important;">${reservation.date_from} až ${reservation.date_to} (${pricing.nights} nocí)</td></tr>
       <tr><td style="color: #555555 !important;">Ubytovaní hosté:</td><td style="color: #1a1a1a !important;">${guestsSummary}</td></tr>
       <tr><td style="color: #555555 !important;">Celková cena pobytu:</td><td style="color: #1a1a1a !important;">${pricing.totalPrice} Kč</td></tr>
-      <tr><td style="color: #555555 !important;">Záloha k úhradě po schválení (30 %):</td><td><strong style="color:#697947 !important;">${pricing.depositPriceTotal} Kč</strong></td></tr>
-      <tr><td style="color: #555555 !important;">Doplatek na místě (70 %):</td><td style="color: #1a1a1a !important;">${pricing.remainingPriceTotal} Kč</td></tr>
+      <tr><td style="color: #555555 !important;">Záloha k úhradě po schválení (${pricing.depositPercentage} %):</td><td><strong style="color:#697947 !important;">${pricing.depositPriceTotal} Kč</strong></td></tr>
+      <tr><td style="color: #555555 !important;">Doplatek na místě (${100 - pricing.depositPercentage} %):</td><td style="color: #1a1a1a !important;">${pricing.remainingPriceTotal} Kč</td></tr>
     </table>
 
     <p style="font-size:13.5px; color:#666666 !important;">O schválení vás budeme informovat v co nejkratším čase.</p>
@@ -327,7 +327,7 @@ export function generateEmail1ReceptionNotification({ reservation, room, pricing
       <tr><td style="color: #555555 !important;">Seznam hostů (${guestsCount}):</td><td style="color: #1a1a1a !important;">${guestsHtml}</td></tr>
       <tr><td style="color: #555555 !important;">Pokoj:</td><td style="color: #1a1a1a !important;">${room.name}</td></tr>
       <tr><td style="color: #555555 !important;">Termín:</td><td style="color: #1a1a1a !important;">${reservation.date_from} až ${reservation.date_to} (${pricing.nights} nocí)</td></tr>
-      <tr><td style="color: #555555 !important;">Celková cena:</td><td style="color: #1a1a1a !important;">${formatCzechPrice(pricing.totalPrice)} (Záloha 30 %: ${formatCzechPrice(pricing.depositPriceTotal)})</td></tr>
+      <tr><td style="color: #555555 !important;">Celková cena:</td><td style="color: #1a1a1a !important;">${formatCzechPrice(pricing.totalPrice)} (Záloha ${pricing.depositPercentage} %: ${formatCzechPrice(pricing.depositPriceTotal)})</td></tr>
       ${reservation.guest_note ? `<tr><td style="color: #555555 !important;">Poznámka hosta:</td><td style="color: #1a1a1a !important;">${reservation.guest_note}</td></tr>` : ''}
     </table>
     ${getEmailFooter()}
@@ -346,26 +346,26 @@ export function generateEmail2ApprovalAndPaymentRequest({ reservation, room, pri
   });
 
   const html = `
-    ${getEmailHeader('Rezervace schválena — Pokyny k 30% záloze')}
+    ${getEmailHeader(`Rezervace schválena — Pokyny k ${pricing.depositPercentage}% záloze`)}
     <p style="color: #1a1a1a !important;">Vážený/á <strong>${reservation.guest_name}</strong>,</p>
     <p style="color: #333333 !important;">s radostí vám oznamujeme, že vaši žádost o rezervaci pokoje <strong>${room.name}</strong> v termínu <strong>${reservation.date_from} až ${reservation.date_to}</strong> recepce schválila!</p>
 
     <div class="alert-box-success" style="background-color: #f2f8f2 !important; color: #1a1a1a !important;">
-      <strong style="color: #27ae60 !important;">✅ Pokoj je pro vás rezervován.</strong> Pro dokončení závazné rezervace prosíme o úhradu 30% zálohy <strong style="color: #1a1a1a !important; background-color: #dceada !important; padding: 2px 7px !important; border-radius: 3px !important; border: 1px solid #b2d8b2 !important; font-weight: 800 !important;">do 3 pracovních dnů</strong>.
+      <strong style="color: #27ae60 !important;">✅ Pokoj je pro vás rezervován.</strong> Pro dokončení závazné rezervace prosíme o úhradu ${pricing.depositPercentage}% zálohy <strong style="color: #1a1a1a !important; background-color: #dceada !important; padding: 2px 7px !important; border-radius: 3px !important; border: 1px solid #b2d8b2 !important; font-weight: 800 !important;">do 3 pracovních dnů</strong>.
     </div>
 
     <div class="qr-section" style="background-color: #f9faf7 !important;">
-      <h3 style="margin:0 0 8px 0; color:#1a1a1a !important;">Rychlá úhrada QR kódem (30 % záloha)</h3>
+      <h3 style="margin:0 0 8px 0; color:#1a1a1a !important;">Rychlá úhrada QR kódem (${pricing.depositPercentage} % záloha)</h3>
       <p style="margin:0; font-size:13.5px; color:#666666 !important;">Naskenujte v aplikaci vaší mobilní banky:</p>
-      <img src="${qrUrl}" alt="QR Kód pro 30% zálohu" class="qr-img" style="display: block; margin: 16px auto; width: 220px; height: 220px; border: 1px solid #e0e0e0; border-radius: 8px; padding: 12px; background: #ffffff;">
+      <img src="${qrUrl}" alt="QR Kód pro ${pricing.depositPercentage}% zálohu" class="qr-img" style="display: block; margin: 16px auto; width: 220px; height: 220px; border: 1px solid #e0e0e0; border-radius: 8px; padding: 12px; background: #ffffff;">
       <p style="margin:4px 0 0 0; font-weight:bold; font-size:18px; color:#697947 !important;">Částka k úhradě: ${formatCzechPrice(pricing.depositPriceTotal)}</p>
     </div>
 
     <table class="info-table" style="background-color: #ffffff !important;">
       <tr><td style="color: #555555 !important;">Číslo bankovního účtu:</td><td style="color: #1a1a1a !important;"><strong>${BANK_ACCOUNT}</strong> (${BANK_NAME})</td></tr>
       <tr><td style="color: #555555 !important;">Variabilní symbol:</td><td style="color: #1a1a1a !important;"><strong>${vsClean}</strong></td></tr>
-      <tr><td style="color: #555555 !important;">Částka zálohy (30 %):</td><td><strong style="color:#697947 !important;">${formatCzechPrice(pricing.depositPriceTotal)}</strong></td></tr>
-      <tr><td style="color: #555555 !important;">Doplatek při příjezdu (70 %):</td><td style="color: #1a1a1a !important;">${formatCzechPrice(pricing.remainingPriceTotal)}</td></tr>
+      <tr><td style="color: #555555 !important;">Částka zálohy (${pricing.depositPercentage} %):</td><td><strong style="color:#697947 !important;">${formatCzechPrice(pricing.depositPriceTotal)}</strong></td></tr>
+      <tr><td style="color: #555555 !important;">Doplatek při příjezdu (${100 - pricing.depositPercentage} %):</td><td style="color: #1a1a1a !important;">${formatCzechPrice(pricing.remainingPriceTotal)}</td></tr>
       <tr><td style="color: #555555 !important;">Splatnost zálohy:</td><td><strong style="color: #d9534f !important; font-size: 15px !important; font-weight: 800 !important; text-decoration: underline !important;">Do 3 pracovních dnů</strong></td></tr>
     </table>
 
@@ -377,7 +377,7 @@ export function generateEmail2ApprovalAndPaymentRequest({ reservation, room, pri
     <p style="font-size:13.5px; color:#666666 !important;">Po připsání zálohy na náš účet vám ihned zašleme finální potvrzení rezervace.</p>
     ${getEmailFooter()}
   `;
-  return { subject: `Vaše rezervace ${reservation.code} byla schválena! Pokyny k úhradě 30% zálohy`, html };
+  return { subject: `Vaše rezervace ${reservation.code} byla schválena! Pokyny k úhradě ${pricing.depositPercentage}% zálohy`, html };
 }
 
 // E-MAIL 3: Zákazníkovi po schválení přijetí zálohy recepcí — Závazné potvrzení (Fáze 3)
@@ -389,7 +389,7 @@ export function generateEmail3FinalConfirmation({ reservation, room, pricing }) 
   const html = `
     ${getEmailHeader('Závazné potvrzení rezervace')}
     <p style="color: #1a1a1a !important;">Vážený/á <strong>${reservation.guest_name}</strong>,</p>
-    <p style="color: #333333 !important;">děkujeme! Vaše 30% záloha ve výši <strong>${formatCzechPrice(pricing.depositPriceTotal)}</strong> byla úspěšně přijata. Vaše rezervace je nyní <strong>závazně potvrzena</strong>.</p>
+    <p style="color: #333333 !important;">děkujeme! Vaše ${pricing.depositPercentage}% záloha ve výši <strong>${formatCzechPrice(pricing.depositPriceTotal)}</strong> byla úspěšně přijata. Vaše rezervace je nyní <strong>závazně potvrzena</strong>.</p>
 
     <div class="alert-box-success" style="background-color: #f2f8f2 !important; color: #1a1a1a !important;">
       <strong style="color: #27ae60 !important;">🎉 Těšíme se na vaši návštěvu!</strong> Ubytování máte plně garantováno.
@@ -400,8 +400,8 @@ export function generateEmail3FinalConfirmation({ reservation, room, pricing }) 
       <tr><td style="color: #555555 !important;">Pokoj:</td><td style="color: #1a1a1a !important;">${room.name}</td></tr>
       <tr><td style="color: #555555 !important;">Termín:</td><td style="color: #1a1a1a !important;">${reservation.date_from} až ${reservation.date_to} (${pricing.nights} nocí)</td></tr>
       <tr><td style="color: #555555 !important;">Ubytovaní hosté:</td><td style="color: #1a1a1a !important;">${guestsSummary}</td></tr>
-      <tr><td style="color: #555555 !important;">Zaplacená záloha (30 %):</td><td><span style="color:#27ae60 !important; font-weight:bold;">${formatCzechPrice(pricing.depositPriceTotal)} (Zaplaceno)</span></td></tr>
-      <tr><td style="color: #555555 !important;">Doplatek na místě (70 %):</td><td><strong style="color:#1a1a1a !important;">${formatCzechPrice(pricing.remainingPriceTotal)}</strong> (při příjezdu)</td></tr>
+      <tr><td style="color: #555555 !important;">Zaplacená záloha (${pricing.depositPercentage} %):</td><td><span style="color:#27ae60 !important; font-weight:bold;">${formatCzechPrice(pricing.depositPriceTotal)} (Zaplaceno)</span></td></tr>
+      <tr><td style="color: #555555 !important;">Doplatek na místě (${100 - pricing.depositPercentage} %):</td><td><strong style="color:#1a1a1a !important;">${formatCzechPrice(pricing.remainingPriceTotal)}</strong> (při příjezdu)</td></tr>
     </table>
 
     <div style="margin: 28px 0 24px 0; background-color: #F9FAF7 !important; border: 1px solid #E7E5DC !important; border-radius: 12px !important; padding: 20px 24px !important;">
@@ -486,7 +486,7 @@ export function generateEmailPaymentExpired({ reservation, room }) {
     <div style="background-color: #fff8f8 !important; border: 1px solid #f5c6cb !important; border-radius: 12px !important; padding: 18px 22px !important; margin: 24px 0 !important; color: #721c24 !important;">
       <strong style="color: #721c24 !important;">⚠️ Důvod uvolnění předběžné rezervace:</strong><br>
       <span style="font-size: 14.5px; color: #491217; line-height: 1.5; display: block; margin-top: 6px;">
-        Ve stanovené lhůtě 3 kalendářních dnů od zaslání platebních podkladů s QR kódem nebyly na účet hotelu připsány finanční prostředky 30% zálohy. Z tohoto důvodu byla vaše předběžná blokace termínu automaticky zrušena a termín byl uvolněn pro ostatní zájemce.
+        Ve stanovené lhůtě 3 kalendářních dnů od zaslání platebních podkladů s QR kódem nebyly na účet hotelu připsány finanční prostředky zálohy. Z tohoto důvodu byla vaše předběžná blokace termínu automaticky zrušena a termín byl uvolněn pro ostatní zájemce.
       </span>
     </div>
 

@@ -1,8 +1,9 @@
 import { MOCK_ROOMS, isSupabaseConfigured, supabase, getStoredReservations, saveStoredReservation, sanitizeReservationForSupabase, getStoredBlockedDates, getStoredDiscountCodes, getStoredRoomPrices, getStoredDisabledRooms, getStoredCenik, fetchCenik, getDeviceRedeemedDiscountCodes, markDiscountCodeRedeemedOnDevice, incrementDiscountCodeUsage } from '../lib/supabaseClient.js';
-import { calculateReservationPrice, generateReservationCode, generateManageToken, BANK_ACCOUNT, BANK_NAME, formatCzechPrice, validateSystemDateIntegrity, isWinterSeason } from '../utils/pricing.js';
-import { maxOsobNaPokoji } from '../utils/cenik.js';
+import { calculateReservationPrice, generateReservationCode, generateManageToken, BANK_ACCOUNT, BANK_NAME, formatCzechPrice, validateSystemDateIntegrity, isWinterSeason, VYCHOZI_NASTAVENI } from '../utils/pricing.js';
+import { maxOsobNaPokoji, obdobiSOmezenouDostupnosti } from '../utils/cenik.js';
 import { sendEmail, generateEmail1RequestReceived, generateEmail1ReceptionNotification } from '../utils/emailService.js';
 import { checkAndProcessExpiredUnpaidReservations } from '../utils/reservationExpiryService.js';
+import { fotkyPokoje } from '../utils/roomGalleries.js';
 
 function getTodayDateString() {
   const d = new Date();
@@ -93,6 +94,7 @@ export class BookingSystem {
       selectedRoomId: '',
       pendingRoomId: null,
       isCustomDropdownOpen: false,
+      isRoomGalleryOpen: false,
       preselectedFromExternal: false,
       dateFrom: null,
       dateTo: null,
@@ -690,6 +692,195 @@ export class BookingSystem {
     return null;
   }
 
+  /**
+   * Upozornění, že mimo hlavní sezónu nemusí být volno na každý termín.
+   *
+   * Ukazuje se až po zvolení termínu a jen když do takového období
+   * pobyt opravdu zasahuje — dřív by to byla jen další věta, kterou
+   * host přeskočí. Formulace nesmí znít jako odmítnutí: rezervaci lze
+   * podat vždy, hotel ji jen musí potvrdit.
+   */
+  /**
+   * Rozbalený náhled fotek vybraného pokoje.
+   *
+   * Dřív tlačítko odvádělo hosta na stránku Ubytování a rozdělaná
+   * rezervace se tím ztrácela z očí. Fotky se teď ukážou rovnou tady;
+   * na Ubytování vede až tlačítko „Detaily pokoje“ pro toho, kdo chce
+   * číst dál.
+   */
+  /**
+   * Oživí rozbalenou galerii — šipky, tažení myší a počítadlo fotek.
+   *
+   * Rolování mění jen scrollLeft, nikdy nevolá render(): překreslení
+   * formuláře by galerii přetočilo zpět na první fotku.
+   */
+  bindRoomGallery() {
+    const okno = this.container.querySelector('.booking-gallery-viewport');
+    if (!okno) return;
+
+    const stopa = okno.querySelector('.booking-gallery-track');
+    const citac = this.container.querySelector('.booking-gallery-index');
+    const krok = () => {
+      const s = okno.querySelector('.booking-gallery-slide');
+      const mezera = stopa ? parseFloat(getComputedStyle(stopa).columnGap || '0') || 0 : 0;
+      return s ? s.offsetWidth + mezera : okno.clientWidth;
+    };
+
+    const celkem = okno.querySelectorAll('.booking-gallery-slide').length;
+
+    // Pořadí si držíme zvlášť, ne dopočítané ze scrollLeft: plynulé
+    // rolování ještě běží, takže dvě rychlá kliknutí za sebou by se
+    // odvodila ze stejné polohy a druhé by nikam neposunulo.
+    let aktualni = 0;
+    const ukazCislo = () => { if (citac) citac.textContent = String(aktualni + 1); };
+
+    const skoc = (index) => {
+      aktualni = (index + celkem) % celkem; // za poslední fotkou zpět na začátek
+      okno.scrollTo({ left: aktualni * krok(), behavior: 'smooth' });
+      ukazCislo();
+    };
+
+    // Když host fotky přetáhne rukou, srovnáme pořadí podle skutečné polohy.
+    okno.addEventListener('scroll', () => {
+      aktualni = Math.min(celkem - 1, Math.max(0, Math.round(okno.scrollLeft / Math.max(1, krok()))));
+      ukazCislo();
+    }, { passive: true });
+
+    const prev = this.container.querySelector('.booking-gallery-prev');
+    const next = this.container.querySelector('.booking-gallery-next');
+    if (next) next.addEventListener('click', (e) => { e.preventDefault(); skoc(aktualni + 1); });
+    if (prev) prev.addEventListener('click', (e) => { e.preventDefault(); skoc(aktualni - 1); });
+
+    let drzi = false;
+    let zacatekX = 0;
+    let zacatekScroll = 0;
+    okno.addEventListener('mousedown', (e) => {
+      drzi = true;
+      zacatekX = e.pageX - okno.offsetLeft;
+      zacatekScroll = okno.scrollLeft;
+    });
+    const pust = () => { drzi = false; };
+    okno.addEventListener('mouseleave', pust);
+    okno.addEventListener('mouseup', pust);
+    okno.addEventListener('mousemove', (e) => {
+      if (!drzi) return;
+      e.preventDefault();
+      okno.scrollLeft = zacatekScroll - ((e.pageX - okno.offsetLeft) - zacatekX) * 1.6;
+    });
+  }
+
+  renderRoomGallery(room) {
+    const fotky = fotkyPokoje(room.id);
+    const kapacita = this.maxOsobProPokoj(room);
+
+    return `
+      <div class="booking-room-gallery" id="room-gallery-panel">
+        <div class="booking-gallery-head">
+          <span class="booking-gallery-nazev">${room.name}</span>
+          <span class="booking-gallery-pocet">${fotky.length} ${fotky.length === 1 ? 'fotka' : (fotky.length < 5 ? 'fotky' : 'fotek')}</span>
+        </div>
+
+        <div class="booking-gallery-stage">
+          <div class="booking-gallery-viewport">
+            <div class="booking-gallery-track">
+              ${fotky.map((src, i) => `
+                <div class="booking-gallery-slide">
+                  <img src="${src}" alt="${room.name} — fotka ${i + 1}"
+                       loading="${i === 0 ? 'eager' : 'lazy'}" decoding="async" draggable="false"
+                       onerror="this.onerror=null;this.src='/hezky pokoj 1.webp';">
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          ${fotky.length > 1 ? `
+            <button type="button" class="booking-gallery-sipka booking-gallery-prev" aria-label="Předchozí fotka">
+              <svg width="9" height="14" viewBox="0 0 8 12" fill="none" aria-hidden="true"><path d="M7 1L2 6L7 11" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>
+            </button>
+            <button type="button" class="booking-gallery-sipka booking-gallery-next" aria-label="Další fotka">
+              <svg width="9" height="14" viewBox="0 0 8 12" fill="none" aria-hidden="true"><path d="M1 1L6 6L1 11" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>
+            </button>
+            <span class="booking-gallery-citac"><strong class="booking-gallery-index">1</strong> / ${fotky.length}</span>
+          ` : ''}
+        </div>
+
+        <div class="booking-gallery-pata">
+          <span class="booking-gallery-popis">Kapacita až ${kapacita} ${kapacita < 5 ? 'osoby' : 'osob'} • ${room.floor === 'prizemi' ? 'Přízemí' : '1. patro'}</span>
+          <button type="button" class="btn-room-detail-odkaz" data-room-id="${room.id}">
+            Detaily pokoje
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  renderOmezenaDostupnostNote() {
+    if (!this.hasValidDates()) return '';
+
+    const obdobi = obdobiSOmezenouDostupnosti(
+      this.state.dateFrom,
+      this.calculateNights(),
+      this.cenik || {}
+    );
+    if (obdobi.length === 0) return '';
+
+    const nazvy = obdobi.length === 1
+      ? obdobi[0].toLowerCase()
+      : `${obdobi.slice(0, -1).join(', ').toLowerCase()} a ${obdobi[obdobi.length - 1].toLowerCase()}`;
+
+    return `
+      <div class="booking-season-note" style="margin-top: 14px; display: flex; gap: 10px; align-items: flex-start; background: #f7f6f1; border: 1px solid #e0dfd5; border-left: 3px solid #697947; border-radius: 6px; padding: 12px 14px;">
+        <span style="font-size: 16px; line-height: 1.3; flex-shrink: 0;">🌿</span>
+        <span style="font-size: 13px; color: #55554e; line-height: 1.6;">
+          Váš termín spadá do období <strong>${nazvy}</strong>. Mimo hlavní sezónu si dopřáváme
+          kratší provozní přestávky, takže nabídka pokojů může být omezená.
+          Rezervaci klidně odešlete — <strong>dostupnost vám obratem potvrdíme</strong>
+          a teprve potom platíte zálohu.
+        </span>
+      </div>
+    `;
+  }
+
+  /**
+   * Částka z ceníku pro popisky ve formuláři.
+   *
+   * Popisky MUSÍ brát stejné číslo jako výpočet. Dřív byly částky
+   * v textech napsané natvrdo, takže po změně v administraci formulář
+   * dál sliboval starou cenu a účtoval novou — polopenze hlásila 195 Kč,
+   * i když v ceníku bylo něco jiného. Nikdy sem nepiš číslo ručně.
+   */
+  castka(klic) {
+    const v = Number(this.cenik && this.cenik.nastaveni && this.cenik.nastaveni[klic]);
+    return Number.isFinite(v) ? v : VYCHOZI_NASTAVENI[klic];
+  }
+
+  /**
+   * Upozornění uvnitř kalendáře místo alert() z prohlížeče.
+   *
+   * Nativní okno se otevře mimo stránku, vypadá jako systémová chyba
+   * a na mobilu překryje celý displej. Hláška proto sedí přímo nad
+   * tlačítkem Potvrdit, ve stejném stylu jako upozornění na minimální
+   * délku pobytu.
+   */
+  ukazHlaskuVKalendari(text) {
+    const tlacitko = this.container.querySelector('#cal-confirm-dates-btn');
+    if (!tlacitko) return;
+
+    let hlaska = this.container.querySelector('.cal-hlaska-obsazeno');
+    if (!hlaska) {
+      hlaska = document.createElement('div');
+      hlaska.className = 'cal-hlaska-obsazeno';
+      hlaska.style.cssText = 'display: flex; align-items: flex-start; gap: 8px; background: #fdecea; border: 1px solid #f5c2bd; border-radius: 6px; padding: 10px 12px; margin-bottom: 10px; font-size: 13px; color: #a33; line-height: 1.5;';
+      tlacitko.parentNode.insertBefore(hlaska, tlacitko);
+    }
+    hlaska.innerHTML = `<span style="flex-shrink: 0;">⚠️</span><span>${text}</span>`;
+    hlaska.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+
+    clearTimeout(this._hlaskaCasovac);
+    this._hlaskaCasovac = setTimeout(() => hlaska.remove(), 6000);
+  }
+
   calculateNights() {
     if (!this.state.dateFrom || !this.state.dateTo) return 1;
     const start = new Date(this.state.dateFrom);
@@ -707,7 +898,6 @@ export class BookingSystem {
       return {
         nights,
         roomBasePriceTotal: 0,
-        singleNightSurchargeTotal: 0,
         halfBoardPriceTotal: 0,
         dogPriceTotal: 0,
         ebikePriceTotal: 0,
@@ -717,6 +907,9 @@ export class BookingSystem {
         discountLabel: '',
         formattedDiscountAmount: '0 Kč',
         totalPrice: 0,
+        // Bez vybraného pokoje se procento zálohy bere přímo z nastavení,
+        // jinak by popisek zálohy ukazoval „undefined %".
+        depositPercentage: this.castka('zaloha_procent'),
         depositPriceTotal: 0,
         remainingPriceTotal: 0,
         hasHalfBoard: this.state.hasHalfBoard,
@@ -1311,14 +1504,10 @@ export class BookingSystem {
             </div>
 
             <div class="terms-row-item">
-              <span class="terms-row-title">Příplatek za 1 noc a samostatné obsazení pokoje</span>
+              <span class="terms-row-title">Nejkratší možný pobyt</span>
               <div class="terms-row-desc">
-                <p>Při pobytu na <strong>pouze 1 noc</strong> nebo při <strong>samostatném obsazení pokoje jedním hostem</strong> se k ceně připočítává přiměřený příplatek:</p>
-                <ul class="terms-surcharge-list" style="margin: 8px 0 8px 18px; padding: 0; list-style-type: disc; font-size: 14.5px; color: #333333; line-height: 1.6;">
-                  <li><strong>Standardní a Turistické pokoje:</strong> +200 Kč / osoba / noc</li>
-                  <li><strong>Nadstandardní pokoje (A, A1, Zen):</strong> +300 Kč / osoba / noc</li>
-                </ul>
-                <p class="terms-sub-note">Tento příplatek kompenzuje zvýšené režijní náklady spojené s kompletní přípravou pokoje, úklidem a výměnou ložního prádla pro krátkodobý pobyt či neobsazené lůžko.</p>
+                <p>Rezervovat lze pobyt na <strong>minimálně 2 noci</strong>. Kratší pobyty hotel nepřijímá.</p>
+                <p class="terms-sub-note">Za samostatné obsazení pokoje jedním hostem se nic navíc nepřipočítává — je už zahrnuté v ceně za jednu osobu.</p>
               </div>
             </div>
 
@@ -1432,6 +1621,8 @@ export class BookingSystem {
                 </button>
               </div>
               
+              ${this.renderOmezenaDostupnostNote()}
+
               <div class="terms-card-bottom-row" style="margin-top: 14px;">
                 <button type="button" class="btn-terms-link" id="btn-open-terms-modal">
                   <span>Podmínky ubytování a storno</span>
@@ -1542,10 +1733,17 @@ export class BookingSystem {
                     <h4 class="preview-room-title">${room.name}</h4>
                     <p class="preview-desc">Kapacita: až ${this.maxOsobProPokoj(room)} ${this.maxOsobProPokoj(room) < 5 ? 'osoby' : 'osob'} • Včetně bufetové snídaně a Wi-Fi zdarma</p>
                   </div>
-                  <button type="button" class="btn btn-view-room-details" id="btn-view-room-details" data-room-id="${room.id}">
-                    <span>Zobrazit fotky pokoje</span>
+                  <button type="button" class="btn btn-view-room-details ${this.state.isRoomGalleryOpen ? 'is-open' : ''}"
+                          id="btn-view-room-details" data-room-id="${room.id}"
+                          aria-expanded="${this.state.isRoomGalleryOpen ? 'true' : 'false'}" aria-controls="room-gallery-panel">
+                    <span>${this.state.isRoomGalleryOpen ? 'Skrýt fotky pokoje' : 'Zobrazit fotky pokoje'}</span>
+                    <svg class="btn-room-gallery-arrow" width="12" height="7" viewBox="0 0 12 7" fill="none" aria-hidden="true">
+                      <path d="M1 1L6 6L11 1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    </svg>
                   </button>
                 </div>
+
+                ${this.state.isRoomGalleryOpen ? this.renderRoomGallery(room) : ''}
               ` : `
                 <div class="room-select-prompt" style="background: #FAF9F5; border: 1.5px dashed #C8C6B9; border-radius: 4px; padding: 18px 20px; text-align: left; margin-top: 14px;">
                   <h4 style="margin: 0 0 4px 0; font-size: 15.5px; font-weight: 700; color: #1C1C19;">Zatím jste nevybrali žádný pokoj</h4>
@@ -1577,7 +1775,7 @@ export class BookingSystem {
                   <label class="checkbox-addon-item">
                     <input type="checkbox" id="addon-halfboard" ${this.state.hasHalfBoard ? 'checked' : ''}>
                     <span class="addon-text">
-                      <strong>Dokoupit polopenzi</strong> (+195 Kč / osoba / noc)
+                      <strong>Dokoupit polopenzi</strong> (+${this.castka('polopenze')} Kč / osoba / noc)
                       <small>Poctivá teplá večeře podávaná v hotelové restauraci.</small>
                     </span>
                   </label>
@@ -1596,7 +1794,7 @@ export class BookingSystem {
                 <label class="checkbox-addon-item">
                   <input type="checkbox" id="addon-dog" ${this.state.hasDog ? 'checked' : ''}>
                   <span class="addon-text">
-                    <strong>Pobyt s pejskem</strong> (+150 Kč / noc pro celý pokoj)
+                    <strong>Pobyt s pejskem</strong> (+${this.castka('pes')} Kč / noc pro celý pokoj)
                     <small>⚠️ Pouze po předchozí domluvě s recepcí. Uveďte prosím rasu a velikost pejska do poznámky v 2. kroku rezervace.</small>
                   </span>
                 </label>
@@ -1605,7 +1803,7 @@ export class BookingSystem {
                   <label class="checkbox-addon-item">
                     <input type="checkbox" id="addon-ebike" ${this.state.hasEbike ? 'checked' : ''}>
                     <span class="addon-text">
-                      <strong>Nabíjení elektrokola</strong> (+15 Kč / den / ks)
+                      <strong>Nabíjení elektrokola</strong> (+${this.castka('elektrokolo')} Kč / den / ks)
                       <small>Bezpečná úschovna a dobíjecí stanice v areálu.</small>
                     </span>
                   </label>
@@ -1626,7 +1824,7 @@ export class BookingSystem {
                     <label class="checkbox-addon-item">
                       <input type="checkbox" id="addon-winter-parking" ${this.state.hasWinterParking ? 'checked' : ''}>
                       <span class="addon-text">
-                        <strong>Zimní parkování u hotelu</strong> (+50 Kč / auto / noc)
+                        <strong>Zimní parkování u hotelu</strong> (+${this.castka('zimni_parkovani')} Kč / auto / noc)
                         <small>Příspěvek na pravidelnou zimní údržbu, odhrnování sněhu a údržbu příjezdové dráhy v zimním období (1. 11. – 15. 4.).</small>
                       </span>
                     </label>
@@ -1676,18 +1874,6 @@ export class BookingSystem {
                 </div>
               </div>
 
-              ${pricing.discountAmount > 0 ? `
-                <div class="summary-total-divider"></div>
-                <div class="summary-rows">
-                  <div class="summary-row" style="color: #2e7d32; font-weight: 700;">
-                    <div class="row-info">
-                      <span class="row-label">✓ ${pricing.discountLabel}</span>
-                    </div>
-                    <span class="row-price">-${pricing.formattedDiscountAmount}</span>
-                  </div>
-                </div>
-              ` : ''}
-
               <!-- PROMO CODE INPUT BOX -->
               <div class="promo-code-box" style="margin-top: 16px; padding-top: 14px; border-top: 1px dashed #e0dfd5;">
                 <label for="promo-code-input" style="font-size: 13.5px; font-weight: 700; color: #4a5a24; display: block; margin-bottom: 8px;">Máte slevový kód?</label>
@@ -1701,20 +1887,27 @@ export class BookingSystem {
                 ${this.discountSuccessMsg ? `<div style="color: #2e7d32; font-size: 12.5px; font-weight: 700; margin-top: 8px; display: flex; align-items: center; gap: 4px;">✓ ${this.discountSuccessMsg}</div>` : ''}
               </div>
 
-              ${(pricing.singleNightSurchargeTotal > 0 || pricing.hasHalfBoard || pricing.hasDog || pricing.hasEbike || pricing.hasWinterParking || pricing.cityTax > 0) ? `
+              <!-- ROZPIS CENY: ubytování + doplňky + sleva pod sebou, ať si host umí sám sečíst celkovou částku -->
+              ${((room && this.state.dateFrom && this.state.dateTo) || pricing.hasHalfBoard || pricing.hasDog || pricing.hasEbike || pricing.hasWinterParking || pricing.cityTax > 0 || pricing.discountAmount > 0) ? `
                 <div class="summary-total-divider"></div>
                 <div class="summary-rows">
-                  ${pricing.singleNightSurchargeTotal > 0 ? `
-                    <div class="summary-row surcharge">
+                  ${room && this.state.dateFrom && this.state.dateTo ? `
+                    <div class="summary-row">
                       <div class="row-info">
-                        <span class="row-label">
-                          ${pricing.surchargeReason === 'single_occupancy'
-                            ? 'Příplatek za neobsazené lůžko'
-                            : (pricing.surchargeReason === 'both' ? 'Příplatek za 1 noc & 1 osobu' : 'Příplatek za 1 noc')}
-                        </span>
-                        <span class="row-details">(+${pricing.singleNightRatePerPerson} Kč / ${pricing.surchargeReason === 'single_occupancy' ? 'noc' : 'osoba'})</span>
+                        <span class="row-label">Ubytování se snídaní</span>
+                        <span class="row-details">(${pricing.totalGuests}x os, ${nights}x noc)</span>
                       </div>
-                      <span class="row-price">+${pricing.singleNightSurchargeTotal} Kč</span>
+                      <span class="row-price">${pricing.formattedAccommodationPrice}</span>
+                    </div>
+                  ` : ''}
+
+                  ${pricing.cityTax > 0 ? `
+                    <div class="summary-row">
+                      <div class="row-info">
+                        <span class="row-label">Poplatek z pobytu</span>
+                        <span class="row-details">(+${this.castka('mestsky_poplatek')} Kč/os/noc • ${pricing.totalGuests || this.state.adults}x os, ${nights}x noc)</span>
+                      </div>
+                      <span class="row-price">+${pricing.cityTax} Kč</span>
                     </div>
                   ` : ''}
 
@@ -1722,7 +1915,7 @@ export class BookingSystem {
                     <div class="summary-row">
                       <div class="row-info">
                         <span class="row-label">Dokoupená polopenze</span>
-                        <span class="row-details">(+195 Kč/os/noc • ${pricing.halfBoardCount}x os, ${nights}x noc)</span>
+                        <span class="row-details">(+${this.castka('polopenze')} Kč/os/noc • ${pricing.halfBoardCount}x os, ${nights}x noc)</span>
                       </div>
                       <span class="row-price">+${pricing.halfBoardPriceTotal} Kč</span>
                     </div>
@@ -1732,7 +1925,7 @@ export class BookingSystem {
                     <div class="summary-row">
                       <div class="row-info">
                         <span class="row-label">Pobyt s pejskem</span>
-                        <span class="row-details">(+150 Kč/noc za pokoj • ${nights}x noc)</span>
+                        <span class="row-details">(+${this.castka('pes')} Kč/noc za pokoj • ${nights}x noc)</span>
                       </div>
                       <span class="row-price">+${pricing.dogPriceTotal} Kč</span>
                     </div>
@@ -1742,7 +1935,7 @@ export class BookingSystem {
                     <div class="summary-row">
                       <div class="row-info">
                         <span class="row-label">Nabíjení elektrokola</span>
-                        <span class="row-details">(+15 Kč/den • ${pricing.ebikeCount}x ks, ${nights}x noc)</span>
+                        <span class="row-details">(+${this.castka('elektrokolo')} Kč/den • ${pricing.ebikeCount}x ks, ${nights}x noc)</span>
                       </div>
                       <span class="row-price">+${pricing.ebikePriceTotal} Kč</span>
                     </div>
@@ -1752,15 +1945,29 @@ export class BookingSystem {
                     <div class="summary-row">
                       <div class="row-info">
                         <span class="row-label">Zimní parkování u hotelu</span>
-                        <span class="row-details">(+50 Kč/noc • ${pricing.parkingCarsCount}x auto, ${nights}x noc)</span>
+                        <span class="row-details">(+${this.castka('zimni_parkovani')} Kč/noc • ${pricing.parkingCarsCount}x auto, ${nights}x noc)</span>
                       </div>
                       <span class="row-price">+${pricing.winterParkingPriceTotal} Kč</span>
+                    </div>
+                  ` : ''}
+
+                  ${pricing.discountAmount > 0 ? `
+                    <div class="summary-row" style="color: #2e7d32; font-weight: 700;">
+                      <div class="row-info">
+                        <span class="row-label">✓ ${pricing.discountLabel}</span>
+                      </div>
+                      <span class="row-price">-${pricing.formattedDiscountAmount}</span>
                     </div>
                   ` : ''}
                 </div>
               ` : ''}
 
               <div class="summary-total-divider"></div>
+
+              <div class="summary-total-row">
+                <span>Celková cena pobytu s DPH:</span>
+                <span class="total-price-amount">${formatCzechPrice(pricing.totalPrice)}</span>
+              </div>
 
               <div class="summary-clean-deposit">
                 <div class="deposit-clean-row zero-deposit">
@@ -1774,7 +1981,7 @@ export class BookingSystem {
                 <div class="deposit-clean-row main-deposit">
                   <div class="deposit-clean-info">
                     <span class="deposit-clean-title">1. Záloha po schválení recepcí</span>
-                    <small class="deposit-clean-sub">(30 % záloha z celkové ceny pobytu)</small>
+                    <small class="deposit-clean-sub">(${pricing.depositPercentage} % záloha z celkové ceny pobytu)</small>
                   </div>
                   <span class="deposit-clean-amount">${formatCzechPrice(pricing.depositPriceTotal)}</span>
                 </div>
@@ -1782,15 +1989,10 @@ export class BookingSystem {
                 <div class="deposit-clean-row remaining-deposit">
                   <div class="deposit-clean-info">
                     <span class="deposit-clean-title">2. Doplatek při příjezdu</span>
-                    <small class="deposit-clean-sub">(70 % doplatek na místě na recepci)</small>
+                    <small class="deposit-clean-sub">(${100 - pricing.depositPercentage} % doplatek na místě na recepci)</small>
                   </div>
                   <span class="deposit-clean-amount">${formatCzechPrice(pricing.remainingPriceTotal)}</span>
                 </div>
-              </div>
-
-              <div class="summary-total-row">
-                <span>Celková cena pobytu s DPH:</span>
-                <span class="total-price-amount">${formatCzechPrice(pricing.totalPrice)}</span>
               </div>
 
               <div class="summary-perks">
@@ -2109,29 +2311,23 @@ export class BookingSystem {
                   </div>
                 </div>
 
-                ${(currentPricing.singleNightSurchargeTotal > 0 || currentPricing.hasHalfBoard || currentPricing.hasDog || currentPricing.hasEbike || currentPricing.discountAmount > 0 || currentPricing.cityTax > 0) ? `
-                  <div class="summary-total-divider"></div>
-                  <div class="summary-rows">
-                    ${currentPricing.discountAmount > 0 ? `
-                      <div class="summary-row discount-row" style="color: #2e7d32; font-weight: 700;">
-                        <div class="row-info">
-                          <span class="row-label">✓ ${currentPricing.discountLabel}</span>
-                        </div>
-                        <span class="row-price">-${currentPricing.formattedDiscountAmount}</span>
+                <div class="summary-total-divider"></div>
+                <div class="summary-rows">
+                    <div class="summary-row">
+                      <div class="row-info">
+                        <span class="row-label">Ubytování se snídaní</span>
+                        <span class="row-details">(${currentPricing.totalGuests}x os, ${nights}x noc)</span>
                       </div>
-                    ` : ''}
+                      <span class="row-price">${currentPricing.formattedAccommodationPrice}</span>
+                    </div>
 
-                    ${currentPricing.singleNightSurchargeTotal > 0 ? `
-                      <div class="summary-row surcharge">
+                    ${currentPricing.cityTax > 0 ? `
+                      <div class="summary-row">
                         <div class="row-info">
-                          <span class="row-label">
-                            ${currentPricing.surchargeReason === 'single_occupancy'
-                              ? 'Příplatek za neobsazené lůžko'
-                              : (currentPricing.surchargeReason === 'both' ? 'Příplatek za 1 noc & 1 osobu' : 'Příplatek za 1 noc')}
-                          </span>
-                          <span class="row-details">(+${currentPricing.singleNightRatePerPerson} Kč / ${currentPricing.surchargeReason === 'single_occupancy' ? 'noc' : 'osoba'})</span>
+                          <span class="row-label">Poplatek z pobytu</span>
+                          <span class="row-details">(+${this.castka('mestsky_poplatek')} Kč/os/noc)</span>
                         </div>
-                        <span class="row-price">+${currentPricing.singleNightSurchargeTotal} Kč</span>
+                        <span class="row-price">+${currentPricing.cityTax} Kč</span>
                       </div>
                     ` : ''}
 
@@ -2139,7 +2335,7 @@ export class BookingSystem {
                       <div class="summary-row">
                         <div class="row-info">
                           <span class="row-label">Dokoupená polopenze</span>
-                          <span class="row-details">(+195 Kč/os/noc • ${currentPricing.halfBoardCount}x os, ${nights}x noc)</span>
+                          <span class="row-details">(+${this.castka('polopenze')} Kč/os/noc • ${currentPricing.halfBoardCount}x os, ${nights}x noc)</span>
                         </div>
                         <span class="row-price">+${currentPricing.halfBoardPriceTotal} Kč</span>
                       </div>
@@ -2149,7 +2345,7 @@ export class BookingSystem {
                       <div class="summary-row">
                         <div class="row-info">
                           <span class="row-label">Pobyt s pejskem</span>
-                          <span class="row-details">(+150 Kč/noc za pokoj • ${nights}x noc)</span>
+                          <span class="row-details">(+${this.castka('pes')} Kč/noc za pokoj • ${nights}x noc)</span>
                         </div>
                         <span class="row-price">+${currentPricing.dogPriceTotal} Kč</span>
                       </div>
@@ -2159,15 +2355,38 @@ export class BookingSystem {
                       <div class="summary-row">
                         <div class="row-info">
                           <span class="row-label">Nabíjení elektrokola</span>
-                          <span class="row-details">(+15 Kč/den • ${currentPricing.ebikeCount}x ks, ${nights}x noc)</span>
+                          <span class="row-details">(+${this.castka('elektrokolo')} Kč/den • ${currentPricing.ebikeCount}x ks, ${nights}x noc)</span>
                         </div>
                         <span class="row-price">+${currentPricing.ebikePriceTotal} Kč</span>
                       </div>
                     ` : ''}
-                  </div>
-                ` : ''}
+
+                    ${currentPricing.hasWinterParking ? `
+                      <div class="summary-row">
+                        <div class="row-info">
+                          <span class="row-label">Zimní parkování u hotelu</span>
+                          <span class="row-details">(+${this.castka('zimni_parkovani')} Kč/noc • ${currentPricing.parkingCarsCount}x auto, ${nights}x noc)</span>
+                        </div>
+                        <span class="row-price">+${currentPricing.winterParkingPriceTotal} Kč</span>
+                      </div>
+                    ` : ''}
+
+                    ${currentPricing.discountAmount > 0 ? `
+                      <div class="summary-row discount-row" style="color: #2e7d32; font-weight: 700;">
+                        <div class="row-info">
+                          <span class="row-label">✓ ${currentPricing.discountLabel}</span>
+                        </div>
+                        <span class="row-price">-${currentPricing.formattedDiscountAmount}</span>
+                      </div>
+                    ` : ''}
+                </div>
 
                 <div class="summary-total-divider"></div>
+
+                <div class="summary-total-row">
+                  <span>Celková cena pobytu s DPH:</span>
+                  <span class="total-price-amount">${formatCzechPrice(currentPricing.totalPrice)}</span>
+                </div>
 
                 <div class="summary-clean-deposit">
                   <div class="deposit-clean-row zero-deposit">
@@ -2181,7 +2400,7 @@ export class BookingSystem {
                   <div class="deposit-clean-row main-deposit">
                     <div class="deposit-clean-info">
                       <span class="deposit-clean-title">1. Záloha po schválení recepcí</span>
-                      <small class="deposit-clean-sub">(30 % záloha z celkové ceny pobytu)</small>
+                      <small class="deposit-clean-sub">(${currentPricing.depositPercentage} % záloha z celkové ceny pobytu)</small>
                     </div>
                     <span class="deposit-clean-amount">${formatCzechPrice(currentPricing.depositPriceTotal)}</span>
                   </div>
@@ -2189,15 +2408,10 @@ export class BookingSystem {
                   <div class="deposit-clean-row remaining-deposit">
                     <div class="deposit-clean-info">
                       <span class="deposit-clean-title">2. Doplatek při příjezdu</span>
-                      <small class="deposit-clean-sub">(70 % doplatek na místě na recepci)</small>
+                      <small class="deposit-clean-sub">(${100 - currentPricing.depositPercentage} % doplatek na místě na recepci)</small>
                     </div>
                     <span class="deposit-clean-amount">${formatCzechPrice(currentPricing.remainingPriceTotal)}</span>
                   </div>
-                </div>
-
-                <div class="summary-total-row">
-                  <span>Celková cena pobytu s DPH:</span>
-                  <span class="total-price-amount">${formatCzechPrice(currentPricing.totalPrice)}</span>
                 </div>
 
                 <div class="summary-perks">
@@ -2273,9 +2487,9 @@ export class BookingSystem {
                 <li style="display: grid; grid-template-columns: 44px 1fr; gap: 18px; padding: 20px 0; border-top: 1px solid #EFEEE7;">
                   <span style="width: 44px; height: 44px; border-radius: 50%; background: #EDF2E4; color: #697947; display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 700; flex-shrink: 0;">2</span>
                   <div>
-                    <h3 style="margin: 4px 0 6px; font-size: clamp(17px, 1.7vw, 20px); font-weight: 700; color: #1C1C19;">Výzva k úhradě 30% zálohy</h3>
+                    <h3 style="margin: 4px 0 6px; font-size: clamp(17px, 1.7vw, 20px); font-weight: 700; color: #1C1C19;">Výzva k úhradě ${pricing.depositPercentage}% zálohy</h3>
                     <p style="margin: 0; color: #55554E; font-size: 14.5px; line-height: 1.5;">
-                      Jakmile termín schválíme, zašleme vám e-mail s pokyny k úhradě 30% zálohy (<strong style="color: #1C1C19;">${formatCzechPrice(pricing.depositPriceTotal)}</strong>) s QR kódem.
+                      Jakmile termín schválíme, zašleme vám e-mail s pokyny k úhradě ${pricing.depositPercentage}% zálohy (<strong style="color: #1C1C19;">${formatCzechPrice(pricing.depositPriceTotal)}</strong>) s QR kódem.
                     </p>
                   </div>
                 </li>
@@ -2285,7 +2499,7 @@ export class BookingSystem {
                   <div>
                     <h3 style="margin: 4px 0 6px; font-size: clamp(17px, 1.7vw, 20px); font-weight: 700; color: #1C1C19;">Závazné potvrzení pobytu</h3>
                     <p style="margin: 0; color: #55554E; font-size: 14.5px; line-height: 1.5;">
-                      Po přijetí zálohy vám zašleme finální potvrzení. Doplatek 70 % (<strong style="color: #1C1C19;">${formatCzechPrice(pricing.remainingPriceTotal)}</strong>) zaplatíte na místě při příjezdu.
+                      Po přijetí zálohy vám zašleme finální potvrzení. Doplatek ${100 - pricing.depositPercentage} % (<strong style="color: #1C1C19;">${formatCzechPrice(pricing.remainingPriceTotal)}</strong>) zaplatíte na místě při příjezdu.
                     </p>
                   </div>
                 </li>
@@ -2472,11 +2686,23 @@ export class BookingSystem {
       if (btnViewRoom) {
         btnViewRoom.addEventListener('click', (e) => {
           e.preventDefault();
-          const room = this.getSelectedRoom();
-          if (!room) return;
-          window.location.href = '/ubytovani#rozdeleni-pokoju?open=' + encodeURIComponent(room.id);
+          if (!this.getSelectedRoom()) return;
+          this.state.isRoomGalleryOpen = !this.state.isRoomGalleryOpen;
+          this.render();
         });
       }
+
+      // Odkaz na podrobnosti — hosta pustíme na stránku Ubytování až tady,
+      // ne už při zobrazení fotek.
+      const btnDetail = this.container.querySelector('.btn-room-detail-odkaz');
+      if (btnDetail) {
+        btnDetail.addEventListener('click', (e) => {
+          e.preventDefault();
+          window.location.href = '/ubytovani';
+        });
+      }
+
+      this.bindRoomGallery();
 
       this.container.querySelectorAll('.btn-counter').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -2853,7 +3079,7 @@ export class BookingSystem {
             }
 
             if (maPlnyDen) {
-              alert('V termínu je den, kdy je hotel plně obsazený. Vyberte prosím jiný termín.');
+              this.ukazHlaskuVKalendari('V tomto termínu je den, kdy je hotel plně obsazený. Vyberte prosím jiný termín.');
               return;
             }
 

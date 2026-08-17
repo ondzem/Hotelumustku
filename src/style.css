@@ -13935,3 +13935,126 @@ html.anim-ready .review-card[data-anim="up"] {
 html.anim-ready .review-card[data-anim].is-in {
   transform: none;
 }
+
+/* ---------------------------------------------------------------
+   CENÍK V ADMINISTRACI — obrazovka Pokoje
+
+   Na šířku se vejdou čtyři sloupce vedle sebe. Na mobilu ne, takže
+   se řádek zalomí: název přes celou šířku a pod ním čísla se svými
+   popisky. Bez popisků by po zmizení hlavičky nešlo poznat, které
+   políčko je které.
+   --------------------------------------------------------------- */
+
+.cenik-pokoj-hlavicka {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) 96px 96px 78px;
+  gap: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1.5px solid #e0dfd5;
+  margin-bottom: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #55554e;
+}
+
+.cenik-pokoj-radek {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) 96px 96px 78px;
+  gap: 10px;
+  align-items: center;
+}
+
+.cenik-pokoj-radek .cenik-pole-popisek {
+  display: none;
+}
+
+.cenik-pokoj-radek .cenik-max-osob {
+  font-size: 14px;
+  font-weight: 800;
+  color: #697947;
+  text-align: right;
+  white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+  .cenik-pokoj-hlavicka {
+    display: none;
+  }
+
+  .cenik-pokoj-radek {
+    grid-template-columns: 1fr 1fr auto;
+    gap: 8px 10px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #efeee7;
+  }
+
+  .cenik-pokoj-radek > .cenik-nazev-input {
+    grid-column: 1 / -1;
+  }
+
+  .cenik-pokoj-radek .cenik-pole-popisek {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #7a7a70;
+    margin-bottom: 4px;
+  }
+
+  .cenik-pokoj-radek .cenik-max-osob {
+    align-self: end;
+    padding-bottom: 11px;
+  }
+}
+
+/* ---------------------------------------------------------------
+   CENÍK V ADMINISTRACI — rám okna
+
+   Okno je flex sloupec: hlavička, rolující obsah, přilepená lišta
+   s tlačítkem. Mobilní pravidlo pro .admin-block-modal ale nastavuje
+   padding s !important, což přebilo inline styl a pod lištou zůstala
+   dvacetipixelová mezera. Vnitřní odsazení proto řeší až .cenik-obsah
+   a .cenik-listaakci, samo okno musí mít nulu.
+   --------------------------------------------------------------- */
+
+.admin-modal-overlay-prices .cenik-modal {
+  padding: 0 !important;
+}
+
+@media (max-width: 700px) {
+  .admin-modal-overlay-prices .cenik-obsah,
+  .admin-modal-overlay-prices .cenik-listaakci {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  /* Na úzkém displeji ať tlačítka nesedí namačkaná vedle sebe */
+  .admin-modal-overlay-prices .cenik-listaakci {
+    gap: 8px;
+  }
+}
+
+/* Načítání aktualit — než dorazí data z databáze.
+   Seznam se do HTML nezapisuje natvrdo, aby na webu nezůstávaly
+   viset novinky smazané v administraci. */
+.news-nacitani {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 60px 20px;
+  font-size: 15px;
+  color: #6b6b60;
+}
+
+.news-nacitani-kolecko {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #e0dfd5;
+  border-top-color: #697947;
+  border-radius: 50%;
+  animation: news-nacitani-otaceni 0.8s linear infinite;
+}
+
+@keyframes news-nacitani-otaceni {
+  to { transform: rotate(360deg); }
+}

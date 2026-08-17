@@ -35,7 +35,7 @@
     <meta name="twitter:image" content="https://umustku.cz/Fotky%20Aktivit/Aktulity%20hero%20sekce.webp" />
 
     <!-- Google Fonts -->
-    <link rel="preconnect" href="https://jpvnvjcktpxyxrvsdukm.supabase.co" crossorigin>
+    <link rel="preconnect" href="https://okgbsclaenbxfvxrbjgm.supabase.co" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
@@ -324,34 +324,15 @@
 
       <!-- 2. HLAVNÍ SEKCE VÝPISU AKTUALIT -->
       <section class="news-main-section" id="seznam-aktualit">
-        <div class="news-main-inner">
-          
-            <div class="news-cards-list" data-anim-group>
-              
-                    <article class="news-card news-card-with-image " data-anim="up">
-                      <div class="news-card-content">
-                        <div class="news-card-date">🗓️ 31. července 2026</div>
-                        <h2 class="news-card-title">Přírodní otužování u řeky Desné</h2>
-                        <div class="news-card-text">Pro všechny naše hosty i návštěvníky jsme připravili možnost osvěžujícího otužování přímo u horského splavu. Přírodní voda z Jizerských hor poskytuje dokonale svěží restart pro vaše tělo i mysl po náročném dni plném turistiky či lyžování.</div>
-                      </div>
-                      <div class="news-card-image-wrap">
-                        <img src="/Uvodni stranka/stravovani.webp" alt="Přírodní otužování u řeky Desné" class="news-card-image" loading="lazy" decoding="async">
-                      </div>
-                    </article>
-                  
-                    <article class="news-card news-card-with-image news-card-reverse" data-anim="up">
-                      <div class="news-card-content">
-                        <div class="news-card-date">🗓️ 31. července 2026</div>
-                        <h2 class="news-card-title">Letní sezóna 2026 v Hotelu u Můstku zahájena</h2>
-                        <div class="news-card-text">S radostí vás vítáme v plném letním provozu! Připravili jsme pro vás novou letní terásku nad splavem Bílé Desné, večerní posezení u ohniště a bohaté snídaňové i večeřové bufety.<br><br>Přijďte si užít horský klid, čerstvý vzduch a osvěžení u splavu.</div>
-                      </div>
-                      <div class="news-card-image-wrap">
-                        <img src="/stravovani/zahradka.webp" alt="Letní sezóna 2026 v Hotelu u Můstku zahájena" class="news-card-image" loading="lazy" decoding="async">
-                      </div>
-                    </article>
-                  
-            </div>
-          
+        <!-- Aktuality se NEVKLÁDAJÍ natvrdo. Dřív tu byly zapsané rovnou
+             v HTML a po smazání v administraci tady zůstávaly viset —
+             návštěvník po obnovení stránky viděl novinky, které už
+             neexistovaly. Seznam plní vždy main.js z tabulky `aktuality`. -->
+        <div class="news-main-inner" id="news-main-inner-container">
+          <div class="news-nacitani" aria-live="polite" aria-busy="true">
+            <span class="news-nacitani-kolecko" aria-hidden="true"></span>
+            <span>Načítáme aktuality…</span>
+          </div>
         </div>
       </section>
 

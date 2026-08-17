@@ -1,5 +1,5 @@
 import { MOCK_ROOMS, getStoredReservations, updateStoredReservationStatus, toggleStoredReservationArchive, deleteStoredReservation, getStoredBlockedDates, saveStoredBlockedDate, deleteStoredBlockedDate, getStoredDiscountCodes, saveStoredDiscountCode, deleteStoredDiscountCode, getStoredRoomPrices, saveStoredRoomPrice, getStoredCustomRoomNames, saveStoredCustomRoomName, getStoredDisabledRooms, saveStoredDisabledRoom, getStoredNewsItems, saveStoredNewsItem, deleteStoredNewsItem, reorderNewsItem, uploadNewsImage, isSupabaseConfigured, supabase, getStoredReviews, updateStoredReviewStatus, getStoredCenik, fetchCenik, doplnPriznakyZeStarychDat, ocistiHosty } from '../lib/supabaseClient.js';
-import { calculateReservationPrice, generateSpaydQrUrl, BANK_ACCOUNT, formatCzechPrice, getVariableSymbol } from '../utils/pricing.js';
+import { calculateReservationPrice, generateSpaydQrUrl, BANK_ACCOUNT, formatCzechPrice, getVariableSymbol, procentoZalohy } from '../utils/pricing.js';
 import { sendEmail, generateEmail2ApprovalAndPaymentRequest, generateEmail3FinalConfirmation, generateEmailCancellation, getEmailLogs, sendAllTestEmailsTo } from '../utils/emailService.js';
 import { checkAndProcessExpiredUnpaidReservations } from '../utils/reservationExpiryService.js';
 import { printReservationSheet } from '../utils/printReservationService.js';
@@ -109,13 +109,12 @@ export class AdminDashboard {
     this.showDiscountModal = false;
     this.showPricesModal = false;
 
-    // Ceník — sezóny, ceny podle počtu osob, výjimky, příplatky
+    // Ceník — sezóny, ceny podle počtu osob, výjimky, příplatky.
+    // Okno je průvodce, cenikKrok drží, na které obrazovce uživatel je.
     this.cenik = getStoredCenik();
+    this.cenikKrok = 'rozcestnik';
     this.cenikSezonaId = null;
     this.cenikVyjimkyOtevrene = false;
-    this.cenikLuzkaOtevrena = false;
-    this.cenikNahled = {};
-    this.showRoomMgmtModal = false;
     this.showDisabledRoomsModal = false;
     this.disabledRooms = getStoredDisabledRooms();
     (this.disabledRooms || []).forEach(p => {
@@ -896,7 +895,9 @@ export class AdminDashboard {
       this.showAdminToast(`❌ Rezervace ${reservation.code} byla stornována. E-mail o zamítnutí s nabídkou náhradního termínu byl odeslán hostu.`);
 
     } else if (targetAction === 'print_reservation') {
-      printReservationSheet(reservation);
+      if (printReservationSheet(reservation) === false) {
+        this.showAdminToast('⚠️ Prohlížeč zablokoval vyskakovací okno. Povolte je pro tuto stránku a zkuste tisk znovu.');
+      }
       return;
     } else if (targetAction === 'delete') {
       this.pendingDeleteReservation = reservation;
@@ -989,11 +990,13 @@ export class AdminDashboard {
       return;
     }
 
+    // Pozor: každé nové okno sem patří dopsat, jinak se pod ním roluje
+    // stránka místo obsahu okna.
     const isAnyAdminModalOpen = Boolean(
       this.showBlockModal ||
       this.showDiscountModal ||
-      this.showRoomPricesModal ||
-      this.showRoomMgmtModal ||
+      this.showPricesModal ||
+      this.showDisabledRoomsModal ||
       this.showDeleteModal ||
       this.showNewsModal ||
       this.showCropModal ||
@@ -1054,7 +1057,10 @@ export class AdminDashboard {
               🏷️ Slevové kódy ${this.discountCodes.length > 0 ? `<span style="background: #4a5a24; color: #ffffff; border-radius: 99px; padding: 2px 7px; font-size: 11px; font-weight: 700; margin-left: 4px;">${this.discountCodes.length}</span>` : ''}
             </button>
             <button type="button" class="btn btn-specs-secondary btn-admin-prices">
-              ⚙️ Správa pokojů
+              💰 Ceník
+            </button>
+            <button type="button" class="btn btn-specs-secondary btn-admin-disabled-rooms">
+              🔒 Blokování pokojů
             </button>
             <button type="button" class="btn btn-booking-submit btn-admin-logout">🚪 Odhlásit se</button>
           </div>
@@ -1140,7 +1146,7 @@ export class AdminDashboard {
                   <!-- COL 4: FINANCE A STAV -->
                   <div>
                     <div class="res-price-total">${formatCzechPrice(r.total_price)}</div>
-                    <div class="res-deposit-sub">Záloha 30%: ${formatCzechPrice(r.deposit_price || Math.round((r.total_price||0)*0.3))}</div>
+                    <div class="res-deposit-sub">Záloha ${procentoZalohy(r)}%: ${formatCzechPrice(r.deposit_price || 0)}</div>
                     <div style="margin-top: 6px;">
                       ${r.status === 'pending_approval' ? `
                         <span style="display:inline-block; font-size:12.5px; font-weight:700; color:#d35400; background:#fef5e7; padding:3px 10px; border-radius:4px;">1. Ke schválení</span>
@@ -1272,7 +1278,7 @@ export class AdminDashboard {
                         <h4 class="drawer-section-title">Rozpis platby & Identifikace</h4>
                         <ul class="drawer-info-list">
                           <li><span>Celková cena pobytu:</span> <strong>${formatCzechPrice(r.total_price)} s DPH</strong></li>
-                          <li><span>Záloha 30 % (předem):</span> <strong style="color: #4a5a24;">${formatCzechPrice(r.deposit_price || Math.round((r.total_price||0)*0.3))}</strong></li>
+                          <li><span>Záloha ${procentoZalohy(r)} % (předem):</span> <strong style="color: #4a5a24;">${formatCzechPrice(r.deposit_price || 0)}</strong></li>
                           <li><span>Doplatek 70 % (na místě):</span> <strong>${formatCzechPrice(r.remaining_price || Math.round((r.total_price||0)*0.7))}</strong></li>
                           <li><span>Variabilní symbol:</span> <strong>${getVariableSymbol(r.code)}</strong></li>
                         </ul>
@@ -1497,29 +1503,6 @@ export class AdminDashboard {
         ` : ''}
 
         ${this.showPricesModal ? renderCenikModal(this) : ''}
-
-        ${this.showRoomMgmtModal ? `
-          <div class="admin-modal-overlay admin-modal-overlay-mgmt">
-            <div class="admin-confirm-modal admin-block-modal" style="max-width: 480px; padding: 0 24px 24px 24px;">
-              <div class="admin-modal-header-sticky">
-                <h3 class="admin-modal-title" style="margin: 0; font-size: 18px; font-weight: 800; color: #1c1c19;">⚙️ Správa pokojů</h3>
-                <button type="button" class="btn-close-mgmt-modal" style="background: none; border: none; font-size: 26px; cursor: pointer; color: #777; line-height: 1; padding: 4px 8px;">&times;</button>
-              </div>
-              <p class="admin-modal-desc" style="margin-top: 14px; margin-bottom: 20px; font-size: 13.5px; color: #55554e; text-align: center;">
-                Vyberte možnost správy pokojů hotelu:
-              </p>
-
-              <div style="display: flex; flex-direction: column; gap: 12px;">
-                <button type="button" class="btn btn-specs-secondary btn-open-prices-from-mgmt" style="height: 45px; font-size: 14.5px; font-weight: 700; width: 100%; justify-content: center; border-radius: 1px;">
-                  💰 Ceník pokojů
-                </button>
-                <button type="button" class="btn btn-specs-secondary btn-open-disabled-from-mgmt" style="height: 45px; font-size: 14.5px; font-weight: 700; width: 100%; justify-content: center; background: #fff5f5; border-color: #f5c6cb; color: #c62828; border-radius: 1px;">
-                  🔒 Blokování pokojů
-                </button>
-              </div>
-            </div>
-          </div>
-        ` : ''}
 
         ${this.showDisabledRoomsModal ? `
           <div class="admin-modal-overlay admin-modal-overlay-block admin-modal-overlay-disabled">
@@ -2220,11 +2203,41 @@ export class AdminDashboard {
       });
     });
 
+    /**
+     * Otevře ceník okamžitě, čerstvá data dorazí až potom.
+     *
+     * Dřív se čekalo na dvě volání do databáze, než se okno vůbec
+     * ukázalo — po kliknutí se skoro vteřinu nedělo nic a obsluha
+     * klikala znovu. Rozcestník ke svému vykreslení žádná data
+     * nepotřebuje, takže se ukáže hned a překreslí se, jakmile data
+     * dojdou. Na rozcestníku není co přepsat pod rukama.
+     */
     const otevriCenik = async () => {
-      await this.fetchRoomPrices();
-      this.cenik = await fetchCenik();
+      // Vždy od rozcestníku, ať uživatel nespadne doprostřed minulé úpravy
+      this.cenikKrok = 'rozcestnik';
+      this.cenikVyjimkyOtevrene = false;
       this.showPricesModal = true;
+
+      // Rozcestník sám žádná data nepotřebuje. Načítání se hlásí jen
+      // tehdy, když ceník ještě vůbec nemáme — jinak je co ukázat hned.
+      const bezDat = ((this.cenik && this.cenik.sezony) || []).length === 0;
+      this.cenikNacita = bezDat;
       this.render();
+
+      try {
+        const [, cenik] = await Promise.all([this.fetchRoomPrices(), fetchCenik()]);
+        this.cenik = cenik;
+      } catch (err) {
+        console.error('Načtení ceníku selhalo:', err);
+      }
+      this.cenikNacita = false;
+
+      // Překreslit jen tehdy, když je opravdu co vyměnit — tedy když se
+      // ukazovalo načítání. Jinak by se celá administrace překreslila
+      // podruhé a okno by viditelně bliklo, přestože se na rozcestníku
+      // nic nezměnilo. Čerstvá data se použijí při dalším překreslení,
+      // které stejně přijde s prvním klikem na kartu.
+      if (this.showPricesModal && bezDat) this.render();
     };
 
     const btnPrices = this.container.querySelector('.btn-admin-prices, .btn-admin-room-prices');
@@ -2232,18 +2245,9 @@ export class AdminDashboard {
       btnPrices.addEventListener('click', otevriCenik);
     }
 
-    const btnOpenPricesFromMgmt = this.container.querySelector('.btn-open-prices-from-mgmt');
-    if (btnOpenPricesFromMgmt) {
-      btnOpenPricesFromMgmt.addEventListener('click', async () => {
-        this.showRoomMgmtModal = false;
-        await otevriCenik();
-      });
-    }
-
-    const btnOpenDisabledFromMgmt = this.container.querySelector('.btn-open-disabled-from-mgmt');
-    if (btnOpenDisabledFromMgmt) {
-      btnOpenDisabledFromMgmt.addEventListener('click', async () => {
-        this.showRoomMgmtModal = false;
+    const btnDisabledRooms = this.container.querySelector('.btn-admin-disabled-rooms');
+    if (btnDisabledRooms) {
+      btnDisabledRooms.addEventListener('click', async () => {
         await this.fetchDisabledRooms();
         this.showDisabledRoomsModal = true;
         this.render();
@@ -2371,7 +2375,7 @@ export class AdminDashboard {
     if (btnSaveBlockDate) {
       btnSaveBlockDate.addEventListener('click', async () => {
         if (this.blockSelectedDates.length === 0) {
-          alert('Prosím zaklikněte v kalendáři alespoň jeden den pro zablokování.');
+          this.showAdminToast('⚠️ Zaklikněte v kalendáři alespoň jeden den pro zablokování.');
           return;
         }
         const ranges = groupContiguousDateRanges(this.blockSelectedDates);
@@ -2700,11 +2704,11 @@ export class AdminDashboard {
         const is_banner = newsIsBannerCheck ? newsIsBannerCheck.checked : this.newsForm.is_banner;
 
         if (!title) {
-          alert('Prosím vyplňte nadpis aktuality.');
+          this.showAdminToast('⚠️ Vyplňte nadpis aktuality.');
           return;
         }
         if (!content) {
-          alert('Prosím vyplňte hlavní text aktuality.');
+          this.showAdminToast('⚠️ Vyplňte hlavní text aktuality.');
           return;
         }
 
@@ -2728,7 +2732,7 @@ export class AdminDashboard {
           this.newsForm = { title: '', banner_text: '', content: '', is_active: true, is_banner: false, image_url: '' };
           await this.fetchNewsItems();
         } else {
-          alert('Chyba při ukládání aktuality.');
+          this.showAdminToast('⚠️ Aktualitu se nepodařilo uložit.');
         }
         this.render();
       });
@@ -2806,8 +2810,12 @@ export class AdminDashboard {
         btnConfirmDeleteNews.disabled = true;
         btnConfirmDeleteNews.textContent = 'Mazám...';
 
-        await deleteStoredNewsItem(this.pendingDeleteNewsItem.id);
-        this.showAdminToast('🗑️ Aktualita byla úspěšně smazána.');
+        // Výsledek se musí ověřit — dřív se hlásilo „smazáno“ i tehdy,
+        // když mazání selhalo, a aktualita zůstala hostům na webu.
+        const vysledek = await deleteStoredNewsItem(this.pendingDeleteNewsItem.id);
+        this.showAdminToast(vysledek && vysledek.success
+          ? '🗑️ Aktualita byla úspěšně smazána.'
+          : '⚠️ Aktualitu se nepodařilo smazat. Zkuste to prosím znovu.');
         this.showDeleteNewsModal = false;
         this.pendingDeleteNewsItem = null;
         await this.fetchNewsItems();
@@ -2850,20 +2858,27 @@ export class AdminDashboard {
         eCtx.drawImage(this.cropLoadedImg, sx, sy, sw, sh, 0, 0, 1280, 720);
 
         exportCanvas.toBlob(async (blob) => {
+          let selhalo = false;
           if (blob) {
             const uploadRes = await uploadNewsImage(blob);
             if (uploadRes.success && uploadRes.url) {
               this.newsForm.image_url = uploadRes.url;
               this.showAdminToast('📷 Fotografie 16:9 byla úspěšně nahraná.');
             } else {
-              this.newsForm.image_url = exportCanvas.toDataURL('image/jpeg', 0.88);
-              this.showAdminToast('📷 Fotografie byla úspěšně zpracována.');
+              // Dřív se fotka při neúspěchu vložila jako base64 přímo do
+              // databáze a obsluze se hlásil úspěch. Řádek pak měl stovky
+              // kilobajtů, stahoval ho každý návštěvník a skutečná příčina
+              // (chybějící úložiště) zůstala skrytá.
+              selhalo = true;
+              this.newsForm.image_url = '';
+              this.showAdminToast('⚠️ Fotku se nepodařilo nahrát. Aktualitu lze uložit bez ní, fotku zkuste přidat později.');
             }
           }
           this.showCropModal = false;
           this.cropImageSrc = null;
           this.cropBox = null;
           this.render();
+          if (selhalo) console.error('Nahrání fotky aktuality selhalo — zkontrolujte úložiště aktuality-images v Supabase.');
         }, 'image/jpeg', 0.90);
       });
     }

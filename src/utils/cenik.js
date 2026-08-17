@@ -7,8 +7,9 @@
  *                      výjimky pro jeden konkrétní pokoj
  *   3. POČET OSOB    — čím víc lidí na pokoji, tím nižší cena za osobu
  *
- * Navíc víkendový příplatek (pátek, sobota, neděle), který se nastavuje
- * jedním číslem na sezónu.
+ * Navíc víkendový příplatek (pátek, sobota, neděle), který se liší podle
+ * kategorie pokoje a platí stejně pro všechny sezóny — nastavuje se na
+ * obrazovce Příplatky (klíče vikend_standard / vikend_nadstandard).
  *
  * Tenhle soubor je čistá matematika bez sítě a bez DOM, aby se dal
  * spolehlivě testovat.
@@ -29,7 +30,14 @@ export const VYCHOZI_CENY = {
 };
 
 /** Prázdný ceník — používá se, dokud se nenačtou data. */
-export const PRAZDNY_CENIK = { sezony: [], ceny: [], cenyPokoj: [] };
+export const PRAZDNY_CENIK = { sezony: [], ceny: [], cenyPokoj: [], nastaveni: {} };
+
+/**
+ * Záchranné víkendové příplatky (pá, so, ne), Kč / osoba / noc.
+ * Opsáno z ceníku hotelu — turistický má stejné ceny jako standard,
+ * proto sdílí i příplatek.
+ */
+export const VYCHOZI_VIKEND = { standard: 60, nadstandard: 100 };
 
 /**
  * Vrátí 'MM-DD' z data ve tvaru 'YYYY-MM-DD'.
@@ -157,14 +165,65 @@ export function cenaZaOsobuNoc({
 }
 
 /**
- * Víkendový příplatek platný pro danou noc (Kč / osoba / noc).
- * Bere se ze sezóny, do které noc spadá — i když si sama sezóna
- * ceny nedrží a dědí je ze základní.
+ * Víkendový příplatek pro kategorii pokoje (Kč / osoba / noc).
+ *
+ * Platí stejně pro všechny sezóny i základní ceník — je to vlastnost
+ * pokoje, ne období, proto se nastavuje jedním číslem na kategorii
+ * v Příplatcích. Turistický sdílí hodnotu se standardem, protože má
+ * i stejné ceny. Nula od admina znamená „bez příplatku" a respektuje se.
  */
-export function vikendovyPriplatek(datumStr, cenik = PRAZDNY_CENIK) {
-  const sezona = najdiSezonu(datumStr, cenik.sezony || []);
-  const p = Number(sezona && sezona.vikendovy_priplatek);
-  return Number.isFinite(p) && p > 0 ? p : 0;
+export function vikendovyPriplatek(kategorie = 'standard', cenik = PRAZDNY_CENIK) {
+  const kat = kategorie === 'nadstandard' ? 'nadstandard' : 'standard';
+  const p = Number(cenik.nastaveni && cenik.nastaveni['vikend_' + kat]);
+  if (Number.isFinite(p) && p >= 0) return p;
+  return VYCHOZI_VIKEND[kat];
+}
+
+/**
+ * Je období mezisezóna?
+ *
+ * Slouží JEN k textovému upozornění v rezervačním formuláři, že mimo
+ * hlavní sezónu bývá nabídka užší. Nic neblokuje a na cenu nemá vliv.
+ *
+ * Skutečné zavírání provozu se dělá v administraci přes „Blokovat
+ * termíny" (konkrétní pokoj a rozsah dnů) nebo „Blokování pokojů"
+ * (pokoj mimo provoz). Záměrně sem nepřibyl vlastní přepínač — byla by
+ * to třetí cesta, jak zavřít pobyt, a tři soupeřící mechanismy na jednu
+ * věc jsou spolehlivý zdroj nedorozumění.
+ *
+ * Pozná se podle názvu období. Kdo mezisezónu přejmenuje tak, aby v ní
+ * „mezisez" nebylo, přijde o upozornění — je to jen věta navíc, ne
+ * ochrana proti přeplnění.
+ */
+export function maOmezenouDostupnost(sezona) {
+  if (!sezona) return false;
+  return /mezisez/i.test(String(sezona.nazev || ''));
+}
+
+/**
+ * Období s omezenou dostupností, do kterých pobyt zasahuje.
+ *
+ * Prochází se po nocích, ne jen krajní dny — pobyt může přes takové
+ * období jen přejet a host to má vědět i tak. Vrací názvy bez opakování
+ * v pořadí, v jakém na ně pobyt narazí.
+ */
+export function obdobiSOmezenouDostupnosti(dateFrom, nights, cenik = PRAZDNY_CENIK) {
+  const pocetNoci = Math.max(1, parseInt(nights, 10) || 1);
+  if (!dateFrom) return [];
+
+  const [r, m, d] = String(dateFrom).split('-').map(Number);
+  if (!r || !m || !d) return [];
+
+  const nalezene = [];
+  for (let i = 0; i < pocetNoci; i++) {
+    const dt = new Date(Date.UTC(r, m - 1, d));
+    dt.setUTCDate(dt.getUTCDate() + i);
+    const sezona = najdiSezonu(dt.toISOString().split('T')[0], cenik.sezony || []);
+    if (sezona && maOmezenouDostupnost(sezona) && !nalezene.includes(sezona.nazev)) {
+      nalezene.push(sezona.nazev);
+    }
+  }
+  return nalezene;
 }
 
 /**
@@ -208,7 +267,7 @@ export function rozpisNoci({
     const jeVikend = denVTydnu === 5 || denVTydnu === 6 || denVTydnu === 0;
 
     const zaklad = cenaZaOsobuNoc({ datumStr, roomId, kategorie, pocetOsob, cenik });
-    const priplatek = jeVikend ? vikendovyPriplatek(datumStr, cenik) : 0;
+    const priplatek = jeVikend ? vikendovyPriplatek(kategorie, cenik) : 0;
     const sezona = najdiSezonu(datumStr, cenik.sezony || []);
 
     noci.push({
