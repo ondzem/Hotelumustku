@@ -4852,7 +4852,7 @@ const getContactPageHTML = () => `
         <div class="contact-about-grid" data-anim-group>
           <!-- Fotka majitelů -->
           <figure class="contact-about-figure" data-anim="up">
-            <img src="/spravce-foto.webp" alt="Majitelé horského hotelu u Můstků před vchodem do hotelu v Desné" class="contact-about-photo" width="1050" height="1500" loading="lazy" decoding="async">
+            <img src="/spravce-foto.webp" alt="Majitelé horského hotelu u Můstků před vchodem do hotelu v Desné" class="contact-about-photo" width="1056" height="1489" loading="lazy" decoding="async">
           </figure>
 
           <!-- Text -->

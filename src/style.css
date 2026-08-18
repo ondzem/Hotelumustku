@@ -11387,13 +11387,12 @@ html.is-route-loading #app {
   box-sizing: border-box;
 }
 
-/* Fotka je vysoká a úzká, dostane proto vlastní sloupec a text se k ní
-   zarovná na střed — vedle sebe mají obě části podobnou výšku a pod
-   fotkou nezůstane hluchý prostor. */
+/* Dvě stejné poloviny a stejná mezera jako u sekce Jak se k nám dostat —
+   sekce tak drží šířku stránky a text nekončí v půlce s prázdnem vpravo. */
 .contact-about-grid {
   display: grid;
-  grid-template-columns: minmax(260px, 340px) 1fr;
-  gap: clamp(44px, 5.5vw, 76px);
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(40px, 5vw, 80px);
   align-items: center;
 }
 
@@ -11412,15 +11411,17 @@ html.is-route-loading #app {
   pointer-events: none;
 }
 
-/* Poměr 4:5 místo původního 7:10 — fotka je na výšku, širší ořez ji
-   v rozvržení usadí a nepůsobí jako úzký sloupek. */
+/* Předloha je na výšku (1056 × 1509). Poměr 4:3 z ní ubere shora i zdola
+   a nechá širší výřez — v rozvržení pak fotka drží celou polovinu sekce
+   místo úzkého sloupku. Svislé posunutí je nastavené tak, aby ořez shora
+   nezasáhl hlavy: při tomhle poměru přebývá zhruba 430 px výšky. */
 .contact-about-photo {
   position: relative;
   display: block;
   width: 100%;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 4 / 3;
   object-fit: cover;
-  object-position: center 26%;
+  object-position: center 24%;
   border-radius: 2px;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.13);
 }
@@ -11455,7 +11456,6 @@ html.is-route-loading #app {
   color: #555550;
   line-height: 1.6;
   margin: 0 0 16px 0;
-  max-width: 62ch;
 }
 
 .contact-about-p:last-child {
@@ -11470,7 +11470,7 @@ html.is-route-loading #app {
   }
 
   .contact-about-figure {
-    max-width: 340px;
+    max-width: 520px;
   }
 
   .contact-about-inner {
