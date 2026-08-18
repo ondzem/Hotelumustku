@@ -1790,6 +1790,25 @@ export function navigateTo(targetUrl) {
 
   history.pushState(null, '', cleanUrl);
   route(false);
+
+  // Nová stránka musí začít nahoře.
+  //
+  // Prohlížeč to sám neudělá — tohle není načtení stránky, ale pushState
+  // uvnitř téže. Kdo si prohlédl patičku a klikl v ní na Akce nebo
+  // Aktivity, zůstal na nové stránce zase dole v patičce. Na mobilu je
+  // patička přes několik obrazovek, takže to vypadalo, že se odkaz vůbec
+  // neprovedl.
+  //
+  // S kotvou v adrese se nic nepřepisuje — tam si cíl řídí odrolování sám
+  // (odrolujNaSekci), a skok nahoru by mu ho vzal.
+  if (!cleanUrl.includes('#')) {
+    window.scrollTo(0, 0);
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+    // Podruhé po vykreslení: obrázky a písma teprve dorovnávají výšku
+    // dokumentu a prohlížeč umí scroll mezitím ještě posunout.
+    requestAnimationFrame(() => window.scrollTo(0, 0));
+  }
 }
 window.navigateTo = navigateTo;
 

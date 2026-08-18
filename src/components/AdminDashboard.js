@@ -1,6 +1,7 @@
 import { MOCK_ROOMS, getStoredReservations, updateStoredReservationStatus, toggleStoredReservationArchive, deleteStoredReservation, getStoredBlockedDates, saveStoredBlockedDate, deleteStoredBlockedDate, getStoredDiscountCodes, saveStoredDiscountCode, deleteStoredDiscountCode, getStoredRoomPrices, saveStoredRoomPrice, getStoredCustomRoomNames, saveStoredCustomRoomName, getStoredDisabledRooms, saveStoredDisabledRoom, getStoredNewsItems, saveStoredNewsItem, deleteStoredNewsItem, reorderNewsItem, uploadNewsImage, isSupabaseConfigured, supabase, getStoredReviews, updateStoredReviewStatus, getStoredCenik, fetchCenik, doplnPriznakyZeStarychDat, ocistiHosty } from '../lib/supabaseClient.js';
-import { calculateReservationPrice, generateSpaydQrUrl, BANK_ACCOUNT, formatCzechPrice, getVariableSymbol, procentoZalohy } from '../utils/pricing.js';
-import { sendEmail, generateEmail2ApprovalAndPaymentRequest, generateEmail3FinalConfirmation, generateEmailCancellation, getEmailLogs, sendAllTestEmailsTo } from '../utils/emailService.js';
+import { calculateReservationPrice, generateSpaydQrUrl, BANK_ACCOUNT, formatCzechPrice, getVariableSymbol, procentoZalohy, maZaplacenouZalohu } from '../utils/pricing.js';
+import { renderOrezModal, bindOrezModal, prazdnyOrez } from './AdminFotoOrez.js';
+import { sendEmail, generateEmail2ApprovalAndPaymentRequest, generateEmail3FinalConfirmation, generateEmailCancellation, generateEmailCancellationRefund, getEmailLogs, sendAllTestEmailsTo } from '../utils/emailService.js';
 import { checkAndProcessExpiredUnpaidReservations } from '../utils/reservationExpiryService.js';
 import { printReservationSheet } from '../utils/printReservationService.js';
 import { renderCenikModal, bindCenikModal } from './AdminCenik.js';
@@ -135,7 +136,7 @@ export class AdminDashboard {
     this.editingNewsItem = null;
     this.newsForm = { title: '', content: '', is_active: true, image_url: '' };
     this.showCropModal = false;
-    this.cropImageSrc = null;
+    this.orez = prazdnyOrez();
     this.showReviewsModal = false;
     this.showDeleteReviewModal = false;
     this.pendingDeleteReview = null;
@@ -707,6 +708,56 @@ export class AdminDashboard {
     return this.isAuthenticated;
   }
 
+  /**
+   * Nahrání oříznuté fotky. Obaluje volání úložiště, aby modul ořezu
+   * nemusel sahat na databázový klient a dal se otestovat samostatně.
+   */
+  async nahrajFotkuAktuality(blob) {
+    return uploadNewsImage(blob);
+  }
+
+  /**
+   * Zámek rolování stránky pod otevřeným oknem.
+   *
+   * Samotné `overflow: hidden` na `body` nestačí — Safari na iPhonu si
+   * stránku pod oknem stejně odroluje. Spolehlivě to drží až `position:
+   * fixed`; pak se ale musí zapamatovat, kde stránka byla, a při zavření
+   * ji tam vrátit, jinak obsluha přistane po zavření okna úplně nahoře.
+   */
+  zamkniRolovaniStranky(zamknout) {
+    const html = document.documentElement;
+    const body = document.body;
+    const jeZamceno = body.dataset.zamekRolovani !== undefined;
+
+    if (zamknout) {
+      if (jeZamceno) return;
+      const y = window.scrollY || window.pageYOffset || 0;
+      body.dataset.zamekRolovani = String(y);
+      body.style.position = 'fixed';
+      body.style.top = `-${y}px`;
+      body.style.left = '0';
+      body.style.right = '0';
+      body.style.width = '100%';
+      html.style.overflow = 'hidden';
+      html.classList.add('modal-open');
+      body.classList.add('modal-open');
+      return;
+    }
+
+    if (!jeZamceno) return;
+    const y = Number(body.dataset.zamekRolovani) || 0;
+    delete body.dataset.zamekRolovani;
+    body.style.position = '';
+    body.style.top = '';
+    body.style.left = '';
+    body.style.right = '';
+    body.style.width = '';
+    html.style.overflow = '';
+    html.classList.remove('modal-open');
+    body.classList.remove('modal-open');
+    window.scrollTo(0, y);
+  }
+
   showAdminToast(msg) {
     this.adminToastMessage = msg;
     this.toastExiting = false;
@@ -818,7 +869,10 @@ export class AdminDashboard {
       this.showAdminToast(`🎉 Záloha pro ${reservation.code} byla potvrzena. Závazné potvrzení pobytu bylo odesláno hostu.`);
 
     } else if (targetAction === 'cancel') {
-      // Cancel reservation & send cancellation email
+      // Rozhodnout se MUSÍ ještě před přepsaním stavu — po překlopení na
+      // 'cancelled' už z rezervace nepoznáme, jestli zaň host zaplatil zálohu,
+      // a poslali bychom mu, že neplatil nic.
+      const zalohaZaplacena = maZaplacenouZalohu(reservation);
       const newStatus = 'cancelled';
       if (isSupabaseConfigured && supabase) {
         try { await supabase.from('reservations').update({ status: newStatus }).eq('id', id); } catch (e) {}
@@ -826,25 +880,36 @@ export class AdminDashboard {
       updateStoredReservationStatus(id, newStatus);
       reservation.status = newStatus;
 
-      // Dispatch Email 4 (Cancellation & Alternative dates offer)
+      // E-mail 4: buď běžné zamítnutí žádosti (host nic neplatil), nebo storno
+      // s vrácením zálohy. Záměna by znamenala, že hostu píšeme „neplatil jste
+      // žádné peníze (0 Kč)" k rezervaci, kterou má uhrazenou.
       try {
-        const emailCancel = generateEmailCancellation({
-          reservation,
-          room,
-          reasonNote: 'Pokoj je v požadovaném termínu již plně obsazen nebo probíhá údržba kapacity.'
-        });
+        const emailCancel = zalohaZaplacena
+          ? generateEmailCancellationRefund({
+              reservation,
+              room,
+              pricing,
+              reasonNote: 'Rezervaci bylo nutné z provozních důvodů zrušit.'
+            })
+          : generateEmailCancellation({
+              reservation,
+              room,
+              reasonNote: 'Pokoj je v požadovaném termínu již plně obsazen nebo probíhá údržba kapacity.'
+            });
         await sendEmail({
           to: reservation.guest_email,
           subject: emailCancel.subject,
           html: emailCancel.html,
-          type: 'email_cancellation',
+          type: zalohaZaplacena ? 'email_cancellation_refund' : 'email_cancellation',
           reservationCode: reservation.code
         });
       } catch (err) {
         console.error('Failed to send Cancellation email:', err);
       }
 
-      this.showAdminToast(`❌ Rezervace ${reservation.code} byla stornována. E-mail o zamítnutí s nabídkou náhradního termínu byl odeslán hostu.`);
+      this.showAdminToast(zalohaZaplacena
+        ? `❌ Rezervace ${reservation.code} byla stornována. Hostu odešel e-mail o vrácení uhrazené zálohy — číslo účtu pošle v odpovědi.`
+        : `❌ Rezervace ${reservation.code} byla stornována. E-mail o zamítnutí s nabídkou náhradního termínu byl odeslán hostu.`);
 
     } else if (targetAction === 'print_reservation') {
       if (printReservationSheet(reservation) === false) {
@@ -970,30 +1035,17 @@ export class AdminDashboard {
       return;
     }
 
-    // Pozor: každé nové okno sem patří dopsat, jinak se pod ním roluje
-    // stránka místo obsahu okna.
+    // Otevřená okna se hledají podle názvu vlastnosti, ne z ručního seznamu.
+    // Ruční seznam se rozešel: chyběla v něm Správa recenzí, potvrzení
+    // smazání aktuality i recenze a okno e-mailů, takže se pod nimi rolovala
+    // stránka za oknem. Obsluze to přišlo jako zaseknuté rolování — sjela
+    // dolů a zpátky nahoru už se nedostala, protože nahoru rolovalo něco
+    // jiného než to, co drží prstem.
     const isAnyAdminModalOpen = Boolean(
-      this.showDiscountModal ||
-      this.showPricesModal ||
-      this.showDisabledRoomsModal ||
-      this.showDeleteModal ||
-      this.showNewsModal ||
-      this.showRucniModal ||
-      this.showPrehledModal ||
-      this.showCropModal ||
+      Object.keys(this).some(k => /^show[A-Za-z]*Modal$/.test(k) && this[k]) ||
       this.showDetailDrawerCode
     );
-    if (isAnyAdminModalOpen) {
-      document.documentElement.style.overflow = 'hidden';
-      document.body.style.overflow = 'hidden';
-      document.documentElement.classList.add('modal-open');
-      document.body.classList.add('modal-open');
-    } else {
-      document.documentElement.style.overflow = '';
-      document.body.style.overflow = '';
-      document.documentElement.classList.remove('modal-open');
-      document.body.classList.remove('modal-open');
-    }
+    this.zamkniRolovaniStranky(isAnyAdminModalOpen);
 
     const activeReservations = this.reservations.filter(r => !r.is_archived && !r.isArchived);
     const archivedReservations = this.reservations.filter(r => Boolean(r.is_archived || r.isArchived));
@@ -1379,14 +1431,14 @@ export class AdminDashboard {
                 ${this.discountCodes.length === 0 ? `
                   <p style="color: #777; font-size: 13.5px; text-align: center; margin: 16px 0;">V současnosti nejsou vytvořeny žádné slevové kódy.</p>
                 ` : `
-                  <div style="display: flex; flex-direction: column; gap: 10px; max-height: 240px; overflow-y: auto; padding-right: 4px;">
+                  <div class="admin-vnitrni-seznam" style="display: flex; flex-direction: column; gap: 10px; max-height: 240px; overflow-y: auto; padding-right: 4px;">
                     ${this.discountCodes.map(c => {
                       const maxLabel = c.max_uses ? `Použito ${c.used_count || 0} z ${c.max_uses}` : `Použito ${c.used_count || 0}× (Neomezeně)`;
                       const dateLabel = (c.valid_from || c.valid_until)
                         ? `${c.valid_from ? formatCzechDateStr(c.valid_from) : 'Od teď'} – ${c.valid_until ? formatCzechDateStr(c.valid_until) : 'Neomezeně'}`
                         : 'Neomezená platnost';
                       return `
-                        <div style="background: #ffffff; border: 1px solid #e0dfd5; border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+                        <div class="admin-seznam-radek" style="background: #ffffff; border: 1px solid #e0dfd5; border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
                           <div>
                             <div style="display: flex; align-items: center; gap: 8px;">
                               <span style="font-weight: 800; font-size: 15px; color: #4a5a24; letter-spacing: 0.04em;">${c.code}</span>
@@ -1432,11 +1484,11 @@ export class AdminDashboard {
                 Vyřazený pokoj zůstane na webu vidět, ale nejde ho zarezervovat — místo tlačítka výběru se u něj ukáže „Dočasně nedostupné“. Platí bez ohledu na datum; na jednotlivé termíny je Blokování termínů.
               </p>
 
-              <div style="display: flex; flex-direction: column; gap: 8px; max-height: 380px; overflow-y: auto; padding-right: 4px;">
+              <div class="admin-vnitrni-seznam" style="display: flex; flex-direction: column; gap: 8px; max-height: 380px; overflow-y: auto; padding-right: 4px;">
                 ${MOCK_ROOMS.map(rm => {
                   const isBlocked = Boolean(rm.isDisabled);
                   return `
-                    <div class="room-disabled-card" data-roomid="${rm.id}" style="background: #ffffff; border: 1px solid #e4e2d8; border-left: 3px solid ${isBlocked ? '#c62828' : '#697947'}; border-radius: 6px; padding: 13px 15px; display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;">
+                    <div class="room-disabled-card admin-seznam-radek" data-roomid="${rm.id}" style="background: #ffffff; border: 1px solid #e4e2d8; border-left: 3px solid ${isBlocked ? '#c62828' : '#697947'}; border-radius: 6px; padding: 13px 15px; display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;">
                       <div style="min-width: 0;">
                         <div style="font-weight: 700; font-size: 14.5px; color: #1c1c19;">${rm.name}</div>
                         <span style="display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; ${isBlocked ? 'background: #fbeaea; color: #a5231f;' : 'background: #eef2e4; color: #4a5a24;'}">
@@ -1534,11 +1586,11 @@ export class AdminDashboard {
                       </div>
                     ` : ''}
 
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                      <input type="file" id="news-photo-file-input" accept="image/*" style="display: none;">
-                      <button type="button" class="btn btn-specs-secondary btn-trigger-photo-upload" style="width: 100%; min-height: 42px; font-size: 13.5px; font-weight: 700; border-radius: 4px; display: flex; align-items: center; justify-content: center; text-align: center; box-sizing: border-box;">
-                        📷 ${this.newsForm.image_url ? 'Změnit fotku' : 'Nahrát fotku (16:9)'}
-                      </button>
+                    <input type="file" id="news-photo-file-input" accept="image/jpeg,image/png,image/webp" style="display: none;">
+                    <div id="orez-vstup-oblast" class="orez-vstup-oblast" role="button" tabindex="0">
+                      <span class="orez-vstup-ikona">📷</span>
+                      <span class="orez-vstup-hlavni">${this.newsForm.image_url ? 'Změnit fotku' : 'Přetáhněte sem fotku'}</span>
+                      <span class="orez-vstup-vedlejsi">nebo klepněte a vyberte soubor — JPEG, PNG nebo WebP do 5 MB</span>
                     </div>
                   </div>
 
@@ -1562,9 +1614,9 @@ export class AdminDashboard {
                 ${this.newsItems.length === 0 ? `
                   <p style="font-size: 13.5px; color: #777; text-align: center; margin: 24px 0;">Zatím nebyly vytvořeny žádné aktuality.</p>
                 ` : `
-                  <div style="display: flex; flex-direction: column; gap: 12px; max-height: 380px; overflow-y: auto; padding-right: 4px;">
+                  <div class="admin-vnitrni-seznam" style="display: flex; flex-direction: column; gap: 12px; max-height: 380px; overflow-y: auto; padding-right: 4px;">
                     ${this.newsItems.map((item, idx) => `
-                      <div style="background: #ffffff; border: 1px solid #e0dfd5; border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+                      <div class="admin-seznam-radek" style="background: #ffffff; border: 1px solid #e0dfd5; border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
                         <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;">
                           <!-- ŠIPKY PRO ZMĚNU POŘADÍ -->
                           <div style="display: flex; flex-direction: column; gap: 3px; flex-shrink: 0;">
@@ -1583,7 +1635,7 @@ export class AdminDashboard {
                           `}
                           <div style="min-width: 0; flex: 1;">
                             <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 3px;">
-                              <span style="font-weight: 800; font-size: 14px; color: #1c1c19; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 240px;">${item.title}</span>
+                              <span class="admin-seznam-nazev" style="font-weight: 800; font-size: 14px; color: #1c1c19; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 240px;">${item.title}</span>
                               ${item.is_active ? `
                                 <span style="font-size: 10.5px; font-weight: 700; color: #27ae60; background: #e8f8f5; padding: 2px 7px; border-radius: 4px;">Publikováno</span>
                               ` : `
@@ -1596,7 +1648,7 @@ export class AdminDashboard {
                           </div>
                         </div>
 
-                        <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                        <div class="admin-seznam-akce" style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
                           <button type="button" class="btn-edit-news-item" data-id="${item.id}" style="background: none; border: 1px solid #d8d5c9; border-radius: 4px; padding: 5px 10px; font-size: 12px; font-weight: 600; color: #1c1c19; cursor: pointer;">
                             Upravit
                           </button>
@@ -1614,64 +1666,7 @@ export class AdminDashboard {
           </div>
         ` : ''}
 
-        ${this.showCropModal && this.cropImageSrc ? `
-          <div class="admin-modal-overlay admin-modal-overlay-crop" style="z-index: 10050;">
-            <div class="admin-confirm-modal" style="max-width: 860px; width: 95%; padding: 24px; border-radius: 12px; background: #ffffff;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #ece8dd; padding-bottom: 12px;">
-                <h3 class="admin-modal-title" style="margin: 0; font-size: 18px; font-weight: 800; color: #1c1c19;">📷 Ořez a pozicování fotografie (Poměr 16:9)</h3>
-                <button type="button" class="btn-cancel-crop" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #888;">&times;</button>
-              </div>
-
-              <p style="font-size: 13.5px; color: #55554e; margin: 0 0 16px 0;">
-                💡 <strong>Táhněte za rohové body (šipky) pro změnu velikosti výřezu</strong>, nebo posouvejte mřížku uvnitř. Pravá strana okamžitě ukazuje živý náhled.
-              </p>
-
-              <div style="display: grid; grid-template-columns: 1fr 280px; gap: 20px; align-items: start;" class="crop-modal-grid">
-                
-                <!-- LEVÝ SLOUPEC: INTERAKTIVNÍ EDITOČNÍ PLOCHA -->
-                <div>
-                  <div style="position: relative; width: 100%; height: 320px; background: #111110; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; user-select: none; cursor: move; touch-action: none;" id="crop-viewport">
-                    <canvas id="news-crop-canvas" width="560" height="315" style="display: block; max-width: 100%; max-height: 100%; border-radius: 4px;"></canvas>
-                    <div style="position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.65); color: #ffffff; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; pointer-events: none;">
-                      ↕️ Posunujte drag & drop
-                    </div>
-                  </div>
-
-                  <!-- OVLÁDACÍ PRVKY ZOOM -->
-                  <div style="margin-top: 14px; background: #fafaf7; border: 1px solid #e8e7de; border-radius: 8px; padding: 12px 16px;">
-                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 8px;">
-                      <label style="font-size: 12.5px; font-weight: 700; color: #1c1c19; display: flex; align-items: center; gap: 6px;">
-                        🔍 Přiblížení (Zoom): <span id="crop-zoom-label" style="color: #4a5a24;">100 %</span>
-                      </label>
-                      <button type="button" id="btn-crop-reset" style="background: #ffffff; border: 1px solid #d8d5c9; border-radius: 4px; padding: 3px 10px; font-size: 11.5px; font-weight: 700; color: #4a5a24; cursor: pointer;">
-                        🔄 Vycentrovat
-                      </button>
-                    </div>
-                    <input type="range" id="crop-zoom-slider" min="1" max="3" step="0.05" value="${this.cropState?.zoom || 1}" style="width: 100%; accent-color: #4a5a24; cursor: pointer;">
-                  </div>
-                </div>
-
-                <!-- PRAVÝ SLOUPEC: ŽIVÝ NÁHLED V REÁLNÉM ČASE -->
-                <div>
-                  <label style="font-size: 12.5px; font-weight: 700; color: #1c1c19; display: block; margin-bottom: 8px;">✨ Živý náhled na webu (16:9):</label>
-                  <div style="position: relative; width: 100%; aspect-ratio: 16 / 9; background: #ece8dd; border-radius: 6px; overflow: hidden; border: 2px solid #4a5a24; box-shadow: 0 4px 16px rgba(0,0,0,0.12);">
-                    <canvas id="news-preview-canvas" width="320" height="180" style="width: 100%; height: 100%; object-fit: cover; display: block;"></canvas>
-                  </div>
-                  <p style="font-size: 11.5px; color: #777; margin-top: 8px; line-height: 1.4;">
-                    Takhle bude fotka vypadat u aktuality na hotelovém webu.
-                  </p>
-                </div>
-
-              </div>
-
-              <!-- SPODNÍ TLAČÍTKA -->
-              <div style="margin-top: 20px; display: flex; align-items: center; justify-content: flex-end; gap: 12px; border-top: 1px solid #ece8dd; padding-top: 16px;">
-                <button type="button" class="btn-cancel-crop" style="background: none; border: 1px solid #d8d5c9; border-radius: 4px; padding: 9px 18px; font-size: 13.5px; font-weight: 600; color: #444; cursor: pointer;">Zrušit</button>
-                <button type="button" class="btn btn-booking-submit btn-confirm-crop" style="height: 42px; padding: 0 24px; font-size: 14px; font-weight: 700; border-radius: 4px;">✓ Oříznout a použít fotku</button>
-              </div>
-            </div>
-          </div>
-        ` : ''}
+        ${renderOrezModal(this)}
 
         ${this.showDeleteNewsModal && this.pendingDeleteNewsItem ? `
           <div class="admin-modal-overlay admin-modal-overlay-delete-news" style="z-index: 10060;">
@@ -1772,7 +1767,7 @@ export class AdminDashboard {
           </div>
 
           <!-- SEZNAM RECENZÍ -->
-          <div style="max-height: 480px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; padding-right: 4px;">
+          <div class="admin-vnitrni-seznam" style="max-height: 480px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; padding-right: 4px;">
             ${list.length === 0 ? `
               <div style="text-align: center; padding: 32px 16px; color: #777; font-size: 14px; background: #fafaf7; border-radius: 6px; border: 1px dashed #ddd;">
                 ${activeTab === 'pending_approval' || activeTab === 'pending' ? '✨ V současnosti nemáte žádné nové recenze ke schválení.' : 'Zatím nebyly schváleny žádné uživatelské recenze.'}
@@ -2530,27 +2525,9 @@ export class AdminDashboard {
       });
     }
 
-    const btnTriggerPhotoUpload = this.container.querySelector('.btn-trigger-photo-upload');
-    const newsPhotoFileInput = this.container.querySelector('#news-photo-file-input');
-
-    if (btnTriggerPhotoUpload && newsPhotoFileInput) {
-      btnTriggerPhotoUpload.addEventListener('click', () => {
-        newsPhotoFileInput.click();
-      });
-
-      newsPhotoFileInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-          this.cropImageSrc = evt.target.result;
-          this.showCropModal = true;
-          this.render();
-          this.initCropCanvas();
-        };
-        reader.readAsDataURL(file);
-      });
-    }
+    // Výběr souboru, přetažení fotky i celé ovládání ořezu má na starost
+    // AdminFotoOrez.js.
+    bindOrezModal(this);
 
     const btnSaveNewsItem = this.container.querySelector('.btn-save-news-item');
     if (btnSaveNewsItem) {
@@ -2675,356 +2652,6 @@ export class AdminDashboard {
       });
     }
 
-    const btnCancelCrop = this.container.querySelector('.btn-cancel-crop');
-    if (btnCancelCrop) {
-      btnCancelCrop.addEventListener('click', () => {
-        this.showCropModal = false;
-        this.cropImageSrc = null;
-        this.render();
-      });
-    }
-
-    const btnConfirmCrop = this.container.querySelector('.btn-confirm-crop');
-    if (btnConfirmCrop) {
-      btnConfirmCrop.addEventListener('click', async () => {
-        const canvas = this.container.querySelector('#news-crop-canvas');
-        if (!canvas || !this.cropLoadedImg || !this.cropBox) return;
-        btnConfirmCrop.disabled = true;
-        btnConfirmCrop.textContent = 'Nahrávám fotku...';
-
-        const exportCanvas = document.createElement('canvas');
-        exportCanvas.width = 1280;
-        exportCanvas.height = 720;
-        const eCtx = exportCanvas.getContext('2d');
-
-        const cw = canvas.width;
-        const ch = canvas.height;
-        const scaleX = this.cropLoadedImg.width / cw;
-        const scaleY = this.cropLoadedImg.height / ch;
-
-        const sx = Math.max(0, this.cropBox.x * scaleX);
-        const sy = Math.max(0, this.cropBox.y * scaleY);
-        const sw = Math.min(this.cropLoadedImg.width - sx, this.cropBox.w * scaleX);
-        const sh = Math.min(this.cropLoadedImg.height - sy, this.cropBox.h * scaleY);
-
-        eCtx.drawImage(this.cropLoadedImg, sx, sy, sw, sh, 0, 0, 1280, 720);
-
-        exportCanvas.toBlob(async (blob) => {
-          let selhalo = false;
-          if (blob) {
-            const uploadRes = await uploadNewsImage(blob);
-            if (uploadRes.success && uploadRes.url) {
-              this.newsForm.image_url = uploadRes.url;
-              this.showAdminToast('📷 Fotografie 16:9 byla úspěšně nahraná.');
-            } else {
-              // Dřív se fotka při neúspěchu vložila jako base64 přímo do
-              // databáze a obsluze se hlásil úspěch. Řádek pak měl stovky
-              // kilobajtů, stahoval ho každý návštěvník a skutečná příčina
-              // (chybějící úložiště) zůstala skrytá.
-              selhalo = true;
-              this.newsForm.image_url = '';
-              this.showAdminToast('⚠️ Fotku se nepodařilo nahrát. Aktualitu lze uložit bez ní, fotku zkuste přidat později.');
-            }
-          }
-          this.showCropModal = false;
-          this.cropImageSrc = null;
-          this.cropBox = null;
-          this.render();
-          if (selhalo) console.error('Nahrání fotky aktuality selhalo — zkontrolujte úložiště aktuality-images v Supabase.');
-        }, 'image/jpeg', 0.90);
-      });
-    }
   }
 
-  initCropCanvas() {
-    setTimeout(() => {
-      const viewport = this.container.querySelector('#crop-viewport');
-      const canvas = this.container.querySelector('#news-crop-canvas');
-      const previewCanvas = this.container.querySelector('#news-preview-canvas');
-      const zoomSlider = this.container.querySelector('#crop-zoom-slider');
-      const zoomLabel = this.container.querySelector('#crop-zoom-label');
-      const btnReset = this.container.querySelector('#btn-crop-reset');
-
-      if (!canvas || !this.cropImageSrc) return;
-
-      const img = new Image();
-      img.onload = () => {
-        this.cropLoadedImg = img;
-
-        const cw = 560;
-        const ch = 315; // 16:9 ratio
-        canvas.width = cw;
-        canvas.height = ch;
-
-        const targetAspect = 16 / 9;
-        let boxW = cw * 0.85;
-        let boxH = boxW / targetAspect;
-        if (boxH > ch * 0.85) {
-          boxH = ch * 0.85;
-          boxW = boxH * targetAspect;
-        }
-
-        const defaultCenterBox = {
-          x: (cw - boxW) / 2,
-          y: (ch - boxH) / 2,
-          w: boxW,
-          h: boxH
-        };
-
-        this.cropBox = this.cropBox || { ...defaultCenterBox };
-
-        const handleRadius = 14;
-
-        const render = () => {
-          if (!canvas || !this.cropLoadedImg) return;
-          const ctx = canvas.getContext('2d');
-          const pCtx = previewCanvas ? previewCanvas.getContext('2d') : null;
-
-          ctx.clearRect(0, 0, cw, ch);
-
-          // 1. Draw full original image fitted inside canvas
-          ctx.drawImage(img, 0, 0, cw, ch);
-
-          const { x, y, w, h } = this.cropBox;
-
-          // 2. Fill dark overlay OUTSIDE the crop box
-          ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
-          ctx.fillRect(0, 0, cw, Math.max(0, y));
-          ctx.fillRect(0, y + h, cw, Math.max(0, ch - (y + h)));
-          ctx.fillRect(0, y, Math.max(0, x), h);
-          ctx.fillRect(x + w, y, Math.max(0, cw - (x + w)), h);
-
-          // 3. Draw Rule of Thirds Grid Lines inside crop box
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.55)';
-          ctx.lineWidth = 1;
-          ctx.setLineDash([4, 4]);
-
-          ctx.beginPath();
-          ctx.moveTo(x + w / 3, y); ctx.lineTo(x + w / 3, y + h);
-          ctx.moveTo(x + (w / 3) * 2, y); ctx.lineTo(x + (w / 3) * 2, y + h);
-          ctx.moveTo(x, y + h / 3); ctx.lineTo(x + w, y + h / 3);
-          ctx.moveTo(x, y + (h / 3) * 2); ctx.lineTo(x + w, y + (h / 3) * 2);
-          ctx.stroke();
-          ctx.setLineDash([]);
-
-          // 4. Draw Crop Box Border
-          ctx.strokeStyle = '#ffffff';
-          ctx.lineWidth = 2;
-          ctx.strokeRect(x, y, w, h);
-
-          // 5. Draw 4 Corner Drag Handles (Figma / Instagram style)
-          const handles = [
-            { id: 'nw', cx: x, cy: y },
-            { id: 'ne', cx: x + w, cy: y },
-            { id: 'sw', cx: x, cy: y + h },
-            { id: 'se', cx: x + w, cy: y + h }
-          ];
-
-          handles.forEach(hnd => {
-            ctx.fillStyle = '#ffffff';
-            ctx.strokeStyle = '#4a5a24';
-            ctx.lineWidth = 2.5;
-            ctx.beginPath();
-            ctx.arc(hnd.cx, hnd.cy, 8, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.stroke();
-
-            ctx.fillStyle = '#4a5a24';
-            ctx.beginPath();
-            ctx.arc(hnd.cx, hnd.cy, 3, 0, Math.PI * 2);
-            ctx.fill();
-          });
-
-          // 6. Update High-Res Real-Time Live Preview Canvas (16:9)
-          if (pCtx && previewCanvas) {
-            previewCanvas.width = 320;
-            previewCanvas.height = 180;
-            pCtx.clearRect(0, 0, 320, 180);
-
-            const scaleX = img.width / cw;
-            const scaleY = img.height / ch;
-
-            const sx = Math.max(0, x * scaleX);
-            const sy = Math.max(0, y * scaleY);
-            const sw = Math.min(img.width - sx, w * scaleX);
-            const sh = Math.min(img.height - sy, h * scaleY);
-
-            pCtx.drawImage(img, sx, sy, sw, sh, 0, 0, 320, 180);
-          }
-        };
-
-        render();
-
-        const getHandle = (px, py) => {
-          const { x, y, w, h } = this.cropBox;
-          const dist = (hx, hy) => Math.hypot(px - hx, py - hy);
-
-          if (dist(x, y) <= handleRadius + 6) return 'nw';
-          if (dist(x + w, y) <= handleRadius + 6) return 'ne';
-          if (dist(x, y + h) <= handleRadius + 6) return 'sw';
-          if (dist(x + w, y + h) <= handleRadius + 6) return 'se';
-          if (px >= x && px <= x + w && py >= y && py <= y + h) return 'move';
-          return null;
-        };
-
-        let draggingHandle = null;
-        let startX = 0, startY = 0;
-        let dragStartBox = null;
-
-        const getCanvasCoords = (e) => {
-          const rect = canvas.getBoundingClientRect();
-          const clientX = (e.touches && e.touches.length > 0) ? e.touches[0].clientX : e.clientX;
-          const clientY = (e.touches && e.touches.length > 0) ? e.touches[0].clientY : e.clientY;
-          return {
-            x: (clientX - rect.left) * (cw / rect.width),
-            y: (clientY - rect.top) * (ch / rect.height)
-          };
-        };
-
-        const onMouseDown = (e) => {
-          const coords = getCanvasCoords(e);
-          draggingHandle = getHandle(coords.x, coords.y);
-
-          if (draggingHandle) {
-            startX = coords.x;
-            startY = coords.y;
-            dragStartBox = { ...this.cropBox };
-          }
-        };
-
-        const onMouseMove = (e) => {
-          const coords = getCanvasCoords(e);
-
-          if (!draggingHandle) {
-            const hnd = getHandle(coords.x, coords.y);
-            if (hnd === 'nw' || hnd === 'se') canvas.style.cursor = 'nwse-resize';
-            else if (hnd === 'ne' || hnd === 'sw') canvas.style.cursor = 'nesw-resize';
-            else if (hnd === 'move') canvas.style.cursor = 'move';
-            else canvas.style.cursor = 'default';
-            return;
-          }
-
-          const dx = coords.x - startX;
-          const dy = coords.y - startY;
-          const minW = 40;
-
-          if (draggingHandle === 'move') {
-            let newX = dragStartBox.x + dx;
-            let newY = dragStartBox.y + dy;
-            newX = Math.max(0, Math.min(cw - dragStartBox.w, newX));
-            newY = Math.max(0, Math.min(ch - dragStartBox.h, newY));
-            this.cropBox.x = newX;
-            this.cropBox.y = newY;
-          } else if (draggingHandle === 'se') {
-            let newW = Math.max(minW, Math.min(cw - dragStartBox.x, dragStartBox.w + dx));
-            let newH = newW / targetAspect;
-            if (dragStartBox.y + newH > ch) {
-              newH = ch - dragStartBox.y;
-              newW = newH * targetAspect;
-            }
-            this.cropBox.w = newW;
-            this.cropBox.h = newH;
-          } else if (draggingHandle === 'sw') {
-            let newW = Math.max(minW, dragStartBox.w - dx);
-            let newX = dragStartBox.x + (dragStartBox.w - newW);
-            let newH = newW / targetAspect;
-            if (newX < 0) {
-              newX = 0;
-              newW = dragStartBox.x + dragStartBox.w;
-              newH = newW / targetAspect;
-            }
-            if (dragStartBox.y + newH > ch) {
-              newH = ch - dragStartBox.y;
-              newW = newH * targetAspect;
-              newX = dragStartBox.x + dragStartBox.w - newW;
-            }
-            this.cropBox.x = newX;
-            this.cropBox.w = newW;
-            this.cropBox.h = newH;
-          } else if (draggingHandle === 'ne') {
-            let newW = Math.max(minW, Math.min(cw - dragStartBox.x, dragStartBox.w + dx));
-            let newH = newW / targetAspect;
-            let newY = dragStartBox.y + (dragStartBox.h - newH);
-            if (newY < 0) {
-              newY = 0;
-              newH = dragStartBox.y + dragStartBox.h;
-              newW = newH * targetAspect;
-            }
-            this.cropBox.y = newY;
-            this.cropBox.w = newW;
-            this.cropBox.h = newH;
-          } else if (draggingHandle === 'nw') {
-            let newW = Math.max(minW, dragStartBox.w - dx);
-            let newX = dragStartBox.x + (dragStartBox.w - newW);
-            let newH = newW / targetAspect;
-            let newY = dragStartBox.y + (dragStartBox.h - newH);
-            if (newX < 0) {
-              newX = 0;
-              newW = dragStartBox.x + dragStartBox.w;
-              newH = newW / targetAspect;
-              newY = dragStartBox.y + dragStartBox.h - newH;
-            }
-            if (newY < 0) {
-              newY = 0;
-              newH = dragStartBox.y + dragStartBox.h;
-              newW = newH * targetAspect;
-              newX = dragStartBox.x + dragStartBox.w - newW;
-            }
-            this.cropBox.x = newX;
-            this.cropBox.y = newY;
-            this.cropBox.w = newW;
-            this.cropBox.h = newH;
-          }
-
-          render();
-        };
-
-        const onMouseUp = () => {
-          draggingHandle = null;
-        };
-
-        canvas.addEventListener('mousedown', onMouseDown);
-        window.addEventListener('mousemove', onMouseMove);
-        window.addEventListener('mouseup', onMouseUp);
-
-        canvas.addEventListener('touchstart', onMouseDown, { passive: true });
-        window.addEventListener('touchmove', onMouseMove, { passive: true });
-        window.addEventListener('touchend', onMouseUp);
-
-        if (zoomSlider) {
-          zoomSlider.addEventListener('input', (e) => {
-            const factor = parseFloat(e.target.value);
-            const baseW = cw * 0.85;
-            const baseH = baseW / targetAspect;
-            const minW = 40;
-            const newW = Math.max(minW, Math.min(cw, baseW * (1 / factor)));
-            const newH = newW / targetAspect;
-
-            const centerX = this.cropBox.x + this.cropBox.w / 2;
-            const centerY = this.cropBox.y + this.cropBox.h / 2;
-
-            let newX = centerX - newW / 2;
-            let newY = centerY - newH / 2;
-
-            newX = Math.max(0, Math.min(cw - newW, newX));
-            newY = Math.max(0, Math.min(ch - newH, newY));
-
-            this.cropBox = { x: newX, y: newY, w: newW, h: newH };
-            if (zoomLabel) zoomLabel.textContent = `${Math.round(factor * 100)} %`;
-            render();
-          });
-        }
-
-        if (btnReset) {
-          btnReset.addEventListener('click', () => {
-            this.cropBox = { ...defaultCenterBox };
-            if (zoomSlider) zoomSlider.value = 1;
-            if (zoomLabel) zoomLabel.textContent = '100 %';
-            render();
-          });
-        }
-      };
-      img.src = this.cropImageSrc;
-    }, 50);
-  }
 }

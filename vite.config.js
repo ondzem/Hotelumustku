@@ -5,7 +5,9 @@ export default defineConfig(({ mode }) => {
   // Zůstávají jen tady na serveru, do prohlížeče se nedostanou —
   // Vite do balíčku vkládá výhradně proměnné s předponou VITE_.
   const env = loadEnv(mode, process.cwd(), '');
-  for (const klic of ['RESEND_API_KEY', 'SUPABASE_SERVICE_ROLE_KEY', 'VITE_SUPABASE_URL']) {
+  // VITE_SUPABASE_ANON_KEY tu musí být taky: serverová funkce pro fotky
+  // jím ověřuje token přihlášené recepce a bez něj vrací 500.
+  for (const klic of ['RESEND_API_KEY', 'SUPABASE_SERVICE_ROLE_KEY', 'VITE_SUPABASE_URL', 'VITE_SUPABASE_ANON_KEY']) {
     if (env[klic] && !process.env[klic]) process.env[klic] = env[klic];
   }
 
@@ -125,9 +127,14 @@ export default defineConfig(({ mode }) => {
           req.on('end', async () => {
             try {
               const { default: handler } = await import('./netlify/functions/upload-news-image.js');
+              // Hlavička Authorization se MUSÍ přenést. Bez ní funkce
+              // nepozná přihlášenou recepci a lokálně vždycky vrátí 401,
+              // takže nahrání fotky ve vývoji nešlo vůbec vyzkoušet.
+              const hlavicky = { 'Content-Type': 'application/json' };
+              if (req.headers.authorization) hlavicky.Authorization = req.headers.authorization;
               const pozadavek = new Request('http://localhost/.netlify/functions/upload-news-image', {
                 method: req.method || 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: hlavicky,
                 body: (req.method === 'GET' || req.method === 'HEAD') ? undefined : Buffer.concat(kusy).toString('utf8')
               });
               const odpoved = await handler(pozadavek);

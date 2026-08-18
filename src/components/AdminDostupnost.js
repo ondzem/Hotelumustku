@@ -257,7 +257,7 @@ export function renderDostupnostModal(ad) {
             ? `Volných pokojů v celém termínu: <strong style="color: #4a5a24;">${volne.length}</strong> z ${radky.length}`
             : '<strong style="color: #c62828;">V tomto termínu není volný žádný pokoj.</strong>'}
         </p>
-        <div style="display: flex; flex-direction: column; gap: 6px; max-height: 260px; overflow-y: auto;">
+        <div class="admin-vnitrni-seznam" style="display: flex; flex-direction: column; gap: 6px; max-height: 260px; overflow-y: auto;">
           ${radky.map(({ rm, kolize }) => `
             <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px; border-radius: 5px; border: 1px solid #e4e2d8; border-left: 3px solid ${kolize.length ? '#c62828' : '#697947'}; background: #fff; flex-wrap: wrap;">
               <span style="font-size: 13.5px; font-weight: 700; color: #1c1c19;">${escapuj(rm.name)}</span>
@@ -394,7 +394,7 @@ export function renderDostupnostModal(ad) {
           <div style="${S.blok}">
             <strong style="display: block; font-size: 14px; font-weight: 800; color: #1c1c19; margin-bottom: 4px;">Zablokované termíny (${ad.blockedDates.length})</strong>
             <p style="margin: 0 0 12px 0; font-size: 12.5px; color: #6b6b60;">Vše, co je teď zavřené pro rezervace přes web — u kterého pokoje a na jak dlouho.</p>
-            <div style="display: flex; flex-direction: column; gap: 8px; max-height: 260px; overflow-y: auto;">
+            <div class="admin-vnitrni-seznam" style="display: flex; flex-direction: column; gap: 8px; max-height: 260px; overflow-y: auto;">
               ${[...ad.blockedDates].sort((x, y) => String(x.date_from).localeCompare(String(y.date_from))).map(b => `
                 <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; border-radius: 5px; border: 1px solid #e4e2d8; border-left: 3px solid #c62828; background: #fff; flex-wrap: wrap;">
                   <div style="min-width: 0;">

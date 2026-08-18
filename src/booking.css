@@ -5346,3 +5346,283 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .rucni-cal-overlay .cal-day:not(.is-full):not(.is-partial):not(.is-selected):not(.in-range):not(.cal-day-empty) {
   border: 1px solid #e7e5dc;
 }
+
+/* =====================================================================
+   ADMINISTRACE NA TELEFONU A TABLETU — JEDNOTNÉ ODSAZENÍ A OKNA
+   Tenhle blok je schválně na konci a schválně jeden. Pravidla pro
+   administraci vznikala postupně ve čtyřech různých @media blocích
+   (767.98 i 768, 400, 380) a rozešla se: na iPadu na výšku, tedy PŘESNĚ
+   768 px, platila část mobilního rozvržení a část stolního, takže filtr
+   pokojů zůstal vycentrovaný na 316 px uprostřed prázdné šířky.
+   Hranice je proto všude 768 px včetně.
+   ===================================================================== */
+
+@media (max-width: 768px) {
+  /* --- Jedna svislá linka pro všechno ---------------------------------
+     Odsazení se dřív sčítalo ze tří vnořených rámů (12 + 10 + 20) a každý
+     blok tím začínal jinde: tlačítka nástrojů na 32 px, bílé karty na
+     22 px a obsah karty rezervace až na 47 px. Na 375px displeji z toho
+     zbylo na text 285 px z 375. Teď drží všechno jednu hranu 12 px od
+     kraje a obsah karet 26 px. */
+  .admin-page-main {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .admin-dashboard-wrapper {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    box-sizing: border-box !important;
+  }
+
+  .admin-header-bar {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .admin-toolbar {
+    padding: 14px !important;
+    align-items: stretch !important;
+    box-sizing: border-box !important;
+  }
+
+  .admin-res-card {
+    padding: 18px 14px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* --- Přepínač stavů ------------------------------------------------
+     Byl to vodorovný posuvník, jenže useknutý uprostřed slova („2. Če…")
+     nevypadá jako něco, co se dá posunout — vypadá jako rozbité
+     vykreslení. Mřížka ukáže všechny stavy naráz. */
+  .admin-status-tabs {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    overflow: visible !important;
+    padding-bottom: 0 !important;
+    scroll-snap-type: none !important;
+    width: 100% !important;
+  }
+
+  .admin-status-tabs .status-tab-btn:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .status-tab-btn {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 42px !important;
+    padding: 7px 8px !important;
+    font-size: 12.5px !important;
+    line-height: 1.25 !important;
+    white-space: normal !important;
+    justify-content: center !important;
+    text-align: center !important;
+    flex-shrink: 1 !important;
+    box-sizing: border-box !important;
+  }
+
+  /* --- Filtr pokoje a Nová rezervace ---------------------------------- */
+  .admin-room-filter {
+    width: 100% !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 6px !important;
+  }
+
+  .admin-room-select {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .admin-nova-rezervace-radek {
+    width: 100% !important;
+  }
+
+  .admin-nova-rezervace-radek .btn-admin-nova-rezervace {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* --- Karta rezervace ------------------------------------------------
+     Potomek gridu má ve výchozím stavu min-width: auto, takže se
+     nesmrskne pod šířku svého textu a vyteče z karty ven. Platí to i pro
+     řádky tlačítek — tři akce vedle sebe („Podrobnosti", „Do archivu",
+     „Stornovat") se na telefon nevejdou a přetékaly za okraj karty. */
+  .res-card-grid,
+  .res-card-grid > *,
+  .res-card-grid > * > * {
+    min-width: 0 !important;
+  }
+
+  .res-guest-name,
+  .res-contact-info,
+  .res-room-title,
+  .res-stay-dates {
+    overflow-wrap: anywhere !important;
+    min-width: 0 !important;
+  }
+
+  .res-actions-cell {
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .res-secondary-btn-row {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  .res-secondary-btn-row > button {
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 0 8px !important;
+    font-size: 13px !important;
+    white-space: normal !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Lichý počet tlačítek — poslední zabere celý řádek, ať nezůstane
+     osamocené v půlce šířky. */
+  .res-secondary-btn-row > button:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  .res-actions-cell > button {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* --- Řádky seznamů v oknech (aktuality, slevové kódy, pokoje mimo
+     provoz) --------------------------------------------------------
+     Řádek byl `space-between`: vlevo název s náhledem, vpravo Upravit
+     a Smazat. Tlačítka mají pevnou šířku, takže na telefonu smrskla
+     levou půlku na „Spu…" a ještě přes ni přelezla. Pod sebou se vejde
+     všechno. */
+  .admin-seznam-radek {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+
+  .admin-seznam-akce {
+    display: flex !important;
+    width: 100% !important;
+  }
+
+  .admin-seznam-akce > button {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    padding: 8px 10px !important;
+  }
+
+  .admin-seznam-nazev {
+    white-space: normal !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    overflow-wrap: anywhere !important;
+  }
+}
+
+/* --- Okna administrace ------------------------------------------------
+   `height: 100vh` je na telefonu VĚTŠÍ než viditelná plocha, dokud je
+   vidět adresní řádek. Okno vysázené doprostřed takové plochy vyleze
+   horním okrajem mimo obrazovku — a protože rolovala jen jeho vnitřní
+   část, na hlavičku okna se nedalo dostat vůbec. Přesně tohle obsluha
+   popisovala jako „sjedu dolů a nahoru už se nevrátím".
+
+   Řešení: okno se sází od horního okraje a vycentruje se `margin: auto`
+   jen tehdy, když se vejde; roluje celý překryv, ne jen vnitřek. */
+@media (max-width: 900px) {
+  .admin-modal-overlay,
+  .admin-modal-overlay-block,
+  .admin-modal-overlay-discount,
+  .admin-modal-overlay-prices,
+  .orez-overlay {
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    align-items: flex-start !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior: contain !important;
+    padding: 10px !important;
+  }
+
+  .admin-modal-overlay > *,
+  .admin-modal-overlay-block > *,
+  .admin-modal-overlay-discount > *,
+  .admin-modal-overlay-prices > *,
+  .orez-overlay > * {
+    margin: auto !important;
+    width: 100% !important;
+    max-width: 640px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Ceník je výjimka a zůstává mu vlastní vnitřní rolování: má pevnou
+     hlavičku nahoře a lištu s tlačítkem Uložit dole, které musí být
+     vidět pořád. Výška je proto omezená na 90dvh (skutečná viditelná
+     plocha), ne 90vh. */
+  .admin-confirm-modal:not(.cenik-modal),
+  .admin-block-modal:not(.cenik-modal) {
+    max-height: none !important;
+    overflow-y: visible !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  /* Seznamy uvnitř oken (recenze, aktuality, slevové kódy, blokace) měly
+     vlastní rolovací rámeček s pevnou výškou. Na telefonu se tak roluje
+     rolovadlo v rolovadle: prst hýbe seznamem, ale okno zůstane stát —
+     a obsluha, která sjela dolů, se nahoru nedostane, protože nahoru
+     roluje něco jiného, než na co sahá. Na malém displeji proto roluje
+     jen překryv. */
+  .admin-vnitrni-seznam {
+    max-height: none !important;
+    overflow-y: visible !important;
+    padding-right: 0 !important;
+  }
+
+  /* Bez vnitřního rolovadla je okno vysoké i přes deset tisíc pixelů.
+     Nabíhací animace se zvětšováním pak celý ten sloup přeškáluje —
+     na slabším telefonu to trhá a při zmenšení 0,95 se okno navíc
+     opticky odsune o stovky pixelů od horního okraje. Stačí prolnutí. */
+  .admin-confirm-modal,
+  .admin-block-modal,
+  .cenik-modal {
+    animation: fadeInModal 0.2s ease !important;
+  }
+}
+
+/* Na tabletu je 12px od kraje zbytečně natěsno — displej má šířku
+   na to, aby karty dýchaly. Pod 560 px zůstává 12 px, protože tam
+   je každý pixel šířky znát. */
+@media (min-width: 561px) and (max-width: 768px) {
+  .admin-dashboard-wrapper {
+    padding-left: 22px !important;
+    padding-right: 22px !important;
+  }
+
+  .admin-toolbar {
+    padding: 18px 20px !important;
+  }
+
+  .admin-res-card {
+    padding: 20px !important;
+  }
+
+  /* Šest stavů se na tabletu vejde do tří sloupců. */
+  .admin-status-tabs {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .admin-status-tabs .status-tab-btn:first-child {
+    grid-column: auto;
+  }
+}

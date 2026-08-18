@@ -25,7 +25,7 @@ const S = {
   popisek: 'display: block; font-size: 12.5px; font-weight: 700; color: #55554e; margin-bottom: 5px;',
   blok: 'background: #fff; border: 1.5px solid #e0dfd5; border-radius: 8px; padding: 16px 18px; margin-bottom: 14px;',
   nadpisBloku: 'display: block; font-size: 14px; font-weight: 800; color: #1c1c19; margin-bottom: 14px;',
-  mrizka: 'display: grid; grid-template-columns: 1fr 1fr; gap: 12px 14px;',
+  mrizka: 'display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px 14px;',
 };
 
 /** Datum v českém tvaru — stejně jako v BookingSystem a na tištěném lístku. */

@@ -380,6 +380,15 @@ oranžový u částečného) a barva čísla.
   která pozici přepočítá několikrát a naposledy po `load`; jakmile uživatel
   sám zaroluje, přestane.
 
+- **Přechod mezi stránkami musí sám odrolovat nahoru.** Odkazy `/akce`,
+  `/okoli` a spol. chytá delegovaná obsluha a řeší je `navigateTo()`
+  přes `pushState` — tedy uvnitř téže stránky, kde prohlížeč scroll sám
+  nevrací. Kdo si prohlédl patičku a klikl v ní na jinou stránku, zůstal
+  na nové zase dole v patičce; na mobilu, kde je patička přes několik
+  obrazovek, to vypadalo, že odkaz vůbec nefunguje. `navigateTo()` proto
+  skočí na začátek — ale **jen když v adrese není kotva**, jinak by vzal
+  odrolování cíli, který si ho řídí sám.
+
 ### Jak se responzivita kontroluje
 
 Ne okem, ale měřením: stránka se načte do iframu o pevné šířce (viz oddíl
@@ -409,6 +418,49 @@ je jeden sloupec.
 a vyteče z buňky. Na kartách rezervací tím jméno hosta a datum přetékaly
 o 21 px; řeší to `min-width: 0` na `.res-card-grid > *`. Na tohle pozor
 u každého nového gridu s textem.
+
+### Administrace na telefonu a tabletu
+
+Pravidla vznikala postupně ve čtyřech `@media` blocích (767.98, 768, 400,
+380) a rozešla se. Sjednocené jsou teď v jednom bloku na konci
+`booking.css`, hranice je všude **768 px včetně**.
+
+- **Na PŘESNĚ 768 px** (iPad na výšku) platila půlka mobilního a půlka
+  stolního rozvržení, protože jedna sada pravidel měla `max-width: 767.98px`
+  a druhá `max-width: 768px`. Filtr pokojů tím zůstal vycentrovaný na
+  316 px uprostřed prázdné šířky.
+- **Jedna svislá linka pro všechno.** Odsazení se sčítalo ze tří
+  vnořených rámů (12 + 10 + 20), takže každý blok začínal jinde:
+  tlačítka nástrojů na 32 px, bílé karty na 22 px, obsah karty rezervace
+  až na 47 px — z 375px displeje zbylo na text 285 px. Teď drží všechno
+  hranu 12 px (na tabletu 22 px).
+- **Přepínač stavů je mřížka, ne vodorovný posuvník.** Useknuté „2. Če…"
+  nevypadá jako něco, co se dá posunout, ale jako rozbité vykreslení.
+- **Řádky `space-between` se na mobilu skládají pod sebe**
+  (`.admin-seznam-radek`). Tlačítka Upravit/Smazat mají pevnou šířku a
+  smrskla levou půlku řádku na „Spu…", přes kterou ještě přelezla.
+
+### Okna administrace na mobilu
+
+- **`height: 100vh` je na telefonu VĚTŠÍ než viditelná plocha**, dokud
+  je vidět adresní řádek. Okno vysázené doprostřed takové plochy vyleze
+  horním okrajem mimo obrazovku — a protože rolovala jen jeho vnitřní
+  část, na hlavičku okna se nedalo dostat vůbec. Přesně tohle obsluha
+  popisovala jako „sjedu dolů a nahoru už se nevrátím". Překryv má proto
+  `100dvh`, sází se od horního okraje a centruje se `margin: auto`, jen
+  když se vejde.
+- **Žádné rolovadlo v rolovadle.** Seznamy uvnitř oken měly vlastní
+  rámeček s pevnou výškou (`.admin-vnitrni-seznam`); na malém displeji
+  se ruší a roluje jen překryv. **Ceník je výjimka** — má pevnou hlavičku
+  a lištu s tlačítkem Uložit, které musí být vidět pořád, takže si vnitřní
+  rolování nechává; jen s výškou `min(90dvh, 900px)`.
+- **Zámek rolování pod oknem se neopisuje ručně.** Ruční seznam příznaků
+  se rozešel — chyběla v něm Správa recenzí, potvrzení smazání aktuality
+  i recenze a okno e-mailů, takže se pod nimi rolovala stránka za oknem.
+  Hledá se teď podle názvu vlastnosti (`/^show[A-Za-z]*Modal$/`), takže
+  nové okno nejde zapomenout. Samotné `overflow: hidden` na `body` navíc
+  Safari na iPhonu ignoruje; drží to až `position: fixed` se zapamatovanou
+  pozicí, kterou `zamkniRolovaniStranky()` po zavření vrátí.
 
 ## Posluchače na předrenderovaných stránkách
 
@@ -522,6 +574,63 @@ návštěvníkovi včetně recepčního. Na adresy obrázků je `escUrl()`.
 
 Bezpečnostní hlavičky jsou v `public/_headers`; `/admin` má navíc
 `noindex` a `no-store`.
+
+## Storno rezervace — dva různé e-maily
+
+Běžný storno e-mail hostu píše, že „při odeslání žádosti jste neplatili
+žádné peníze (0 Kč)". U rezervace, kterou recepce překlopila do stavu
+`confirmed`, je to ale **nepravda** — záloha už je na účtu hotelu a host
+má nárok na její vrácení. Poslat mu tuhle větu je vzkaz, že o peníze
+přišel.
+
+Rozhoduje `maZaplacenouZalohu()` v `pricing.js`: stav `confirmed`
+**a** nenulová `deposit_price`. Stav `confirmed` nastavuje obsluha až
+ve chvíli, kdy zálohu vidí na účtu (tlačítko Potvrdit přijetí zálohy).
+
+- neplaceno → `generateEmailCancellation()`, typ `email_cancellation`
+- zaplaceno → `generateEmailCancellationRefund()`, typ
+  `email_cancellation_refund` — vypíše uhrazenou částku a požádá
+  o číslo účtu **v odpovědi na ten e-mail**. Číslo účtu hosta v databázi
+  nemáme a schválně ho nesbíráme formulářem.
+
+**Rozhodnout se musí ještě před zápisem `cancelled`.** Po přepsání stavu
+už z rezervace nepoznáš, jestli za ni host zaplatil, a pošleš mu to
+špatné.
+
+## Ořez fotky aktuality
+
+Ovládání je v `src/components/AdminFotoOrez.js`, styly v oddílu „OŘEZ
+FOTKY AKTUALITY" ve `style.css`. Nahradilo to přes tři sta řádků kreslení
+do canvasu se zoomem přímo v `AdminDashboard.js`, které se při každém
+překreslení administrace navazovalo znovu a jehož potvrzovací tlačítko
+tiše nedělalo nic, když se `cropBox` nestihl nastavit.
+
+Čtyři věci, na kterých to stojí:
+
+- **Výřez se drží v pixelech ORIGINÁLU**, ne v zobrazených. Ukazatel se
+  přepočítává dělením měřítkem (`clientWidth / naturalWidth`) a rámeček
+  se násobí zpátky. Kdyby se ukládaly zobrazené pixely, ořez by změnil
+  význam při každé změně velikosti okna.
+- **Poměr je zamčený, takže volná je vždy jen jedna míra.** Spočítá se
+  šířka, výška se z ní odvodí. U rohu rozhoduje ten směr, kterým se táhne
+  výrazněji — svislý posun se přitom musí přepočítat na šířku (`* POMER`),
+  jinak by u širokého poměru vodorovný tah vždycky přebil svislý.
+- **Ořezávat se musí v pořadí a po každé změně šířky dopočítat výšku.**
+  Nezávislé ořezání obou měr rozbije poměr na okraji fotky. Když by
+  výsledek klesl pod minimum, celý snímek se zahodí (`return`) — jeden
+  zahozený pohyb myši si nikdo nevšimne, převrácený rámeček ano.
+- **Výstup vynucuje canvas, ne ovládání.** Cílový obdélník je konstanta
+  `CIL_SIRKA × CIL_VYSKA` (1280 × 720), takže ať uživatel táhne kamkoli,
+  ven vyleze pokaždé stejně velký obrázek a karty aktualit neposkakují.
+  Formát se mění jen na tom jednom místě.
+
+Nahrávání samo funguje (ověřeno proti nasazené funkci s platným tokenem).
+Ve **vývoji** ale dřív selhávalo vždycky: middleware ve `vite.config.js`
+nepřenášel hlavičku `Authorization`, takže funkce nepoznala přihlášenou
+recepci a vracela 401, a do `process.env` se nekopíroval
+`VITE_SUPABASE_ANON_KEY`, bez kterého se token nemá čím ověřit. Obojí je
+opravené — kdo bude přidávat další serverovou funkci, musí hlavičky
+přenést taky.
 
 ## Mazání rezervace — jeden požadavek, ne pět
 

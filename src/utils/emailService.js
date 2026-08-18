@@ -500,6 +500,72 @@ export function generateEmailCancellation({ reservation, room, reasonNote }) {
   return { subject: `Informace k vaší žádosti o rezervaci ${reservation.code} — Hotel u Můstku`, html };
 }
 
+/**
+ * E-MAIL 4b: storno rezervace, u které už host ZAPLATIL zálohu.
+ *
+ * Běžný storno e-mail hostu tvrdí, že „neplatil žádné peníze (0 Kč)".
+ * U rezervace, kterou recepce posunula do stavu `confirmed`, je to ale
+ * nepravda — záloha už je na účtu hotelu a host má nárok na její vrácení.
+ * Rozlišuje se podle `maZaplacenouZalohu()`, ne podle úsudku obsluhy.
+ *
+ * Číslo účtu hosta v systému nemáme, a schválně ho ani nechceme sbírat
+ * formulářem; host ho pošle prostou odpovědí na tento e-mail.
+ */
+export function generateEmailCancellationRefund({ reservation, room, reasonNote, pricing }) {
+  const zaloha = Number(reservation && reservation.deposit_price) > 0
+    ? Number(reservation.deposit_price)
+    : Number((pricing && pricing.depositPriceTotal) || 0);
+  const zalohaText = formatCzechPrice(zaloha);
+
+  const html = `
+    ${getEmailHeader('Storno rezervace a vrácení uhrazené zálohy')}
+    <p style="color: #1a1a1a !important;">Vážený/á <strong>${reservation.guest_name}</strong>,</p>
+    <p style="color: #333333 !important;">velice nás to mrzí, ale vaši potvrzenou rezervaci <strong>${reservation.code}</strong> v termínu <strong>${reservation.date_from} až ${reservation.date_to}</strong> jsme nuceni stornovat.</p>
+
+    <div style="background-color: #fff8f8 !important; border: 1px solid #f5c6cb !important; border-radius: 12px !important; padding: 18px 22px !important; margin: 24px 0 !important; color: #721c24 !important;">
+      <strong style="color: #721c24 !important;">⚠️ Důvod storna:</strong><br>
+      <span style="font-size: 14.5px; color: #491217;">${reasonNote || 'Rezervaci bylo nutné z provozních důvodů zrušit.'}</span>
+    </div>
+
+    <div style="background-color: #F3F7EA !important; border: 2px solid #697947 !important; border-radius: 12px !important; padding: 20px 24px !important; margin: 24px 0 !important;">
+      <h4 style="margin: 0 0 12px 0 !important; font-size: 16px !important; font-weight: 700 !important; color: #4A5A24 !important;">💰 Uhrazenou zálohu vám vrátíme v plné výši</h4>
+      <p style="margin: 0 0 14px 0 !important; font-size: 14.5px !important; color: #333333 !important; line-height: 1.6 !important;">
+        Na účet hotelu jste uhradil/a zálohu ve výši <strong style="color: #4A5A24 !important; font-size: 17px !important;">${zalohaText}</strong>. Tuto částku vám vracíme celou — storno jde za námi, nikoliv za vámi.
+      </p>
+      <p style="margin: 0 0 10px 0 !important; font-size: 14.5px !important; color: #333333 !important; line-height: 1.6 !important;">
+        <strong>Prosíme, odpovězte přímo na tento e-mail</strong> a uveďte:
+      </p>
+      <ul style="margin: 0 0 14px 0 !important; padding-left: 20px !important; font-size: 14.5px !important; color: #2C2C28 !important; line-height: 1.6 !important;">
+        <li style="margin-bottom: 6px !important;"><strong>číslo bankovního účtu</strong> pro vrácení peněz (například 123456789/0800),</li>
+        <li style="margin-bottom: 6px !important;"><strong>jméno majitele účtu</strong>,</li>
+        <li style="margin-bottom: 6px !important;">případně <strong>IBAN</strong>, pokud jde o zahraniční účet.</li>
+      </ul>
+      <p style="margin: 0 !important; font-size: 14.5px !important; color: #333333 !important; line-height: 1.6 !important;">
+        Jakmile nám údaje pošlete, odešleme peníze zpět <strong>nejpozději do 14 dnů</strong> a potvrdíme vám to e-mailem. Raději si to vyřídíte telefonicky? Zavolejte na <strong>${HOTEL_TELEFON}</strong>.
+      </p>
+    </div>
+
+    <div style="background-color: #F9FAF7 !important; border: 1px solid #E7E5DC !important; border-radius: 12px !important; padding: 20px 24px !important; margin: 24px 0 !important;">
+      <h4 style="margin: 0 0 12px 0 !important; font-size: 16px !important; font-weight: 700 !important; color: #4A5A24 !important;">💡 Nebo pro vás rádi najdeme náhradní termín</h4>
+      <p style="margin: 0 !important; font-size: 14.5px !important; color: #333333 !important; line-height: 1.6 !important;">
+        Pokud máte o pobyt stále zájem, můžeme místo vrácení peněz <strong>převést zálohu na jiný termín</strong>. Napište nám to prosím v odpovědi nebo zavolejte na <strong>${HOTEL_TELEFON}</strong> a společně vybereme datum, které vám bude vyhovovat.
+      </p>
+    </div>
+
+    <table class="info-table" style="background-color: #ffffff !important;">
+      <tr><td style="color: #555555 !important;">Kód rezervace:</td><td style="color: #1a1a1a !important;"><strong>${reservation.code}</strong></td></tr>
+      <tr><td style="color: #555555 !important;">Pokoj:</td><td style="color: #1a1a1a !important;">${room ? room.name : (reservation.room_name || 'Vybraný pokoj')}</td></tr>
+      <tr><td style="color: #555555 !important;">Termín:</td><td style="color: #1a1a1a !important;">${reservation.date_from} až ${reservation.date_to}</td></tr>
+      <tr><td style="color: #555555 !important;">Uhrazená záloha:</td><td style="color: #1a1a1a !important;"><strong>${zalohaText}</strong></td></tr>
+      <tr><td style="color: #555555 !important;">Stav rezervace:</td><td><strong style="color: #d9534f !important;">Stornováno — záloha se vrací</strong></td></tr>
+    </table>
+
+    <p style="font-size:13.5px; color:#666666 !important; text-align: center !important; margin-top: 24px !important;">Omlouváme se za komplikace, které vám tím způsobujeme, a děkujeme za pochopení.</p>
+    ${getEmailFooter()}
+  `;
+  return { subject: `Storno rezervace ${reservation.code} a vrácení zálohy — Hotel u Můstku`, html };
+}
+
 // E-MAIL 5 (Automatický): Zákazníkovi při vypršení 3denní lhůty na úhradu zálohy
 export function generateEmailPaymentExpired({ reservation, room }) {
   const html = `
@@ -589,6 +655,14 @@ export function sendAllTestEmailsTo(recipientEmail = RECEPCE_PRIJEMCE) {
   // E-mail 3: Potvrzení přijetí zálohy & Závazná rezervace
   const e3 = generateEmail3FinalConfirmation({ reservation: mockReservation, room: mockRoom, pricing: mockPricing });
   sendEmail({ to: recipientEmail, subject: e3.subject, html: e3.html, type: 'email_3_final_confirmation', reservationCode: mockReservation.code });
+
+  // E-mail 4: Zamítnutí žádosti, u které host nic neplatil
+  const e4 = generateEmailCancellation({ reservation: mockReservation, room: mockRoom });
+  sendEmail({ to: recipientEmail, subject: e4.subject, html: e4.html, type: 'email_cancellation', reservationCode: mockReservation.code });
+
+  // E-mail 4b: Storno potvrzené rezervace — záloha se vrací
+  const e4b = generateEmailCancellationRefund({ reservation: { ...mockReservation, status: 'confirmed' }, room: mockRoom, pricing: mockPricing });
+  sendEmail({ to: recipientEmail, subject: e4b.subject, html: e4b.html, type: 'email_cancellation_refund', reservationCode: mockReservation.code });
 
   return true;
 }

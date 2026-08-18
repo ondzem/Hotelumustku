@@ -21,6 +21,7 @@ const POVOLENE_TYPY = new Set([
   'email_2_approval_payment_request',
   'email_3_final_confirmation',
   'email_cancellation',
+  'email_cancellation_refund',
   'email_payment_expired',
   'contact_form_message',
   'new_review_notification',

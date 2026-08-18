@@ -43,6 +43,21 @@ export function procentoZalohy(reservation) {
   return VYCHOZI_NASTAVENI.zaloha_procent;
 }
 
+/**
+ * Má už hotel od hosta peníze?
+ *
+ * Rozhoduje o tom, jestli se při stornu smí napsat „neplatili jste nic".
+ * Stav `confirmed` nastavuje recepce teprve ve chvíli, kdy zálohu vidí
+ * na účtu (tlačítko Potvrdit zálohu), a ručně zapsaná rezervace se
+ * takhle označí jen tehdy, když ji obsluha vede jako závazně potvrzenou.
+ * Nula v `deposit_price` znamená, že se nemá co vracet — třeba u pobytu
+ * placeného až na místě.
+ */
+export function maZaplacenouZalohu(reservation) {
+  if (!reservation || reservation.status !== 'confirmed') return false;
+  return Number(reservation.deposit_price) > 0;
+}
+
 /** Vytáhne číslo z nastavení, s návratem k výchozí hodnotě. */
 function nast(nastaveni, klic) {
   const v = Number(nastaveni && nastaveni[klic]);

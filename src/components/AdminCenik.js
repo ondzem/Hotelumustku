@@ -200,7 +200,7 @@ function obrazovka({ titul, krokovnik = '', napoveda = '', zpet = null, obsah, a
   return `
     <div class="admin-modal-overlay admin-modal-overlay-block admin-modal-overlay-prices">
       <div class="admin-confirm-modal admin-block-modal cenik-modal"
-           style="max-width: 860px; padding: 0; max-height: min(90vh, 900px); display: flex; flex-direction: column; overflow: hidden;">
+           style="max-width: 860px; padding: 0; max-height: min(90dvh, 900px); display: flex; flex-direction: column; overflow: hidden;">
         <!-- Jen boční padding: svislý si drží .admin-modal-header-sticky, aby
              hlavička seděla stejně jako u Slevových kódů i na mobilu. -->
         <div class="admin-modal-header-sticky" style="flex-shrink: 0; padding-left: 26px; padding-right: 26px;">
