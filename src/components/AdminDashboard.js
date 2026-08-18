@@ -498,6 +498,7 @@ export class AdminDashboard {
     this.rucniRezervace = { ...prazdnaRucniRezervace(), ...(predvyplneno || {}) };
     this.rucniChyba = '';
     this.rucniKolize = false;
+    this.rucniOdesila = false;   // pojistka proti dvojímu založení téže rezervace
     this.showPrehledModal = false;
     this.showRucniModal = true;
     this.zkontrolujKoliziRucni();

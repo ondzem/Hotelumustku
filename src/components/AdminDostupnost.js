@@ -93,6 +93,28 @@ function zabranyDuvod(ad, den, roomId) {
   return null;
 }
 
+/**
+ * Přestupní den — dopoledne se odjíždí, odpoledne může přijet někdo jiný.
+ *
+ * Pozná se podle toho, že `date_to` nějakého záznamu padne přesně na tenhle
+ * den. Protože je date_to výlučné, pokoj v ten den obsazený UŽ NENÍ, ale do
+ * 10:00 v něm ještě někdo je. Vrací, kdo odjíždí, nebo null.
+ */
+function odjezdVDen(ad, den, roomId) {
+  const rezervace = (ad.reservations || []).find(r =>
+    r.room_id === roomId
+    && !r.is_archived
+    && !(r.status && (String(r.status).startsWith('cancelled') || r.status === 'stornováno'))
+    && r.date_to === den);
+  if (rezervace) return { typ: 'rezervace', popis: rezervace.guest_name || 'Rezervace' };
+
+  const blokace = (ad.blockedDates || []).find(b =>
+    (b.room_id === 'all' || b.room_id === roomId) && b.date_to === den);
+  if (blokace) return { typ: 'blokace', popis: blokace.reason || 'Blokace' };
+
+  return null;
+}
+
 /** Prodejné pokoje — vyřazené z provozu se do dostupnosti nepočítají. */
 function prodejnePokoje(ad) {
   const vypnute = new Set((ad.disabledRooms || []).filter(d => d.is_disabled).map(d => d.room_id));
@@ -102,11 +124,15 @@ function prodejnePokoje(ad) {
 function stavDne(ad, den, roomId) {
   if (roomId !== 'all') {
     const d = zabranyDuvod(ad, den, roomId);
-    return { volno: d ? 0 : 1, celkem: 1, duvod: d };
+    // Přestup hlásíme jen u dne, který je jinak volný — jinak by to
+    // znamenalo, že jeden pobyt končí a druhý týž den pokračuje, a to
+    // se do jedné buňky rozumně nakreslit nedá.
+    return { volno: d ? 0 : 1, celkem: 1, duvod: d, odjezd: d ? null : odjezdVDen(ad, den, roomId) };
   }
   const pokoje = prodejnePokoje(ad);
   const volne = pokoje.filter(r => !zabranyDuvod(ad, den, r.id));
-  return { volno: volne.length, celkem: pokoje.length, duvod: null };
+  const odjezdy = pokoje.filter(r => !zabranyDuvod(ad, den, r.id) && odjezdVDen(ad, den, r.id)).length;
+  return { volno: volne.length, celkem: pokoje.length, duvod: null, odjezdy };
 }
 
 export function renderDostupnostModal(ad) {
@@ -126,13 +152,15 @@ export function renderDostupnostModal(ad) {
 
   for (let d = 1; d <= dnuVMesici; d++) {
     const den = `${year}-${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-    const { volno, celkem, duvod } = stavDne(ad, den, p.roomId);
+    const { volno, celkem, duvod, odjezd, odjezdy } = stavDne(ad, den, p.roomId);
     const plne = volno === 0;
     const castecne = volno > 0 && volno < celkem;
+    const jePrestup = p.roomId === 'all' ? (odjezdy || 0) > 0 : Boolean(odjezd);
 
     let tridy = 'cal-day';
     if (plne) tridy += ' is-full';
     else if (castecne) tridy += ' is-partial';
+    if (jePrestup) tridy += ' is-turnover-day';
     if (den === p.od) tridy += ' is-from is-selected';
     if (den === p.doo) tridy += ' is-to is-selected';
     if (p.od && p.doo && den > p.od && den < p.doo) tridy += ' in-range';
@@ -141,7 +169,12 @@ export function renderDostupnostModal(ad) {
     const popisStavu = p.roomId === 'all'
       ? (plne ? 'Plně obsazeno' : `Volných pokojů: ${volno} z ${celkem}`)
       : (duvod ? (duvod.typ === 'blokace' ? `Blokace: ${duvod.popis}` : `Obsazeno — ${duvod.popis}`) : 'Volno');
-    const popis = den < dnes ? `${popisStavu} — tenhle den už je za námi` : popisStavu;
+    const popisPrestupu = jePrestup
+      ? (p.roomId === 'all'
+          ? ` · odjezd do 10:00 (${odjezdy} ${odjezdy === 1 ? 'pokoj' : (odjezdy < 5 ? 'pokoje' : 'pokojů')}), potom volno od 15:00`
+          : ` · ${odjezd.typ === 'rezervace' ? odjezd.popis + ' odjíždí' : 'blokace končí'} do 10:00, volno od 15:00`)
+      : '';
+    const popis = (den < dnes ? `${popisStavu} — tenhle den už je za námi` : popisStavu) + popisPrestupu;
 
     // U celého hotelu se pod číslem ukáže, kolik pokojů zbývá — hlavní
     // údaj, kvůli kterému se majitel na kalendář dívá.
@@ -223,8 +256,8 @@ export function renderDostupnostModal(ad) {
         </div>
 
         <div style="display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap;">
-          <button type="button" class="btn btn-specs-secondary btn-prehled-rezervovat" ${p.roomId === 'all' ? 'disabled title="Nejprve vyberte konkrétní pokoj"' : ''}>
-            ➕ Zapsat rezervaci
+          <button type="button" class="btn btn-specs-secondary btn-prehled-rezervovat">
+            ${p.roomId === 'all' ? '➕ Zarezervovat celý hotel' : '➕ Zapsat rezervaci'}
           </button>
           <button type="button" class="btn btn-specs-secondary btn-prehled-blokovat">
             🔒 Zablokovat termín
@@ -235,7 +268,13 @@ export function renderDostupnostModal(ad) {
           ${dnuVcetne} ${dnuVcetne === 1 ? 'den' : (dnuVcetne < 5 ? 'dny' : 'dnů')} včetně obou krajních.
           Rezervace se počítá jinak — ${noci} ${noci === 1 ? 'noc' : (noci < 5 ? 'noci' : 'nocí')}, protože ${formatCzechDateStr(p.doo)} je den odjezdu.
         </p>
-        ${p.roomId === 'all' ? '<p style="margin: 8px 0 0 0; font-size: 12.5px; color: #96958a;">Rezervaci zapíšete po výběru konkrétního pokoje nahoře. Blokovat jde i celý hotel.</p>' : ''}
+        ${p.roomId === 'all' ? `
+          <p style="margin: 8px 0 0 0; font-size: 12.5px; color: #6b6b60;">
+            Skupinová akce: založí se rezervace na <strong>každý prodejný pokoj</strong> se stejným hostem
+            a termínem, takže hotel bude celý obsazený. V seznamu se objeví ${prodejnePokoje(ad).length} karet
+            označených jako skupinová akce. Cenu za celou akci můžete ve formuláři přepsat, rozpočítá se sama.
+          </p>
+        ` : ''}
       </div>
     `;
   }
@@ -286,6 +325,7 @@ export function renderDostupnostModal(ad) {
             <span class="cal-legend-item"><i class="cal-legend-box" style="background:#f9d9d4;"></i> ${p.roomId === 'all' ? 'Plně obsazeno' : 'Obsazeno'}</span>
             ${p.roomId === 'all' ? '<span class="cal-legend-item"><i class="cal-legend-box" style="background:#fcecc2;"></i> Částečně obsazeno</span>' : ''}
             <span class="cal-legend-item"><i class="cal-legend-box" style="background:#cadbb0; border-color:#697947;"></i> Vybraný termín</span>
+            <span class="cal-legend-item"><i class="cal-legend-box" style="background: linear-gradient(to bottom right, #fef5e7 0 50%, #ffffff 50% 100%);"></i> Odjezd do 10:00, potom volno</span>
             <span class="cal-legend-item" style="opacity: 0.7;"><i class="cal-legend-box" style="background:#e8e6dd; filter: grayscale(0.35);"></i> Už proběhlo</span>
           </div>
 
@@ -387,7 +427,7 @@ export function bindDostupnostModal(ad) {
   if (btnRez) {
     btnRez.addEventListener('click', () => {
       const p = ad.prehled;
-      if (p.roomId === 'all' || !p.od || !p.doo) return;
+      if (!p.od || !p.doo) return;
       ad.otevriRucniRezervaci({ room_id: p.roomId, date_from: p.od, date_to: p.doo });
     });
   }

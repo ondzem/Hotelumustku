@@ -5051,6 +5051,22 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 /* Minulé dny zůstávají klikatelné (majitel se ptá i zpětně),
    jen jsou tlumené, aby nepletly. */
+/* Přestupní den v administraci — dopoledne se odjíždí, odpoledne může
+   přijet někdo další. Úhlopříčka je stejná jako na webu, aby to obsluha
+   četla jako totéž. Musí být za .is-partial, jinak ho plná žlutá přebije. */
+.dostupnost-kalendar .cal-day.is-turnover-day,
+.rucni-cal-overlay .cal-day.is-turnover-day {
+  background: linear-gradient(to bottom right, #fcecc2 0 50%, #ffffff 50% 100%) !important;
+  border-color: #e6e3d8 !important;
+  color: #1c1c19 !important;
+}
+
+.dostupnost-kalendar .cal-day.is-turnover-day.is-selected,
+.rucni-cal-overlay .cal-day.is-turnover-day.is-selected {
+  background: linear-gradient(to bottom right, #fcecc2 0 50%, #cadbb0 50% 100%) !important;
+  border-color: #697947 !important;
+}
+
 .dostupnost-kalendar .cal-day.je-minulost {
   opacity: 0.7;
   filter: grayscale(0.35);

@@ -312,6 +312,33 @@ duplicita staví znovu. Spolu s oknem zmizely i `renderAdminCalendarMarkup()`
 a `groupContiguousDateRanges()` v `AdminDashboard.js` — blokuje se souvislý
 rozsah, ne rozklikané jednotlivé dny.
 
+## Rezervace celého hotelu (skupinové akce)
+
+`room_id` je jeden sloupec, takže „celý hotel" se do jednoho řádku nevejde.
+Volba **🏨 Celý hotel** v ručním zápisu proto založí **rezervaci na každý
+prodejný pokoj** se stejným hostem, termínem a značkou „Skupinová akce" v
+poznámce. Obsazenost tím sedí všude a nemusí se nic obcházet blokací.
+
+Tři věci, které nejsou z kódu vidět:
+
+- **Příplatky nese první pokoj.** Polopenzi, psa, elektrokola ani parkování
+  si skupina neobjednává devětkrát. Kdyby se předaly do každého výpočtu,
+  sečetly by se za každý pokoj zvlášť.
+- **Prázdný pokoj se počítá aspoň za jednu osobu.** Cena je za osobu a noc,
+  takže nula osob by nedala žádnou sazbu. U dvaceti lidí se tak naúčtuje
+  jednadvacet — formulář to říká nahlas a nabízí přepsání částky.
+- **Ručně zadaná cena se rozpustí poměrně** podle ceníkových podílů
+  jednotlivých pokojů, takže součet rezervací odpovídá tomu, co se skupinou
+  domluvíte. Poslední pokoj dostane zbytek, aby zaokrouhlení nikam neuteklo.
+
+## Přestupní dny v kalendáři administrace
+
+Den, na který padne `date_to` nějakého záznamu, je **přestupní**: do 10:00 se
+odjíždí, od 15:00 může přijet někdo další. Kreslí se úhlopříčně rozpůlený
+(třída `is-turnover-day`, styl existoval v CSS už dávno, jen ho nikdo
+nenasadil). Hlásí se jen u dne, který je jinak volný — kdyby jeden pobyt
+končil a druhý týž den pokračoval, nedá se to do jedné buňky nakreslit.
+
 ## Databáze
 
 Tabulky: `reservations`, `blocked_dates`, `room_prices`, `disabled_rooms`,

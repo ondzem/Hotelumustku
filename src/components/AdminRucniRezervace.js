@@ -77,6 +77,39 @@ export function prazdnaRucniRezervace() {
   };
 }
 
+/** Identifikátor „celý hotel" ve výběru pokoje. Stejný jako u blokací. */
+export const CELY_HOTEL = 'all';
+
+/** Pokoje, které se dají prodat — vyřazené z provozu do skupiny nepatří. */
+function pokojeHotelu() {
+  return MOCK_ROOMS.filter(r => !r.isDisabled);
+}
+
+/**
+ * Rozdělí skupinu po pokojích.
+ *
+ * Skupina, která si kupuje celý hotel, si lidi rozmístí sama; pro ceník ale
+ * musí být jasné, kolik osob spí kde, protože cena je za osobu a noc. Plní se
+ * postupně do kapacity. Pokoj, na který se nedostane, se pořád rezervuje —
+ * skupina ho má zaplacený jako součást hotelu — ale počítá se jako jedna
+ * osoba, protože nula osob by v ceníku nedala žádnou sazbu.
+ */
+function rozdelOsobyPoPokojich(celkemOsob) {
+  const pokoje = pokojeHotelu();
+  let zbyva = Math.max(1, celkemOsob);
+  return pokoje.map(rm => {
+    const kapacita = maxOsobNaPokoji(rm);
+    const osob = Math.min(kapacita, Math.max(1, zbyva));
+    zbyva = Math.max(0, zbyva - osob);
+    return { pokoj: rm, osob };
+  });
+}
+
+/** Kolik lidí se do hotelu vejde dohromady. */
+export function kapacitaHotelu() {
+  return pokojeHotelu().reduce((soucet, rm) => soucet + maxOsobNaPokoji(rm), 0);
+}
+
 /** Počet nocí mezi dvěma daty; záporný nebo nulový rozsah vrací 0. */
 function pocetNoci(od, doo) {
   if (!od || !doo) return 0;
@@ -91,6 +124,38 @@ function pocetNoci(od, doo) {
  * založená rezervace stojí přesně tolik, kolik by stála přes web.
  */
 export function spoctiRucniCenu(f, cenik) {
+  // Celý hotel: každý pokoj se ocení zvlášť a částky se sečtou. Sazba je za
+  // osobu a noc, takže jeden společný výpočet by dal nesmysl.
+  if (f.room_id === CELY_HOTEL) {
+    const noci = pocetNoci(f.date_from, f.date_to);
+    if (noci < 1) return null;
+    const rozpis = rozdelOsobyPoPokojich(parseInt(f.adults_count, 10) || 1);
+    // Příplatky (polopenze, pes, elektrokola, parkování) si skupina objednává
+    // jednou za celou akci, ne za každý pokoj. Kdyby se předaly do každého
+    // výpočtu, sečetly by se devětkrát.
+    const bezPriplatku = {
+      has_half_board: false, has_dog: false, has_ebike: false, has_winter_parking: false,
+    };
+    const casti = rozpis.map(({ pokoj, osob }, i) =>
+      spoctiRucniCenu({
+        ...f,
+        ...(i === 0 ? {} : bezPriplatku),
+        room_id: pokoj.id,
+        adults_count: osob,
+      }, cenik)).filter(Boolean);
+    if (casti.length === 0) return null;
+    const soucet = (klic) => casti.reduce((a, c) => a + (c[klic] || 0), 0);
+    return {
+      ...casti[0],
+      accommodationPrice: soucet('accommodationPrice'),
+      addonsPrice: soucet('addonsPrice'),
+      cityTax: soucet('cityTax'),
+      winterParkingPriceTotal: soucet('winterParkingPriceTotal'),
+      totalPrice: soucet('totalPrice'),
+      depositPercentage: casti[0].depositPercentage,
+    };
+  }
+
   const pokoj = MOCK_ROOMS.find(r => r.id === f.room_id) || MOCK_ROOMS[0];
   const noci = pocetNoci(f.date_from, f.date_to);
   // Bez termínu nemá cena co počítat — jinak by výpočet sáhl po sazbě
@@ -251,8 +316,9 @@ export function renderRucniRezervaceModal(ad) {
   const f = ad.rucniRezervace || prazdnaRucniRezervace();
   const cena = spoctiRucniCenu(f, ad.cenik);
   const noci = pocetNoci(f.date_from, f.date_to);
+  const celyHotel = f.room_id === CELY_HOTEL;
   const pokoj = MOCK_ROOMS.find(r => r.id === f.room_id) || MOCK_ROOMS[0];
-  const maxOsob = maxOsobNaPokoji(pokoj);
+  const maxOsob = celyHotel ? kapacitaHotelu() : maxOsobNaPokoji(pokoj);
 
   // Ručně zadaná částka přebíjí ceník; záloha a doplatek se z ní dopočítají
   // stejným procentem, jaké platí v nastavení.
@@ -292,13 +358,25 @@ export function renderRucniRezervaceModal(ad) {
             <div>
               <label style="${S.popisek}">Pokoj</label>
               <select class="rucni-pole" data-pole="room_id" style="${S.input}">
+                <option value="${CELY_HOTEL}" ${f.room_id === CELY_HOTEL ? 'selected' : ''}>🏨 Celý hotel — skupinová akce (${pokojeHotelu().length} pokojů)</option>
                 ${MOCK_ROOMS.map(rm => `
                   <option value="${rm.id}" ${rm.id === f.room_id ? 'selected' : ''}>${escapuj(rm.name)}${rm.isDisabled ? ' — mimo provoz' : ''}</option>
                 `).join('')}
               </select>
+              ${celyHotel ? (() => {
+                const rozpis = rozdelOsobyPoPokojich(parseInt(f.adults_count, 10) || 1);
+                const uctovano = rozpis.reduce((a, x) => a + x.osob, 0);
+                const zadano = Math.max(1, parseInt(f.adults_count, 10) || 1);
+                return `
+                  <p style="margin: 6px 0 0 0; font-size: 12px; color: #6b6b60; line-height: 1.45;">
+                    Rozdělení po pokojích: ${rozpis.map(x => `${escapuj(x.pokoj.name.replace(/ - .*/, ''))} ${x.osob}`).join(', ')}.
+                    ${uctovano > zadano ? `<strong>Účtuje se ${uctovano} osob</strong> — cena je za osobu a noc, takže i pokoj, na který se nikdo nedostal, se počítá aspoň za jednu. Když to skupině nesedí, přepište částku dole.` : ''}
+                  </p>
+                `;
+              })() : ''}
             </div>
             <div>
-              <label style="${S.popisek}">Počet osob (max ${maxOsob})</label>
+              <label style="${S.popisek}">${celyHotel ? `Počet osob celkem (max ${maxOsob})` : `Počet osob (max ${maxOsob})`}</label>
               <input type="number" min="1" max="${maxOsob}" class="rucni-pole" data-pole="adults_count" value="${escapuj(f.adults_count)}" style="${S.input}">
             </div>
           </div>
@@ -428,6 +506,56 @@ export function sestavRucniRezervaci(f, cenik) {
   const noci = pocetNoci(f.date_from, f.date_to);
   if (!f.date_from || !f.date_to) return { chyba: 'Vyberte termín pobytu v kalendáři.' };
   if (noci < 1) return { chyba: 'Datum odjezdu musí být pozdější než datum příjezdu.' };
+
+  // Celý hotel se do jednoho řádku nevejde — room_id je jeden sloupec. Zapíše
+  // se proto rezervace na každý prodejný pokoj, se stejným hostem a termínem.
+  // Díky tomu sedí obsazenost všude a nemusí se nic obcházet blokací.
+  if (f.room_id === CELY_HOTEL) {
+    const kapacita = kapacitaHotelu();
+    const osobCelkem = Math.max(1, parseInt(f.adults_count, 10) || 1);
+    if (osobCelkem > kapacita) {
+      return { chyba: `Do celého hotelu se vejde nejvýš ${kapacita} osob.` };
+    }
+    const rozpis = rozdelOsobyPoPokojich(osobCelkem);
+    const znacka = `Skupinová akce — celý hotel (${rozpis.length} pokojů), ${formatCzechDateStr(f.date_from)} – ${formatCzechDateStr(f.date_to)}`;
+
+    const casti = [];
+    for (let i = 0; i < rozpis.length; i++) {
+      const { pokoj: rm, osob } = rozpis[i];
+      const dil = sestavRucniRezervaci({
+        ...f,
+        // Příplatky nese první pokoj, jinak by se naúčtovaly za každý.
+        ...(i === 0 ? {} : { has_half_board: false, has_dog: false, has_ebike: false, has_winter_parking: false }),
+        room_id: rm.id,
+        adults_count: osob,
+        // Ručně zadaná částka platí za celou akci, ne za každý pokoj.
+        total_price: '',
+        guest_note: [znacka, String(f.guest_note || '').trim()].filter(Boolean).join(' · '),
+      }, cenik);
+      if (dil.chyba) return { chyba: dil.chyba };
+      casti.push(dil.rezervace);
+    }
+
+    // Když obsluha přepsala cenu, rozpustí se poměrně podle ceníku, ať
+    // součet rezervací odpovídá tomu, co se skupinou domluvila.
+    const rucniCelkem = parseFloat(String(f.total_price).replace(/\s/g, '').replace(',', '.'));
+    if (Number.isFinite(rucniCelkem) && rucniCelkem >= 0) {
+      const dleCeniku = casti.reduce((a, r) => a + r.total_price, 0) || 1;
+      let rozdano = 0;
+      casti.forEach((r, i) => {
+        const podil = i === casti.length - 1
+          ? Math.round(rucniCelkem) - rozdano
+          : Math.round(rucniCelkem * r.total_price / dleCeniku);
+        rozdano += podil;
+        const procento = f.zaplaceno ? 100 : ((spoctiRucniCenu(f, cenik) || {}).depositPercentage || 30);
+        r.total_price = podil;
+        r.deposit_price = Math.round(podil * procento / 100);
+        r.remaining_price = podil - r.deposit_price;
+      });
+    }
+
+    return { rezervace: casti[0], skupina: casti };
+  }
 
   const pokoj = MOCK_ROOMS.find(r => r.id === f.room_id);
   if (!pokoj) return { chyba: 'Vyberte pokoj.' };
@@ -598,6 +726,16 @@ export function bindRucniRezervaceModal(ad) {
     });
   }
 
+  // Políčka, která se do ceny ani do kolize nepromítnou. Jméno, telefon
+  // a poznámka jen sedí ve stavu — překreslovat kvůli nim celé okno nemá
+  // co ukázat a působí to škodu: blur při kliknutí na Založit rezervaci
+  // vyměnil tlačítko v DOM dřív, než se stihl vyhodnotit click. Obsluze
+  // to přišlo, že se nic nestalo, klikla znovu a měla dvě rezervace.
+  const POLE_BEZ_PREKRESLENI = new Set([
+    'guest_name', 'guest_email', 'guest_phone',
+    'guest_street', 'guest_city', 'guest_zip', 'guest_note',
+  ]);
+
   ad.container.querySelectorAll('.rucni-pole').forEach(el => {
     // change, ne input: po každém úhozu se okno překresluje kvůli ceně
     // a průběžné překreslování by z políčka vyhazovalo kurzor.
@@ -606,6 +744,7 @@ export function bindRucniRezervaceModal(ad) {
       const pole = el.dataset.pole;
       ad.rucniRezervace[pole] = el.type === 'checkbox' ? el.checked : el.value;
       ad.rucniChyba = '';
+      if (POLE_BEZ_PREKRESLENI.has(pole)) return;
       ad.zkontrolujKoliziRucni();
       ad.render();
     });
@@ -614,32 +753,42 @@ export function bindRucniRezervaceModal(ad) {
   const ulozit = ad.container.querySelector('.btn-ulozit-rucni');
   if (ulozit) {
     ulozit.addEventListener('click', async () => {
+      // Druhá pojistka. Vypnuté tlačítko nestačí: okno se mezitím
+      // překresluje, takže by se disabled ztratilo i s ním.
+      if (ad.rucniOdesila) return;
+
       // Rozepsaná políčka, ze kterých obsluha neodešla, by se jinak
       // ztratila — blur se u nich ještě nestihl spustit.
       ad.container.querySelectorAll('.rucni-pole').forEach(el => {
         ad.rucniRezervace[el.dataset.pole] = el.type === 'checkbox' ? el.checked : el.value;
       });
 
-      const { chyba, rezervace } = sestavRucniRezervaci(ad.rucniRezervace, ad.cenik);
+      const { chyba, rezervace, skupina } = sestavRucniRezervaci(ad.rucniRezervace, ad.cenik);
       if (chyba) {
         ad.rucniChyba = chyba;
         ad.render();
         return;
       }
 
+      const zapisovane = skupina || [rezervace];
+
+      ad.rucniOdesila = true;
       ulozit.disabled = true;
       ulozit.textContent = 'Ukládám…';
 
-      saveStoredReservation(rezervace);
-      ad.reservations = [rezervace, ...(ad.reservations || [])];
+      zapisovane.forEach(r => saveStoredReservation(r));
+      ad.reservations = [...zapisovane, ...(ad.reservations || [])];
       ad.showRucniModal = false;
       ad.rucniChyba = '';
-      ad.showAdminToast(`Rezervace ${rezervace.code} pro hosta ${rezervace.guest_name} byla založena.`);
+      ad.showAdminToast(skupina
+        ? `Celý hotel zarezervován pro ${rezervace.guest_name} — založeno ${skupina.length} rezervací, na každý pokoj jedna.`
+        : `Rezervace ${rezervace.code} pro hosta ${rezervace.guest_name} byla založena.`);
       ad.render();
 
       // Zápis do databáze běží uvnitř saveStoredReservation na pozadí;
       // po chvíli se seznam načte znovu, ať je vidět, co je opravdu uložené.
       setTimeout(() => {
+        ad.rucniOdesila = false;
         ad.fetchReservations().then(() => ad.render()).catch(() => {});
       }, 1200);
     });
