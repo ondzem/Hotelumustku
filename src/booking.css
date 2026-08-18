@@ -5011,51 +5011,61 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   }
 }
 
-/* Pravá strana lišty nad seznamem rezervací: filtr pokoje a tlačítko
-   pro ruční založení. Tlačítko bylo dřív mezi nástroji nahoře, kde se
-   ztratilo mezi sedmi stejně vypadajícími. */
-.admin-toolbar-right {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  flex-wrap: wrap;
-}
-
-.btn-admin-nova-rezervace {
+/* Hlavní akce recepčního portálu — ruční založení rezervace.
+   Stojí u titulku, na vlastním řádku nad drobnými nástroji, a je jediné
+   plně vybarvené tlačítko na obrazovce. Dřív bylo nejdřív mezi sedmi
+   stejnými nástroji a pak vedle filtru pokoje; v obou případech
+   vypadalo jako součást něčeho jiného a recepční ho přehlédl. */
+/* !important schválně: mezi 1028 a 1350 px sráží obecné pravidlo pro .btn
+   všechna tlačítka na 42 px a hranaté rohy. Hlavní akce si má svou
+   velikost udržet i na noteboocích, jinak zase splyne s okolím. */
+.admin-header-bar .btn-admin-nova-rezervace {
+  order: 2;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  height: 42px;
-  padding: 0 18px;
+  gap: 10px;
+  height: 50px !important;
+  padding: 0 24px !important;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px !important;
   background: #697947;
   color: #ffffff;
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 15.5px !important;
+  font-weight: 800;
   cursor: pointer;
   white-space: nowrap;
-  transition: background 0.2s ease;
+  box-shadow: 0 4px 14px rgba(105, 121, 71, 0.28);
+  transition: background 0.2s ease, box-shadow 0.2s ease;
 }
 
-.btn-admin-nova-rezervace:hover {
+.admin-header-bar .btn-admin-nova-rezervace:hover {
   background: #5b6a3d;
+  box-shadow: 0 6px 18px rgba(105, 121, 71, 0.34);
 }
 
-.btn-admin-nova-rezervace span {
+.btn-nova-plus {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
   font-size: 17px;
+  font-weight: 700;
   line-height: 1;
 }
 
-@media (max-width: 768px) {
-  .admin-toolbar-right {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-  }
+/* Nástroje spadnou pod titulek a tlačítko, ať se s hlavní akcí nepletou. */
+.admin-header-bar .admin-top-actions {
+  order: 3;
+  flex-basis: 100%;
+}
 
-  .btn-admin-nova-rezervace {
-    justify-content: center;
+@media (max-width: 768px) {
+  .admin-header-bar .btn-admin-nova-rezervace {
     width: 100%;
+    justify-content: center;
+    height: 52px !important;
   }
 }

@@ -1064,6 +1064,14 @@ export class AdminDashboard {
             <h2>Recepční portál</h2>
             <p>Správa rezervací a obsluha 30% záloh pro Hotel u Můstku</p>
           </div>
+
+          <!-- Hlavní akce celé obrazovky. Mezi drobnými nástroji ani vedle
+               filtru pokoje ji recepční nenašel, proto stojí samostatně
+               u titulku a je jediná plná zelená. -->
+          <button type="button" class="btn btn-admin-nova-rezervace">
+            <span class="btn-nova-plus" aria-hidden="true">+</span>
+            <span>Nová rezervace</span>
+          </button>
           <!-- Pořadí je podle toho, jak často to recepční potřebuje:
                ceník a dostupnost denně, aktuality a recenze občas.
                Odhlásit se zůstává poslední. -->
@@ -1122,19 +1130,12 @@ export class AdminDashboard {
             </button>
           </div>
 
-          <div class="admin-toolbar-right">
-            <div class="admin-room-filter">
-              <label for="filter-room">Pokoj:</label>
-              <select id="filter-room" class="admin-room-select">
-                <option value="all">Všechny pokoje</option>
-                ${MOCK_ROOMS.map(r => `<option value="${r.id}" ${this.selectedRoomFilter === r.id ? 'selected' : ''}>${r.name}</option>`).join('')}
-              </select>
-            </div>
-            <!-- Mezi nástroji nahoře tohle tlačítko zapadlo. Patří k seznamu
-                 rezervací, se kterým pracuje, a proto je zvýrazněné. -->
-            <button type="button" class="btn btn-admin-nova-rezervace">
-              <span aria-hidden="true">＋</span> Nová rezervace
-            </button>
+          <div class="admin-room-filter">
+            <label for="filter-room">Pokoj:</label>
+            <select id="filter-room" class="admin-room-select">
+              <option value="all">Všechny pokoje</option>
+              ${MOCK_ROOMS.map(r => `<option value="${r.id}" ${this.selectedRoomFilter === r.id ? 'selected' : ''}>${r.name}</option>`).join('')}
+            </select>
           </div>
         </div>
 
