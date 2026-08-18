@@ -233,9 +233,9 @@ export function renderDostupnostModal(ad) {
           <div class="cal-grid">${dny}</div>
 
           <div class="cal-legend" style="display:flex; flex-wrap:wrap; gap:14px; padding:12px 6px 2px 6px; border-top:1px solid #E7E5DC; margin-top:8px;">
-            <span class="cal-legend-item"><i class="cal-legend-box" style="background:#f6c9c3;"></i> ${p.roomId === 'all' ? 'Plně obsazeno' : 'Obsazeno'}</span>
-            ${p.roomId === 'all' ? '<span class="cal-legend-item"><i class="cal-legend-box" style="background:#fbe3a2;"></i> Částečně obsazeno</span>' : ''}
-            <span class="cal-legend-item"><i class="cal-legend-box" style="background:#697947;"></i> Vybraný termín</span>
+            <span class="cal-legend-item"><i class="cal-legend-box" style="background:#fbe3e0;"></i> ${p.roomId === 'all' ? 'Plně obsazeno' : 'Obsazeno'}</span>
+            ${p.roomId === 'all' ? '<span class="cal-legend-item"><i class="cal-legend-box" style="background:#fdf3d7;"></i> Částečně obsazeno</span>' : ''}
+            <span class="cal-legend-item"><i class="cal-legend-box" style="background:#eef3e6;"></i> Vybraný termín</span>
           </div>
 
           <p style="margin: 10px 6px 0 6px; font-size: 12.5px; color: #6b6b60;">
