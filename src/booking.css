@@ -1730,7 +1730,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .admin-top-actions button,
 .admin-top-actions .btn,
-.admin-top-actions .btn-admin-logout {
+.admin-top-actions .btn-admin-logout,
+.admin-nova-rezervace-radek .btn-admin-nova-rezervace {
   width: auto !important;
   flex: 0 0 auto !important;
   max-width: none !important;
@@ -3943,7 +3944,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
   .admin-top-actions button,
   .admin-top-actions .btn,
-  .admin-top-actions .btn-admin-logout {
+  .admin-top-actions .btn-admin-logout,
+  .admin-nova-rezervace-radek .btn-admin-nova-rezervace {
     width: auto !important;
     flex: 0 0 auto !important;
     max-width: none !important;
@@ -3982,7 +3984,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
   .admin-top-actions button,
   .admin-top-actions .btn,
-  .admin-top-actions .btn-admin-logout {
+  .admin-top-actions .btn-admin-logout,
+  .admin-nova-rezervace-radek .btn-admin-nova-rezervace {
     width: 100% !important;
     max-width: 100% !important;
     flex: none !important;
@@ -4387,7 +4390,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     box-sizing: border-box !important;
   }
 
-  .admin-top-actions .btn-admin-logout {
+  .admin-top-actions .btn-admin-logout,
+  .admin-nova-rezervace-radek .btn-admin-nova-rezervace {
     grid-column: span 1 !important;
   }
 
@@ -5011,61 +5015,17 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   }
 }
 
-/* Hlavní akce recepčního portálu — ruční založení rezervace.
-   Stojí u titulku, na vlastním řádku nad drobnými nástroji, a je jediné
-   plně vybarvené tlačítko na obrazovce. Dřív bylo nejdřív mezi sedmi
-   stejnými nástroji a pak vedle filtru pokoje; v obou případech
-   vypadalo jako součást něčeho jiného a recepční ho přehlédl. */
-/* !important schválně: mezi 1028 a 1350 px sráží obecné pravidlo pro .btn
-   všechna tlačítka na 42 px a hranaté rohy. Hlavní akce si má svou
-   velikost udržet i na noteboocích, jinak zase splyne s okolím. */
-.admin-header-bar .btn-admin-nova-rezervace {
-  order: 2;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  height: 50px !important;
-  padding: 0 24px !important;
-  border: none;
-  border-radius: 8px !important;
-  background: #697947;
-  color: #ffffff;
-  font-size: 15.5px !important;
-  font-weight: 800;
-  cursor: pointer;
-  white-space: nowrap;
-  box-shadow: 0 4px 14px rgba(105, 121, 71, 0.28);
-  transition: background 0.2s ease, box-shadow 0.2s ease;
-}
-
-.admin-header-bar .btn-admin-nova-rezervace:hover {
-  background: #5b6a3d;
-  box-shadow: 0 6px 18px rgba(105, 121, 71, 0.34);
-}
-
-.btn-nova-plus {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.22);
-  font-size: 17px;
-  font-weight: 700;
-  line-height: 1;
-}
-
-/* Nástroje spadnou pod titulek a tlačítko, ať se s hlavní akcí nepletou. */
-.admin-header-bar .admin-top-actions {
-  order: 3;
-  flex-basis: 100%;
+/* Řádek s tlačítkem pro ruční založení rezervace — mezi filtry
+   a seznamem rezervací, ke kterému patří. Vzhled tlačítka řeší
+   .btn-specs-secondary, stejně jako u ostatních tlačítek administrace. */
+.admin-nova-rezervace-radek {
+  display: flex;
+  margin: -12px 0 20px 0;
 }
 
 @media (max-width: 768px) {
-  .admin-header-bar .btn-admin-nova-rezervace {
-    width: 100%;
+  .admin-nova-rezervace-radek .btn-admin-nova-rezervace {
+    width: 100% !important;
     justify-content: center;
-    height: 52px !important;
   }
 }

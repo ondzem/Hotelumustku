@@ -1065,13 +1065,6 @@ export class AdminDashboard {
             <p>Správa rezervací a obsluha 30% záloh pro Hotel u Můstku</p>
           </div>
 
-          <!-- Hlavní akce celé obrazovky. Mezi drobnými nástroji ani vedle
-               filtru pokoje ji recepční nenašel, proto stojí samostatně
-               u titulku a je jediná plná zelená. -->
-          <button type="button" class="btn btn-admin-nova-rezervace">
-            <span class="btn-nova-plus" aria-hidden="true">+</span>
-            <span>Nová rezervace</span>
-          </button>
           <!-- Pořadí je podle toho, jak často to recepční potřebuje:
                ceník a dostupnost denně, aktuality a recenze občas.
                Odhlásit se zůstává poslední. -->
@@ -1137,6 +1130,15 @@ export class AdminDashboard {
               ${MOCK_ROOMS.map(r => `<option value="${r.id}" ${this.selectedRoomFilter === r.id ? 'selected' : ''}>${r.name}</option>`).join('')}
             </select>
           </div>
+        </div>
+
+        <!-- Ruční založení rezervace patří k seznamu pod ním, ne mezi
+             nástroje nahoře ani mezi filtry. Vzhled má stejný jako
+             ostatní tlačítka administrace. -->
+        <div class="admin-nova-rezervace-radek">
+          <button type="button" class="btn btn-specs-secondary btn-admin-nova-rezervace">
+            ➕ Nová rezervace
+          </button>
         </div>
 
         <!-- SEZNAM KARET REZERVACÍ -->
