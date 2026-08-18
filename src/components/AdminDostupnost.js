@@ -72,6 +72,7 @@ export function prazdnyPrehled() {
     rokMesic: null,
     od: null,
     doo: null,
+    duvod: '',          // proč se blokuje — Booking.com, telefonát, uzávěrka
   };
 }
 
@@ -168,6 +169,9 @@ export function renderDostupnostModal(ad) {
       return { rm, kolize };
     });
     const volne = radky.filter(r => r.kolize.length === 0);
+    // Jen rezervace, ne blokace — blokaci přes blokaci nikomu nevadí,
+    // kdežto host v termínu je důvod nejdřív zvednout telefon.
+    const obsazene = radky.filter(r => r.kolize.some(k => k.typ === 'rezervace'));
     vypisRozsahu = `
       <div style="${S.blok}">
         <strong style="display: block; font-size: 14px; font-weight: 800; color: #1c1c19; margin-bottom: 4px;">
@@ -197,6 +201,23 @@ export function renderDostupnostModal(ad) {
               `}
             </div>
           `).join('')}
+        </div>
+
+        ${obsazene.length > 0 ? `
+          <div style="margin-top: 14px; background: #fff8e1; border: 1px solid #ffe082; border-radius: 6px; padding: 12px 14px; font-size: 13px; color: #795548;">
+            <strong>⚠️ V termínu už jsou rezervace (${obsazene.length}).</strong>
+            Zablokovat jde i tak, ale hosté tím nezmizí — je potřeba je nejdřív obvolat nebo stornovat.
+          </div>
+        ` : ''}
+
+        <div style="margin-top: 14px;">
+          <label style="${S.popisek}">Důvod blokace (uvidíte ho v seznamu níž)</label>
+          <input type="text" class="prehled-duvod" style="${S.input}" placeholder="např. Booking.com, telefonát, uzávěrka" value="${escapuj(p.duvod)}">
+          <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 7px;">
+            ${['Booking.com', 'Telefonická rezervace', 'Dovolená správy', 'Uzávěrka'].map(d => `
+              <button type="button" class="btn-prehled-duvod-predvolba" data-duvod="${escapuj(d)}" style="background:#f2f1ea; border:1px solid #d8d5c9; border-radius:4px; padding:4px 9px; font-size:12px; font-weight:600; cursor:pointer; color:#4a5a24;">+ ${escapuj(d)}</button>
+            `).join('')}
+          </div>
         </div>
 
         <div style="display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap;">
@@ -341,6 +362,18 @@ export function bindDostupnostModal(ad) {
     });
   });
 
+  const poleDuvod = ad.container.querySelector('.prehled-duvod');
+  if (poleDuvod) {
+    poleDuvod.addEventListener('input', () => { ad.prehled.duvod = poleDuvod.value; });
+  }
+
+  ad.container.querySelectorAll('.btn-prehled-duvod-predvolba').forEach(chip => {
+    chip.addEventListener('click', () => {
+      ad.prehled.duvod = chip.dataset.duvod || '';
+      if (poleDuvod) poleDuvod.value = ad.prehled.duvod;
+    });
+  });
+
   // Zapsat rezervaci — otevře ruční formulář s předvyplněným pokojem a termínem.
   const btnRez = ad.container.querySelector('.btn-prehled-rezervovat');
   if (btnRez) {
@@ -394,7 +427,8 @@ export function bindDostupnostModal(ad) {
       if (!p.od || !p.doo) return;
       btnBlok.disabled = true;
       btnBlok.textContent = 'Blokuji…';
-      await ad.addBlockedDate(p.roomId, p.od, p.doo, 'Blokace z přehledu dostupnosti');
+      await ad.addBlockedDate(p.roomId, p.od, p.doo, (p.duvod || '').trim() || 'Uzávěrka recepce');
+      p.duvod = '';
       ad.render();
     });
   }

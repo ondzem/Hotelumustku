@@ -261,26 +261,32 @@ osvědčila a nemají se rozvolňovat:
 
 ---
 
-## Zavírání provozu — tři nástroje, každý na něco jiného
+## Zavírání provozu — tři způsoby, jedno okno
 
-Nepřidávej čtvrtý. Padly už dva pokusy postavit vedle nich další
+Nepřidávej čtvrtý způsob. Padly už dva pokusy postavit vedle nich další
 „nedostupnost", oba skončily jako duplicita:
 
-- **📅 Blokovat termíny** (`blocked_dates`) — konkrétní pokoj na rozsah
-  dnů. Tohle je nástroj na dovolenou, uzávěrku i rezervaci z Booking.com.
-- **🔒 Blokování pokojů** (`disabled_rooms`) — pokoj mimo provoz natrvalo,
-  bez ohledu na datum. Takhle jsou vyřazené turistické pokoje.
+- **`blocked_dates`** — konkrétní pokoj (nebo celý hotel) na rozsah dnů.
+  Nástroj na dovolenou, uzávěrku i rezervaci z Booking.com.
+- **`disabled_rooms`** — pokoj mimo provoz natrvalo, bez ohledu na datum.
+  Takhle jsou vyřazené turistické pokoje. Ovládá se přes **🔒 Blokování
+  pokojů**.
 - **Mezisezóna** — jen věta v rezervačním formuláři, že bývá užší
   nabídka. Nic neblokuje, pozná se podle názvu období
   (`maOmezenouDostupnost` v `cenik.js`).
 
-**📆 Dostupnost pokojů** (`AdminDostupnost.js`) čtvrtý nástroj NENÍ — je to
-jen pohodlnější cesta k těm výše. Ukazuje obsazenost v kalendáři a jeho
-tlačítka volají tytéž funkce: „Zablokovat termín" zapisuje do
-`blocked_dates` přes `addBlockedDate()`, „Zapsat rezervaci" otevře ruční
-formulář (`AdminRucniRezervace.js`). Žádnou vlastní tabulku nemá a mít nemá.
+**Do `blocked_dates` se zapisuje jen z 📆 Dostupnost a blokace**
+(`AdminDostupnost.js`). Dřív k tomu bylo druhé okno „📅 Blokovat termíny"
+s vlastním kalendářem, vlastním seznamem blokací a vlastním rušením —
+tedy dvě místa na tutéž věc. Bylo zrušeno 18. 8. 2026 a všechno, co uměla
+navíc (důvod blokace s předvolbami, varování na kolizní rezervace), se
+přesunulo do Dostupnosti. Ta má proti němu navíc obsazenost, takže je
+vidět, co se vlastně zavírá.
 
----
+Kdyby se někdy vracel samostatný kalendář na blokace, znamená to, že se
+duplicita staví znovu. Spolu s oknem zmizely i `renderAdminCalendarMarkup()`
+a `groupContiguousDateRanges()` v `AdminDashboard.js` — blokuje se souvislý
+rozsah, ne rozklikané jednotlivé dny.
 
 ## Databáze
 
