@@ -414,13 +414,34 @@ interaktivní prvek na předrenderované stránce řeš stejně.
 
 ## Fotky
 
-Fotky aktivit se zmenšují na **900 px delší stranu, kvalita 80**. Karta je
-na desktopu široká nejvýš ~440 px, takže 900 px pokryje i retinu. Originály
-měly 1600 px a přes 400 kB — složky `Fotky Aktivit` a `Aktivity v hotelu`
-šly z 11,6 MB na 6,5 MB. Nové fotky projeď stejně:
+Fotky **v kartách** se zmenšují na 900 px delší stranu, kvalita 80. Karta je
+na desktopu široká nejvýš ~440 px, takže 900 px pokryje i retinu. Složky
+`Fotky Aktivit` a `Aktivity v hotelu` tím šly z 11,6 MB na 6,5 MB.
 
 ```bash
 magick vstup.webp -resize '900x900>' -quality 80 -strip vystup.webp
+```
+
+**HERO FOTKY SE TAKHLE ZMENŠOVAT NESMÍ.** Jsou přes celou šířku okna, takže
+900 px je na nich vidět jako rozmazanina. Doplatily na to 18. 8. 2026 při
+hromadné optimalizaci — musely se obnovovat z historie gitu. Jsou to:
+
+| Stránka | Fotka |
+|---|---|
+| okoli | `Aktivity v hotelu/vyhled na krajinu desktop.webp` (+ `… mobil.webp`) |
+| okoli-turistika | `Fotky Aktivit/Turistika.webp` |
+| okoli-cyklistika | `Fotky Aktivit/cyklistika.webp` |
+| okoli-zima | `Fotky Aktivit/Zimni vylety.webp` |
+| okoli-vylety-autem | `Fotky Aktivit/vylety autem.webp` |
+| aktuality | `Fotky Aktivit/Aktulity hero sekce.webp` |
+
+Hero drž na **nativním rozlišení, nejméně 1600 px** na šířku. A pozor:
+překódovat už jednou zkomprimovaný WebP nic neušetří a jen ubere kvalitu —
+`cyklistika.webp` po překódování na kvalitu 90 **narostla** ze 457 kB na
+529 kB. Když je potřeba se vrátit, ber soubor z gitu beze změny:
+
+```bash
+git show <commit>:"public/Fotky Aktivit/Turistika.webp" > "public/Fotky Aktivit/Turistika.webp"
 ```
 
 ## Zabezpečení — co drží web pohromadě
