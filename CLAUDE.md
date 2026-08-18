@@ -331,13 +331,23 @@ Tři věci, které nejsou z kódu vidět:
   jednotlivých pokojů, takže součet rezervací odpovídá tomu, co se skupinou
   domluvíte. Poslední pokoj dostane zbytek, aby zaokrouhlení nikam neuteklo.
 
-## Přestupní dny v kalendáři administrace
+## Půlené dny v kalendářích administrace
 
-Den, na který padne `date_to` nějakého záznamu, je **přestupní**: do 10:00 se
-odjíždí, od 15:00 může přijet někdo další. Kreslí se úhlopříčně rozpůlený
-(třída `is-turnover-day`, styl existoval v CSS už dávno, jen ho nikdo
-nenasadil). Hlásí se jen u dne, který je jinak volný — kdyby jeden pobyt
-končil a druhý týž den pokračoval, nedá se to do jedné buňky nakreslit.
+Úhlopříčka čte čas: **levý horní roh je ráno, pravý dolní odpoledne.**
+
+- **Odjezdový den** (`is-turnover-day`) — padne na něj `date_to`. Do 10:00 se
+  odjíždí, potom volno. Barva nahoře, bílá dole.
+- **Příjezdový den** (`is-arrival-day`) — padne na něj `date_from`. Do 15:00
+  je ještě volno, potom obsazeno. Bílá nahoře, barva dole.
+
+Odjezd se hlásí jen u dne, který je jinak **volný**, příjezd jen u dne
+**obsazeného** — plyne to z výlučnosti `date_to`. Když v jeden den někdo
+odjíždí a hned nato jiný přijíždí, jsou obě půlky zabrané a buňka zůstane
+celá; půlit ji by lhalo.
+
+Platí ve dvou kalendářích: v Přehledu dostupnosti (`AdminDostupnost.js`)
+a v ručním zápisu (`AdminRucniRezervace.js`). Styl `is-turnover-day` byl
+v `booking.css` napsaný už dávno, ale do 18. 8. 2026 ho nikdo nenasadil.
 
 ## Databáze
 

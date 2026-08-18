@@ -207,8 +207,28 @@ function obsazenostDne(ad, den, roomId) {
     return (ad.blockedDates || []).some(b =>
       (b.room_id === 'all' || b.room_id === r.id) && den >= b.date_from && den < b.date_to);
   };
+  // Půlené dny: date_from znamená obsazeno až od 15:00, date_to zase jen
+  // do 10:00. Bez toho vypadá den výměny hostů jako celý zabraný a recepční
+  // do něj nezapíše příjezd, i když by mohla.
+  const zacinaVDen = (r) => (ad.reservations || []).some(x =>
+    x.room_id === r
+    && !(x.status && (String(x.status).startsWith('cancelled') || x.status === 'stornováno'))
+    && x.date_from === den)
+    || (ad.blockedDates || []).some(b => (b.room_id === 'all' || b.room_id === r) && b.date_from === den);
+
+  const konciVDen = (r) => (ad.reservations || []).some(x =>
+    x.room_id === r
+    && !(x.status && (String(x.status).startsWith('cancelled') || x.status === 'stornováno'))
+    && x.date_to === den)
+    || (ad.blockedDates || []).some(b => (b.room_id === 'all' || b.room_id === r) && b.date_to === den);
+
+  const zabrany = roomId ? zabranyPokoj({ id: roomId }) : false;
   return {
-    vybranyZabrany: roomId ? zabranyPokoj({ id: roomId }) : false,
+    vybranyZabrany: zabrany,
+    // Příjezd hlásíme u obsazeného dne, odjezd u volného — a když nastanou
+    // oba, je zabraná celá buňka a nepůlí se.
+    prijezdVybraneho: Boolean(roomId && zabrany && zacinaVDen(roomId) && !konciVDen(roomId)),
+    odjezdVybraneho: Boolean(roomId && !zabrany && konciVDen(roomId) && !zacinaVDen(roomId)),
     obsazeno: prodejne.filter(zabranyPokoj).length,
     celkem: prodejne.length,
   };
@@ -241,12 +261,14 @@ function renderKalendar(ad, f) {
 
   for (let d = 1; d <= dnuVMesici; d++) {
     const den = `${year}-${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-    const { vybranyZabrany, obsazeno, celkem } = obsazenostDne(ad, den, f.room_id);
+    const { vybranyZabrany, prijezdVybraneho, odjezdVybraneho, obsazeno, celkem } = obsazenostDne(ad, den, f.room_id);
     const castecne = !vybranyZabrany && obsazeno > 0 && obsazeno < celkem;
 
     let tridy = 'cal-day';
     if (vybranyZabrany) tridy += ' is-full';
     else if (castecne) tridy += ' is-partial';
+    if (odjezdVybraneho) tridy += ' is-turnover-day';
+    if (prijezdVybraneho) tridy += ' is-arrival-day';
     if (den === od) tridy += ' is-from is-selected';
     if (den === doo) tridy += ' is-to is-selected';
     if (od && doo && den > od && den < doo) tridy += ' in-range';

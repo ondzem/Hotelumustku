@@ -142,6 +142,18 @@
       "norm_label": "fetchcenik()"
     },
     {
+      "label": "fetchRoomPrices()",
+      "file_type": "code",
+      "source_file": "src/lib/supabaseClient.js",
+      "source_location": "L515",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_lib_supabaseclient_fetchroomprices",
+      "community": 0,
+      "community_name": "main.js",
+      "norm_label": "fetchroomprices()"
+    },
+    {
       "label": "formatGDPRName()",
       "file_type": "code",
       "source_file": "src/lib/supabaseClient.js",
@@ -922,6 +934,18 @@
       "norm_label": ".adddiscountcode()"
     },
     {
+      "label": ".advanceReservationPhase()",
+      "file_type": "code",
+      "source_file": "src/components/AdminDashboard.js",
+      "source_location": "L681",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard_advancereservationphase",
+      "community": 1,
+      "community_name": "supabaseClient.js",
+      "norm_label": ".advancereservationphase()"
+    },
+    {
       "label": ".attachAdminListeners()",
       "file_type": "code",
       "source_file": "src/components/AdminDashboard.js",
@@ -1016,6 +1040,18 @@
       "community": 1,
       "community_name": "supabaseClient.js",
       "norm_label": ".fetchnewsitems()"
+    },
+    {
+      "label": ".fetchReservations()",
+      "file_type": "code",
+      "source_file": "src/components/AdminDashboard.js",
+      "source_location": "L524",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard_fetchreservations",
+      "community": 1,
+      "community_name": "supabaseClient.js",
+      "norm_label": ".fetchreservations()"
     },
     {
       "label": ".fetchReviews()",
@@ -1234,6 +1270,42 @@
       "norm_label": "getdiscountvaliditydisplay()"
     },
     {
+      "label": "posunDatum()",
+      "file_type": "code",
+      "source_file": "src/components/AdminDashboard.js",
+      "source_location": "L34",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_components_admindashboard_posundatum",
+      "community": 1,
+      "community_name": "supabaseClient.js",
+      "norm_label": "posundatum()"
+    },
+    {
+      "label": "zobrazRozsahBlokace()",
+      "file_type": "code",
+      "source_file": "src/components/AdminDashboard.js",
+      "source_location": "L45",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_components_admindashboard_zobrazrozsahblokace",
+      "community": 1,
+      "community_name": "supabaseClient.js",
+      "norm_label": "zobrazrozsahblokace()"
+    },
+    {
+      "label": "prazdnaRucniRezervace()",
+      "file_type": "code",
+      "source_file": "src/components/AdminRucniRezervace.js",
+      "source_location": "L49",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_components_adminrucnirezervace_prazdnarucnirezervace",
+      "community": 1,
+      "community_name": "supabaseClient.js",
+      "norm_label": "prazdnarucnirezervace()"
+    },
+    {
       "label": ".constructor()",
       "file_type": "code",
       "source_file": "src/components/BookingSystem.js",
@@ -1294,16 +1366,28 @@
       "norm_label": "deletestorednewsitem()"
     },
     {
-      "label": "fetchRoomPrices()",
+      "label": "deleteStoredReservation()",
       "file_type": "code",
       "source_file": "src/lib/supabaseClient.js",
-      "source_location": "L515",
+      "source_location": "L239",
       "_callable": true,
       "_origin": "ast",
-      "id": "src_lib_supabaseclient_fetchroomprices",
+      "id": "src_lib_supabaseclient_deletestoredreservation",
       "community": 1,
       "community_name": "supabaseClient.js",
-      "norm_label": "fetchroomprices()"
+      "norm_label": "deletestoredreservation()"
+    },
+    {
+      "label": "doplnPriznakyZeStarychDat()",
+      "file_type": "code",
+      "source_file": "src/lib/supabaseClient.js",
+      "source_location": "L92",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_lib_supabaseclient_doplnpriznakyzestarychdat",
+      "community": 1,
+      "community_name": "supabaseClient.js",
+      "norm_label": "doplnpriznakyzestarychdat()"
     },
     {
       "label": "getDeviceRedeemedDiscountCodes()",
@@ -1328,18 +1412,6 @@
       "community": 1,
       "community_name": "supabaseClient.js",
       "norm_label": "getstoredblockeddates()"
-    },
-    {
-      "label": "getStoredCenik()",
-      "file_type": "code",
-      "source_file": "src/lib/supabaseClient.js",
-      "source_location": "L1516",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "src_lib_supabaseclient_getstoredcenik",
-      "community": 1,
-      "community_name": "supabaseClient.js",
-      "norm_label": "getstoredcenik()"
     },
     {
       "label": "getStoredCustomRoomNames()",
@@ -1388,6 +1460,18 @@
       "community": 1,
       "community_name": "supabaseClient.js",
       "norm_label": "getstorednewsitems()"
+    },
+    {
+      "label": "getStoredReservations()",
+      "file_type": "code",
+      "source_file": "src/lib/supabaseClient.js",
+      "source_location": "L35",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_lib_supabaseclient_getstoredreservations",
+      "community": 1,
+      "community_name": "supabaseClient.js",
+      "norm_label": "getstoredreservations()"
     },
     {
       "label": "getStoredReviews()",
@@ -1474,18 +1558,6 @@
       "norm_label": "markdiscountcoderedeemedondevice()"
     },
     {
-      "label": "nactiCenik()",
-      "file_type": "code",
-      "source_file": "src/lib/supabaseClient.js",
-      "source_location": "L1562",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "src_lib_supabaseclient_nacticenik",
-      "community": 1,
-      "community_name": "supabaseClient.js",
-      "norm_label": "nacticenik()"
-    },
-    {
       "label": "nactiPokoje()",
       "file_type": "code",
       "source_file": "src/lib/supabaseClient.js",
@@ -1496,6 +1568,18 @@
       "community": 1,
       "community_name": "supabaseClient.js",
       "norm_label": "nactipokoje()"
+    },
+    {
+      "label": "ocistiHosty()",
+      "file_type": "code",
+      "source_file": "src/lib/supabaseClient.js",
+      "source_location": "L70",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_lib_supabaseclient_ocistihosty",
+      "community": 1,
+      "community_name": "supabaseClient.js",
+      "norm_label": "ocistihosty()"
     },
     {
       "label": "reorderNewsItem()",
@@ -1522,6 +1606,18 @@
       "norm_label": "safesetlocalstorage()"
     },
     {
+      "label": "sanitizeReservationForSupabase()",
+      "file_type": "code",
+      "source_file": "src/lib/supabaseClient.js",
+      "source_location": "L113",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_lib_supabaseclient_sanitizereservationforsupabase",
+      "community": 1,
+      "community_name": "supabaseClient.js",
+      "norm_label": "sanitizereservationforsupabase()"
+    },
+    {
       "label": "saveStoredBlockedDate()",
       "file_type": "code",
       "source_file": "src/lib/supabaseClient.js",
@@ -1532,6 +1628,18 @@
       "community": 1,
       "community_name": "supabaseClient.js",
       "norm_label": "savestoredblockeddate()"
+    },
+    {
+      "label": "saveStoredCustomRoomName()",
+      "file_type": "code",
+      "source_file": "src/lib/supabaseClient.js",
+      "source_location": "L577",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_lib_supabaseclient_savestoredcustomroomname",
+      "community": 1,
+      "community_name": "supabaseClient.js",
+      "norm_label": "savestoredcustomroomname()"
     },
     {
       "label": "saveStoredDisabledRoom()",
@@ -1582,6 +1690,30 @@
       "norm_label": "savestoredroomprice()"
     },
     {
+      "label": "toggleStoredReservationArchive()",
+      "file_type": "code",
+      "source_file": "src/lib/supabaseClient.js",
+      "source_location": "L199",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_lib_supabaseclient_togglestoredreservationarchive",
+      "community": 1,
+      "community_name": "supabaseClient.js",
+      "norm_label": "togglestoredreservationarchive()"
+    },
+    {
+      "label": "updateStoredReservationStatus()",
+      "file_type": "code",
+      "source_file": "src/lib/supabaseClient.js",
+      "source_location": "L173",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_lib_supabaseclient_updatestoredreservationstatus",
+      "community": 1,
+      "community_name": "supabaseClient.js",
+      "norm_label": "updatestoredreservationstatus()"
+    },
+    {
       "label": "updateStoredReviewStatus()",
       "file_type": "code",
       "source_file": "src/lib/supabaseClient.js",
@@ -1618,10 +1750,34 @@
       "norm_label": "refreshactivebanner()"
     },
     {
+      "label": "generateEmailPaymentExpired()",
+      "file_type": "code",
+      "source_file": "src/utils/emailService.js",
+      "source_location": "L480",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_utils_emailservice_generateemailpaymentexpired",
+      "community": 1,
+      "community_name": "supabaseClient.js",
+      "norm_label": "generateemailpaymentexpired()"
+    },
+    {
+      "label": "checkAndProcessExpiredUnpaidReservations()",
+      "file_type": "code",
+      "source_file": "src/utils/reservationExpiryService.js",
+      "source_location": "L13",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_utils_reservationexpiryservice_checkandprocessexpiredunpaidreservations",
+      "community": 1,
+      "community_name": "supabaseClient.js",
+      "norm_label": "checkandprocessexpiredunpaidreservations()"
+    },
+    {
       "label": "bindRucniRezervaceModal()",
       "file_type": "code",
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L630",
+      "source_location": "L652",
       "_callable": true,
       "_origin": "ast",
       "id": "src_components_adminrucnirezervace_bindrucnirezervacemodal",
@@ -1714,22 +1870,10 @@
       "norm_label": "pokojehotelu()"
     },
     {
-      "label": "prazdnaRucniRezervace()",
-      "file_type": "code",
-      "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L49",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "src_components_adminrucnirezervace_prazdnarucnirezervace",
-      "community": 13,
-      "community_name": "AdminRucniRezervace.js",
-      "norm_label": "prazdnarucnirezervace()"
-    },
-    {
       "label": "renderKalendar()",
       "file_type": "code",
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L226",
+      "source_location": "L246",
       "_callable": true,
       "_origin": "ast",
       "id": "src_components_adminrucnirezervace_renderkalendar",
@@ -1741,7 +1885,7 @@
       "label": "renderRucniRezervaceModal()",
       "file_type": "code",
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L315",
+      "source_location": "L337",
       "_callable": true,
       "_origin": "ast",
       "id": "src_components_adminrucnirezervace_renderrucnirezervacemodal",
@@ -1765,7 +1909,7 @@
       "label": "sestavRucniRezervaci()",
       "file_type": "code",
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L502",
+      "source_location": "L524",
       "_callable": true,
       "_origin": "ast",
       "id": "src_components_adminrucnirezervace_sestavrucnirezervaci",
@@ -1784,6 +1928,18 @@
       "community": 13,
       "community_name": "AdminRucniRezervace.js",
       "norm_label": "spoctirucnicenu()"
+    },
+    {
+      "label": "saveStoredReservation()",
+      "file_type": "code",
+      "source_file": "src/lib/supabaseClient.js",
+      "source_location": "L146",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_lib_supabaseclient_savestoredreservation",
+      "community": 13,
+      "community_name": "AdminRucniRezervace.js",
+      "norm_label": "savestoredreservation()"
     },
     {
       "label": "maxOsobNaPokoji()",
@@ -1825,7 +1981,7 @@
       "label": "bindDostupnostModal()",
       "file_type": "code",
       "source_file": "src/components/AdminDostupnost.js",
-      "source_location": "L366",
+      "source_location": "L407",
       "_callable": true,
       "_origin": "ast",
       "id": "src_components_admindostupnost_binddostupnostmodal",
@@ -1918,10 +2074,22 @@
       "norm_label": "prazdnyprehled()"
     },
     {
+      "label": "prijezdVDen()",
+      "file_type": "code",
+      "source_file": "src/components/AdminDostupnost.js",
+      "source_location": "L124",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_components_admindostupnost_prijezdvden",
+      "community": 14,
+      "community_name": "AdminDostupnost.js",
+      "norm_label": "prijezdvden()"
+    },
+    {
       "label": "prodejnePokoje()",
       "file_type": "code",
       "source_file": "src/components/AdminDostupnost.js",
-      "source_location": "L119",
+      "source_location": "L140",
       "_callable": true,
       "_origin": "ast",
       "id": "src_components_admindostupnost_prodejnepokoje",
@@ -1933,7 +2101,7 @@
       "label": "renderDostupnostModal()",
       "file_type": "code",
       "source_file": "src/components/AdminDostupnost.js",
-      "source_location": "L138",
+      "source_location": "L167",
       "_callable": true,
       "_origin": "ast",
       "id": "src_components_admindostupnost_renderdostupnostmodal",
@@ -1945,7 +2113,7 @@
       "label": "stavDne()",
       "file_type": "code",
       "source_file": "src/components/AdminDostupnost.js",
-      "source_location": "L124",
+      "source_location": "L145",
       "_callable": true,
       "_origin": "ast",
       "id": "src_components_admindostupnost_stavdne",
@@ -1978,54 +2146,6 @@
       "norm_label": "zobrazrozsahblokace()"
     },
     {
-      "label": ".advanceReservationPhase()",
-      "file_type": "code",
-      "source_file": "src/components/AdminDashboard.js",
-      "source_location": "L681",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "src_components_admindashboard_admindashboard_advancereservationphase",
-      "community": 2,
-      "community_name": "AdminDashboard.js",
-      "norm_label": ".advancereservationphase()"
-    },
-    {
-      "label": ".fetchReservations()",
-      "file_type": "code",
-      "source_file": "src/components/AdminDashboard.js",
-      "source_location": "L524",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "src_components_admindashboard_admindashboard_fetchreservations",
-      "community": 2,
-      "community_name": "AdminDashboard.js",
-      "norm_label": ".fetchreservations()"
-    },
-    {
-      "label": "posunDatum()",
-      "file_type": "code",
-      "source_file": "src/components/AdminDashboard.js",
-      "source_location": "L34",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "src_components_admindashboard_posundatum",
-      "community": 2,
-      "community_name": "AdminDashboard.js",
-      "norm_label": "posundatum()"
-    },
-    {
-      "label": "zobrazRozsahBlokace()",
-      "file_type": "code",
-      "source_file": "src/components/AdminDashboard.js",
-      "source_location": "L45",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "src_components_admindashboard_zobrazrozsahblokace",
-      "community": 2,
-      "community_name": "AdminDashboard.js",
-      "norm_label": "zobrazrozsahblokace()"
-    },
-    {
       "label": "getDayAfterTomorrowDateString()",
       "file_type": "code",
       "source_file": "src/components/BookingSystem.js",
@@ -2034,7 +2154,7 @@
       "_origin": "ast",
       "id": "src_components_bookingsystem_getdayaftertomorrowdatestring",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "getdayaftertomorrowdatestring()"
     },
     {
@@ -2046,7 +2166,7 @@
       "_origin": "ast",
       "id": "src_components_bookingsystem_gettomorrowdatestring",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "gettomorrowdatestring()"
     },
     {
@@ -2058,7 +2178,7 @@
       "_origin": "ast",
       "id": "src_components_bookingsystem_isdummyidnumber",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "isdummyidnumber()"
     },
     {
@@ -2070,7 +2190,7 @@
       "_origin": "ast",
       "id": "src_components_bookingsystem_isdummyname",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "isdummyname()"
     },
     {
@@ -2082,7 +2202,7 @@
       "_origin": "ast",
       "id": "src_components_bookingsystem_isvalidemail",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "isvalidemail()"
     },
     {
@@ -2094,104 +2214,32 @@
       "_origin": "ast",
       "id": "src_components_bookingsystem_isvalidphone",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "isvalidphone()"
     },
     {
-      "label": "deleteStoredReservation()",
+      "label": "getStoredCenik()",
       "file_type": "code",
       "source_file": "src/lib/supabaseClient.js",
-      "source_location": "L239",
+      "source_location": "L1516",
       "_callable": true,
       "_origin": "ast",
-      "id": "src_lib_supabaseclient_deletestoredreservation",
+      "id": "src_lib_supabaseclient_getstoredcenik",
       "community": 2,
-      "community_name": "AdminDashboard.js",
-      "norm_label": "deletestoredreservation()"
+      "community_name": "BookingSystem.js",
+      "norm_label": "getstoredcenik()"
     },
     {
-      "label": "doplnPriznakyZeStarychDat()",
+      "label": "popisRozpisu()",
       "file_type": "code",
-      "source_file": "src/lib/supabaseClient.js",
-      "source_location": "L92",
+      "source_file": "src/utils/cenik.js",
+      "source_location": "L293",
       "_callable": true,
       "_origin": "ast",
-      "id": "src_lib_supabaseclient_doplnpriznakyzestarychdat",
+      "id": "src_utils_cenik_popisrozpisu",
       "community": 2,
-      "community_name": "AdminDashboard.js",
-      "norm_label": "doplnpriznakyzestarychdat()"
-    },
-    {
-      "label": "getStoredReservations()",
-      "file_type": "code",
-      "source_file": "src/lib/supabaseClient.js",
-      "source_location": "L35",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "src_lib_supabaseclient_getstoredreservations",
-      "community": 2,
-      "community_name": "AdminDashboard.js",
-      "norm_label": "getstoredreservations()"
-    },
-    {
-      "label": "ocistiHosty()",
-      "file_type": "code",
-      "source_file": "src/lib/supabaseClient.js",
-      "source_location": "L70",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "src_lib_supabaseclient_ocistihosty",
-      "community": 2,
-      "community_name": "AdminDashboard.js",
-      "norm_label": "ocistihosty()"
-    },
-    {
-      "label": "sanitizeReservationForSupabase()",
-      "file_type": "code",
-      "source_file": "src/lib/supabaseClient.js",
-      "source_location": "L113",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "src_lib_supabaseclient_sanitizereservationforsupabase",
-      "community": 2,
-      "community_name": "AdminDashboard.js",
-      "norm_label": "sanitizereservationforsupabase()"
-    },
-    {
-      "label": "saveStoredReservation()",
-      "file_type": "code",
-      "source_file": "src/lib/supabaseClient.js",
-      "source_location": "L146",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "src_lib_supabaseclient_savestoredreservation",
-      "community": 2,
-      "community_name": "AdminDashboard.js",
-      "norm_label": "savestoredreservation()"
-    },
-    {
-      "label": "toggleStoredReservationArchive()",
-      "file_type": "code",
-      "source_file": "src/lib/supabaseClient.js",
-      "source_location": "L199",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "src_lib_supabaseclient_togglestoredreservationarchive",
-      "community": 2,
-      "community_name": "AdminDashboard.js",
-      "norm_label": "togglestoredreservationarchive()"
-    },
-    {
-      "label": "updateStoredReservationStatus()",
-      "file_type": "code",
-      "source_file": "src/lib/supabaseClient.js",
-      "source_location": "L173",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "src_lib_supabaseclient_updatestoredreservationstatus",
-      "community": 2,
-      "community_name": "AdminDashboard.js",
-      "norm_label": "updatestoredreservationstatus()"
+      "community_name": "BookingSystem.js",
+      "norm_label": "popisrozpisu()"
     },
     {
       "label": "generateEmail1ReceptionNotification()",
@@ -2202,7 +2250,7 @@
       "_origin": "ast",
       "id": "src_utils_emailservice_generateemail1receptionnotification",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "generateemail1receptionnotification()"
     },
     {
@@ -2214,7 +2262,7 @@
       "_origin": "ast",
       "id": "src_utils_emailservice_generateemail1requestreceived",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "generateemail1requestreceived()"
     },
     {
@@ -2226,7 +2274,7 @@
       "_origin": "ast",
       "id": "src_utils_emailservice_generateemail2approvalandpaymentrequest",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "generateemail2approvalandpaymentrequest()"
     },
     {
@@ -2238,7 +2286,7 @@
       "_origin": "ast",
       "id": "src_utils_emailservice_generateemail3finalconfirmation",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "generateemail3finalconfirmation()"
     },
     {
@@ -2250,7 +2298,7 @@
       "_origin": "ast",
       "id": "src_utils_emailservice_generateemailcancellation",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "generateemailcancellation()"
     },
     {
@@ -2262,7 +2310,7 @@
       "_origin": "ast",
       "id": "src_utils_emailservice_generateemailcontactnotification",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "generateemailcontactnotification()"
     },
     {
@@ -2274,20 +2322,8 @@
       "_origin": "ast",
       "id": "src_utils_emailservice_generateemailnewreviewnotification",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "generateemailnewreviewnotification()"
-    },
-    {
-      "label": "generateEmailPaymentExpired()",
-      "file_type": "code",
-      "source_file": "src/utils/emailService.js",
-      "source_location": "L480",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "src_utils_emailservice_generateemailpaymentexpired",
-      "community": 2,
-      "community_name": "AdminDashboard.js",
-      "norm_label": "generateemailpaymentexpired()"
     },
     {
       "label": "getEmailFooter()",
@@ -2298,7 +2334,7 @@
       "_origin": "ast",
       "id": "src_utils_emailservice_getemailfooter",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "getemailfooter()"
     },
     {
@@ -2310,7 +2346,7 @@
       "_origin": "ast",
       "id": "src_utils_emailservice_getemailheader",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "getemailheader()"
     },
     {
@@ -2322,7 +2358,7 @@
       "_origin": "ast",
       "id": "src_utils_emailservice_getemaillogs",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "getemaillogs()"
     },
     {
@@ -2334,7 +2370,7 @@
       "_origin": "ast",
       "id": "src_utils_emailservice_logsentemail",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "logsentemail()"
     },
     {
@@ -2346,7 +2382,7 @@
       "_origin": "ast",
       "id": "src_utils_emailservice_sendalltestemailsto",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "sendalltestemailsto()"
     },
     {
@@ -2358,7 +2394,7 @@
       "_origin": "ast",
       "id": "src_utils_emailservice_sendemail",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "sendemail()"
     },
     {
@@ -2370,7 +2406,7 @@
       "_origin": "ast",
       "id": "src_utils_pricing_calculatereservationprice",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "calculatereservationprice()"
     },
     {
@@ -2382,7 +2418,7 @@
       "_origin": "ast",
       "id": "src_utils_pricing_formatczechprice",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "formatczechprice()"
     },
     {
@@ -2394,7 +2430,7 @@
       "_origin": "ast",
       "id": "src_utils_pricing_generatespaydqrurl",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "generatespaydqrurl()"
     },
     {
@@ -2406,7 +2442,7 @@
       "_origin": "ast",
       "id": "src_utils_pricing_getvariablesymbol",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "getvariablesymbol()"
     },
     {
@@ -2418,7 +2454,7 @@
       "_origin": "ast",
       "id": "src_utils_pricing_isweekendnight",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "isweekendnight()"
     },
     {
@@ -2430,7 +2466,7 @@
       "_origin": "ast",
       "id": "src_utils_pricing_iswinterseason",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "iswinterseason()"
     },
     {
@@ -2442,7 +2478,7 @@
       "_origin": "ast",
       "id": "src_utils_pricing_nast",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "nast()"
     },
     {
@@ -2454,7 +2490,7 @@
       "_origin": "ast",
       "id": "src_utils_pricing_procentozalohy",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "procentozalohy()"
     },
     {
@@ -2466,7 +2502,7 @@
       "_origin": "ast",
       "id": "src_utils_pricing_validatesystemdateintegrity",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "validatesystemdateintegrity()"
     },
     {
@@ -2478,7 +2514,7 @@
       "_origin": "ast",
       "id": "src_utils_printreservationservice_formatczechdatestr",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "formatczechdatestr()"
     },
     {
@@ -2490,7 +2526,7 @@
       "_origin": "ast",
       "id": "src_utils_printreservationservice_formatczechdatetimenow",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "formatczechdatetimenow()"
     },
     {
@@ -2502,7 +2538,7 @@
       "_origin": "ast",
       "id": "src_utils_printreservationservice_getstatuslabel",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "getstatuslabel()"
     },
     {
@@ -2514,7 +2550,7 @@
       "_origin": "ast",
       "id": "src_utils_printreservationservice_printreservationsheet",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "printreservationsheet()"
     },
     {
@@ -2526,20 +2562,8 @@
       "_origin": "ast",
       "id": "src_utils_printreservationservice_renderguestrowshtml",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "renderguestrowshtml()"
-    },
-    {
-      "label": "checkAndProcessExpiredUnpaidReservations()",
-      "file_type": "code",
-      "source_file": "src/utils/reservationExpiryService.js",
-      "source_location": "L13",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "src_utils_reservationexpiryservice_checkandprocessexpiredunpaidreservations",
-      "community": 2,
-      "community_name": "AdminDashboard.js",
-      "norm_label": "checkandprocessexpiredunpaidreservations()"
     },
     {
       "label": "buildSpaydString()",
@@ -3454,6 +3478,18 @@
       "norm_label": "zeptejse()"
     },
     {
+      "label": "nactiCenik()",
+      "file_type": "code",
+      "source_file": "src/lib/supabaseClient.js",
+      "source_location": "L1562",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_lib_supabaseclient_nacticenik",
+      "community": 5,
+      "community_name": "AdminCenik.js",
+      "norm_label": "nacticenik()"
+    },
+    {
       "label": "saveStoredCenik()",
       "file_type": "code",
       "source_file": "src/lib/supabaseClient.js",
@@ -3464,18 +3500,6 @@
       "community": 5,
       "community_name": "AdminCenik.js",
       "norm_label": "savestoredcenik()"
-    },
-    {
-      "label": "saveStoredCustomRoomName()",
-      "file_type": "code",
-      "source_file": "src/lib/supabaseClient.js",
-      "source_location": "L577",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "src_lib_supabaseclient_savestoredcustomroomname",
-      "community": 5,
-      "community_name": "AdminCenik.js",
-      "norm_label": "savestoredcustomroomname()"
     },
     {
       "label": "cenaZaOsobuNoc()",
@@ -3560,18 +3584,6 @@
       "community": 5,
       "community_name": "AdminCenik.js",
       "norm_label": "obdobisomezenoudostupnosti()"
-    },
-    {
-      "label": "popisRozpisu()",
-      "file_type": "code",
-      "source_file": "src/utils/cenik.js",
-      "source_location": "L293",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "src_utils_cenik_popisrozpisu",
-      "community": 5,
-      "community_name": "AdminCenik.js",
-      "norm_label": "popisrozpisu()"
     },
     {
       "label": "rozpisNoci()",
@@ -3795,6 +3807,17 @@
       "norm_label": "scrollreveal.js"
     },
     {
+      "label": "AdminDashboard.js",
+      "file_type": "code",
+      "source_file": "src/components/AdminDashboard.js",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "src_components_admindashboard",
+      "community": 1,
+      "community_name": "supabaseClient.js",
+      "norm_label": "admindashboard.js"
+    },
+    {
       "label": "supabaseClient.js",
       "file_type": "code",
       "source_file": "src/lib/supabaseClient.js",
@@ -3861,6 +3884,28 @@
       "norm_label": "inmemoryreviews"
     },
     {
+      "label": "isSupabaseConfigured",
+      "file_type": "code",
+      "source_file": "src/lib/supabaseClient.js",
+      "source_location": "L7",
+      "_origin": "ast",
+      "id": "src_lib_supabaseclient_issupabaseconfigured",
+      "community": 1,
+      "community_name": "supabaseClient.js",
+      "norm_label": "issupabaseconfigured"
+    },
+    {
+      "label": "MOCK_ROOMS",
+      "file_type": "code",
+      "source_file": "src/lib/supabaseClient.js",
+      "source_location": "L15",
+      "_origin": "ast",
+      "id": "src_lib_supabaseclient_mock_rooms",
+      "community": 1,
+      "community_name": "supabaseClient.js",
+      "norm_label": "mock_rooms"
+    },
+    {
       "label": "PRAZDNY",
       "file_type": "code",
       "source_file": "src/lib/supabaseClient.js",
@@ -3870,6 +3915,39 @@
       "community": 1,
       "community_name": "supabaseClient.js",
       "norm_label": "prazdny"
+    },
+    {
+      "label": "supabase",
+      "file_type": "code",
+      "source_file": "src/lib/supabaseClient.js",
+      "source_location": "L9",
+      "_origin": "ast",
+      "id": "src_lib_supabaseclient_supabase",
+      "community": 1,
+      "community_name": "supabaseClient.js",
+      "norm_label": "supabase"
+    },
+    {
+      "label": "reservationExpiryService.js",
+      "file_type": "code",
+      "source_file": "src/utils/reservationExpiryService.js",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "src_utils_reservationexpiryservice",
+      "community": 1,
+      "community_name": "supabaseClient.js",
+      "norm_label": "reservationexpiryservice.js"
+    },
+    {
+      "label": "UNPAID_PAYMENT_DEADLINE_MS",
+      "file_type": "code",
+      "source_file": "src/utils/reservationExpiryService.js",
+      "source_location": "L6",
+      "_origin": "ast",
+      "id": "src_utils_reservationexpiryservice_unpaid_payment_deadline_ms",
+      "community": 1,
+      "community_name": "supabaseClient.js",
+      "norm_label": "unpaid_payment_deadline_ms"
     },
     {
       "label": "CLAUDE.md",
@@ -4443,28 +4521,28 @@
       "norm_label": "test viditelnosti v ai \ud83d\udd12 blokovano domenou"
     },
     {
-      "label": "texty-vylety-autem.md",
+      "label": "texty-cyklistika.md",
       "file_type": "document",
       "node_kind": "page",
-      "source_file": "Aktivity popisky/texty-vylety-autem.md",
+      "source_file": "Aktivity popisky/texty-cyklistika.md",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "aktivity_popisky_texty_vylety_autem",
+      "id": "aktivity_popisky_texty_cyklistika",
       "community": 12,
       "community_name": ".agents/SEO-ROADMAP.md",
-      "norm_label": "texty-vylety-autem.md"
+      "norm_label": "texty-cyklistika.md"
     },
     {
-      "label": "texty-zima.md",
+      "label": "texty-turistika.md",
       "file_type": "document",
       "node_kind": "page",
-      "source_file": "Aktivity popisky/texty-zima.md",
+      "source_file": "Aktivity popisky/texty-turistika.md",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "aktivity_popisky_texty_zima",
+      "id": "aktivity_popisky_texty_turistika",
       "community": 12,
       "community_name": ".agents/SEO-ROADMAP.md",
-      "norm_label": "texty-zima.md"
+      "norm_label": "texty-turistika.md"
     },
     {
       "label": "AdminRucniRezervace.js",
@@ -5167,17 +5245,6 @@
       "norm_label": "\u26d4 rozhodnuti: dal se rychlosti nezabyvame *(ondrej, 31. 7. 2026)*"
     },
     {
-      "label": "AdminDashboard.js",
-      "file_type": "code",
-      "source_file": "src/components/AdminDashboard.js",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "src_components_admindashboard",
-      "community": 2,
-      "community_name": "AdminDashboard.js",
-      "norm_label": "admindashboard.js"
-    },
-    {
       "label": "BookingSystem.js",
       "file_type": "code",
       "source_file": "src/components/BookingSystem.js",
@@ -5185,41 +5252,8 @@
       "_origin": "ast",
       "id": "src_components_bookingsystem",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "bookingsystem.js"
-    },
-    {
-      "label": "isSupabaseConfigured",
-      "file_type": "code",
-      "source_file": "src/lib/supabaseClient.js",
-      "source_location": "L7",
-      "_origin": "ast",
-      "id": "src_lib_supabaseclient_issupabaseconfigured",
-      "community": 2,
-      "community_name": "AdminDashboard.js",
-      "norm_label": "issupabaseconfigured"
-    },
-    {
-      "label": "MOCK_ROOMS",
-      "file_type": "code",
-      "source_file": "src/lib/supabaseClient.js",
-      "source_location": "L15",
-      "_origin": "ast",
-      "id": "src_lib_supabaseclient_mock_rooms",
-      "community": 2,
-      "community_name": "AdminDashboard.js",
-      "norm_label": "mock_rooms"
-    },
-    {
-      "label": "supabase",
-      "file_type": "code",
-      "source_file": "src/lib/supabaseClient.js",
-      "source_location": "L9",
-      "_origin": "ast",
-      "id": "src_lib_supabaseclient_supabase",
-      "community": 2,
-      "community_name": "AdminDashboard.js",
-      "norm_label": "supabase"
     },
     {
       "label": "emailService.js",
@@ -5229,7 +5263,7 @@
       "_origin": "ast",
       "id": "src_utils_emailservice",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "emailservice.js"
     },
     {
@@ -5240,7 +5274,7 @@
       "_origin": "ast",
       "id": "src_utils_pricing",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "pricing.js"
     },
     {
@@ -5251,7 +5285,7 @@
       "_origin": "ast",
       "id": "src_utils_pricing_bank_account",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "bank_account"
     },
     {
@@ -5262,7 +5296,7 @@
       "_origin": "ast",
       "id": "src_utils_pricing_bank_name",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "bank_name"
     },
     {
@@ -5273,7 +5307,7 @@
       "_origin": "ast",
       "id": "src_utils_pricing_city_tax_per_adult_night",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "city_tax_per_adult_night"
     },
     {
@@ -5284,7 +5318,7 @@
       "_origin": "ast",
       "id": "src_utils_pricing_deposit_percentage",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "deposit_percentage"
     },
     {
@@ -5295,7 +5329,7 @@
       "_origin": "ast",
       "id": "src_utils_pricing_dog_per_day",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "dog_per_day"
     },
     {
@@ -5306,7 +5340,7 @@
       "_origin": "ast",
       "id": "src_utils_pricing_ebike_per_day",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "ebike_per_day"
     },
     {
@@ -5317,7 +5351,7 @@
       "_origin": "ast",
       "id": "src_utils_pricing_half_board_per_person_night",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "half_board_per_person_night"
     },
     {
@@ -5328,7 +5362,7 @@
       "_origin": "ast",
       "id": "src_utils_pricing_vychozi_nastaveni",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "vychozi_nastaveni"
     },
     {
@@ -5339,7 +5373,7 @@
       "_origin": "ast",
       "id": "src_utils_pricing_winter_parking_per_car_night",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "winter_parking_per_car_night"
     },
     {
@@ -5350,30 +5384,8 @@
       "_origin": "ast",
       "id": "src_utils_printreservationservice",
       "community": 2,
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "norm_label": "printreservationservice.js"
-    },
-    {
-      "label": "reservationExpiryService.js",
-      "file_type": "code",
-      "source_file": "src/utils/reservationExpiryService.js",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "src_utils_reservationexpiryservice",
-      "community": 2,
-      "community_name": "AdminDashboard.js",
-      "norm_label": "reservationexpiryservice.js"
-    },
-    {
-      "label": "UNPAID_PAYMENT_DEADLINE_MS",
-      "file_type": "code",
-      "source_file": "src/utils/reservationExpiryService.js",
-      "source_location": "L6",
-      "_origin": "ast",
-      "id": "src_utils_reservationexpiryservice_unpaid_payment_deadline_ms",
-      "community": 2,
-      "community_name": "AdminDashboard.js",
-      "norm_label": "unpaid_payment_deadline_ms"
     },
     {
       "label": "A) Co jde dod\u011blat TE\u010e, bez dom\u00e9ny \u2014 dokop\u00e1n\u00ed do fin\u00e1le",
@@ -6431,7 +6443,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 41,
-      "community_name": "SEO-CONTEXT.md",
+      "community_name": "Ubytov\u00e1n\u00ed & Pokoje Page",
       "norm_label": "seo-context.md",
       "rationale": "Referen\u010dn\u00ed SEO/copywriting kontext s c\u00edlovou skupinou, USP, faktick\u00fdmi pravidly (bezbari\u00e9rovost NE, trampol\u00edna neexistuje) a cen\u00edkem.",
       "id": "agents_seo_context"
@@ -7021,28 +7033,28 @@
       "norm_label": "vite.config.js"
     },
     {
-      "label": "texty-cyklistika.md",
+      "label": "texty-vylety-autem.md",
       "file_type": "document",
       "node_kind": "page",
-      "source_file": "Aktivity popisky/texty-cyklistika.md",
+      "source_file": "Aktivity popisky/texty-vylety-autem.md",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "aktivity_popisky_texty_cyklistika",
+      "id": "aktivity_popisky_texty_vylety_autem",
       "community": 8,
       "community_name": "Okol\u00ed (Aktivity) Page",
-      "norm_label": "texty-cyklistika.md"
+      "norm_label": "texty-vylety-autem.md"
     },
     {
-      "label": "texty-turistika.md",
+      "label": "texty-zima.md",
       "file_type": "document",
       "node_kind": "page",
-      "source_file": "Aktivity popisky/texty-turistika.md",
+      "source_file": "Aktivity popisky/texty-zima.md",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "aktivity_popisky_texty_turistika",
+      "id": "aktivity_popisky_texty_zima",
       "community": 8,
       "community_name": "Okol\u00ed (Aktivity) Page",
-      "norm_label": "texty-turistika.md"
+      "norm_label": "texty-zima.md"
     },
     {
       "label": "\ud83d\udcf1 1. Mobiln\u00ed verze (<768px)",
@@ -7521,6 +7533,22 @@
       "id": "table_reviews"
     },
     {
+      "label": "Supabase tabulka room_prices",
+      "file_type": "concept",
+      "source_file": "CLAUDE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Dr\u017e\u00ed je\u0161t\u011b sloupce ze star\u00e9ho cenov\u00e9ho modelu (base_price NOT NULL bez default). Upsert spadne na 23502 \u2014 proto se pou\u017e\u00edv\u00e1 update() nebo insert() podle existence \u0159\u00e1dku.",
+      "community": 1,
+      "norm_label": "supabase tabulka room_prices",
+      "community_name": "supabaseClient.js",
+      "_origin": "semantic",
+      "id": "table_room_prices"
+    },
+    {
       "label": "this.castka(klic) v BookingSystem",
       "file_type": "concept",
       "source_file": "CLAUDE.md",
@@ -7532,7 +7560,7 @@
       "rationale": "Popisky \u010d\u00e1stek nikdy nepsat natvrdo \u2014 d\u0159\u00edv formul\u00e1\u0159 sliboval starou cenu a \u00fa\u010dtoval novou po zm\u011bn\u011b v administraci.",
       "community": 2,
       "norm_label": "this.castka(klic) v bookingsystem",
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "_origin": "semantic",
       "id": "concept_castka_key"
     },
@@ -7548,7 +7576,7 @@
       "rationale": "\u017div\u011b z pricing.depositPercentage, u ulo\u017een\u00fdch rezervac\u00ed se procento dopo\u010d\u00edt\u00e1 z \u010d\u00e1stek p\u0159es procentoZalohy(), jinak by zm\u011bna nastaven\u00ed zp\u011btn\u011b p\u0159epsala popisky u star\u00fdch rezervac\u00ed.",
       "community": 2,
       "norm_label": "zive procento zalohy",
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "_origin": "semantic",
       "id": "concept_deposit_percentage"
     },
@@ -7564,7 +7592,7 @@
       "rationale": "Rezerva\u010dn\u00ed formul\u00e1\u0159 nep\u0159ijme jednu noc; p\u0159\u00edplatek za jednu noc byl proto z cen\u00edku i z v\u00fdpo\u010dtu odstran\u011bn.",
       "community": 2,
       "norm_label": "minimum dve noci (hasvaliddates)",
-      "community_name": "AdminDashboard.js",
+      "community_name": "BookingSystem.js",
       "_origin": "semantic",
       "id": "concept_min_dve_noci"
     },
@@ -7612,9 +7640,25 @@
       "rationale": "Pr\u00e1vn\u00ed str\u00e1nka s obchodn\u00edmi podm\u00ednkami a ubytovac\u00edm \u0159\u00e1dem; noindex.",
       "community": 41,
       "norm_label": "obchodni podminky page",
-      "community_name": "SEO-CONTEXT.md",
+      "community_name": "Ubytov\u00e1n\u00ed & Pokoje Page",
       "_origin": "semantic",
       "id": "podminky"
+    },
+    {
+      "label": "Ubytov\u00e1n\u00ed & Pokoje Page",
+      "file_type": "code",
+      "source_file": "ubytovani.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Str\u00e1nka pokoj\u016f \u2014 obsahuje cen\u00edk a rezerva\u010dn\u00ed sekci; jedin\u00e1 odchylka nav: tla\u010d\u00edtko Rezervovat pobyt m\u00ed\u0159\u00ed na /ubytovani#rezervace m\u00edsto /#rezervace.",
+      "community": 41,
+      "norm_label": "ubytovani & pokoje page",
+      "community_name": "Ubytov\u00e1n\u00ed & Pokoje Page",
+      "_origin": "semantic",
+      "id": "ubytovani"
     },
     {
       "label": "Cen\u00edk 2026",
@@ -7628,7 +7672,7 @@
       "rationale": "Faktick\u00e1 data o cen\u00e1ch \u2014 Standard 700-830 K\u010d, Nadstandard 890 K\u010d, polopenze +195 K\u010d, pes 150 K\u010d/den.",
       "community": 41,
       "norm_label": "cenik 2026",
-      "community_name": "SEO-CONTEXT.md",
+      "community_name": "Ubytov\u00e1n\u00ed & Pokoje Page",
       "_origin": "semantic",
       "id": "cenik_2026"
     },
@@ -7644,7 +7688,7 @@
       "rationale": "Hotel NEN\u00cd bezbari\u00e9rov\u00fd (schody do budovy) a trampol\u00edna byla odstran\u011bna; podklady klienta (Marek - Hotel/) obsahuj\u00ed chybn\u00e9 informace.",
       "community": 41,
       "norm_label": "fakticke zakazy (bezbarierovost, trampolina)",
-      "community_name": "SEO-CONTEXT.md",
+      "community_name": "Ubytov\u00e1n\u00ed & Pokoje Page",
       "_origin": "semantic",
       "id": "faktica_zakaz"
     },
@@ -7660,9 +7704,73 @@
       "rationale": "Rozhodnut\u00ed Ond\u0159eje 31.7.2026 \u2014 nep\u0159id\u00e1vat dal\u0161\u00ed FAQ, byly by duplicitn\u00ed vata; existuj\u00edc\u00ed FAQ na /okoli a /ubytovani z\u016fst\u00e1vaj\u00ed.",
       "community": 41,
       "norm_label": "zakaz novych faq sekci",
-      "community_name": "SEO-CONTEXT.md",
+      "community_name": "Ubytov\u00e1n\u00ed & Pokoje Page",
       "_origin": "semantic",
       "id": "faq_zakaz"
+    },
+    {
+      "label": "Hlavn\u00ed naviga\u010dn\u00ed str\u00e1nky",
+      "file_type": "concept",
+      "source_file": "okoli.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Sada str\u00e1nek ubytovani, stravovani, okoli, akce, aktuality, kontakt sd\u00edlen\u00e1 v hlavi\u010dce.",
+      "community": 41,
+      "norm_label": "hlavni navigacni stranky",
+      "community_name": "Ubytov\u00e1n\u00ed & Pokoje Page",
+      "_origin": "semantic",
+      "id": "navigation_pages"
+    },
+    {
+      "label": "FAQPage schema (ubytov\u00e1n\u00ed)",
+      "file_type": "concept",
+      "source_file": "ubytovani.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "FAQ o psech, sn\u00eddani, parkov\u00e1n\u00ed, doprav\u011b a storno podm\u00ednk\u00e1ch.",
+      "community": 41,
+      "norm_label": "faqpage schema (ubytovani)",
+      "community_name": "Ubytov\u00e1n\u00ed & Pokoje Page",
+      "_origin": "semantic",
+      "id": "schema_faq_ubytovani"
+    },
+    {
+      "label": "HotelRoom JSON-LD (Standard/Nadstandard)",
+      "file_type": "concept",
+      "source_file": "ubytovani.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Dva typy pokoj\u016f s Offer; obsahuje ceny 700 K\u010d (Standard) a 890 K\u010d (Nadstandard).",
+      "community": 41,
+      "norm_label": "hotelroom json-ld (standard/nadstandard)",
+      "community_name": "Ubytov\u00e1n\u00ed & Pokoje Page",
+      "_origin": "semantic",
+      "id": "schema_hotelroom"
+    },
+    {
+      "label": "Site Header (sd\u00edlen\u00e1 hlavi\u010dka)",
+      "file_type": "concept",
+      "source_file": "okoli.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Mus\u00ed b\u00fdt identick\u00e1 na v\u0161ech str\u00e1nk\u00e1ch krom\u011b admin.html; jedin\u00e1 zn\u00e1m\u00e1 odchylka je tla\u010d\u00edtko Rezervovat pobyt na /ubytovani.",
+      "community": 41,
+      "norm_label": "site header (sdilena hlavicka)",
+      "community_name": "Ubytov\u00e1n\u00ed & Pokoje Page",
+      "_origin": "semantic",
+      "id": "site_header_component"
     },
     {
       "label": "Storno podm\u00ednky",
@@ -7676,7 +7784,7 @@
       "rationale": "V\u00edce ne\u017e 3 dny zdarma, m\u00e9n\u011b ne\u017e 3 dny nebo nedojezd 100%; z\u00e1vazn\u00e1 verze je z modalu v rezerva\u010dn\u00edm formul\u00e1\u0159i.",
       "community": 41,
       "norm_label": "storno podminky",
-      "community_name": "SEO-CONTEXT.md",
+      "community_name": "Ubytov\u00e1n\u00ed & Pokoje Page",
       "_origin": "semantic",
       "id": "storno_podminky"
     },
@@ -7871,22 +7979,6 @@
       "community_name": "AdminCenik.js",
       "_origin": "semantic",
       "id": "table_cenik_sezony"
-    },
-    {
-      "label": "Supabase tabulka room_prices",
-      "file_type": "concept",
-      "source_file": "CLAUDE.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "rationale": "Dr\u017e\u00ed je\u0161t\u011b sloupce ze star\u00e9ho cenov\u00e9ho modelu (base_price NOT NULL bez default). Upsert spadne na 23502 \u2014 proto se pou\u017e\u00edv\u00e1 update() nebo insert() podle existence \u0159\u00e1dku.",
-      "community": 5,
-      "norm_label": "supabase tabulka room_prices",
-      "community_name": "AdminCenik.js",
-      "_origin": "semantic",
-      "id": "table_room_prices"
     },
     {
       "label": "public/404.html",
@@ -8353,38 +8445,6 @@
       "id": "stravovani"
     },
     {
-      "label": "Ubytov\u00e1n\u00ed & Pokoje Page",
-      "file_type": "code",
-      "source_file": "ubytovani.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "rationale": "Str\u00e1nka pokoj\u016f \u2014 obsahuje cen\u00edk a rezerva\u010dn\u00ed sekci; jedin\u00e1 odchylka nav: tla\u010d\u00edtko Rezervovat pobyt m\u00ed\u0159\u00ed na /ubytovani#rezervace m\u00edsto /#rezervace.",
-      "community": 8,
-      "norm_label": "ubytovani & pokoje page",
-      "community_name": "Okol\u00ed (Aktivity) Page",
-      "_origin": "semantic",
-      "id": "ubytovani"
-    },
-    {
-      "label": "Hlavn\u00ed naviga\u010dn\u00ed str\u00e1nky",
-      "file_type": "concept",
-      "source_file": "okoli.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "rationale": "Sada str\u00e1nek ubytovani, stravovani, okoli, akce, aktuality, kontakt sd\u00edlen\u00e1 v hlavi\u010dce.",
-      "community": 8,
-      "norm_label": "hlavni navigacni stranky",
-      "community_name": "Okol\u00ed (Aktivity) Page",
-      "_origin": "semantic",
-      "id": "navigation_pages"
-    },
-    {
       "label": "BreadcrumbList JSON-LD",
       "file_type": "concept",
       "source_file": "okoli.html",
@@ -8417,22 +8477,6 @@
       "id": "schema_faq_okoli"
     },
     {
-      "label": "FAQPage schema (ubytov\u00e1n\u00ed)",
-      "file_type": "concept",
-      "source_file": "ubytovani.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "rationale": "FAQ o psech, sn\u00eddani, parkov\u00e1n\u00ed, doprav\u011b a storno podm\u00ednk\u00e1ch.",
-      "community": 8,
-      "norm_label": "faqpage schema (ubytovani)",
-      "community_name": "Okol\u00ed (Aktivity) Page",
-      "_origin": "semantic",
-      "id": "schema_faq_ubytovani"
-    },
-    {
       "label": "Hotel JSON-LD schema",
       "file_type": "concept",
       "source_file": "okoli.html",
@@ -8449,22 +8493,6 @@
       "id": "schema_hotel_jsonld"
     },
     {
-      "label": "HotelRoom JSON-LD (Standard/Nadstandard)",
-      "file_type": "concept",
-      "source_file": "ubytovani.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "rationale": "Dva typy pokoj\u016f s Offer; obsahuje ceny 700 K\u010d (Standard) a 890 K\u010d (Nadstandard).",
-      "community": 8,
-      "norm_label": "hotelroom json-ld (standard/nadstandard)",
-      "community_name": "Okol\u00ed (Aktivity) Page",
-      "_origin": "semantic",
-      "id": "schema_hotelroom"
-    },
-    {
       "label": "Sekce 'Aktivity v okol\u00ed' (znovupou\u017eit\u00e1)",
       "file_type": "concept",
       "source_file": "stravovani.html",
@@ -8479,22 +8507,6 @@
       "community_name": "Okol\u00ed (Aktivity) Page",
       "_origin": "semantic",
       "id": "section_surroundings_shared"
-    },
-    {
-      "label": "Site Header (sd\u00edlen\u00e1 hlavi\u010dka)",
-      "file_type": "concept",
-      "source_file": "okoli.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "rationale": "Mus\u00ed b\u00fdt identick\u00e1 na v\u0161ech str\u00e1nk\u00e1ch krom\u011b admin.html; jedin\u00e1 zn\u00e1m\u00e1 odchylka je tla\u010d\u00edtko Rezervovat pobyt na /ubytovani.",
-      "community": 8,
-      "norm_label": "site header (sdilena hlavicka)",
-      "community_name": "Okol\u00ed (Aktivity) Page",
-      "_origin": "semantic",
-      "id": "site_header_component"
     }
   ],
   "links": [
@@ -10363,7 +10375,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminDostupnost.js",
-      "source_location": "L386",
+      "source_location": "L427",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_admindostupnost_binddostupnostmodal",
@@ -10375,7 +10387,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminDostupnost.js",
-      "source_location": "L481",
+      "source_location": "L522",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_admindostupnost_binddostupnostmodal",
@@ -10387,7 +10399,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminDostupnost.js",
-      "source_location": "L139",
+      "source_location": "L168",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_admindostupnost_renderdostupnostmodal",
@@ -10399,7 +10411,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminDostupnost.js",
-      "source_location": "L140",
+      "source_location": "L169",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_admindostupnost_renderdostupnostmodal",
@@ -10411,7 +10423,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminDostupnost.js",
-      "source_location": "L155",
+      "source_location": "L184",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_admindostupnost_renderdostupnostmodal",
@@ -10423,7 +10435,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminDostupnost.js",
-      "source_location": "L185",
+      "source_location": "L225",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_admindostupnost_renderdostupnostmodal",
@@ -10435,7 +10447,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminDostupnost.js",
-      "source_location": "L188",
+      "source_location": "L228",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_admindostupnost_renderdostupnostmodal",
@@ -10447,7 +10459,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminDostupnost.js",
-      "source_location": "L196",
+      "source_location": "L236",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_admindostupnost_renderdostupnostmodal",
@@ -10459,7 +10471,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminDostupnost.js",
-      "source_location": "L199",
+      "source_location": "L239",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_admindostupnost_renderdostupnostmodal",
@@ -10471,7 +10483,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminDostupnost.js",
-      "source_location": "L200",
+      "source_location": "L240",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_admindostupnost_renderdostupnostmodal",
@@ -10483,7 +10495,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminDostupnost.js",
-      "source_location": "L213",
+      "source_location": "L253",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_admindostupnost_renderdostupnostmodal",
@@ -10495,7 +10507,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminDostupnost.js",
-      "source_location": "L352",
+      "source_location": "L393",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_admindostupnost_renderdostupnostmodal",
@@ -10507,7 +10519,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminDostupnost.js",
-      "source_location": "L126",
+      "source_location": "L147",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_admindostupnost_stavdne",
@@ -10519,7 +10531,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminDostupnost.js",
-      "source_location": "L130",
+      "source_location": "L156",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_admindostupnost_stavdne",
@@ -10531,7 +10543,19 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminDostupnost.js",
-      "source_location": "L132",
+      "source_location": "L157",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_components_admindostupnost_stavdne",
+      "target": "src_components_admindostupnost_prijezdvden",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/AdminDostupnost.js",
+      "source_location": "L160",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_admindostupnost_stavdne",
@@ -10567,7 +10591,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L675",
+      "source_location": "L697",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminrucnirezervace_bindrucnirezervacemodal",
@@ -10579,7 +10603,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L766",
+      "source_location": "L788",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminrucnirezervace_bindrucnirezervacemodal",
@@ -10592,7 +10616,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L779",
+      "source_location": "L801",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminrucnirezervace_bindrucnirezervacemodal",
@@ -10627,7 +10651,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L230",
+      "source_location": "L250",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminrucnirezervace_renderkalendar",
@@ -10639,7 +10663,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L244",
+      "source_location": "L264",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminrucnirezervace_renderkalendar",
@@ -10651,7 +10675,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L261",
+      "source_location": "L283",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminrucnirezervace_renderkalendar",
@@ -10663,7 +10687,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L296",
+      "source_location": "L318",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminrucnirezervace_renderkalendar",
@@ -10675,7 +10699,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L316",
+      "source_location": "L338",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminrucnirezervace_renderrucnirezervacemodal",
@@ -10687,7 +10711,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L317",
+      "source_location": "L339",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminrucnirezervace_renderrucnirezervacemodal",
@@ -10699,7 +10723,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L318",
+      "source_location": "L340",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminrucnirezervace_renderrucnirezervacemodal",
@@ -10711,7 +10735,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L321",
+      "source_location": "L343",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminrucnirezervace_renderrucnirezervacemodal",
@@ -10724,7 +10748,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L321",
+      "source_location": "L343",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminrucnirezervace_renderrucnirezervacemodal",
@@ -10735,7 +10759,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L344",
+      "source_location": "L366",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminrucnirezervace_renderrucnirezervacemodal",
@@ -10747,7 +10771,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L354",
+      "source_location": "L376",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminrucnirezervace_renderrucnirezervacemodal",
@@ -10759,7 +10783,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L361",
+      "source_location": "L383",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminrucnirezervace_renderrucnirezervacemodal",
@@ -10771,7 +10795,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L367",
+      "source_location": "L389",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminrucnirezervace_renderrucnirezervacemodal",
@@ -10784,7 +10808,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L455",
+      "source_location": "L477",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminrucnirezervace_renderrucnirezervacemodal",
@@ -10795,7 +10819,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L492",
+      "source_location": "L514",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminrucnirezervace_renderrucnirezervacemodal",
@@ -10831,7 +10855,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L506",
+      "source_location": "L528",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminrucnirezervace_sestavrucnirezervaci",
@@ -10843,7 +10867,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L514",
+      "source_location": "L536",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminrucnirezervace_sestavrucnirezervaci",
@@ -10855,7 +10879,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L519",
+      "source_location": "L541",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminrucnirezervace_sestavrucnirezervaci",
@@ -10867,7 +10891,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L520",
+      "source_location": "L542",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminrucnirezervace_sestavrucnirezervaci",
@@ -10879,7 +10903,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L550",
+      "source_location": "L572",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminrucnirezervace_sestavrucnirezervaci",
@@ -10892,7 +10916,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L564",
+      "source_location": "L586",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminrucnirezervace_sestavrucnirezervaci",
@@ -10904,7 +10928,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L576",
+      "source_location": "L598",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminrucnirezervace_sestavrucnirezervaci",
@@ -10916,7 +10940,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L582",
+      "source_location": "L604",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminrucnirezervace_sestavrucnirezervaci",
@@ -19768,7 +19792,18 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminDostupnost.js",
-      "source_location": "L119",
+      "source_location": "L124",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_components_admindostupnost",
+      "target": "src_components_admindostupnost_prijezdvden",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/AdminDostupnost.js",
+      "source_location": "L140",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_admindostupnost",
@@ -19779,7 +19814,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminDostupnost.js",
-      "source_location": "L124",
+      "source_location": "L145",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_admindostupnost",
@@ -19790,7 +19825,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminDostupnost.js",
-      "source_location": "L138",
+      "source_location": "L167",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_admindostupnost",
@@ -19845,7 +19880,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminDostupnost.js",
-      "source_location": "L366",
+      "source_location": "L407",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_admindostupnost",
@@ -19988,17 +20023,6 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L226",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_components_adminrucnirezervace",
-      "target": "src_components_adminrucnirezervace_renderkalendar",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/AdminRucniRezervace.js",
       "source_location": "L23",
       "weight": 1.0,
       "_origin": "ast",
@@ -20010,11 +20034,11 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L315",
+      "source_location": "L246",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminrucnirezervace",
-      "target": "src_components_adminrucnirezervace_renderrucnirezervacemodal",
+      "target": "src_components_adminrucnirezervace_renderkalendar",
       "confidence_score": 1.0
     },
     {
@@ -20026,6 +20050,17 @@
       "_origin": "ast",
       "source": "src_components_adminrucnirezervace",
       "target": "src_components_adminrucnirezervace_formatczechdatestr",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/AdminRucniRezervace.js",
+      "source_location": "L337",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_components_adminrucnirezervace",
+      "target": "src_components_adminrucnirezervace_renderrucnirezervacemodal",
       "confidence_score": 1.0
     },
     {
@@ -20054,7 +20089,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L502",
+      "source_location": "L524",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminrucnirezervace",
@@ -20065,7 +20100,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminRucniRezervace.js",
-      "source_location": "L630",
+      "source_location": "L652",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminrucnirezervace",
@@ -24968,5 +25003,5 @@
       "source_file": "CLAUDE.md"
     }
   ],
-  "built_at_commit": "5b30d6431d22688e4a3fccb67403bec2f2c0475c"
+  "built_at_commit": "773c78b569006c9e7562ffa899c85629113cec86"
 }

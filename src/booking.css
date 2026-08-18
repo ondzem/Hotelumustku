@@ -5051,9 +5051,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 /* Minulé dny zůstávají klikatelné (majitel se ptá i zpětně),
    jen jsou tlumené, aby nepletly. */
-/* Přestupní den v administraci — dopoledne se odjíždí, odpoledne může
-   přijet někdo další. Úhlopříčka je stejná jako na webu, aby to obsluha
-   četla jako totéž. Musí být za .is-partial, jinak ho plná žlutá přebije. */
+/* Půlené dny v administraci. Úhlopříčka čte čas: levý horní roh je ráno,
+   pravý dolní odpoledne. Musí být za .is-partial i .is-full, jinak je plná
+   barva přebije.
+
+   Odjezdový den — do 10:00 se odjíždí, potom volno. */
 .dostupnost-kalendar .cal-day.is-turnover-day,
 .rucni-cal-overlay .cal-day.is-turnover-day {
   background: linear-gradient(to bottom right, #fcecc2 0 50%, #ffffff 50% 100%) !important;
@@ -5061,9 +5063,34 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   color: #1c1c19 !important;
 }
 
+/* Příjezdový den — do 15:00 ještě volno, potom obsazeno. Zrcadlo toho výš. */
+.dostupnost-kalendar .cal-day.is-arrival-day,
+.rucni-cal-overlay .cal-day.is-arrival-day {
+  background: linear-gradient(to bottom right, #ffffff 0 50%, #fcecc2 50% 100%) !important;
+  border-color: #e6e3d8 !important;
+  color: #1c1c19 !important;
+}
+
+/* Plně obsazený hotel má i v půlce sytější barvu, ať je poznat od částečné. */
+.dostupnost-kalendar .cal-day.is-full.is-turnover-day,
+.rucni-cal-overlay .cal-day.is-full.is-turnover-day {
+  background: linear-gradient(to bottom right, #f9d9d4 0 50%, #ffffff 50% 100%) !important;
+}
+
+.dostupnost-kalendar .cal-day.is-full.is-arrival-day,
+.rucni-cal-overlay .cal-day.is-full.is-arrival-day {
+  background: linear-gradient(to bottom right, #ffffff 0 50%, #f9d9d4 50% 100%) !important;
+}
+
 .dostupnost-kalendar .cal-day.is-turnover-day.is-selected,
 .rucni-cal-overlay .cal-day.is-turnover-day.is-selected {
   background: linear-gradient(to bottom right, #fcecc2 0 50%, #cadbb0 50% 100%) !important;
+  border-color: #697947 !important;
+}
+
+.dostupnost-kalendar .cal-day.is-arrival-day.is-selected,
+.rucni-cal-overlay .cal-day.is-arrival-day.is-selected {
+  background: linear-gradient(to bottom right, #cadbb0 0 50%, #fcecc2 50% 100%) !important;
   border-color: #697947 !important;
 }
 

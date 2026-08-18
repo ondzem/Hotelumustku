@@ -115,6 +115,27 @@ function odjezdVDen(ad, den, roomId) {
   return null;
 }
 
+/**
+ * Příjezdový den — dopoledne je ještě volno, od 15:00 už je obsazeno.
+ *
+ * Zrcadlo k `odjezdVDen`: pozná se podle `date_from`. Ten den pokoj obsazený
+ * JE (date_from je včetně), ale až od odpoledne.
+ */
+function prijezdVDen(ad, den, roomId) {
+  const rezervace = (ad.reservations || []).find(r =>
+    r.room_id === roomId
+    && !r.is_archived
+    && !(r.status && (String(r.status).startsWith('cancelled') || r.status === 'stornováno'))
+    && r.date_from === den);
+  if (rezervace) return { typ: 'rezervace', popis: rezervace.guest_name || 'Rezervace' };
+
+  const blokace = (ad.blockedDates || []).find(b =>
+    (b.room_id === 'all' || b.room_id === roomId) && b.date_from === den);
+  if (blokace) return { typ: 'blokace', popis: blokace.reason || 'Blokace' };
+
+  return null;
+}
+
 /** Prodejné pokoje — vyřazené z provozu se do dostupnosti nepočítají. */
 function prodejnePokoje(ad) {
   const vypnute = new Set((ad.disabledRooms || []).filter(d => d.is_disabled).map(d => d.room_id));
@@ -124,15 +145,23 @@ function prodejnePokoje(ad) {
 function stavDne(ad, den, roomId) {
   if (roomId !== 'all') {
     const d = zabranyDuvod(ad, den, roomId);
-    // Přestup hlásíme jen u dne, který je jinak volný — jinak by to
-    // znamenalo, že jeden pobyt končí a druhý týž den pokračuje, a to
-    // se do jedné buňky rozumně nakreslit nedá.
-    return { volno: d ? 0 : 1, celkem: 1, duvod: d, odjezd: d ? null : odjezdVDen(ad, den, roomId) };
+    // Odjezd se hlásí u dne, který je jinak volný (obsazenost skončila),
+    // příjezd naopak u dne obsazeného (obsazenost začíná až odpoledne).
+    // Když v jeden den někdo odjíždí a hned nato jiný přijíždí, jsou obě
+    // půlky zabrané a buňka zůstane celá — půlit ji by lhalo.
+    return {
+      volno: d ? 0 : 1,
+      celkem: 1,
+      duvod: d,
+      odjezd: d ? null : odjezdVDen(ad, den, roomId),
+      prijezd: d ? prijezdVDen(ad, den, roomId) : null,
+    };
   }
   const pokoje = prodejnePokoje(ad);
   const volne = pokoje.filter(r => !zabranyDuvod(ad, den, r.id));
   const odjezdy = pokoje.filter(r => !zabranyDuvod(ad, den, r.id) && odjezdVDen(ad, den, r.id)).length;
-  return { volno: volne.length, celkem: pokoje.length, duvod: null, odjezdy };
+  const prijezdy = pokoje.filter(r => zabranyDuvod(ad, den, r.id) && prijezdVDen(ad, den, r.id)).length;
+  return { volno: volne.length, celkem: pokoje.length, duvod: null, odjezdy, prijezdy };
 }
 
 export function renderDostupnostModal(ad) {
@@ -152,15 +181,21 @@ export function renderDostupnostModal(ad) {
 
   for (let d = 1; d <= dnuVMesici; d++) {
     const den = `${year}-${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-    const { volno, celkem, duvod, odjezd, odjezdy } = stavDne(ad, den, p.roomId);
+    const { volno, celkem, duvod, odjezd, prijezd, odjezdy, prijezdy } = stavDne(ad, den, p.roomId);
     const plne = volno === 0;
     const castecne = volno > 0 && volno < celkem;
-    const jePrestup = p.roomId === 'all' ? (odjezdy || 0) > 0 : Boolean(odjezd);
+    const maOdjezd = p.roomId === 'all' ? (odjezdy || 0) > 0 : Boolean(odjezd);
+    const maPrijezd = p.roomId === 'all' ? (prijezdy || 0) > 0 : Boolean(prijezd);
+    // Odjezd i příjezd v jeden den znamená, že jsou obě půlky zabrané —
+    // buňka zůstane celá.
+    const jeOdjezdovy = maOdjezd && !maPrijezd;
+    const jePrijezdovy = maPrijezd && !maOdjezd;
 
     let tridy = 'cal-day';
     if (plne) tridy += ' is-full';
     else if (castecne) tridy += ' is-partial';
-    if (jePrestup) tridy += ' is-turnover-day';
+    if (jeOdjezdovy) tridy += ' is-turnover-day';
+    if (jePrijezdovy) tridy += ' is-arrival-day';
     if (den === p.od) tridy += ' is-from is-selected';
     if (den === p.doo) tridy += ' is-to is-selected';
     if (p.od && p.doo && den > p.od && den < p.doo) tridy += ' in-range';
@@ -169,11 +204,16 @@ export function renderDostupnostModal(ad) {
     const popisStavu = p.roomId === 'all'
       ? (plne ? 'Plně obsazeno' : `Volných pokojů: ${volno} z ${celkem}`)
       : (duvod ? (duvod.typ === 'blokace' ? `Blokace: ${duvod.popis}` : `Obsazeno — ${duvod.popis}`) : 'Volno');
-    const popisPrestupu = jePrestup
-      ? (p.roomId === 'all'
-          ? ` · odjezd do 10:00 (${odjezdy} ${odjezdy === 1 ? 'pokoj' : (odjezdy < 5 ? 'pokoje' : 'pokojů')}), potom volno od 15:00`
-          : ` · ${odjezd.typ === 'rezervace' ? odjezd.popis + ' odjíždí' : 'blokace končí'} do 10:00, volno od 15:00`)
-      : '';
+    let popisPrestupu = '';
+    if (jeOdjezdovy) {
+      popisPrestupu = p.roomId === 'all'
+        ? ` · odjezd do 10:00 (${odjezdy} ${odjezdy === 1 ? 'pokoj' : (odjezdy < 5 ? 'pokoje' : 'pokojů')}), potom volno od 15:00`
+        : ` · ${odjezd.typ === 'rezervace' ? odjezd.popis + ' odjíždí' : 'blokace končí'} do 10:00, volno od 15:00`;
+    } else if (jePrijezdovy) {
+      popisPrestupu = p.roomId === 'all'
+        ? ` · do 15:00 ještě volno, potom příjezd (${prijezdy} ${prijezdy === 1 ? 'pokoj' : (prijezdy < 5 ? 'pokoje' : 'pokojů')})`
+        : ` · volno do 15:00, potom ${prijezd.typ === 'rezervace' ? prijezd.popis + ' přijíždí' : 'začíná blokace'}`;
+    }
     const popis = (den < dnes ? `${popisStavu} — tenhle den už je za námi` : popisStavu) + popisPrestupu;
 
     // U celého hotelu se pod číslem ukáže, kolik pokojů zbývá — hlavní
@@ -325,7 +365,8 @@ export function renderDostupnostModal(ad) {
             <span class="cal-legend-item"><i class="cal-legend-box" style="background:#f9d9d4;"></i> ${p.roomId === 'all' ? 'Plně obsazeno' : 'Obsazeno'}</span>
             ${p.roomId === 'all' ? '<span class="cal-legend-item"><i class="cal-legend-box" style="background:#fcecc2;"></i> Částečně obsazeno</span>' : ''}
             <span class="cal-legend-item"><i class="cal-legend-box" style="background:#cadbb0; border-color:#697947;"></i> Vybraný termín</span>
-            <span class="cal-legend-item"><i class="cal-legend-box" style="background: linear-gradient(to bottom right, #fef5e7 0 50%, #ffffff 50% 100%);"></i> Odjezd do 10:00, potom volno</span>
+            <span class="cal-legend-item"><i class="cal-legend-box" style="background: linear-gradient(to bottom right, #fcecc2 0 50%, #ffffff 50% 100%);"></i> Odjezd do 10:00, potom volno</span>
+            <span class="cal-legend-item"><i class="cal-legend-box" style="background: linear-gradient(to bottom right, #ffffff 0 50%, #fcecc2 50% 100%);"></i> Volno do 15:00, potom příjezd</span>
             <span class="cal-legend-item" style="opacity: 0.7;"><i class="cal-legend-box" style="background:#e8e6dd; filter: grayscale(0.35);"></i> Už proběhlo</span>
           </div>
 
