@@ -59,7 +59,11 @@ const ADMIN_SESSION_KEY = 'hotel_mustku_admin_auth_v1';
 export class AdminDashboard {
   constructor(containerId) {
     this.container = document.getElementById(containerId);
-    this.isAuthenticated = (typeof localStorage !== 'undefined' && localStorage.getItem(ADMIN_SESSION_KEY) === 'true');
+    // Přihlášení drží Supabase Auth, ne příznak v localStorage. Ten se dal
+    // nastavit z konzole a administrace se otevřela komukoli.
+    this.isAuthenticated = false;
+    this.emailInput = '';
+    this.loginProbiha = false;
     this.passwordInput = '';
     this.loginError = false;
     this.reservations = [];
@@ -126,6 +130,15 @@ export class AdminDashboard {
   }
 
   async init() {
+    // Nejdřív se zeptáme Supabase, jestli platí přihlášení z minule.
+    // Bez tohohle by po obnovení stránky recepční vypadl, i když má
+    // token pořád platný.
+    if (!this.isAuthenticated) {
+      await this.obnovPrihlaseni();
+      this.render();
+      if (!this.isAuthenticated) return;
+    }
+
     this.render();
     try {
       await Promise.allSettled([
@@ -623,37 +636,61 @@ export class AdminDashboard {
     });
   }
 
+  /**
+   * Přihlášení recepčního.
+   *
+   * Dřív se porovnával SHA-256 otisk hesla přímo v prohlížeči a do databáze
+   * se pak chodilo týmž veřejným anon klíčem jako za návštěvníka. Kdokoli si
+   * ten klíč opsal ze zdrojáku stránky, mohl číst osobní údaje hostů a mazat
+   * rezervace — přihlášení nic nechránilo, protože databáze o něm nevěděla.
+   *
+   * Teď se přihlašuje do Supabase Auth. Klient si od té chvíle ke každému
+   * dotazu přikládá token přihlášeného uživatele a pravidla v databázi
+   * (supabase-ZABEZPECENI.sql) podle něj pouštějí dál jen recepci.
+   */
   async handleLogin(e) {
     e.preventDefault();
-    const encoder = new TextEncoder();
-    const data = encoder.encode(this.passwordInput || '');
-    const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const inputHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-    // SHA-256 cryptographic hashes (No plain text passwords stored in client source code)
-    const validHashes = [
-      '9b0ff4347547f372b1a3e770f486a380e2f81655219914b3bb28ac6279221f35',
-      '3155fd625056427feaa42b58d5e27f4f3b778fe28540b8c7a0c7ffccdf1ecc25'
-    ];
-
-    if (validHashes.includes(inputHash)) {
-      this.isAuthenticated = true;
-      this.loginError = false;
-      try {
-        localStorage.setItem(ADMIN_SESSION_KEY, 'true');
-      } catch (err) {}
+    const email = String(this.emailInput || '').trim();
+    const heslo = String(this.passwordInput || '');
+    if (!email || !heslo) {
+      this.loginError = 'Vyplňte e-mail i heslo.';
       this.render();
-    } else {
-      this.loginError = true;
-      this.render();
-      setTimeout(() => {
-        const pwdInput = document.getElementById('admin-password');
-        const loginErrAlert = this.container.querySelector('.login-error-alert') || pwdInput;
-        if (loginErrAlert) loginErrAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        if (pwdInput && typeof pwdInput.focus === 'function') pwdInput.focus({ preventScroll: true });
-      }, 60);
+      return;
     }
+
+    if (!isSupabaseConfigured || !supabase) {
+      this.loginError = 'Databáze není nastavená, přihlášení nelze ověřit.';
+      this.render();
+      return;
+    }
+
+    this.loginProbiha = true;
+    this.render();
+
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password: heslo });
+
+    this.loginProbiha = false;
+    if (error || !data || !data.session) {
+      this.loginError = 'Nesprávný e-mail nebo heslo.';
+      this.passwordInput = '';
+      this.render();
+      return;
+    }
+
+    this.isAuthenticated = true;
+    this.loginError = '';
+    this.passwordInput = '';
+    this.render();
+    this.init();
+  }
+
+  /** Obnoví přihlášení po znovunačtení stránky. */
+  async obnovPrihlaseni() {
+    if (!isSupabaseConfigured || !supabase) return false;
+    const { data } = await supabase.auth.getSession();
+    this.isAuthenticated = Boolean(data && data.session);
+    return this.isAuthenticated;
   }
 
   showAdminToast(msg) {
@@ -858,34 +895,42 @@ export class AdminDashboard {
           <div class="admin-login-card">
             <div class="admin-login-brand">Hotel u Můstku</div>
             <h2 class="admin-login-title">Recepční portál</h2>
-            <p class="admin-login-desc">Zadejte přístupové heslo pro vstup do správy rezervací.</p>
+            <p class="admin-login-desc">Přihlaste se účtem recepce.</p>
 
             ${this.loginError ? `
               <div class="admin-login-error-banner">
                 <span style="font-size: 16px;">⚠️</span>
-                <span>Zadali jste nesprávné heslo. Zkuste to prosím znovu.</span>
+                <span>${this.loginError}</span>
               </div>
             ` : ''}
 
             <form id="admin-login-form" class="admin-login-form">
               <div class="form-field ${this.loginError ? 'has-error' : ''}">
-                <label for="admin-pass" class="form-label">Heslo recepce</label>
-                <input type="password" id="admin-pass" class="form-input" placeholder="Vložte přístupové heslo..." autofocus required value="${this.passwordInput}">
+                <label for="admin-email" class="form-label">E-mail</label>
+                <input type="email" id="admin-email" class="form-input" placeholder="recepce@umustku.cz" autocomplete="username" autofocus required value="${this.emailInput || ''}">
               </div>
-              <button type="submit" class="btn btn-booking-submit btn-admin-login">Vstoupit do správy →</button>
+              <div class="form-field ${this.loginError ? 'has-error' : ''}">
+                <label for="admin-pass" class="form-label">Heslo</label>
+                <input type="password" id="admin-pass" class="form-input" placeholder="Vaše heslo" autocomplete="current-password" required value="${this.passwordInput}">
+              </div>
+              <button type="submit" class="btn btn-booking-submit btn-admin-login" ${this.loginProbiha ? 'disabled' : ''}>
+                ${this.loginProbiha ? 'Přihlašuji…' : 'Vstoupit do správy →'}
+              </button>
             </form>
           </div>
         </div>
       `;
 
       const form = document.getElementById('admin-login-form');
+      const mail = document.getElementById('admin-email');
       const pass = document.getElementById('admin-pass');
+      if (mail) {
+        if (!this.emailInput) mail.focus();
+        mail.addEventListener('input', (e) => { this.emailInput = e.target.value; });
+      }
       if (pass) {
-        pass.focus();
-        pass.addEventListener('input', (e) => {
-          this.passwordInput = e.target.value;
-          if (this.loginError) this.loginError = false;
-        });
+        if (this.emailInput) pass.focus();
+        pass.addEventListener('input', (e) => { this.passwordInput = e.target.value; });
       }
       if (form) form.addEventListener('submit', (e) => this.handleLogin(e));
       return;
@@ -2245,11 +2290,12 @@ export class AdminDashboard {
     });
 
     if (btnLogout) {
-      btnLogout.addEventListener('click', () => {
+      btnLogout.addEventListener('click', async () => {
+        if (isSupabaseConfigured && supabase) {
+          try { await supabase.auth.signOut(); } catch (err) {}
+        }
         this.isAuthenticated = false;
-        try {
-          localStorage.removeItem(ADMIN_SESSION_KEY);
-        } catch (err) {}
+        try { localStorage.removeItem(ADMIN_SESSION_KEY); } catch (err) {}
         this.render();
       });
     }

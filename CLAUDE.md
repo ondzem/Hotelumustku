@@ -424,6 +424,47 @@ měly 1600 px a přes 400 kB — složky `Fotky Aktivit` a `Aktivity v hotelu`
 magick vstup.webp -resize '900x900>' -quality 80 -strip vystup.webp
 ```
 
+## Zabezpečení — co drží web pohromadě
+
+Bezpečnostní kontrola 18. 8. 2026 našla čtyři vážné věci. Všechny jsou
+opravené, ale na pravidlech níž stojí celý web — kdo je obejde, otevře je
+znovu.
+
+**1. Anonymní klíč je veřejný. Chrání ho jen pravidla v databázi.**
+`supabase-ZABEZPECENI.sql` zapíná RLS na všech tabulkách. Role `anon`
+(návštěvník) smí založit rezervaci, recenzi a zprávu a přečíst si veřejný
+obsah. Role `authenticated` (přihlášený recepční) smí vše.
+
+Osobní údaje hostů chrání **oprávnění na sloupce**, ne jen řádková pravidla:
+```sql
+REVOKE SELECT ON public.reservations FROM anon;
+GRANT  SELECT (room_id, date_from, date_to, status) ON public.reservations TO anon;
+```
+Veřejný kalendář víc nepotřebuje. Kdyby někdy potřeboval další sloupec,
+přidej ho do `GRANT`, **nikdy nevracej `SELECT` na celou tabulku** — jinak
+jsou jména, e-maily a telefony hostů zase veřejné.
+
+**2. Administrace se přihlašuje do Supabase Auth.** Dřív se porovnával
+otisk hesla v prohlížeči a do databáze se chodilo týmž anon klíčem jako za
+návštěvníka — přihlášení tedy nechránilo vůbec nic. Navíc stačilo
+v konzoli nastavit `hotel_mustku_admin_auth_v1` na `true` a administrace se
+otevřela. Teď rozhoduje token ze Supabase Auth a `localStorage` se nevěří.
+
+**3. Serverové funkce nejsou veřejné.** `send-email` kontroluje hlavičku
+`Origin` a drží limit 5 zpráv za minutu z jedné adresy; bez toho to byla
+otevřená pošta — příjemce, předmět i HTML se berou z požadavku, takže
+kdokoli mohl rozesílat phishing z domény hotelu a zničit jí pověst.
+`upload-news-image` má servisní klíč, proto vyžaduje token přihlášené
+recepce.
+
+**4. Cizí text se do stránky vkládá jen přes `esc()`.** Recenze, aktuality
+a oznámení píšou lidé zvenčí a jdou do `innerHTML`. Bez escapování stačilo
+uložit recenzi s `<img src=x onerror=…>` a kód se spustil každému
+návštěvníkovi včetně recepčního. Na adresy obrázků je `escUrl()`.
+
+Bezpečnostní hlavičky jsou v `public/_headers`; `/admin` má navíc
+`noindex` a `no-store`.
+
 ## Databáze
 
 Tabulky: `reservations`, `blocked_dates`, `room_prices`, `disabled_rooms`,

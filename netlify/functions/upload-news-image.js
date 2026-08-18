@@ -27,6 +27,30 @@ function odpoved(status, telo) {
   });
 }
 
+/**
+ * Ověří, že volá přihlášený recepční.
+ *
+ * Funkce má na serveru servisní klíč, kterým se dá do úložiště zapisovat
+ * cokoli. Bez téhle kontroly stačilo poslat POST a nahrát hotelu do koše
+ * libovolný soubor. Token přiloží administrace ze své relace v Supabase
+ * Auth; ověřuje ho sám Supabase, my si jen vyžádáme uživatele.
+ */
+async function jePrihlasenaRecepce(request, url, anonKlic) {
+  const hlavicka = request.headers.get('authorization') || '';
+  const token = hlavicka.startsWith('Bearer ') ? hlavicka.slice(7).trim() : '';
+  if (!token) return false;
+  try {
+    const r = await fetch(`${url}/auth/v1/user`, {
+      headers: { apikey: anonKlic, Authorization: `Bearer ${token}` }
+    });
+    if (!r.ok) return false;
+    const u = await r.json();
+    return Boolean(u && u.id);
+  } catch (e) {
+    return false;
+  }
+}
+
 export default async function handler(request) {
   if (request.method !== 'POST') {
     return odpoved(405, { error: 'Použijte POST.' });
@@ -34,9 +58,18 @@ export default async function handler(request) {
 
   const url = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
   const klic = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const anonKlic = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
   if (!url || !klic) {
     console.error('Chybí VITE_SUPABASE_URL nebo SUPABASE_SERVICE_ROLE_KEY.');
     return odpoved(500, { error: 'Úložiště není nastavené.' });
+  }
+  if (!anonKlic) {
+    console.error('Chybí VITE_SUPABASE_ANON_KEY — bez něj nejde ověřit přihlášení.');
+    return odpoved(500, { error: 'Ověřování není nastavené.' });
+  }
+
+  if (!(await jePrihlasenaRecepce(request, url, anonKlic))) {
+    return odpoved(401, { error: 'Nahrávat fotky může jen přihlášená recepce.' });
   }
 
   let data;

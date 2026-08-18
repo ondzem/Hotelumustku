@@ -8,6 +8,31 @@ import { sendEmail, generateEmailContactNotification, generateEmailNewReviewNoti
 import { initScrollReveal } from './utils/scrollReveal.js';
 import { fotkyPokoje } from './utils/roomGalleries.js';
 
+/**
+ * Ošetří text, který se vkládá do HTML.
+ *
+ * Recenze, aktuality i jména autorů píšou lidé zvenčí a putují do stránky
+ * přes `innerHTML`. Bez tohohle stačilo uložit recenzi s `<img src=x
+ * onerror=...>` a kód se spustil každému návštěvníkovi — včetně recepčního
+ * v administraci, takže by šlo ukrást přihlášení. Nikdy nevkládej cizí text
+ * do šablony bez `esc()`.
+ */
+export function esc(text) {
+  return String(text == null ? '' : text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+/** Adresa obrázku z databáze — pustíme jen běžné a bezpečné tvary. */
+export function escUrl(url) {
+  const u = String(url == null ? '' : url).trim();
+  if (/^(https?:\/\/|\/)[^\s"'<>]*$/i.test(u)) return esc(u);
+  return '';
+}
+
 export function syncCustomRoomNamesToDOM() {
   const roomItems = document.querySelectorAll('.room-breakdown-item[data-room]');
   roomItems.forEach(item => {
@@ -320,13 +345,13 @@ export function getTopAnnouncementBarHTML() {
   }
 
   const imageHTML = activeBannerCache.image_url
-    ? `<div class="announcement-modal-image"><img src="${activeBannerCache.image_url}" alt="${activeBannerCache.title || ''}" loading="lazy"></div>`
+    ? `<div class="announcement-modal-image"><img src="${escUrl(activeBannerCache.image_url)}" alt="${esc(activeBannerCache.title || '')}" loading="lazy"></div>`
     : '';
 
   const paragraphs = (activeBannerCache.content || '').split('\n\n').filter(Boolean);
   const contentHTML = paragraphs.length > 0
-    ? paragraphs.map(p => `<p class="announcement-modal-p">${p.replace(/\n/g, '<br>')}</p>`).join('')
-    : `<p class="announcement-modal-p">${text}</p>`;
+    ? paragraphs.map(p => `<p class="announcement-modal-p">${esc(p).replace(/\n/g, '<br>')}</p>`).join('')
+    : `<p class="announcement-modal-p">${esc(text)}</p>`;
 
   return `
     <!-- Boční záložka, kterou se oznámení otevírá. Chyběla — v CSS
@@ -335,7 +360,7 @@ export function getTopAnnouncementBarHTML() {
     <button type="button" class="announcement-side-tab" id="announcement-side-tab"
             aria-label="Zobrazit aktuální oznámení hotelu">
       <span class="side-tab-dot" aria-hidden="true"></span>
-      <span class="side-tab-text">${text}</span>
+      <span class="side-tab-text">${esc(text)}</span>
     </button>
 
     <!-- POP-UP MODAL PRO DETAIL OZNÁMENÍ -->
@@ -349,7 +374,7 @@ export function getTopAnnouncementBarHTML() {
             <span class="announcement-modal-badge-tag">AKTUÁLNÍ OZNÁMENÍ</span>
             ${formattedDate ? `<span class="announcement-modal-date">${formattedDate}</span>` : ''}
           </div>
-          <h2 class="announcement-modal-title">${activeBannerCache.title || text}</h2>
+          <h2 class="announcement-modal-title">${esc(activeBannerCache.title || text)}</h2>
           <div class="announcement-modal-text">
             ${contentHTML}
           </div>
@@ -748,12 +773,12 @@ const getReviewsHTML = () => `
           ${GUEST_REVIEWS.map(r => `
             <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
-              <p class="review-quote">${r.text}</p>
+              <p class="review-quote">${esc(r.text)}</p>
               <div class="review-contour-bg">
                 <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
               </div>
               <div class="review-footer">
-                <span class="review-author-name">${r.author || r.author_name}</span>
+                <span class="review-author-name">${esc(r.author || r.author_name)}</span>
                 <span class="review-date">${r.date}</span>
               </div>
             </div>
@@ -2161,12 +2186,12 @@ const initInteractivity = () => {
           reviewsTrack.innerHTML = approved.map(r => `
             <div class="review-card" data-anim="up">
               <img src="/Icons/google logo.webp" alt="Google Logo" class="review-google-icon" loading="lazy" decoding="async">
-              <p class="review-quote">${r.text}</p>
+              <p class="review-quote">${esc(r.text)}</p>
               <div class="review-contour-bg">
                 <img src="/Decoration/hory_contour.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
               </div>
               <div class="review-footer">
-                <span class="review-author-name">${r.author_name || r.full_name}</span>
+                <span class="review-author-name">${esc(r.author_name || r.full_name)}</span>
                 <span class="review-date">${r.date || ''}</span>
               </div>
             </div>
@@ -3949,7 +3974,8 @@ const renderNewsCardsHTML = (activeItems) => {
     <div class="news-cards-list" data-anim-group>
       ${activeItems.map((item, index) => {
     const hasImage = Boolean(item.image_url);
-    const formattedContent = (item.content || '').replace(/\n/g, '<br>');
+    // Escapuje se PŘED nahrazením konců řádků, jinak by se rozbilo i <br>.
+    const formattedContent = esc(item.content || '').replace(/\n/g, '<br>');
     const isReverse = index % 2 === 1;
 
     if (hasImage) {
@@ -3957,11 +3983,11 @@ const renderNewsCardsHTML = (activeItems) => {
             <article class="news-card news-card-with-image ${isReverse ? 'news-card-reverse' : ''}" data-anim="up">
               <div class="news-card-content">
                 <div class="news-card-date">🗓️ ${datumVydani(item)}</div>
-                <h2 class="news-card-title">${item.title}</h2>
+                <h2 class="news-card-title">${esc(item.title)}</h2>
                 <div class="news-card-text">${formattedContent}</div>
               </div>
               <div class="news-card-image-wrap">
-                <img src="${item.image_url}" alt="${item.title}" class="news-card-image" loading="lazy" decoding="async"
+                <img src="${escUrl(item.image_url)}" alt="${esc(item.title)}" class="news-card-image" loading="lazy" decoding="async"
                      onerror="window.aktualitaBezFotky && window.aktualitaBezFotky(this)">
               </div>
             </article>
@@ -3971,7 +3997,7 @@ const renderNewsCardsHTML = (activeItems) => {
             <article class="news-card news-card-without-image" data-anim="up">
               <div class="news-card-centered-header">
                 <div class="news-card-date">🗓️ ${datumVydani(item)}</div>
-                <h2 class="news-card-title">${item.title}</h2>
+                <h2 class="news-card-title">${esc(item.title)}</h2>
               </div>
               <div class="news-card-text news-card-text-readable">${formattedContent}</div>
             </article>

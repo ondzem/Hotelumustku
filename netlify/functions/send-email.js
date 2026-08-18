@@ -49,9 +49,64 @@ function jeEmail(hodnota) {
   return typeof hodnota === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(hodnota.trim());
 }
 
+/**
+ * Odkud smí volání přijít.
+ *
+ * Bez téhle kontroly byla funkce otevřená pošta pro kohokoli: příjemce,
+ * předmět i HTML tělo se berou z požadavku, takže kdokoli mohl rozesílat
+ * libovolné e-maily z ověřené domény hotelu. Kromě vyčerpaného limitu
+ * Resendu je hlavní škoda pověst domény — jakmile se z ní rozešle spam,
+ * začne veškerá pošta hotelu padat příjemcům do spamu.
+ */
+const POVOLENE_ZDROJE = [
+  /^https:\/\/([a-z0-9-]+\.)*umustku\.cz$/i,
+  /^https:\/\/([a-z0-9-]+--)?papaya-travesseiro-6b341e\.netlify\.app$/i,
+  /^https:\/\/[a-z0-9-]+\.netlify\.app$/i,   // náhledy nasazení
+  /^http:\/\/localhost(:\d+)?$/i,
+];
+
+function zdrojJePovoleny(request) {
+  const origin = request.headers.get('origin');
+  // Volání ze stejného webu bez hlavičky Origin (např. serverové) pustíme,
+  // cizí prohlížeč Origin vždycky posílá.
+  if (!origin) return true;
+  return POVOLENE_ZDROJE.some(v => v.test(origin));
+}
+
+/**
+ * Hrubé omezení počtu zpráv. Paměť funkce se sdílí jen v rámci jedné
+ * instance, takže to není neprůstřelné — ale zastaví to hromadnou
+ * rozesílku z jednoho místa, což je ten reálný scénář.
+ */
+const historie = new Map();
+const OKNO_MS = 60 * 1000;
+const MAX_ZA_OKNO = 5;
+
+function prekrocilLimit(request) {
+  const ip = request.headers.get('x-nf-client-connection-ip')
+    || request.headers.get('x-forwarded-for')
+    || 'neznamy';
+  const ted = Date.now();
+  const casy = (historie.get(ip) || []).filter(t => ted - t < OKNO_MS);
+  casy.push(ted);
+  historie.set(ip, casy);
+  if (historie.size > 500) {
+    for (const [k, v] of historie) if (!v.some(t => ted - t < OKNO_MS)) historie.delete(k);
+  }
+  return casy.length > MAX_ZA_OKNO;
+}
+
 export default async function handler(request) {
   if (request.method !== 'POST') {
     return odpoved(405, { error: 'Povolena je jen metoda POST.' });
+  }
+
+  if (!zdrojJePovoleny(request)) {
+    return odpoved(403, { error: 'Nepovolený zdroj požadavku.' });
+  }
+
+  if (prekrocilLimit(request)) {
+    return odpoved(429, { error: 'Příliš mnoho požadavků. Zkuste to za chvíli.' });
   }
 
   const klic = process.env.RESEND_API_KEY;

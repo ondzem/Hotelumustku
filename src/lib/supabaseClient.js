@@ -868,9 +868,20 @@ export const uploadNewsImage = async (fileOrBlob) => {
       ctecka.readAsDataURL(fileOrBlob);
     });
 
+    // Serverová funkce má servisní klíč, takže si musí ověřit, kdo volá.
+    // Přiložíme token přihlášené recepce ze Supabase Auth.
+    let token = '';
+    if (isSupabaseConfigured && supabase) {
+      const { data } = await supabase.auth.getSession();
+      token = (data && data.session && data.session.access_token) || '';
+    }
+    if (!token) {
+      throw new Error('Nahrávat fotky může jen přihlášená recepce. Přihlaste se prosím znovu.');
+    }
+
     const res = await fetch('/.netlify/functions/upload-news-image', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify({ base64, contentType })
     });
 
