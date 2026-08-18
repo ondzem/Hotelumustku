@@ -389,6 +389,22 @@ Nespoléhej na to, že změna vypadá správně v kódu. Osvědčené postupy:
 
 ---
 
+## Skilly — používat, ne čekat na vyzvání
+
+Než sáhnu na první nástroj u netriviálního zadání, projít tyhle čtyři a nahlas
+říct, co použiju a proč. Plné pravidlo je v globálním `~/.claude/CLAUDE.md`.
+
+- **claude-mem** — na začátku místo slepého grepování (`mem-search`,
+  `smart-explore`). Tohle jediné reálně šetří kontext.
+- **andrej-karpathy-skills:karpathy-guidelines** — u každé práce s kódem.
+- **superpowers** — podle fáze: `systematic-debugging` na chybu,
+  `brainstorming` → `writing-plans` → `executing-plans` na novou věc,
+  `verification-before-completion` než řeknu „hotovo".
+- **ruflo-core** — jen když zlobí tooling nebo MCP.
+
+Nevyvolávat všechny naráz, to jde proti smyslu. Headroom není skill, je to
+lokální proxy na portu 8787 — nedá se vyvolat, buď běží, nebo ne.
+
 ## Zvyklosti
 
 - **Odpovídej maximálně stručně.** Stačí výsledek — „Hotovo, upravil jsem X."

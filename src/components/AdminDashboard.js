@@ -4,6 +4,7 @@ import { sendEmail, generateEmail2ApprovalAndPaymentRequest, generateEmail3Final
 import { checkAndProcessExpiredUnpaidReservations } from '../utils/reservationExpiryService.js';
 import { printReservationSheet } from '../utils/printReservationService.js';
 import { renderCenikModal, bindCenikModal } from './AdminCenik.js';
+import { renderRucniRezervaceModal, bindRucniRezervaceModal, prazdnaRucniRezervace } from './AdminRucniRezervace.js';
 
 function formatCzechDateStr(dateStr) {
   if (!dateStr) return '';
@@ -119,6 +120,10 @@ export class AdminDashboard {
     this.disabledRooms = getStoredDisabledRooms();
     this.showConfirmRoomBlockModal = false;
     this.pendingRoomBlock = null;
+    this.showRucniModal = false;
+    this.rucniRezervace = prazdnaRucniRezervace();
+    this.rucniChyba = '';
+    this.rucniKolize = false;
     (this.disabledRooms || []).forEach(p => {
       if (p.room_id) {
         const rm = MOCK_ROOMS.find(r => r.id === p.room_id);
@@ -519,6 +524,22 @@ export class AdminDashboard {
         console.error('Supabase toggleRoomDisabled failed:', err);
       }
     }
+  }
+
+  /**
+   * Je vybraný pokoj v zadaném termínu už obsazený?
+   *
+   * Jen upozornění, ne zákaz — recepční může vědět o výměně pokoje nebo
+   * o rezervaci, která se má vzápětí zrušit.
+   */
+  zkontrolujKoliziRucni() {
+    const f = this.rucniRezervace || {};
+    if (!f.room_id || !f.date_from || !f.date_to) { this.rucniKolize = false; return; }
+    this.rucniKolize = (this.reservations || []).some(r => {
+      if (r.room_id !== f.room_id) return false;
+      if (r.status && (String(r.status).startsWith('cancelled') || r.status === 'stornováno')) return false;
+      return r.date_from < f.date_to && r.date_to > f.date_from;
+    });
   }
 
   async fetchReservations() {
@@ -1001,6 +1022,7 @@ export class AdminDashboard {
       this.showDisabledRoomsModal ||
       this.showDeleteModal ||
       this.showNewsModal ||
+      this.showRucniModal ||
       this.showCropModal ||
       this.showDetailDrawerCode
     );
@@ -1051,6 +1073,9 @@ export class AdminDashboard {
             </button>
             <button type="button" class="btn btn-specs-secondary btn-admin-news">
               📰 Správa aktualit ${this.newsItems.length > 0 ? `<span style="background: #2e3524; color: #ffffff; border-radius: 99px; padding: 2px 7px; font-size: 11px; font-weight: 700; margin-left: 4px;">${this.newsItems.length}</span>` : ''}
+            </button>
+            <button type="button" class="btn btn-specs-secondary btn-admin-nova-rezervace">
+              ➕ Přidat rezervaci
             </button>
             <button type="button" class="btn btn-specs-secondary btn-admin-block-dates">
               📅 Blokovat termíny ${this.blockedDates.length > 0 ? `<span style="background: #e67e22; color: #ffffff; border-radius: 99px; padding: 2px 7px; font-size: 11px; font-weight: 700; margin-left: 4px;">${this.blockedDates.length}</span>` : ''}
@@ -1505,6 +1530,8 @@ export class AdminDashboard {
         ` : ''}
 
         ${this.showPricesModal ? renderCenikModal(this) : ''}
+
+        ${this.showRucniModal ? renderRucniRezervaceModal(this) : ''}
 
         ${this.showDisabledRoomsModal ? `
           <div class="admin-modal-overlay admin-modal-overlay-block admin-modal-overlay-disabled">
@@ -2364,6 +2391,19 @@ export class AdminDashboard {
 
     // Okno s ceníkem si obsluhuje vlastní modul (AdminCenik.js)
     bindCenikModal(this);
+
+    // Ruční založení rezervace — vlastní modul (AdminRucniRezervace.js)
+    const btnNovaRezervace = this.container.querySelector('.btn-admin-nova-rezervace');
+    if (btnNovaRezervace) {
+      btnNovaRezervace.addEventListener('click', () => {
+        this.rucniRezervace = prazdnaRucniRezervace();
+        this.rucniChyba = '';
+        this.rucniKolize = false;
+        this.showRucniModal = true;
+        this.render();
+      });
+    }
+    bindRucniRezervaceModal(this);
 
     const btnCloseBlockModal = this.container.querySelector('.btn-close-block-modal');
     if (btnCloseBlockModal) {
