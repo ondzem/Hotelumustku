@@ -207,12 +207,12 @@ export function renderDostupnostModal(ad) {
     let popisPrestupu = '';
     if (jeOdjezdovy) {
       popisPrestupu = p.roomId === 'all'
-        ? ` · odjezd do 10:00 (${odjezdy} ${odjezdy === 1 ? 'pokoj' : (odjezdy < 5 ? 'pokoje' : 'pokojů')}), potom volno od 15:00`
-        : ` · ${odjezd.typ === 'rezervace' ? odjezd.popis + ' odjíždí' : 'blokace končí'} do 10:00, volno od 15:00`;
+        ? ` · odjezd ${odjezdy} ${odjezdy === 1 ? 'pokoje' : 'pokojů'}`
+        : ` · ${odjezd.typ === 'rezervace' ? odjezd.popis + ' odjíždí' : 'konec blokace'}`;
     } else if (jePrijezdovy) {
       popisPrestupu = p.roomId === 'all'
-        ? ` · do 15:00 ještě volno, potom příjezd (${prijezdy} ${prijezdy === 1 ? 'pokoj' : (prijezdy < 5 ? 'pokoje' : 'pokojů')})`
-        : ` · volno do 15:00, potom ${prijezd.typ === 'rezervace' ? prijezd.popis + ' přijíždí' : 'začíná blokace'}`;
+        ? ` · příjezd ${prijezdy} ${prijezdy === 1 ? 'pokoje' : 'pokojů'}`
+        : ` · ${prijezd.typ === 'rezervace' ? prijezd.popis + ' přijíždí' : 'začátek blokace'}`;
     }
     const popis = (den < dnes ? `${popisStavu} — tenhle den už je za námi` : popisStavu) + popisPrestupu;
 
@@ -365,8 +365,6 @@ export function renderDostupnostModal(ad) {
             <span class="cal-legend-item"><i class="cal-legend-box" style="background:#f9d9d4;"></i> ${p.roomId === 'all' ? 'Plně obsazeno' : 'Obsazeno'}</span>
             ${p.roomId === 'all' ? '<span class="cal-legend-item"><i class="cal-legend-box" style="background:#fcecc2;"></i> Částečně obsazeno</span>' : ''}
             <span class="cal-legend-item"><i class="cal-legend-box" style="background:#cadbb0; border-color:#697947;"></i> Vybraný termín</span>
-            <span class="cal-legend-item"><i class="cal-legend-box" style="background: linear-gradient(to bottom right, #fcecc2 0 50%, #ffffff 50% 100%);"></i> Odjezd do 10:00, potom volno</span>
-            <span class="cal-legend-item"><i class="cal-legend-box" style="background: linear-gradient(to bottom right, #ffffff 0 50%, #fcecc2 50% 100%);"></i> Volno do 15:00, potom příjezd</span>
             <span class="cal-legend-item" style="opacity: 0.7;"><i class="cal-legend-box" style="background:#e8e6dd; filter: grayscale(0.35);"></i> Už proběhlo</span>
           </div>
 
