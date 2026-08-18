@@ -4859,7 +4859,7 @@ const getContactPageHTML = () => `
           <div class="contact-about-text">
             <h2 class="contact-about-title" data-anim="up">Hory jsou pro nás poslání,<br>ne jen podnikání</h2>
 
-            <p class="contact-about-p contact-about-lead" data-anim="up">
+            <p class="contact-about-p" data-anim="up">
               Horský hotel u Můstků stojí v Desné v Jizerských horách, v údolí Bílé Desné a pár kroků od areálu skokanských můstků. Vedeme ho sami a osobně — bez anonymní recepce a bez pravidel vymyšlených někým v centrále. Hory jsou pro nás krásné, i když počasí tu umí být nevyzpytatelné, a naši práci bereme spíš jako poslání než jako způsob, jak zbohatnout.
             </p>
             <p class="contact-about-p" data-anim="up">

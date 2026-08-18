@@ -11371,13 +11371,12 @@ html.is-route-loading #app {
 }
 
 /* 4b. Sekce O nás na stránce Kontakt
-   Stejné šedé pozadí jako Jak se k nám dostat — obě sekce spolu tvoří
-   jeden klidný blok pod bílým formulářem. Spodní odsazení je proto menší,
-   ať mezi nimi nevznikne prázdné pásmo dvojité výšky. */
+   Stejné šedé pozadí jako Jak se k nám dostat. Spodní odsazení je plné,
+   ať mezi oběma sekcemi zůstane pořádný nádech a nelepí se na sebe. */
 .contact-about-section {
   width: 100%;
   background-color: #f2f2f2;
-  padding: clamp(55px, 11.1vh, 100px) 0 clamp(30px, 5.5vh, 52px) 0;
+  padding: clamp(55px, 11.1vh, 100px) 0 clamp(70px, 13vh, 120px) 0;
 }
 
 .contact-about-inner {
@@ -11388,13 +11387,13 @@ html.is-route-loading #app {
   box-sizing: border-box;
 }
 
-/* Fotka je vysoká a úzká (1050 × 1500), proto dostane vlastní úzký sloupec
-   a text se k ní zarovná na střed — vedle sebe tak mají obě části podobnou
-   výšku a nevzniká pod fotkou hluchý prostor. */
+/* Fotka je vysoká a úzká, dostane proto vlastní sloupec a text se k ní
+   zarovná na střed — vedle sebe mají obě části podobnou výšku a pod
+   fotkou nezůstane hluchý prostor. */
 .contact-about-grid {
   display: grid;
-  grid-template-columns: minmax(300px, 420px) 1fr;
-  gap: clamp(48px, 6vw, 88px);
+  grid-template-columns: minmax(260px, 340px) 1fr;
+  gap: clamp(44px, 5.5vw, 76px);
   align-items: center;
 }
 
@@ -11403,36 +11402,38 @@ html.is-route-loading #app {
   position: relative;
 }
 
-/* Tenký rámeček posunutý za fotku dává ploché fotografii hloubku
-   a drží ji ukotvenou v sekci, aniž by přebíjel obsah. */
+/* Tenký rámeček posunutý za fotku jí dodá hloubku, aniž by přebíjel obsah. */
 .contact-about-figure::before {
   content: '';
   position: absolute;
-  inset: 22px -22px -22px 22px;
-  border: 1px solid #c9c6b8;
+  inset: 20px -20px -20px 20px;
+  border: 1px solid #d3d0c4;
   border-radius: 2px;
   pointer-events: none;
 }
 
+/* Poměr 4:5 místo původního 7:10 — fotka je na výšku, širší ořez ji
+   v rozvržení usadí a nepůsobí jako úzký sloupek. */
 .contact-about-photo {
   position: relative;
   display: block;
   width: 100%;
-  aspect-ratio: 7 / 10;
+  aspect-ratio: 4 / 5;
   object-fit: cover;
-  object-position: center 28%;
+  object-position: center 26%;
   border-radius: 2px;
-  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.14);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.13);
 }
 
+/* Velikosti písma stejné jako u nadpisu Jak se k nám dostat pod touhle
+   sekcí — na jedné stránce nesmí být dvě různá měřítka. */
 .contact-about-title {
   font-family: 'Outfit', sans-serif;
-  font-size: clamp(30px, 3.1vw, 42px);
+  font-size: clamp(28px, 2.8vw, 38px);
   font-weight: 700;
   color: #1c1c19;
-  line-height: 1.18;
-  letter-spacing: -0.01em;
-  margin: 0 0 26px 0;
+  line-height: 1.25;
+  margin: 0 0 24px 0;
   padding-top: 22px;
   position: relative;
 }
@@ -11451,16 +11452,10 @@ html.is-route-loading #app {
 
 .contact-about-p {
   font-size: 16px;
-  color: #55554e;
-  line-height: 1.75;
-  margin: 0 0 18px 0;
-  max-width: 60ch;
-}
-
-.contact-about-lead {
-  font-size: 17.5px;
-  color: #3f3f3a;
-  line-height: 1.7;
+  color: #555550;
+  line-height: 1.6;
+  margin: 0 0 16px 0;
+  max-width: 62ch;
 }
 
 .contact-about-p:last-child {
@@ -11470,26 +11465,22 @@ html.is-route-loading #app {
 @media (max-width: 1024px) {
   .contact-about-grid {
     grid-template-columns: 1fr;
-    gap: 44px;
+    gap: 40px;
     align-items: start;
   }
 
   .contact-about-figure {
-    max-width: 380px;
+    max-width: 340px;
   }
 
   .contact-about-inner {
     padding: 0 32px;
   }
-
-  .contact-about-title {
-    margin-bottom: 22px;
-  }
 }
 
 @media (max-width: 768px) {
   .contact-about-section {
-    padding: 60px 0 28px 0;
+    padding: 60px 0 70px 0;
   }
 
   .contact-about-inner {
@@ -11501,11 +11492,14 @@ html.is-route-loading #app {
   }
 
   .contact-about-figure::before {
-    inset: 16px -16px -16px 16px;
+    inset: 14px -14px -14px 14px;
   }
 
-  .contact-about-p,
-  .contact-about-lead {
+  .contact-about-title {
+    font-size: 26px;
+  }
+
+  .contact-about-p {
     font-size: 15.5px;
   }
 }
