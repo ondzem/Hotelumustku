@@ -373,6 +373,36 @@ v `booking.css` napsaný už dávno, ale do 18. 8. 2026 ho nikdo nenasadil.
   která pozici přepočítá několikrát a naposledy po `load`; jakmile uživatel
   sám zaroluje, přestane.
 
+### Jak se responzivita kontroluje
+
+Ne okem, ale měřením: stránka se načte do iframu o pevné šířce (viz oddíl
+„Jak si ověřit, že to funguje") a projdou se všechny prvky. Hlásí se ty,
+jejichž `getBoundingClientRect()` přesahuje šířku okna.
+
+Dvě věci, bez kterých detektor jen šumí:
+
+- **Přeskočit potomky vodorovných rolovadel.** Karusely recenzí a galerie
+  pokojů jsou schválně širší než okno; bez téhle výjimky hlásil detektor
+  přes tisíc „vad" na stránku.
+- **Sledovat `documentElement.scrollWidth`.** Když se rovná šířce okna,
+  stránka vodorovně neroluje — jenže přetečený obsah může být oříznutý
+  a nedostupný, takže se musí hlídat obojí.
+
+Poslední průchod (18. 8. 2026) našel jen administraci na 320 px, viz níž.
+
+### Administrace na úzkých displejích
+
+Odsazení tří vnořených rámů (`admin-page-main` 33 px, `admin-dashboard-wrapper`
+16 px, `admin-header-bar` 14 px) ukrajovalo 126 px z 320. Na dva sloupce
+tlačítek zbylo 194 px, takže pravý sloupec končil až za okrajem okna —
+oříznutý a nedostupný. Pod 400 px se proto okraje ztenčují a pod 380 px
+je jeden sloupec.
+
+**Potomek gridu má `min-width: auto`.** Nesmrskne se pod šířku svého textu
+a vyteče z buňky. Na kartách rezervací tím jméno hosta a datum přetékaly
+o 21 px; řeší to `min-width: 0` na `.res-card-grid > *`. Na tohle pozor
+u každého nového gridu s textem.
+
 ## Posluchače na předrenderovaných stránkách
 
 `initInteractivity()` běží po **každém** přechodu. Když se DOM nevyměňuje

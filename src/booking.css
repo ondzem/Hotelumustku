@@ -4420,6 +4420,72 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     width: 100% !important;
   }
 
+  /* Nejužší telefony (320 px). Odsazení tří vnořených rámů ukrajovalo
+     126 px z 320, takže na dva sloupce zbylo 194 px — tlačítka se do nich
+     nevešla a pravý sloupec končil až za okrajem okna, useknutý a
+     nedostupný. Pod 360 px proto jeden sloupec a tenčí okraje. */
+  @media (max-width: 400px) {
+    .admin-page-main {
+      padding-left: 12px !important;
+      padding-right: 12px !important;
+    }
+
+    .admin-dashboard-wrapper {
+      padding-left: 10px !important;
+      padding-right: 10px !important;
+    }
+
+    .admin-header-bar {
+      padding-left: 10px !important;
+      padding-right: 10px !important;
+    }
+
+    /* Karta rezervace: dlouhé jméno hosta ani datum nesmí kartu roztáhnout.
+       Potomek gridu má ve výchozím stavu `min-width: auto`, takže se
+       nesmrskne pod šířku svého textu a vyteče z buňky ven — na 320 px
+       o 21 px. Nulové minimum to pustí a text se zalomí. */
+    .res-card-grid,
+    .res-card-grid > *,
+    .res-card-grid > * > * {
+      min-width: 0 !important;
+    }
+
+    .admin-res-card,
+    .res-guest-name,
+    .res-created-at {
+      min-width: 0 !important;
+      max-width: 100% !important;
+      overflow-wrap: anywhere !important;
+    }
+
+    /* Řádek akcí na kartě (Potvrdit, Storno, …) se na 320 px zalamuje,
+       ne roztahuje kartu. */
+    .res-card-actions,
+    .res-actions {
+      flex-wrap: wrap !important;
+      min-width: 0 !important;
+    }
+
+    .res-card-actions .btn-admin-action,
+    .res-actions .btn-admin-action,
+    .btn-admin-action {
+      max-width: 100% !important;
+      white-space: normal !important;
+      overflow-wrap: anywhere !important;
+    }
+  }
+
+  /* Dva sloupce tlačítek se pod 380 px nevejdou ani po zúžení okrajů. */
+  @media (max-width: 380px) {
+    .admin-top-actions {
+      grid-template-columns: 1fr !important;
+    }
+
+    .admin-top-actions .btn {
+      font-size: 14px !important;
+    }
+  }
+
   .admin-top-actions .btn {
     width: 100% !important;
     height: 44px !important;
