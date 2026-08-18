@@ -92,6 +92,16 @@ Jen ten první: na další by se muselo přespat plnou noc. Než se to opravilo
 18. 8. 2026, `isDisabled = isPast || jePlne` zakazoval kliknout na cokoli
 obsazeného, takže na okraji každé blokace padala jinak platná rezervace.
 
+**V Dostupnosti znamená tentýž vybraný rozsah u každého tlačítka něco
+jiného.** Klepnutí na 24. a 30. je u „Zapsat rezervaci" příjezd 24.
+a odjezd 30., tedy noci 24.–29. U „Zablokovat termín" je to ale požadavek
+zavřít 24. **až 30. včetně** — obsluha vybírá dny, ne pobyt. Blokace proto
+ukládá `date_to = posunDatum(p.doo, 1)`. Konvence z oddílu 2 platí dál,
+`date_to` je pořád výlučné; liší se jen to, co si pod vybraným rozsahem
+představuje člověk. Aby to nemátlo, je pod tlačítky věta, která oba
+výklady vypíše čísly. Nesjednocuj to na jeden výklad — 18. 8. 2026 se
+ukázalo, že blokace končila o den dřív, než majitel čekal.
+
 **Minulé dny v kalendáři nedostávají barvu obsazenosti.** Růžová a žlutá
 v už proběhlém týdnu vypadaly jako rozbité vykreslení a vedly k hlášení,
 že „na volný den nejde kliknout" — přitom šlo prostě o včerejšek. Veřejný

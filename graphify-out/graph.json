@@ -1849,7 +1849,7 @@
       "label": "bindDostupnostModal()",
       "file_type": "code",
       "source_file": "src/components/AdminDostupnost.js",
-      "source_location": "L320",
+      "source_location": "L326",
       "_callable": true,
       "_origin": "ast",
       "id": "src_components_admindostupnost_binddostupnostmodal",
@@ -10304,11 +10304,23 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminDostupnost.js",
-      "source_location": "L340",
+      "source_location": "L346",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_admindostupnost_binddostupnostmodal",
       "target": "src_components_admindostupnost_dnesstr",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/AdminDostupnost.js",
+      "source_location": "L441",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_components_admindostupnost_binddostupnostmodal",
+      "target": "src_components_admindostupnost_posundatum",
       "confidence_score": 1.0
     },
     {
@@ -10412,7 +10424,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminDostupnost.js",
-      "source_location": "L179",
+      "source_location": "L180",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_admindostupnost_renderdostupnostmodal",
@@ -10424,7 +10436,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminDostupnost.js",
-      "source_location": "L306",
+      "source_location": "L312",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_admindostupnost_renderdostupnostmodal",
@@ -19597,7 +19609,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminDostupnost.js",
-      "source_location": "L320",
+      "source_location": "L326",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_admindostupnost",
@@ -24698,5 +24710,5 @@
       "source_file": "CLAUDE.md"
     }
   ],
-  "built_at_commit": "2ec58c4c3b03bf898267a1ec2c4b3b1e2fe20312"
+  "built_at_commit": "bf88b38a3526c2381f536873303ab5ca8c80a75c"
 }

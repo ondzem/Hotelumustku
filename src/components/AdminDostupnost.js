@@ -173,6 +173,7 @@ export function renderDostupnostModal(ad) {
     // Jen rezervace, ne blokace — blokaci přes blokaci nikomu nevadí,
     // kdežto host v termínu je důvod nejdřív zvednout telefon.
     const obsazene = radky.filter(r => r.kolize.some(k => k.typ === 'rezervace'));
+    const dnuVcetne = noci + 1;
     vypisRozsahu = `
       <div style="${S.blok}">
         <strong style="display: block; font-size: 14px; font-weight: 800; color: #1c1c19; margin-bottom: 4px;">
@@ -229,6 +230,11 @@ export function renderDostupnostModal(ad) {
             🔒 Zablokovat termín
           </button>
         </div>
+        <p style="margin: 8px 0 0 0; font-size: 12.5px; color: #6b6b60;">
+          Blokace zavře <strong>${formatCzechDateStr(p.od)} – ${formatCzechDateStr(p.doo)}</strong>, tedy
+          ${dnuVcetne} ${dnuVcetne === 1 ? 'den' : (dnuVcetne < 5 ? 'dny' : 'dnů')} včetně obou krajních.
+          Rezervace se počítá jinak — ${noci} ${noci === 1 ? 'noc' : (noci < 5 ? 'noci' : 'nocí')}, protože ${formatCzechDateStr(p.doo)} je den odjezdu.
+        </p>
         ${p.roomId === 'all' ? '<p style="margin: 8px 0 0 0; font-size: 12.5px; color: #96958a;">Rezervaci zapíšete po výběru konkrétního pokoje nahoře. Blokovat jde i celý hotel.</p>' : ''}
       </div>
     `;
@@ -420,8 +426,11 @@ export function bindDostupnostModal(ad) {
     });
   });
 
-  // Zablokovat termín — zapíše se do blocked_dates stejně jako v okně
-  // Blokovat termíny, tedy s výlučným date_to.
+  // Zablokovat termín. Pozor na rozdíl proti rezervaci: klepnutí na 24. a 30.
+  // znamená u rezervace „přijede 24., odjíždí 30.", tedy noci 24.–29., kdežto
+  // u blokace „zavři mi 24. až 30.", tedy včetně třicátého. Do databáze proto
+  // jde date_to o den dál — date_to je pořád výlučné, mění se jen to, co si
+  // pod vybraným rozsahem představuje obsluha.
   const btnBlok = ad.container.querySelector('.btn-prehled-blokovat');
   if (btnBlok) {
     btnBlok.addEventListener('click', async () => {
@@ -429,7 +438,7 @@ export function bindDostupnostModal(ad) {
       if (!p.od || !p.doo) return;
       btnBlok.disabled = true;
       btnBlok.textContent = 'Blokuji…';
-      await ad.addBlockedDate(p.roomId, p.od, p.doo, (p.duvod || '').trim() || 'Uzávěrka recepce');
+      await ad.addBlockedDate(p.roomId, p.od, posunDatum(p.doo, 1), (p.duvod || '').trim() || 'Uzávěrka recepce');
       p.duvod = '';
       ad.render();
     });

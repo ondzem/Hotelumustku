@@ -1,16 +1,16 @@
 # Graph Report - Hotel u mustku  (2026-08-18)
 
 ## Corpus Check
-- 44 files · ~158,943 words
+- 44 files · ~159,157 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 676 nodes · 1405 edges · 42 communities (36 shown, 6 thin omitted)
+- 676 nodes · 1406 edges · 42 communities (36 shown, 6 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 23 edges (avg confidence: 0.77)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `2ec58c4c`
+- Built from commit: `bf88b38a`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -147,7 +147,7 @@ Cohesion: 0.24
 Nodes (17): bindRucniRezervaceModal(), dnesStr(), escapuj(), formatCzechDateStr(), MESICE, obsazenostDne(), pocetNoci(), prazdnaRucniRezervace() (+9 more)
 
 ### Community 14 - "AdminDostupnost.js"
-Cohesion: 0.28
+Cohesion: 0.29
 Nodes (14): bindDostupnostModal(), dnesStr(), escapuj(), formatCzechDateStr(), MESICE, pocetNoci(), posunDatum(), prazdnyPrehled() (+6 more)
 
 ### Community 15 - "supabase-novy-projekt.sql"
