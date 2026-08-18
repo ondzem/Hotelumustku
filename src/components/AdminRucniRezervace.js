@@ -50,7 +50,9 @@ export function prazdnaRucniRezervace() {
   return {
     date_from: '',
     date_to: '',
-    room_id: (MOCK_ROOMS.find(r => !r.isDisabled) || MOCK_ROOMS[0]).id,
+    // Prázdné schválně. Předvyplněný pokoj obsluha přehlédla a zapsala
+    // rezervaci na jiný, než chtěla — formulář si o něj musí říct sám.
+    room_id: '',
     adults_count: 2,
     guest_name: '',
     guest_email: '',
@@ -124,6 +126,10 @@ function pocetNoci(od, doo) {
  * založená rezervace stojí přesně tolik, kolik by stála přes web.
  */
 export function spoctiRucniCenu(f, cenik) {
+  // Bez zvoleného pokoje není z čeho počítat — formulář ukáže prázdno,
+  // ne cenu prvního pokoje v seznamu.
+  if (!f.room_id) return null;
+
   // Celý hotel: každý pokoj se ocení zvlášť a částky se sečtou. Sazba je za
   // osobu a noc, takže jeden společný výpočet by dal nesmysl.
   if (f.room_id === CELY_HOTEL) {
@@ -339,8 +345,8 @@ export function renderRucniRezervaceModal(ad) {
   const cena = spoctiRucniCenu(f, ad.cenik);
   const noci = pocetNoci(f.date_from, f.date_to);
   const celyHotel = f.room_id === CELY_HOTEL;
-  const pokoj = MOCK_ROOMS.find(r => r.id === f.room_id) || MOCK_ROOMS[0];
-  const maxOsob = celyHotel ? kapacitaHotelu() : maxOsobNaPokoji(pokoj);
+  const pokoj = MOCK_ROOMS.find(r => r.id === f.room_id) || null;
+  const maxOsob = celyHotel ? kapacitaHotelu() : (pokoj ? maxOsobNaPokoji(pokoj) : 4);
 
   // Ručně zadaná částka přebíjí ceník; záloha a doplatek se z ní dopočítají
   // stejným procentem, jaké platí v nastavení.
@@ -380,6 +386,7 @@ export function renderRucniRezervaceModal(ad) {
             <div>
               <label style="${S.popisek}">Pokoj</label>
               <select class="rucni-pole" data-pole="room_id" style="${S.input}">
+                <option value="" ${!f.room_id ? 'selected' : ''}>— Vyberte pokoj —</option>
                 <option value="${CELY_HOTEL}" ${f.room_id === CELY_HOTEL ? 'selected' : ''}>🏨 Celý hotel — skupinová akce (${pokojeHotelu().length} pokojů)</option>
                 ${MOCK_ROOMS.map(rm => `
                   <option value="${rm.id}" ${rm.id === f.room_id ? 'selected' : ''}>${escapuj(rm.name)}${rm.isDisabled ? ' — mimo provoz' : ''}</option>
@@ -579,6 +586,7 @@ export function sestavRucniRezervaci(f, cenik) {
     return { rezervace: casti[0], skupina: casti };
   }
 
+  if (!f.room_id) return { chyba: 'Vyberte pokoj.' };
   const pokoj = MOCK_ROOMS.find(r => r.id === f.room_id);
   if (!pokoj) return { chyba: 'Vyberte pokoj.' };
 

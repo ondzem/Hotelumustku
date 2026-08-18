@@ -254,10 +254,14 @@ export const deleteStoredReservation = (targetIdOrCode) => {
     console.error('Failed to delete reservation locally:', err);
   }
 
+  // Do databáze jde JEDEN požadavek, a to na správný sloupec. Filtr `.or()`
+  // s `id.eq.<kód>` na sloupci typu uuid skončí chybou, proto se rozlišuje
+  // podle tvaru: uuid → id, cokoli jiného → code.
   if (isSupabaseConfigured && supabase && targetStr) {
-    supabase.from('reservations').delete().or(`id.eq.${targetStr},code.eq.${targetStr}`).then(({ error }) => {
-      if (error) console.error('Supabase delete reservation error:', error);
-    }).catch(err => console.error('Supabase delete reservation exception:', err));
+    const jeUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetStr);
+    supabase.from('reservations').delete().eq(jeUuid ? 'id' : 'code', targetStr)
+      .then(({ error }) => { if (error) console.error('Supabase delete reservation error:', error); })
+      .catch(err => console.error('Supabase delete reservation exception:', err));
   }
 
   return filtered;

@@ -221,6 +221,14 @@ export class BookingSystem {
     } catch { /* soukromý režim prohlížeče — bez zapamatování, ale bez pádu */ }
   }
 
+  /** Zahodí zapamatovaný výběr — po odeslané rezervaci nebo při vynulování. */
+  zapomenVyberVSezeni() {
+    this.slevovyKodKUplatneni = '';
+    try {
+      sessionStorage.removeItem('hotel_rozdelana_rezervace');
+    } catch { /* soukromý režim prohlížeče */ }
+  }
+
   nactiVyberZeSezeni() {
     try {
       const raw = sessionStorage.getItem('hotel_rozdelana_rezervace');
@@ -579,6 +587,42 @@ export class BookingSystem {
 
   // Kolik prodejných pokojů je v daný den obsazeno.
   // Vypnuté pokoje se nepočítají ani do jednoho čísla.
+  /**
+   * Kolik prodejných pokojů má v ten den PŘÍJEZD, respektive ODJEZD.
+   *
+   * Přesně jako v administraci: `date_from` znamená obsazeno až od 15:00,
+   * `date_to` jen do 10:00. Host tak vidí, že den, kdy někdo odjíždí, je
+   * odpoledne volný — a nepřijde o termín kvůli tomu, že vypadá obsazeně.
+   */
+  spocitejPrestupy(dateStr) {
+    const prodejne = (this.roomsList || []).filter((r) => !(
+      r.isDisabled ||
+      (this.disabledRooms || []).some((d) => d.room_id === r.id && d.is_disabled)
+    ));
+
+    const zacina = (roomId) =>
+      (this.blockedDates || []).some(b => (b.room_id === 'all' || b.room_id === roomId) && b.date_from === dateStr)
+      || (this.activeReservations || []).some(r => r.room_id === roomId
+          && !(r.status && (r.status.startsWith('cancelled') || r.status === 'stornováno'))
+          && r.date_from === dateStr);
+
+    const konci = (roomId) =>
+      (this.blockedDates || []).some(b => (b.room_id === 'all' || b.room_id === roomId) && b.date_to === dateStr)
+      || (this.activeReservations || []).some(r => r.room_id === roomId
+          && !(r.status && (r.status.startsWith('cancelled') || r.status === 'stornováno'))
+          && r.date_to === dateStr);
+
+    let prijezdy = 0, odjezdy = 0;
+    for (const r of prodejne) {
+      const obsazeny = this.isDateOccupied(dateStr, r.id);
+      // Příjezd hlásíme u obsazeného dne, odjezd u volného — plyne to
+      // z toho, že date_to je výlučné.
+      if (obsazeny && zacina(r.id) && !konci(r.id)) prijezdy++;
+      if (!obsazeny && konci(r.id) && !zacina(r.id)) odjezdy++;
+    }
+    return { prijezdy, odjezdy };
+  }
+
   getDayOccupancy(dateStr) {
     const prodejne = (this.roomsList || []).filter((r) => {
       const vypnuty = Boolean(
@@ -1355,6 +1399,11 @@ export class BookingSystem {
       console.error('Failed to dispatch Phase 1 emails:', emailErr);
     }
 
+    // Rezervace je odeslaná — rozdělaný výběr už neplatí. Bez tohohle se
+    // hostovi po návratu na formulář předvyplnil pokoj a termín, které si
+    // právě objednal, a vypadalo to, že objednává znovu.
+    this.zapomenVyberVSezeni();
+
     this.state.confirmedReservation = reservationData;
     this.state.isSubmitting = false;
     this.setStep(3);
@@ -1365,7 +1414,9 @@ export class BookingSystem {
 
     // Výběr se ukládá při každém překreslení — pokrývá to změnu termínu,
     // pokoje i počtu osob bez zvláštní obsluhy u každého ovládacího prvku.
-    this.ulozVyberDoSezeni();
+    // Na děkovací obrazovce už ne: rezervace je hotová a uložením by se
+    // výběr, který jsme právě zahodili, vrátil zpátky.
+    if (this.currentStep !== 3) this.ulozVyberDoSezeni();
 
     if (this.state.showCalendarModal) {
       document.documentElement.style.overflow = 'hidden';
@@ -1504,6 +1555,12 @@ export class BookingSystem {
         : false;
       const lzeJakoOdjezd = !isPast && jePlne && dayStr === prvniPlnyPoPrijezdu && dostNoci;
 
+      const { prijezdy, odjezdy } = isPast ? { prijezdy: 0, odjezdy: 0 } : this.spocitejPrestupy(dayStr);
+      // Když se v jeden den odjíždí i přijíždí, jsou obě půlky zabrané
+      // a buňka zůstane celá — půlit ji by lhalo.
+      const jePrijezdovy = prijezdy > 0 && odjezdy === 0;
+      const jeOdjezdovy = odjezdy > 0 && prijezdy === 0;
+
       let dayClass = 'cal-day';
       if (isPast) dayClass += ' is-disabled';
       // Minulý den nedostává barvu obsazenosti. Kdo se dívá na srpen 18. srpna,
@@ -1514,6 +1571,8 @@ export class BookingSystem {
         else if (jeCastecne) dayClass += ' is-partial';
       }
       if (lzeJakoOdjezd) dayClass += ' je-jen-odjezd';
+      if (!isPast && jeOdjezdovy) dayClass += ' is-turnover-day';
+      if (!isPast && jePrijezdovy) dayClass += ' is-arrival-day';
       if (isFrom) dayClass += ' is-from is-selected';
       if (isTo) dayClass += ' is-to is-selected';
       if (isInRange) dayClass += ' in-range';
@@ -1525,6 +1584,10 @@ export class BookingSystem {
         tooltipText = 'Tento den už je za námi';
       } else if (lzeJakoOdjezd) {
         tooltipText = 'Plně obsazeno — jde zvolit už jen jako den odjezdu';
+      } else if (jeOdjezdovy) {
+        tooltipText = `Do 10:00 se odjíždí, potom je volno${jeCastecne ? ` (obsazeno ${obsazeno} z ${celkem})` : ''}`;
+      } else if (jePrijezdovy) {
+        tooltipText = `Do 15:00 je ještě volno, potom se přijíždí${jeCastecne ? ` (obsazeno ${obsazeno} z ${celkem})` : ''}`;
       } else if (jeCastecne) {
         tooltipText = `Volno máme, obsazeno je ${obsazeno} z ${celkem} pokojů`;
       } else if (jePlne) {

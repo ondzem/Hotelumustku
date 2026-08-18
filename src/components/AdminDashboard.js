@@ -857,23 +857,39 @@ export class AdminDashboard {
       this.render();
       return;
     } else if (targetAction === 'confirm_delete') {
+      // Pojistka proti opakovanému kliknutí. Dřív jedno mazání znamenalo až
+      // PĚT požadavků do databáze — dva čekané tady a další tři na pozadí,
+      // protože se deleteStoredReservation() volalo třikrát. Obsluze to
+      // přišlo zaseknuté, klikla znovu a mazání se vyvolalo několikrát.
+      if (this.mazeSeRezervace) return;
+      this.mazeSeRezervace = true;
+
       const resId = reservation.id || id;
       const resCode = reservation.code || id;
-      if (isSupabaseConfigured && supabase) {
-        try {
-          if (resCode) await supabase.from('reservations').delete().eq('code', resCode);
-          if (resId) await supabase.from('reservations').delete().eq('id', resId);
-        } catch (e) {
-          console.error('Supabase delete exception:', e);
-        }
-      }
-      if (resId) deleteStoredReservation(resId);
-      if (resCode) deleteStoredReservation(resCode);
-      if (id) deleteStoredReservation(id);
 
-      this.reservations = this.reservations.filter(r => r.id !== resId && r.code !== resCode && r.id !== id && r.code !== id);
+      // Okno zavřít hned, ať je vidět, že se něco děje.
       this.showDeleteModal = false;
       this.pendingDeleteReservation = null;
+      this.reservations = this.reservations.filter(
+        r => r.id !== resId && r.code !== resCode && r.id !== id && r.code !== id);
+      this.render();
+
+      try {
+        if (isSupabaseConfigured && supabase) {
+          // Jeden požadavek na správný sloupec — id je uuid, code je text.
+          const kde = resId && resId !== resCode ? { sloupec: 'id', hodnota: resId }
+                                                 : { sloupec: 'code', hodnota: resCode };
+          const { error } = await supabase.from('reservations').delete().eq(kde.sloupec, kde.hodnota);
+          if (error) console.error('Supabase delete error:', error);
+        }
+      } catch (e) {
+        console.error('Supabase delete exception:', e);
+      }
+
+      // Záloha v prohlížeči — jednou, ne třikrát.
+      deleteStoredReservation(resId || resCode || id);
+
+      this.mazeSeRezervace = false;
       this.showAdminToast(`🗑️ Rezervace ${resCode || id} byla trvale vymazána z databáze.`);
     } else if (targetAction === 'archive') {
       const resId = reservation.id || id;

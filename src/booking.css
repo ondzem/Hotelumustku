@@ -3583,13 +3583,33 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   color: #999999 !important;
 }
 
-/* Přestupní den — dopoledne obsazeno, odpoledne volno */
+/* Přestupní den — dopoledne obsazeno, odpoledne volno.
+   Úhlopříčka čte čas: levý horní roh ráno, pravý dolní odpoledne. */
 .cal-day.is-turnover-day {
   position: relative;
-  background: linear-gradient(to bottom right, #fef5e7 0 50%, #ffffff 50% 100%) !important;
+  background: linear-gradient(to bottom right, #fdf3d7 0 50%, #ffffff 50% 100%) !important;
   color: #1c1c19 !important;
   cursor: pointer !important;
   text-shadow: none !important;
+}
+
+/* Příjezdový den — do 15:00 volno, potom obsazeno. Zrcadlo toho výš. */
+.cal-day.is-arrival-day {
+  position: relative;
+  background: linear-gradient(to bottom right, #ffffff 0 50%, #fdf3d7 50% 100%) !important;
+  color: #1c1c19 !important;
+  cursor: pointer !important;
+  text-shadow: none !important;
+}
+
+/* Plně obsazený hotel má i v půlce sytější barvu. */
+.cal-day.is-full.is-turnover-day {
+  background: linear-gradient(to bottom right, #fbe3e0 0 50%, #ffffff 50% 100%) !important;
+  text-decoration: none !important;
+}
+.cal-day.is-full.is-arrival-day {
+  background: linear-gradient(to bottom right, #ffffff 0 50%, #fbe3e0 50% 100%) !important;
+  text-decoration: none !important;
 }
 
 /* Přestupní den vybraný jako PŘÍJEZDU — dopoledne obsazeno, odpoledne váš */
@@ -5281,21 +5301,44 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   color: #33401a !important;
 }
 
-/* Obsazený den uvnitř vybraného rozsahu musí dál číst jako obsazený.
-   Na webu tahle situace nenastane (obsazené dny nejdou vybrat), tady ano —
-   proto pravidlo stojí až za rozsahem a přebíjí ho. */
+/* Obsazený den uvnitř vybraného rozsahu.
+   Dvě věci se tu perou: obsluha musí vidět, KAM až sahá výběr, a zároveň
+   že ten den někdo má. Dřív vyhrávala obsazenost a prostřední den vypadal
+   nevybraně — obsluha si myslela, že jí výběr přeskočil.
+
+   Řeší to dělba: podklad patří VÝBĚRU (zelený, celý rozsah drží pohromadě),
+   obsazenost nese výrazný RÁMEČEK a barva čísla. */
 .dostupnost-kalendar .cal-day.is-full.in-range,
 .rucni-cal-overlay .cal-day.is-full.in-range {
-  background-color: #f9d9d4 !important;
+  background-color: #cadbb0 !important;
   color: #99302a !important;
-  border: 1px solid #e9b3ac !important;
+  border: 2px solid #c9524a !important;
+  font-weight: 700 !important;
 }
 
 .dostupnost-kalendar .cal-day.is-partial.in-range,
 .rucni-cal-overlay .cal-day.is-partial.in-range {
-  background-color: #fcecc2 !important;
+  background-color: #cadbb0 !important;
   color: #7a5c12 !important;
-  border: 1px solid #eddca0 !important;
+  border: 2px solid #d9a83a !important;
+  font-weight: 700 !important;
+}
+
+/* Krajní dny výběru (příjezd a odjezd) na obsazeném dni — stejná logika,
+   jen sytější podklad, ať je poznat začátek a konec rozsahu. */
+.dostupnost-kalendar .cal-day.is-full.is-selected,
+.dostupnost-kalendar .cal-day.is-partial.is-selected,
+.rucni-cal-overlay .cal-day.is-full.is-selected,
+.rucni-cal-overlay .cal-day.is-partial.is-selected {
+  background: #b9cf98 !important;
+  border: 2px solid #697947 !important;
+  font-weight: 700 !important;
+}
+
+/* Počet volných pokojů uvnitř výběru ať zůstane čitelný na zeleném. */
+.dostupnost-kalendar .cal-day.in-range .dostupnost-pocet,
+.dostupnost-kalendar .cal-day.is-selected .dostupnost-pocet {
+  color: #33401a !important;
 }
 
 /* Volné dny dostanou jemnou konturu, ať mřížka nevypadá prázdně */

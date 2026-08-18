@@ -133,7 +133,7 @@ export function printReservationSheet(reservation) {
   <style>
     @page {
       size: A4 portrait;
-      margin: 15mm 20mm 15mm 20mm;
+      margin: 10mm 14mm 10mm 14mm;
     }
     * { box-sizing: border-box; }
     body {
@@ -302,6 +302,35 @@ export function printReservationSheet(reservation) {
       body { width: 100%; margin: 0; padding: 0; }
       .no-print { display: none !important; }
       .financial-box { background: none !important; }
+
+      /* JEDNA STRANA, VŽDY.
+         Rezervační list přetékal na druhý list, kde bylo pár řádků —
+         recepční pak měla u každé rezervace dva papíry. Sazba se proto
+         při tisku stáhne a zalomení se zakáže. Kdyby někdy přibyl obsah
+         a přestalo se to vejít, uber tady, ne v zobrazení na obrazovce. */
+      html, body {
+        font-size: 9pt;
+        line-height: 1.3;
+      }
+      body > *:last-child { margin-bottom: 0 !important; }
+
+      /* Nic se nesmí odlomit na další stranu. */
+      table, tr, td, th,
+      .financial-box, .section-block, .guests-table, .print-header, .print-footer {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+      h1, h2, h3 { page-break-after: avoid !important; }
+
+      /* Stáhnout mezery, které na obrazovce dávají smysl, na papíře ne. */
+      .section-block { margin-bottom: 10px !important; }
+      td, th { padding-top: 3px !important; padding-bottom: 3px !important; }
+      h1 { font-size: 14pt !important; }
+      h2 { font-size: 11pt !important; margin: 8px 0 5px 0 !important; }
+      h3 { font-size: 10pt !important; margin: 6px 0 4px 0 !important; }
+
+      /* Podpisové řádky nemusí být tak vysoké. */
+      td[style*="height: 36px"] { height: 26px !important; }
     }
   </style>
 </head>

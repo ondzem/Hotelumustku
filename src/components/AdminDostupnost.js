@@ -279,9 +279,22 @@ export function renderDostupnostModal(ad) {
         </div>
 
         ${obsazene.length > 0 ? `
-          <div style="margin-top: 14px; background: #fff8e1; border: 1px solid #ffe082; border-radius: 6px; padding: 12px 14px; font-size: 13px; color: #795548;">
-            <strong>⚠️ V termínu už jsou rezervace (${obsazene.length}).</strong>
-            Zablokovat jde i tak, ale hosté tím nezmizí — je potřeba je nejdřív obvolat nebo stornovat.
+          <div style="margin-top: 14px; background: #fff8e1; border: 1px solid #ffe082; border-radius: 6px; padding: 12px 14px; font-size: 13px; color: #795548; line-height: 1.5;">
+            <strong>⚠️ V tomto termínu už máte ${obsazene.length === 1 ? 'rezervaci' : `rezervace (${obsazene.length})`}:</strong>
+            <ul style="margin: 6px 0 0 0; padding-left: 18px;">
+              ${obsazene.map(({ rm, kolize }) => `
+                <li>
+                  <strong>${escapuj(rm.name)}</strong> —
+                  ${kolize.filter(k => k.typ === 'rezervace')
+                    .map(k => escapuj(k.popis) + (k.zaznam && k.zaznam.code ? ` (${escapuj(k.zaznam.code)})` : ''))
+                    .join(', ')}
+                </li>
+              `).join('')}
+            </ul>
+            <p style="margin: 8px 0 0 0;">
+              Zablokovat termín <strong>jde</strong>, ale hosté tím nezmizí — pokoj jim zůstane obsazený.
+              Napište jim nebo zavolejte a rezervaci stornujte, jinak přijedou na termín, který máte zavřený.
+            </p>
           </div>
         ` : ''}
 
@@ -515,6 +528,26 @@ export function bindDostupnostModal(ad) {
     btnBlok.addEventListener('click', async () => {
       const p = ad.prehled;
       if (!p.od || !p.doo) return;
+      // Blokace přes cizí rezervaci je nevratná v tom smyslu, že hostovi
+      // zůstane potvrzený pobyt na termín, který je zavřený. Musí to projít
+      // vědomím obsluhy, ne jedním kliknutím.
+      const koliznich = prodejnePokoje(ad).filter(rm => {
+        for (let den = p.od; den <= p.doo; den = posunDatum(den, 1)) {
+          const d = zabranyDuvod(ad, den, rm.id);
+          if (d && d.typ === 'rezervace') return true;
+        }
+        return false;
+      });
+      if (koliznich.length > 0) {
+        const jmena = koliznich.map(rm => rm.name).join(', ');
+        const potvrzeno = window.confirm(
+          `V termínu ${formatCzechDateStr(p.od)} – ${formatCzechDateStr(p.doo)} už jsou rezervace: ${jmena}.\n\n`
+          + 'Blokace je nezruší — hostům zůstane potvrzený pobyt na termín, který zavíráte. '
+          + 'Budete jim muset napsat nebo zavolat a rezervaci stornovat.\n\nOpravdu termín zablokovat?'
+        );
+        if (!potvrzeno) return;
+      }
+
       btnBlok.disabled = true;
       btnBlok.textContent = 'Blokuji…';
       await ad.addBlockedDate(p.roomId, p.od, posunDatum(p.doo, 1), (p.duvod || '').trim() || 'Uzávěrka recepce');

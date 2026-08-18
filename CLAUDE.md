@@ -344,9 +344,17 @@ Odjezd se hlásí jen u dne, který je jinak **volný**, příjezd jen u dne
 odjíždí a hned nato jiný přijíždí, jsou obě půlky zabrané a buňka zůstane
 celá; půlit ji by lhalo.
 
-Platí ve dvou kalendářích: v Přehledu dostupnosti (`AdminDostupnost.js`)
-a v ručním zápisu (`AdminRucniRezervace.js`). Styl `is-turnover-day` byl
-v `booking.css` napsaný už dávno, ale do 18. 8. 2026 ho nikdo nenasadil.
+Platí ve **třech** kalendářích: v Přehledu dostupnosti
+(`AdminDostupnost.js`), v ručním zápisu (`AdminRucniRezervace.js`)
+a od 18. 8. 2026 i ve veřejném rezervačním formuláři
+(`BookingSystem.spocitejPrestupy()`). Styl `is-turnover-day` byl
+v `booking.css` napsaný už dávno, ale dlouho ho nikdo nenasadil.
+
+**Ve vybraném rozsahu patří podklad výběru, ne obsazenosti.** Obsluha
+potřebuje vidět, kam až výběr sahá; když vyhrávala obsazenost, prostřední
+den vypadal nevybraně a obsluha si myslela, že jí výběr přeskočil. Podklad
+je proto zelený a obsazenost nese výrazný rámeček (červený u plného,
+oranžový u částečného) a barva čísla.
 
 ## Responzivita a rozvržení — co se tu už rozbilo
 
@@ -514,6 +522,15 @@ návštěvníkovi včetně recepčního. Na adresy obrázků je `escUrl()`.
 
 Bezpečnostní hlavičky jsou v `public/_headers`; `/admin` má navíc
 `noindex` a `no-store`.
+
+## Mazání rezervace — jeden požadavek, ne pět
+
+Smazání rezervace posílalo do databáze až **pět** požadavků: dva čekané
+v obsluze a další tři na pozadí, protože se `deleteStoredReservation()`
+volalo třikrát za sebou. Obsluze to přišlo zaseknuté, klikla znovu a
+mazání se vyvolalo několikrát. Teď jde jeden cílený požadavek (podle tvaru
+se pozná, jestli je to `id` typu uuid, nebo `code`), okno se zavírá hned
+a `mazeSeRezervace` brání druhému spuštění.
 
 ## Rozdělaná rezervace se pamatuje
 
