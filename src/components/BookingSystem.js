@@ -1395,6 +1395,20 @@ export class BookingSystem {
       daysHtml += `<div class="cal-day cal-day-empty"></div>`;
     }
 
+    // Který plně obsazený den ještě smí být odjezdem? Jen ten PRVNÍ za
+    // příjezdem — na pozdější by se muselo přespat plnou noc. Hledá se
+    // dopředu jednou, ne v každé buňce znovu.
+    let prvniPlnyPoPrijezdu = null;
+    if (this.state.tempDateFrom && !this.state.tempDateTo) {
+      const kurzor = new Date(this.state.tempDateFrom + 'T00:00:00');
+      for (let i = 0; i < 400; i++) {
+        kurzor.setDate(kurzor.getDate() + 1);
+        const dStr = `${kurzor.getFullYear()}-${String(kurzor.getMonth() + 1).padStart(2, '0')}-${String(kurzor.getDate()).padStart(2, '0')}`;
+        const { obsazeno, celkem } = this.getDayOccupancy(dStr);
+        if (celkem > 0 && obsazeno >= celkem) { prvniPlnyPoPrijezdu = dStr; break; }
+      }
+    }
+
     for (let day = 1; day <= daysInMonth; day++) {
       const dayStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       const isPast = dayStr < todayStr;
@@ -1407,19 +1421,40 @@ export class BookingSystem {
       const isTo = dayStr === effectiveTo;
       const isInRange = effectiveFrom && effectiveTo && dayStr > effectiveFrom && dayStr < effectiveTo;
 
+      // Plně obsazený den jde zvolit jako den ODJEZDU. Odjezdem se totiž
+      // nocuje naposledy předchozí noc — date_to je výlučné, takže na sám
+      // den odjezdu už pokoj nikdo neblokuje. Bez tohohle nešlo odjet
+      // v první den uzávěrky a na okraji každé blokace padala rezervace.
+      // Pobyt musí mít aspoň dvě noci (hasValidDates), takže odjezd hned
+      // druhý den by stejně neprošel a nemá cenu ho nabízet.
+      const dostNoci = this.state.tempDateFrom
+        ? (new Date(dayStr) - new Date(this.state.tempDateFrom)) / 86400000 >= 2
+        : false;
+      const lzeJakoOdjezd = !isPast && jePlne && dayStr === prvniPlnyPoPrijezdu && dostNoci;
+
       let dayClass = 'cal-day';
       if (isPast) dayClass += ' is-disabled';
-      if (jePlne) dayClass += ' is-full';
-      else if (jeCastecne) dayClass += ' is-partial';
+      // Minulý den nedostává barvu obsazenosti. Kdo se dívá na srpen 18. srpna,
+      // nemá řešit, jestli bylo 10. plno — a růžová v minulosti vypadala jako
+      // porouchané vykreslení, ne jako „tenhle den už je pryč".
+      if (!isPast) {
+        if (jePlne) dayClass += ' is-full';
+        else if (jeCastecne) dayClass += ' is-partial';
+      }
+      if (lzeJakoOdjezd) dayClass += ' je-jen-odjezd';
       if (isFrom) dayClass += ' is-from is-selected';
       if (isTo) dayClass += ' is-to is-selected';
       if (isInRange) dayClass += ' in-range';
 
-      const isDisabled = isPast || jePlne;
+      const isDisabled = isPast || (jePlne && !lzeJakoOdjezd);
 
       let tooltipText = '';
-      if (jeCastecne) {
-        tooltipText = `Obsazeno ${obsazeno} z ${celkem} pokojů`;
+      if (isPast) {
+        tooltipText = 'Tento den už je za námi';
+      } else if (lzeJakoOdjezd) {
+        tooltipText = 'Plně obsazeno — jde zvolit už jen jako den odjezdu';
+      } else if (jeCastecne) {
+        tooltipText = `Volno máme, obsazeno je ${obsazeno} z ${celkem} pokojů`;
       } else if (jePlne) {
         tooltipText = 'Tento den je hotel plně obsazený';
       } else if (isFrom) {

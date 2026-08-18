@@ -1,7 +1,7 @@
 # Graph Report - Hotel u mustku  (2026-08-18)
 
 ## Corpus Check
-- 44 files · ~158,510 words
+- 44 files · ~158,943 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `76f72645`
+- Built from commit: `2ec58c4c`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -70,11 +70,11 @@
   SEO-ROADMAP.md → index.html
 - `Ubytování & Pokoje Page` --conceptually_related_to--> `Faktické zákazy (bezbariérovost, trampolína)`  [INFERRED]
   ubytovani.html → .agents/SEO-CONTEXT.md
+- `index.html — úvodní stránka` --references--> `Cookie lišta a GA4 gating`  [INFERRED]
+  index.html → CLAUDE.md
 - `src/style.css (Global Stylesheet)` --implements--> `Button Design System`  [INFERRED]
   okoli.html → .agents/AGENTS.md
 - `src/style.css (Global Stylesheet)` --implements--> `Hero Section System`  [INFERRED]
-  okoli.html → .agents/AGENTS.md
-- `src/style.css (Global Stylesheet)` --implements--> `Pravidlo pro výšku okna`  [INFERRED]
   okoli.html → .agents/AGENTS.md
 
 ## Import Cycles

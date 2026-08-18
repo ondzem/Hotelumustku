@@ -138,9 +138,10 @@ export function renderDostupnostModal(ad) {
     if (p.od && p.doo && den > p.od && den < p.doo) tridy += ' in-range';
     if (den < dnes) tridy += ' je-minulost';
 
-    const popis = p.roomId === 'all'
+    const popisStavu = p.roomId === 'all'
       ? (plne ? 'Plně obsazeno' : `Volných pokojů: ${volno} z ${celkem}`)
       : (duvod ? (duvod.typ === 'blokace' ? `Blokace: ${duvod.popis}` : `Obsazeno — ${duvod.popis}`) : 'Volno');
+    const popis = den < dnes ? `${popisStavu} — tenhle den už je za námi` : popisStavu;
 
     // U celého hotelu se pod číslem ukáže, kolik pokojů zbývá — hlavní
     // údaj, kvůli kterému se majitel na kalendář dívá.
@@ -279,6 +280,7 @@ export function renderDostupnostModal(ad) {
             <span class="cal-legend-item"><i class="cal-legend-box" style="background:#f9d9d4;"></i> ${p.roomId === 'all' ? 'Plně obsazeno' : 'Obsazeno'}</span>
             ${p.roomId === 'all' ? '<span class="cal-legend-item"><i class="cal-legend-box" style="background:#fcecc2;"></i> Částečně obsazeno</span>' : ''}
             <span class="cal-legend-item"><i class="cal-legend-box" style="background:#cadbb0; border-color:#697947;"></i> Vybraný termín</span>
+            <span class="cal-legend-item" style="opacity: 0.7;"><i class="cal-legend-box" style="background:#e8e6dd; filter: grayscale(0.35);"></i> Už proběhlo</span>
           </div>
 
           <p style="margin: 10px 6px 0 6px; font-size: 12.5px; color: #6b6b60;">

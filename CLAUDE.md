@@ -85,6 +85,20 @@ nic. Přesně tahle chyba tu už jednou byla.
 V administraci se obsluze zobrazuje rozsah **včetně** posledního dne
 (funkce `zobrazRozsahBlokace`), aby to dávalo lidský smysl.
 
+Z výlučnosti plyne i to, že **v plně obsazený den se ještě smí odjet** —
+poslední noc se spí den předtím. Rezervační kalendář proto první obsazený
+den za příjezdem nabízí jako den odjezdu (`je-jen-odjezd`, šrafovaně).
+Jen ten první: na další by se muselo přespat plnou noc. Než se to opravilo
+18. 8. 2026, `isDisabled = isPast || jePlne` zakazoval kliknout na cokoli
+obsazeného, takže na okraji každé blokace padala jinak platná rezervace.
+
+**Minulé dny v kalendáři nedostávají barvu obsazenosti.** Růžová a žlutá
+v už proběhlém týdnu vypadaly jako rozbité vykreslení a vedly k hlášení,
+že „na volný den nejde kliknout" — přitom šlo prostě o včerejšek. Veřejný
+kalendář minulost jen zešedne, administrace ji ztlumí na 70 % a má na to
+položku v legendě („Už proběhlo"), protože majitel se do minulosti dívá
+schválně.
+
 ### 3. Build na Netlify stojí na `netlify.toml`
 
 Nastavení buildu je schválně v `netlify.toml` v repozitáři, ne jen

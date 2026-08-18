@@ -3485,6 +3485,19 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   color: #b03a2e !important;
 }
 
+/* Plně obsazeno, ale jako den ODJEZDU to pořád jde — poslední noc se
+   spí předchozí den. Šrafování říká „napůl": barva zůstává červená,
+   ale den není mrtvý a nechává se kliknout. */
+.cal-day.is-full.je-jen-odjezd {
+  background-image: repeating-linear-gradient(135deg, transparent 0 5px, rgba(255, 255, 255, 0.75) 5px 10px) !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+  border: 1px dashed #d99b92 !important;
+}
+.cal-day.is-full.je-jen-odjezd:hover {
+  background-color: #f7d5d0 !important;
+}
+
 /* Částečně obsazeno — něco volného zbývá, jde kliknout */
 .cal-day.is-partial {
   background-color: #fdf3d7 !important;
@@ -5039,7 +5052,16 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 /* Minulé dny zůstávají klikatelné (majitel se ptá i zpětně),
    jen jsou tlumené, aby nepletly. */
 .dostupnost-kalendar .cal-day.je-minulost {
-  opacity: 0.45;
+  opacity: 0.7;
+  filter: grayscale(0.35);
+}
+
+/* Vybraný termín v minulosti se nesmí ztratit — majitel se do minulosti
+   dívá schválně, když dohledává, kdo tam byl. */
+.dostupnost-kalendar .cal-day.je-minulost.is-selected,
+.dostupnost-kalendar .cal-day.je-minulost.in-range {
+  opacity: 1;
+  filter: none;
 }
 
 @media (max-width: 560px) {
