@@ -515,6 +515,26 @@ návštěvníkovi včetně recepčního. Na adresy obrázků je `escUrl()`.
 Bezpečnostní hlavičky jsou v `public/_headers`; `/admin` má navíc
 `noindex` a `no-store`.
 
+## Rozdělaná rezervace se pamatuje
+
+Host, který si odskočí na jinou stránku a vrátí se, nesmí přijít o to, co
+už vyplnil. Drží to `ulozVyberDoSezeni()` / `nactiVyberZeSezeni()`
+v `BookingSystem.js` — v `sessionStorage`, tedy do zavření karty, a navíc
+jen dvě hodiny. Ukládá se termín, pokoj, počty osob, **doplňkové služby,
+slevový kód i údaje hosta**; původně jen první čtyři, takže zaškrtnutou
+polopenzi nebo uplatněný kód musel host zadávat znovu.
+
+Dvě věci, které při tom nejsou z kódu vidět:
+
+- **Slevový kód se ukládá jako text a při návratu se ověřuje znovu.**
+  Kdyby se ukládala hotová sleva, přežil by i kód, který mezitím vypršel
+  nebo ho recepce vypnula.
+- **Kód se musí podržet v `slevovyKodKUplatneni`, než se stihne uplatnit.**
+  Ukládá se při každém překreslení, takže první render po návratu ho
+  přepsal prázdnou hodnotou dřív, než doběhlo načtení kódů — a sleva se
+  ztratila, přestože byla uložená správně. Když ji host sám smaže, pole se
+  vyprázdní, aby ji podržená hodnota nevzkřísila.
+
 ## E-mailové adresy
 
 Jsou **dvě a mají různou roli**. Obě jsou v `src/utils/emailService.js`,

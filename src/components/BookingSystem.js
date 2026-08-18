@@ -179,7 +179,43 @@ export class BookingSystem {
         dateFrom: this.state.dateFrom,
         dateTo: this.state.dateTo,
         adults: this.state.adults,
+        children: this.state.children,
         selectedRoomId: this.state.selectedRoomId,
+
+        // Doplňkové služby. Dřív se neukládaly, takže host, který si odskočil
+        // na jinou stránku, našel po návratu termín i pokoj, ale zaškrtnutou
+        // polopenzi nebo psa musel vybírat znovu.
+        hasHalfBoard: this.state.hasHalfBoard,
+        halfBoardCount: this.state.halfBoardCount,
+        hasDog: this.state.hasDog,
+        hasEbike: this.state.hasEbike,
+        ebikeCount: this.state.ebikeCount,
+        hasWinterParking: this.state.hasWinterParking,
+        parkingCarsCount: this.state.parkingCarsCount,
+
+        // Jen text kódu, a to z uplatněné slevy — `discountCodeInput` drží
+        // jen to, co je zrovna napsané v políčku, a po překreslení bývá
+        // prázdné. Hotovou slevu schválně neukládáme: při návratu se kód
+        // ověří znovu, aby mezitím zneplatněný kód nepřežil.
+        // Dokud se zapamatovaný kód nestihne znovu uplatnit, drží ho
+        // `slevovyKodKUplatneni`. Bez toho ho první překreslení po návratu
+        // přepsalo prázdnou hodnotou dřív, než doběhlo načtení kódů —
+        // a sleva se tím ztratila, přestože byla uložená správně.
+        slevovyKod: this.appliedDiscount
+          ? (this.appliedDiscount.code || this.discountCodeInput || '')
+          : (this.slevovyKodKUplatneni || ''),
+
+        // Údaje hosta, ať se nepřepisují při každém odskoku.
+        guestName: this.state.guestName,
+        guestEmail: this.state.guestEmail,
+        guestPhone: this.state.guestPhone,
+        guestStreet: this.state.guestStreet,
+        guestCity: this.state.guestCity,
+        guestZip: this.state.guestZip,
+        guestCountry: this.state.guestCountry,
+        guestNote: this.state.guestNote,
+        guests: this.state.guests,
+
         ulozeno: Date.now(),
       }));
     } catch { /* soukromý režim prohlížeče — bez zapamatování, ale bez pádu */ }
@@ -203,11 +239,35 @@ export class BookingSystem {
   async init(initialRoomId, openCalendar) {
     const zapamatovane = this.nactiVyberZeSezeni();
     if (zapamatovane) {
+      // Podrží kód, než se stihne ověřit a uplatnit (viz ulozVyberDoSezeni).
+      this.slevovyKodKUplatneni = zapamatovane.slevovyKod || '';
+
       if (zapamatovane.dateFrom && zapamatovane.dateTo) {
         this.state.dateFrom = zapamatovane.dateFrom;
         this.state.dateTo = zapamatovane.dateTo;
       }
       if (zapamatovane.adults) this.state.adults = zapamatovane.adults;
+      if (typeof zapamatovane.children === 'number') this.state.children = zapamatovane.children;
+
+      // Doplňkové služby
+      for (const klic of ['hasHalfBoard', 'hasDog', 'hasEbike', 'hasWinterParking']) {
+        if (typeof zapamatovane[klic] === 'boolean') this.state[klic] = zapamatovane[klic];
+      }
+      for (const klic of ['halfBoardCount', 'ebikeCount', 'parkingCarsCount']) {
+        const n = parseInt(zapamatovane[klic], 10);
+        if (Number.isFinite(n) && n > 0) this.state[klic] = n;
+      }
+
+      // Údaje hosta
+      for (const klic of ['guestName', 'guestEmail', 'guestPhone', 'guestStreet',
+                          'guestCity', 'guestZip', 'guestCountry', 'guestNote']) {
+        if (typeof zapamatovane[klic] === 'string' && zapamatovane[klic]) {
+          this.state[klic] = zapamatovane[klic];
+        }
+      }
+      if (Array.isArray(zapamatovane.guests) && zapamatovane.guests.length) {
+        this.state.guests = zapamatovane.guests;
+      }
       // Pokoj z adresy (proklik „Zvolit pokoj“) má přednost před
       // zapamatovaným — host právě řekl, který chce.
       if (!initialRoomId && zapamatovane.selectedRoomId
@@ -257,7 +317,18 @@ export class BookingSystem {
       this.fetchDiscountCodes(),
       this.fetchRoomPrices(),
       this.fetchCenik()
-    ]).catch(err => console.error('BookingSystem init fetch error:', err));
+    ]).then(() => {
+      // Slevový kód se uplatní až tady — ověřuje se proti seznamu, který
+      // musí být načtený. Ukládá se jen text kódu, ne hotová sleva, takže
+      // kód mezitím zneplatněný se prostě znovu neuplatní.
+      if (zapamatovane && zapamatovane.slevovyKod && !this.appliedDiscount) {
+        this.discountCodeInput = zapamatovane.slevovyKod;
+        return this.applyDiscountCode(zapamatovane.slevovyKod)
+          .catch(() => {})
+          .finally(() => { this.slevovyKodKUplatneni = ''; });
+      }
+      this.slevovyKodKUplatneni = '';
+    }).catch(err => console.error('BookingSystem init fetch error:', err));
 
     await dostupnost;
 
@@ -350,6 +421,7 @@ export class BookingSystem {
     this.discountError = '';
     if (!clean) {
       this.appliedDiscount = null;
+      this.slevovyKodKUplatneni = '';   // host kód smazal, nekřísit ho
       this.discountSuccessMsg = '';
       this.render();
       return;

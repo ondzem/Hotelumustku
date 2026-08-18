@@ -1,16 +1,16 @@
 # Graph Report - Hotel u mustku  (2026-08-18)
 
 ## Corpus Check
-- 46 files · ~163,747 words
+- 46 files · ~164,435 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 693 nodes · 1444 edges · 45 communities (39 shown, 6 thin omitted)
+- 693 nodes · 1445 edges · 45 communities (39 shown, 6 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 22 edges (avg confidence: 0.78)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `28bfd052`
+- Built from commit: `f661b2ef`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -23,7 +23,7 @@
 - AdminCenik.js
 - SEO-ROADMAP.md
 - CLAUDE.md — projektová dokumentace
-- Ubytování & Pokoje Page
+- SEO-CONTEXT.md
 - Pravidla a pokyny pro tlačítka a responzivitu v projektu Hotel u Můstku
 - Hotel u Můstků — web a rezervační systém
 - package.json
@@ -123,9 +123,9 @@ Nodes (39): public/404.html, public/llms.txt, public/_redirects, public/robots.t
 Cohesion: 0.07
 Nodes (35): admin.html — recepční portál, akce.html — skupinové akce, aktuality.html — aktuality, CLAUDE.md — projektová dokumentace, Cookie lišta a GA4 gating, spustHeroVideo() — podmíněné spuštění hero videa, Kapacita pokojů (17. 8. 2026), VITE_ prefix pro klientské env proměnné (+27 more)
 
-### Community 8 - "Ubytování & Pokoje Page"
-Cohesion: 0.25
-Nodes (10): Ceník 2026, Faktické zákazy (bezbariérovost, trampolína), Zákaz nových FAQ sekcí, Hlavní navigační stránky, Obchodní podmínky Page, FAQPage schema (ubytování), HotelRoom JSON-LD (Standard/Nadstandard), Site Header (sdílená hlavička) (+2 more)
+### Community 8 - "SEO-CONTEXT.md"
+Cohesion: 0.40
+Nodes (5): Ceník 2026, Faktické zákazy (bezbariérovost, trampolína), Zákaz nových FAQ sekcí, Obchodní podmínky Page, Storno podmínky
 
 ### Community 9 - "Pravidla a pokyny pro tlačítka a responzivitu v projektu Hotel u Můstku"
 Cohesion: 0.10
@@ -164,8 +164,8 @@ Cohesion: 0.20
 Nodes (10): 1. Co je projekt, 2. Cílová skupina (priorita shora dolů), 3. USP — o co se copy vždycky opírá, 4. Fakta pro texty (nikdy si nevymýšlet jiná), 5. Stav SEO — co chybí (audit k 31. 7. 2026), 6. Copy pravidla, 7. Kde jsou zdrojová data, Fakturační údaje — ověřeno v ARES 1. 8. 2026 (+2 more)
 
 ### Community 19 - "Okolí (Aktivity) Page"
-Cohesion: 0.36
-Nodes (6): Okolí (Aktivity) Page, BreadcrumbList JSON-LD, FAQPage schema (okoli), Hotel JSON-LD schema, Sekce 'Aktivity v okolí' (znovupoužitá), Stravování Page
+Cohesion: 0.26
+Nodes (11): Hlavní navigační stránky, Okolí (Aktivity) Page, BreadcrumbList JSON-LD, FAQPage schema (okoli), FAQPage schema (ubytování), Hotel JSON-LD schema, HotelRoom JSON-LD (Standard/Nadstandard), Sekce 'Aktivity v okolí' (znovupoužitá) (+3 more)
 
 ### Community 20 - "Výlety v zimě — SEO texty"
 Cohesion: 0.18
@@ -227,9 +227,9 @@ Nodes (4): Button Design System, Hero Section System, src/style.css (Global Styl
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `src/style.css (Global Stylesheet)` connect `src/style.css (Global Stylesheet)` to `Ubytování & Pokoje Page`, `main.js`, `Okolí (Aktivity) Page`?**
+- **Why does `src/style.css (Global Stylesheet)` connect `src/style.css (Global Stylesheet)` to `SEO-CONTEXT.md`, `main.js`, `Okolí (Aktivity) Page`?**
   _High betweenness centrality (0.302) - this node is a cross-community bridge._
-- **Why does `Okolí (Aktivity) Page` connect `Okolí (Aktivity) Page` to `Ubytování & Pokoje Page`, `src/style.css (Global Stylesheet)`, `.agents/SEO-ROADMAP.md`?**
+- **Why does `Okolí (Aktivity) Page` connect `Okolí (Aktivity) Page` to `src/style.css (Global Stylesheet)`, `.agents/SEO-ROADMAP.md`?**
   _High betweenness centrality (0.192) - this node is a cross-community bridge._
 - **Why does `index.html — úvodní stránka` connect `CLAUDE.md — projektová dokumentace` to `main.js`?**
   _High betweenness centrality (0.102) - this node is a cross-community bridge._
