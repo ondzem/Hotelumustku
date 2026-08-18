@@ -28,6 +28,15 @@ const S = {
   mrizka: 'display: grid; grid-template-columns: 1fr 1fr; gap: 12px 14px;',
 };
 
+/** Datum v českém tvaru — stejně jako v BookingSystem a na tištěném lístku. */
+function formatCzechDateStr(isoStr) {
+  if (!isoStr) return '';
+  const parts = String(isoStr).split('-');
+  if (parts.length !== 3) return isoStr;
+  const [rok, mesic, den] = parts;
+  return `${parseInt(den, 10)}. ${parseInt(mesic, 10)}. ${rok}`;
+}
+
 const escapuj = (t) => String(t == null ? '' : t)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
@@ -58,6 +67,11 @@ export function prazdnaRucniRezervace() {
     status: 'confirmed',
     total_price: '',      // prázdné = vzít cenu z ceníku
     zaplaceno: false,
+    // Kalendář — stejný jako na webu, jen se otevírá uvnitř tohoto okna
+    calOtevreny: false,
+    calRokMesic: null,
+    tempFrom: null,
+    tempTo: null,
   };
 }
 
@@ -98,6 +112,135 @@ export function spoctiRucniCenu(f, cenik) {
   });
 }
 
+
+const MESICE = ['Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen',
+  'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec'];
+
+const dnesStr = () => new Date().toISOString().split('T')[0];
+
+/**
+ * Obsazenost dne pro kalendář v administraci.
+ *
+ * Vrací dvě čísla: jestli je zabraný právě vybíraný pokoj a kolik
+ * prodejných pokojů je zabraných celkem. Recepční tak vidí totéž, co
+ * host na webu (žluté částečně obsazeno), a navíc červeně dny, kdy je
+ * obsazený konkrétně ten pokoj, který právě zapisuje.
+ */
+function obsazenostDne(ad, den, roomId) {
+  const prodejne = MOCK_ROOMS.filter(r => !r.isDisabled);
+  const zabranyPokoj = (r) => {
+    const rezervace = (ad.reservations || []).some(x =>
+      x.room_id === r.id
+      && !(x.status && (String(x.status).startsWith('cancelled') || x.status === 'stornováno'))
+      && den >= x.date_from && den < x.date_to);
+    if (rezervace) return true;
+    return (ad.blockedDates || []).some(b =>
+      (b.room_id === 'all' || b.room_id === r.id) && den >= b.date_from && den < b.date_to);
+  };
+  return {
+    vybranyZabrany: roomId ? zabranyPokoj({ id: roomId }) : false,
+    obsazeno: prodejne.filter(zabranyPokoj).length,
+    celkem: prodejne.length,
+  };
+}
+
+/**
+ * Kalendář ve stejné podobě jako v rezervaci na webu — sdílí s ním
+ * i třídy, takže i vybarvení a legenda vypadají stejně.
+ *
+ * Jediný rozdíl je v tom, co znamená červená: na webu den, kdy je plný
+ * celý hotel, tady den, kdy je zabraný právě vybíraný pokoj. Recepční
+ * potřebuje vidět tenhle pokoj, ne průměr přes hotel. Červený den jde
+ * i tak vybrat — obsluha může vědět o výměně nebo o chystaném storně.
+ */
+function renderKalendar(ad, f) {
+  const od = f.tempFrom !== undefined && f.tempFrom !== null ? f.tempFrom : f.date_from;
+  const doo = f.tempTo !== undefined && f.tempTo !== null ? f.tempTo : (f.tempFrom ? null : f.date_to);
+
+  const zaklad = od || dnesStr();
+  const { year, month } = f.calRokMesic || (() => {
+    const [y, m] = zaklad.split('-').map(Number);
+    return { year: y, month: m };
+  })();
+
+  const prvniDen = (new Date(year, month - 1, 1).getDay() + 6) % 7;
+  const dnuVMesici = new Date(year, month, 0).getDate();
+
+  let dny = '';
+  for (let i = 0; i < prvniDen; i++) dny += '<div class="cal-day cal-day-empty"></div>';
+
+  for (let d = 1; d <= dnuVMesici; d++) {
+    const den = `${year}-${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const { vybranyZabrany, obsazeno, celkem } = obsazenostDne(ad, den, f.room_id);
+    const castecne = !vybranyZabrany && obsazeno > 0 && obsazeno < celkem;
+
+    let tridy = 'cal-day';
+    if (vybranyZabrany) tridy += ' is-full';
+    else if (castecne) tridy += ' is-partial';
+    if (den === od) tridy += ' is-from is-selected';
+    if (den === doo) tridy += ' is-to is-selected';
+    if (od && doo && den > od && den < doo) tridy += ' in-range';
+
+    const popis = vybranyZabrany
+      ? 'Tento pokoj je v tento den už obsazený'
+      : (castecne ? `Obsazeno ${obsazeno} z ${celkem} pokojů` : 'Volno');
+
+    dny += `<button type="button" class="${tridy}" data-den="${den}" title="${popis}">${d}</button>`;
+  }
+
+  const noci = pocetNoci(od, doo);
+
+  return `
+    <div class="cal-modal-overlay rucni-cal-overlay" style="z-index: 10090;">
+      <div class="cal-modal-card">
+        <div class="cal-modal-header" style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+          <span class="cal-month-title">${MESICE[month - 1]} ${year}</span>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button type="button" class="btn btn-cal-nav cal-nav-btn rucni-cal-prev" title="Předchozí měsíc">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <button type="button" class="btn btn-cal-nav cal-nav-btn rucni-cal-next" title="Následující měsíc">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+            <button type="button" class="btn btn-cal-close cal-close-btn rucni-cal-close" title="Zavřít kalendář">&times;</button>
+          </div>
+        </div>
+
+        <div class="cal-week-days">
+          <span>Po</span><span>Út</span><span>St</span><span>Čt</span><span>Pá</span><span>So</span><span>Ne</span>
+        </div>
+
+        <div class="cal-grid">${dny}</div>
+
+        <div class="cal-modal-footer" style="padding: 16px; border-top: 1px solid #E7E5DC; display: flex; flex-direction: column; gap: 12px;">
+          <div class="cal-legend" style="display:flex; flex-wrap:wrap; gap:14px; padding:4px 0 10px 0; border-bottom:1px solid #E7E5DC; margin-bottom:4px;">
+            <span class="cal-legend-item"><i class="cal-legend-box" style="background:#fbe3e0;"></i> Tento pokoj obsazený</span>
+            <span class="cal-legend-item"><i class="cal-legend-box" style="background:#fdf3d7;"></i> Částečně obsazeno</span>
+            <span class="cal-legend-item"><i class="cal-legend-box" style="background:#eef3e6;"></i> Vybraný termín</span>
+          </div>
+
+          <div class="cal-range-summary" style="display: flex; flex-direction: column; gap: 2px;">
+            <span class="cal-summary-label" style="font-size: 14px; font-weight: 700; color: #1C1C19;">
+              ${od && doo
+                ? `Příjezd: ${formatCzechDateStr(od)} &nbsp;|&nbsp; Odjezd: ${formatCzechDateStr(doo)}`
+                : (od ? `Příjezd: ${formatCzechDateStr(od)}` : 'Žádný termín není vybraný')}
+            </span>
+            <span class="cal-summary-sub" style="font-size: 13px; color: #666660; font-weight: 500;">
+              ${od && doo
+                ? `Délka pobytu: <strong>${noci} ${noci === 1 ? 'noc' : (noci < 5 ? 'noci' : 'nocí')}</strong>`
+                : 'Klikněte na datum příjezdu, potom na datum odjezdu.'}
+            </span>
+          </div>
+
+          <button type="button" class="btn rucni-cal-potvrd" ${od && doo ? '' : 'disabled'} style="height: 42px; padding: 0 24px; font-size: 15px; font-weight: 700; color: ${od && doo ? '#ffffff' : '#999990'}; background-color: ${od && doo ? '#4A5A24' : '#E7E5DC'}; border: none; border-radius: 2px; cursor: ${od && doo ? 'pointer' : 'not-allowed'}; width: 100%;">
+            Potvrdit termín
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 export function renderRucniRezervaceModal(ad) {
   const f = ad.rucniRezervace || prazdnaRucniRezervace();
   const cena = spoctiRucniCenu(f, ad.cenik);
@@ -133,13 +276,12 @@ export function renderRucniRezervaceModal(ad) {
         <div style="${S.blok}">
           <strong style="${S.nadpisBloku}">Termín a pokoj</strong>
           <div style="${S.mrizka}">
-            <div>
-              <label style="${S.popisek}">Příjezd</label>
-              <input type="date" class="rucni-pole" data-pole="date_from" value="${escapuj(f.date_from)}" style="${S.input}">
-            </div>
-            <div>
-              <label style="${S.popisek}">Odjezd</label>
-              <input type="date" class="rucni-pole" data-pole="date_to" value="${escapuj(f.date_to)}" style="${S.input}">
+            <div style="grid-column: 1 / -1;">
+              <label style="${S.popisek}">Termín pobytu</label>
+              <button type="button" class="rucni-otevri-kalendar" style="${S.input} text-align: left; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: space-between;">
+                <span>${f.date_from && f.date_to ? `${formatCzechDateStr(f.date_from)} – ${formatCzechDateStr(f.date_to)}` : 'Vyberte termín v kalendáři'}</span>
+                <span style="color: #697947; font-weight: 700;">Otevřít kalendář</span>
+              </button>
             </div>
             <div>
               <label style="${S.popisek}">Pokoj</label>
@@ -260,6 +402,8 @@ export function renderRucniRezervaceModal(ad) {
           </div>
         </div>
       </div>
+
+      ${f.calOtevreny ? renderKalendar(ad, f) : ''}
     </div>
   `;
 }
@@ -360,6 +504,78 @@ export function bindRucniRezervaceModal(ad) {
   const prekryti = ad.container.querySelector('.admin-modal-overlay-rucni');
   if (prekryti) {
     prekryti.addEventListener('click', (e) => { if (e.target === prekryti) zavri(); });
+  }
+
+  // ---- kalendář ----
+  const otevri = ad.container.querySelector('.rucni-otevri-kalendar');
+  if (otevri) {
+    otevri.addEventListener('click', () => {
+      ad.rucniRezervace.calOtevreny = true;
+      ad.rucniRezervace.tempFrom = ad.rucniRezervace.date_from || null;
+      ad.rucniRezervace.tempTo = ad.rucniRezervace.date_to || null;
+      ad.rucniRezervace.calRokMesic = null;
+      ad.render();
+    });
+  }
+
+  const zavriKalendar = () => {
+    ad.rucniRezervace.calOtevreny = false;
+    ad.rucniRezervace.tempFrom = null;
+    ad.rucniRezervace.tempTo = null;
+    ad.render();
+  };
+
+  ad.container.querySelectorAll('.rucni-cal-close').forEach(b => b.addEventListener('click', zavriKalendar));
+
+  const calPrekryti = ad.container.querySelector('.rucni-cal-overlay');
+  if (calPrekryti) {
+    calPrekryti.addEventListener('click', (e) => { if (e.target === calPrekryti) zavriKalendar(); });
+  }
+
+  const posunMesic = (o) => {
+    const f = ad.rucniRezervace;
+    const zaklad = f.calRokMesic || (() => {
+      const [y, m] = (f.tempFrom || f.date_from || dnesStr()).split('-').map(Number);
+      return { year: y, month: m };
+    })();
+    const d = new Date(zaklad.year, zaklad.month - 1 + o, 1);
+    f.calRokMesic = { year: d.getFullYear(), month: d.getMonth() + 1 };
+    ad.render();
+  };
+  ad.container.querySelectorAll('.rucni-cal-prev').forEach(b => b.addEventListener('click', () => posunMesic(-1)));
+  ad.container.querySelectorAll('.rucni-cal-next').forEach(b => b.addEventListener('click', () => posunMesic(1)));
+
+  // Klikání na dny: první klik příjezd, druhý odjezd, třetí začíná znovu —
+  // stejné chování jako v rezervaci na webu.
+  ad.container.querySelectorAll('.rucni-cal-overlay .cal-day[data-den]').forEach(den => {
+    den.addEventListener('click', () => {
+      const f = ad.rucniRezervace;
+      const vybrany = den.dataset.den;
+      if (f.tempFrom && f.tempTo) {
+        f.tempFrom = vybrany; f.tempTo = null;
+      } else if (!f.tempFrom || vybrany <= f.tempFrom) {
+        f.tempFrom = vybrany; f.tempTo = null;
+      } else {
+        f.tempTo = vybrany;
+      }
+      ad.render();
+    });
+  });
+
+  const potvrd = ad.container.querySelector('.rucni-cal-potvrd');
+  if (potvrd) {
+    potvrd.addEventListener('click', () => {
+      const f = ad.rucniRezervace;
+      if (!f.tempFrom || !f.tempTo) return;
+      f.date_from = f.tempFrom;
+      f.date_to = f.tempTo;
+      f.calOtevreny = false;
+      f.tempFrom = null;
+      f.tempTo = null;
+      ad.rucniChyba = '';
+      ad.zkontrolujKoliziRucni();
+      ad.render();
+    });
   }
 
   ad.container.querySelectorAll('.rucni-pole').forEach(el => {
