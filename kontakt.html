@@ -437,15 +437,26 @@
           <div class="contact-about-text">
             <h2 class="contact-about-title" data-anim="up">Hory jsou pro nás poslání,<br>ne jen podnikání</h2>
 
-            <p class="contact-about-p" data-anim="up">
-              Horský hotel u Můstků stojí v Desné v Jizerských horách, v údolí Bílé Desné a pár kroků od areálu skokanských můstků. Vedeme ho sami a osobně — bez anonymní recepce a bez pravidel vymyšlených někým v centrále. Hory jsou pro nás krásné, i když počasí tu umí být nevyzpytatelné, a naši práci bereme spíš jako poslání než jako způsob, jak zbohatnout.
-            </p>
-            <p class="contact-about-p" data-anim="up">
-              Chceme, aby se u nás hosté při odpočinku na horách cítili jako doma. Vaříme poctivou domácí kuchyni z čerstvých surovin, snídani podáváme formou bufetu a večer se dá posedět u krbu v hotelové restauraci. Podle počasí poradíme, kam se vydat, a když nemáte auto, odvoz pomůžeme zařídit.
-            </p>
-            <p class="contact-about-p" data-anim="up">
-              Největší odměnou je pro nás spokojený host, který se rád vrací — ať už je to sportovně založená rodina, parta cyklistů, turisté, nebo manželé, kteří u nás našli klid. Přijeďte pobýt, těšíme se na vás.
-            </p>
+            <!-- Na mobilu se odstavce sbalí a rozbaluje je tlačítko níž;
+                 na větších obrazovkách je zkrácení vypnuté v CSS. -->
+            <div class="contact-about-body" id="contact-about-body" data-anim="up">
+              <p class="contact-about-p">
+                Horský hotel u Můstků stojí v Desné v Jizerských horách, v údolí Bílé Desné a pár kroků od areálu skokanských můstků. Vedeme ho sami a osobně — bez anonymní recepce a bez pravidel vymyšlených někým v centrále. Hory jsou pro nás krásné, i když počasí tu umí být nevyzpytatelné, a naši práci bereme spíš jako poslání než jako způsob, jak zbohatnout.
+              </p>
+              <p class="contact-about-p">
+                Chceme, aby se u nás hosté při odpočinku na horách cítili jako doma. Vaříme poctivou domácí kuchyni z čerstvých surovin, snídani podáváme formou bufetu a večer se dá posedět u krbu v hotelové restauraci. Podle počasí poradíme, kam se vydat, a když nemáte auto, odvoz pomůžeme zařídit.
+              </p>
+              <p class="contact-about-p">
+                Největší odměnou je pro nás spokojený host, který se rád vrací — ať už je to sportovně založená rodina, parta cyklistů, turisté, nebo manželé, kteří u nás našli klid. Přijeďte pobýt, těšíme se na vás.
+              </p>
+            </div>
+
+            <button type="button" class="contact-about-toggle" aria-expanded="false" aria-controls="contact-about-body">
+              <span class="contact-about-toggle-text">Přečíst více</span>
+              <svg class="contact-about-toggle-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
           </div>
         </div>
       </div>

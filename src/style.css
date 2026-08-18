@@ -11376,7 +11376,7 @@ html.is-route-loading #app {
 .contact-about-section {
   width: 100%;
   background-color: #f2f2f2;
-  padding: clamp(55px, 11.1vh, 100px) 0 clamp(70px, 13vh, 120px) 0;
+  padding: clamp(80px, 16vh, 140px) 0 clamp(70px, 13vh, 120px) 0;
 }
 
 .contact-about-inner {
@@ -11462,6 +11462,12 @@ html.is-route-loading #app {
   margin-bottom: 0;
 }
 
+/* Sbalování textu má smysl jen na úzkém displeji, kde tři odstavce
+   zaberou půl obrazovky. Na větších je tlačítko schované a text celý. */
+.contact-about-toggle {
+  display: none;
+}
+
 @media (max-width: 1024px) {
   .contact-about-grid {
     grid-template-columns: 1fr;
@@ -11480,7 +11486,7 @@ html.is-route-loading #app {
 
 @media (max-width: 768px) {
   .contact-about-section {
-    padding: 60px 0 70px 0;
+    padding: 84px 0 70px 0;
   }
 
   .contact-about-inner {
@@ -11501,6 +11507,66 @@ html.is-route-loading #app {
 
   .contact-about-p {
     font-size: 15.5px;
+  }
+
+  /* Sbalený text: ukáže se začátek a zbytek se ztratí v přechodu do
+     pozadí sekce, ať je na první pohled vidět, že text pokračuje. */
+  .contact-about-body {
+    position: relative;
+    max-height: 168px;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .contact-about-body::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 72px;
+    background: linear-gradient(to bottom, rgba(242, 242, 242, 0), #f2f2f2);
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+
+  /* Dost velká hodnota, aby se text vešel celý — „none" by se nedalo
+     plynule přejet. */
+  .contact-about-body.is-rozbaleno {
+    max-height: 1200px;
+  }
+
+  .contact-about-body.is-rozbaleno::after {
+    opacity: 0;
+  }
+
+  .contact-about-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 11px 20px;
+    background: transparent;
+    border: 1.5px solid #697947;
+    border-radius: 2px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 14.5px;
+    font-weight: 700;
+    color: #697947;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .contact-about-toggle:active {
+    background: rgba(105, 121, 71, 0.09);
+  }
+
+  .contact-about-toggle-icon {
+    transition: transform 0.3s ease;
+  }
+
+  .contact-about-toggle[aria-expanded="true"] .contact-about-toggle-icon {
+    transform: rotate(180deg);
   }
 }
 
