@@ -454,6 +454,13 @@ Veřejný kalendář víc nepotřebuje. Kdyby někdy potřeboval další sloupec
 přidej ho do `GRANT`, **nikdy nevracej `SELECT` na celou tabulku** — jinak
 jsou jména, e-maily a telefony hostů zase veřejné.
 
+**2a. Recepční zadává jen heslo.** Supabase Auth přihlašuje dvojicí
+e-mail + heslo, ale políčko na adresu je schválně skryté a předvyplněné
+z `VITE_ADMIN_EMAIL` (`.env` i Netlify → Environment variables). Adresa se
+tím dostane do zdrojáku, což nevadí — je to uživatelské jméno, ne přístupový
+údaj. Když proměnná chybí, formulář si o e-mail řekne, aby se nikdo
+nezamkl venku.
+
 **2. Administrace se přihlašuje do Supabase Auth.** Dřív se porovnával
 otisk hesla v prohlížeči a do databáze se chodilo týmž anon klíčem jako za
 návštěvníka — přihlášení tedy nechránilo vůbec nic. Navíc stačilo

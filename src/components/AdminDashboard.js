@@ -56,13 +56,27 @@ function zobrazRozsahBlokace(dateFrom, dateTo) {
 
 const ADMIN_SESSION_KEY = 'hotel_mustku_admin_auth_v1';
 
+/**
+ * Přihlašovací adresa recepce.
+ *
+ * Supabase Auth přihlašuje dvojicí e-mail + heslo, ale recepční má zadávat
+ * jen heslo. Adresa se proto předvyplní odsud a políčko se vůbec neukáže.
+ * Není to tajemství — je to uživatelské jméno, ne přístupový údaj; celá
+ * ochrana stojí na hesle, které se do prohlížeče nikdy nedostane.
+ *
+ * Nastavuje se přes VITE_ADMIN_EMAIL (v .env i v Netlify → Environment
+ * variables). Když chybí, formulář si o e-mail řekne jako dřív, ať se
+ * nikdo nezamkne venku.
+ */
+const ADMIN_EMAIL = (import.meta.env && import.meta.env.VITE_ADMIN_EMAIL) || '';
+
 export class AdminDashboard {
   constructor(containerId) {
     this.container = document.getElementById(containerId);
     // Přihlášení drží Supabase Auth, ne příznak v localStorage. Ten se dal
     // nastavit z konzole a administrace se otevřela komukoli.
     this.isAuthenticated = false;
-    this.emailInput = '';
+    this.emailInput = ADMIN_EMAIL;
     this.loginProbiha = false;
     this.passwordInput = '';
     this.loginError = false;
@@ -651,7 +665,7 @@ export class AdminDashboard {
   async handleLogin(e) {
     e.preventDefault();
 
-    const email = String(this.emailInput || '').trim();
+    const email = String(ADMIN_EMAIL || this.emailInput || '').trim();
     const heslo = String(this.passwordInput || '');
     if (!email || !heslo) {
       this.loginError = 'Vyplňte e-mail i heslo.';
@@ -895,7 +909,7 @@ export class AdminDashboard {
           <div class="admin-login-card">
             <div class="admin-login-brand">Hotel u Můstku</div>
             <h2 class="admin-login-title">Recepční portál</h2>
-            <p class="admin-login-desc">Přihlaste se účtem recepce.</p>
+            <p class="admin-login-desc">${ADMIN_EMAIL ? 'Zadejte přístupové heslo pro vstup do správy rezervací.' : 'Přihlaste se účtem recepce.'}</p>
 
             ${this.loginError ? `
               <div class="admin-login-error-banner">
@@ -905,13 +919,17 @@ export class AdminDashboard {
             ` : ''}
 
             <form id="admin-login-form" class="admin-login-form">
+              ${ADMIN_EMAIL ? `
+                <input type="email" id="admin-email" autocomplete="username" value="${ADMIN_EMAIL}" readonly hidden>
+              ` : `
+                <div class="form-field ${this.loginError ? 'has-error' : ''}">
+                  <label for="admin-email" class="form-label">E-mail</label>
+                  <input type="email" id="admin-email" class="form-input" placeholder="recepce@umustku.cz" autocomplete="username" autofocus required value="${this.emailInput || ''}">
+                </div>
+              `}
               <div class="form-field ${this.loginError ? 'has-error' : ''}">
-                <label for="admin-email" class="form-label">E-mail</label>
-                <input type="email" id="admin-email" class="form-input" placeholder="recepce@umustku.cz" autocomplete="username" autofocus required value="${this.emailInput || ''}">
-              </div>
-              <div class="form-field ${this.loginError ? 'has-error' : ''}">
-                <label for="admin-pass" class="form-label">Heslo</label>
-                <input type="password" id="admin-pass" class="form-input" placeholder="Vaše heslo" autocomplete="current-password" required value="${this.passwordInput}">
+                <label for="admin-pass" class="form-label">Heslo recepce</label>
+                <input type="password" id="admin-pass" class="form-input" placeholder="Zadejte přístupové heslo…" autocomplete="current-password" ${ADMIN_EMAIL ? 'autofocus' : ''} required value="${this.passwordInput}">
               </div>
               <button type="submit" class="btn btn-booking-submit btn-admin-login" ${this.loginProbiha ? 'disabled' : ''}>
                 ${this.loginProbiha ? 'Přihlašuji…' : 'Vstoupit do správy →'}
@@ -924,12 +942,12 @@ export class AdminDashboard {
       const form = document.getElementById('admin-login-form');
       const mail = document.getElementById('admin-email');
       const pass = document.getElementById('admin-pass');
-      if (mail) {
+      if (mail && !ADMIN_EMAIL) {
         if (!this.emailInput) mail.focus();
         mail.addEventListener('input', (e) => { this.emailInput = e.target.value; });
       }
       if (pass) {
-        if (this.emailInput) pass.focus();
+        if (ADMIN_EMAIL || this.emailInput) pass.focus();
         pass.addEventListener('input', (e) => { this.passwordInput = e.target.value; });
       }
       if (form) form.addEventListener('submit', (e) => this.handleLogin(e));
