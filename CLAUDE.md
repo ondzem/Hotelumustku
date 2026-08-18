@@ -467,6 +467,12 @@ kdokoli mohl rozesílat phishing z domény hotelu a zničit jí pověst.
 `upload-news-image` má servisní klíč, proto vyžaduje token přihlášené
 recepce.
 
+**3b. Veřejné formuláře nesmí číst vložený řádek zpátky.** Kontaktní
+formulář i recenze měly za `insert()` ještě `.select()`. Host ale svou
+zprávu číst nesmí a nová recenze čeká na schválení, takže vracení řádku
+skončilo chybou 42501 a formulář hlásil selhání, i když se záznam uložil.
+U čehokoli, co zapisuje návštěvník, `.select()` nepřipojuj.
+
 **4. Cizí text se do stránky vkládá jen přes `esc()`.** Recenze, aktuality
 a oznámení píšou lidé zvenčí a jdou do `innerHTML`. Bez escapování stačilo
 uložit recenzi s `<img src=x onerror=…>` a kód se spustil každému
