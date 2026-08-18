@@ -274,6 +274,12 @@ Nepřidávej čtvrtý. Padly už dva pokusy postavit vedle nich další
   nabídka. Nic neblokuje, pozná se podle názvu období
   (`maOmezenouDostupnost` v `cenik.js`).
 
+**📆 Dostupnost pokojů** (`AdminDostupnost.js`) čtvrtý nástroj NENÍ — je to
+jen pohodlnější cesta k těm výše. Ukazuje obsazenost v kalendáři a jeho
+tlačítka volají tytéž funkce: „Zablokovat termín" zapisuje do
+`blocked_dates` přes `addBlockedDate()`, „Zapsat rezervaci" otevře ruční
+formulář (`AdminRucniRezervace.js`). Žádnou vlastní tabulku nemá a mít nemá.
+
 ---
 
 ## Databáze
