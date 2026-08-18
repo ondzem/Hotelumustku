@@ -430,6 +430,16 @@ Bezpečnostní kontrola 18. 8. 2026 našla čtyři vážné věci. Všechny jsou
 opravené, ale na pravidlech níž stojí celý web — kdo je obejde, otevře je
 znovu.
 
+**0. RLS je POVOLUJÍCÍ — stačí jedno cizí pravidlo a je otevřeno.**
+Při prvním spuštění migrace zůstala vedle nových pravidel stará povolující
+(„Enable read access for all users" a podobná), takže se anonymním klíčem
+dál četly kontaktní zprávy a přepisoval ceník. `supabase-ZABEZPECENI.sql`
+proto **maže všechna** pravidla na dotčených tabulkách, ne jen vlastní.
+Pravidla se navíc zakládají v cyklu s kontrolou `to_regclass` — jedna
+chybějící tabulka uprostřed jinak shodí skript a všechno za ní zůstane
+odemčené. Na konci skriptu je kontrolní výpis; `cizich_pravidel` musí být
+u všech tabulek nula.
+
 **1. Anonymní klíč je veřejný. Chrání ho jen pravidla v databázi.**
 `supabase-ZABEZPECENI.sql` zapíná RLS na všech tabulkách. Role `anon`
 (návštěvník) smí založit rezervaci, recenzi a zprávu a přečíst si veřejný
