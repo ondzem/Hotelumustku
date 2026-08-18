@@ -40,14 +40,16 @@ function formatCzechDateStr(isoStr) {
 const escapuj = (t) => String(t == null ? '' : t)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-/** Prázdný formulář — výchozí termín je dnes → zítra, ať jde rovnou uložit. */
+/**
+ * Prázdný formulář.
+ *
+ * Termín schválně nevyplněný: předvyplněné „dnes → zítra" vypadalo jako
+ * volba, kterou obsluha udělala, a snadno se odeslalo omylem.
+ */
 export function prazdnaRucniRezervace() {
-  const dnes = new Date();
-  const zitra = new Date(dnes.getTime() + 86400000);
-  const naDatum = (d) => d.toISOString().split('T')[0];
   return {
-    date_from: naDatum(dnes),
-    date_to: naDatum(zitra),
+    date_from: '',
+    date_to: '',
     room_id: (MOCK_ROOMS.find(r => !r.isDisabled) || MOCK_ROOMS[0]).id,
     adults_count: 2,
     guest_name: '',
@@ -91,6 +93,9 @@ function pocetNoci(od, doo) {
 export function spoctiRucniCenu(f, cenik) {
   const pokoj = MOCK_ROOMS.find(r => r.id === f.room_id) || MOCK_ROOMS[0];
   const noci = pocetNoci(f.date_from, f.date_to);
+  // Bez termínu nemá cena co počítat — jinak by výpočet sáhl po sazbě
+  // pro dnešek a formulář by ukazoval částku za pobyt, který není zadaný.
+  if (noci < 1) return null;
   return calculateReservationPrice({
     roomType: pokoj.type,
     roomId: pokoj.id,
@@ -202,6 +207,7 @@ function renderKalendar(ad, f) {
             <button type="button" class="btn btn-cal-nav cal-nav-btn rucni-cal-next" title="Následující měsíc">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </button>
+            <button type="button" class="btn btn-cal-reset rucni-cal-reset" style="font-size: 13px; font-weight: 600; color: #4A5A24; background: none; border: none; cursor: pointer; padding: 4px 8px; text-decoration: underline;">Vynulovat výběr</button>
             <button type="button" class="btn btn-cal-close cal-close-btn rucni-cal-close" title="Zavřít kalendář">&times;</button>
           </div>
         </div>
@@ -232,8 +238,8 @@ function renderKalendar(ad, f) {
             </span>
           </div>
 
-          <button type="button" class="btn rucni-cal-potvrd" ${od && doo ? '' : 'disabled'} style="height: 42px; padding: 0 24px; font-size: 15px; font-weight: 700; color: ${od && doo ? '#ffffff' : '#999990'}; background-color: ${od && doo ? '#4A5A24' : '#E7E5DC'}; border: none; border-radius: 2px; cursor: ${od && doo ? 'pointer' : 'not-allowed'}; width: 100%;">
-            Potvrdit termín
+          <button type="button" class="btn rucni-cal-potvrd" ${od && !doo ? 'disabled' : ''} style="height: 42px; padding: 0 24px; font-size: 15px; font-weight: 700; color: ${od && !doo ? '#999990' : '#ffffff'}; background-color: ${od && !doo ? '#E7E5DC' : '#4A5A24'}; border: none; border-radius: 2px; cursor: ${od && !doo ? 'not-allowed' : 'pointer'}; width: 100%;">
+            ${od && doo ? 'Potvrdit termín' : (od ? 'Vyberte ještě datum odjezdu' : 'Uložit bez termínu')}
           </button>
         </div>
       </div>
@@ -251,8 +257,8 @@ export function renderRucniRezervaceModal(ad) {
   // Ručně zadaná částka přebíjí ceník; záloha a doplatek se z ní dopočítají
   // stejným procentem, jaké platí v nastavení.
   const rucni = parseFloat(String(f.total_price).replace(/\s/g, '').replace(',', '.'));
-  const celkem = Number.isFinite(rucni) && rucni >= 0 ? rucni : cena.totalPrice;
-  const procento = cena.depositPercentage || 30;
+  const celkem = Number.isFinite(rucni) && rucni >= 0 ? rucni : (cena ? cena.totalPrice : 0);
+  const procento = (cena && cena.depositPercentage) || 30;
   const zaloha = Math.round(celkem * procento / 100);
 
   return `
@@ -297,7 +303,7 @@ export function renderRucniRezervaceModal(ad) {
             </div>
           </div>
           <p style="margin: 12px 0 0 0; font-size: 13px; color: #6b6b60;">
-            ${noci > 0 ? `${noci} ${noci === 1 ? 'noc' : (noci < 5 ? 'noci' : 'nocí')}` : '<strong style="color: #c62828;">Odjezd musí být po příjezdu.</strong>'}
+            ${noci > 0 ? `${noci} ${noci === 1 ? 'noc' : (noci < 5 ? 'noci' : 'nocí')}` : 'Termín zatím nevybraný'}
             ${ad.rucniKolize ? ` · <strong style="color: #c62828;">Pozor: pokoj je v tomto termínu už obsazený.</strong>` : ''}
           </p>
         </div>
@@ -353,7 +359,7 @@ export function renderRucniRezervaceModal(ad) {
               Nabíjení elektrokola
               ${f.has_ebike ? `<input type="number" min="1" class="rucni-pole" data-pole="ebike_count" value="${escapuj(f.ebike_count)}" style="width: 74px; height: 34px; text-align: right; padding: 0 8px; border-radius: 4px; border: 1.5px solid #c9c8bd;"> ks` : ''}
             </label>
-            ${cena.isWinterSeason ? `
+            ${cena && cena.isWinterSeason ? `
               <label style="display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; color: #1c1c19; cursor: pointer;">
                 <input type="checkbox" class="rucni-pole" data-pole="has_winter_parking" ${f.has_winter_parking ? 'checked' : ''} style="width: 18px; height: 18px; accent-color: #697947;">
                 Zimní parkování
@@ -367,15 +373,17 @@ export function renderRucniRezervaceModal(ad) {
           <strong style="${S.nadpisBloku}">Cena a stav</strong>
 
           <div style="background: #faf9f5; border-radius: 6px; padding: 12px 14px; margin-bottom: 14px; font-size: 13.5px; color: #55554e; line-height: 1.9;">
-            <div style="display: flex; justify-content: space-between;"><span>Ubytování se snídaní${cena.nightBreakdownLabel ? ` (${escapuj(cena.nightBreakdownLabel)})` : ''}</span><strong style="color: #1c1c19;">${formatCzechPrice(cena.accommodationPrice)}</strong></div>
-            ${cena.addonsPrice > 0 ? `<div style="display: flex; justify-content: space-between;"><span>Doplňkové služby</span><strong style="color: #1c1c19;">${formatCzechPrice(cena.addonsPrice)}</strong></div>` : ''}
-            <div style="display: flex; justify-content: space-between; border-top: 1px solid #e4e2d8; margin-top: 6px; padding-top: 6px;"><span>Podle ceníku celkem</span><strong style="color: #1c1c19;">${formatCzechPrice(cena.totalPrice)}</strong></div>
+            ${cena ? `
+              <div style="display: flex; justify-content: space-between;"><span>Ubytování se snídaní${cena.nightBreakdownLabel ? ` (${escapuj(cena.nightBreakdownLabel)})` : ''}</span><strong style="color: #1c1c19;">${formatCzechPrice(cena.accommodationPrice)}</strong></div>
+              ${cena.addonsPrice > 0 ? `<div style="display: flex; justify-content: space-between;"><span>Doplňkové služby</span><strong style="color: #1c1c19;">${formatCzechPrice(cena.addonsPrice)}</strong></div>` : ''}
+              <div style="display: flex; justify-content: space-between; border-top: 1px solid #e4e2d8; margin-top: 6px; padding-top: 6px;"><span>Podle ceníku celkem</span><strong style="color: #1c1c19;">${formatCzechPrice(cena.totalPrice)}</strong></div>
+            ` : '<span>Cenu spočítáme, jakmile vyberete termín pobytu.</span>'}
           </div>
 
           <div style="${S.mrizka}">
             <div>
               <label style="${S.popisek}">Celkem zaplatí (Kč)</label>
-              <input type="number" min="0" step="10" class="rucni-pole" data-pole="total_price" value="${escapuj(f.total_price)}" placeholder="${Math.round(cena.totalPrice)}" style="${S.input}">
+              <input type="number" min="0" step="10" class="rucni-pole" data-pole="total_price" value="${escapuj(f.total_price)}" placeholder="${cena ? Math.round(cena.totalPrice) : ''}" style="${S.input}">
               <p style="margin: 5px 0 0 0; font-size: 12px; color: #96958a;">Prázdné = cena z ceníku.</p>
             </div>
             <div>
@@ -395,7 +403,7 @@ export function renderRucniRezervaceModal(ad) {
         </div>
 
         <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
-          <span style="font-size: 15px; font-weight: 800; color: #1c1c19;">Celkem ${formatCzechPrice(celkem)}</span>
+          <span style="font-size: 15px; font-weight: 800; color: #1c1c19;">${cena || Number.isFinite(rucni) ? `Celkem ${formatCzechPrice(celkem)}` : 'Zatím bez termínu'}</span>
           <div style="display: flex; gap: 10px;">
             <button type="button" class="btn-close-rucni" style="height: 44px; padding: 0 18px; font-size: 14px; font-weight: 700; border-radius: 4px; border: 1.5px solid #c9c8bd; background: #fff; color: #444; cursor: pointer;">Zrušit</button>
             <button type="button" class="btn-ulozit-rucni" style="height: 44px; padding: 0 22px; font-size: 14.5px; font-weight: 800; border-radius: 4px; border: none; background: #697947; color: #fff; cursor: pointer;">Založit rezervaci</button>
@@ -418,6 +426,7 @@ export function sestavRucniRezervaci(f, cenik) {
   if (!jmeno) return { chyba: 'Vyplňte jméno a příjmení hosta.' };
 
   const noci = pocetNoci(f.date_from, f.date_to);
+  if (!f.date_from || !f.date_to) return { chyba: 'Vyberte termín pobytu v kalendáři.' };
   if (noci < 1) return { chyba: 'Datum odjezdu musí být pozdější než datum příjezdu.' };
 
   const pokoj = MOCK_ROOMS.find(r => r.id === f.room_id);
@@ -562,13 +571,24 @@ export function bindRucniRezervaceModal(ad) {
     });
   });
 
+  // Vynulování vrátí kalendář do neutrálního stavu — bez příjezdu i odjezdu.
+  ad.container.querySelectorAll('.rucni-cal-reset').forEach(b => {
+    b.addEventListener('click', () => {
+      const f = ad.rucniRezervace;
+      f.tempFrom = '';
+      f.tempTo = '';
+      ad.render();
+    });
+  });
+
   const potvrd = ad.container.querySelector('.rucni-cal-potvrd');
   if (potvrd) {
     potvrd.addEventListener('click', () => {
       const f = ad.rucniRezervace;
-      if (!f.tempFrom || !f.tempTo) return;
-      f.date_from = f.tempFrom;
-      f.date_to = f.tempTo;
+      // Rozdělaný výběr (jen příjezd) potvrdit nejde — tlačítko je vypnuté.
+      if (f.tempFrom && !f.tempTo) return;
+      f.date_from = f.tempFrom || '';
+      f.date_to = f.tempTo || '';
       f.calOtevreny = false;
       f.tempFrom = null;
       f.tempTo = null;
