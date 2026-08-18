@@ -117,6 +117,8 @@ export class AdminDashboard {
     this.cenikVyjimkyOtevrene = false;
     this.showDisabledRoomsModal = false;
     this.disabledRooms = getStoredDisabledRooms();
+    this.showConfirmRoomBlockModal = false;
+    this.pendingRoomBlock = null;
     (this.disabledRooms || []).forEach(p => {
       if (p.room_id) {
         const rm = MOCK_ROOMS.find(r => r.id === p.room_id);
@@ -506,7 +508,7 @@ export class AdminDashboard {
     }
 
     const rmName = rm ? rm.name : roomId;
-    this.showAdminToast(shouldDisable ? `Pokoj ${rmName} byl zablokován pro rezervace.` : `Blokace pokoje ${rmName} byla zrušena.`);
+    this.showAdminToast(shouldDisable ? `${rmName} je vyřazený z provozu, rezervovat ho nejde.` : `${rmName} je zase v provozu a jde ho rezervovat.`);
     this.showDisabledRoomsModal = true;
     this.render();
 
@@ -1511,31 +1513,56 @@ export class AdminDashboard {
                 <h3 class="admin-modal-title" style="margin: 0; font-size: 18px; font-weight: 800; color: #1c1c19;">🔒 Blokování pokojů</h3>
                 <button type="button" class="btn-close-disabled-modal" style="background: none; border: none; font-size: 26px; cursor: pointer; color: #777; line-height: 1; padding: 4px 8px;">&times;</button>
               </div>
-              <p class="admin-modal-desc" style="margin-top: 14px; margin-bottom: 16px; font-size: 13.5px; color: #55554e;">
-                Zablokujte vybraný pokoj. Zablokovaný pokoj zůstane na webu viditelný, ale tlačítko výběru se změní na „Dočasně nedostupné“ a v rezervaci bude označen jako zablokovaný.
+              <p class="admin-modal-desc" style="margin-top: 14px; margin-bottom: 18px; font-size: 13.5px; color: #55554e;">
+                Vyřazený pokoj zůstane na webu vidět, ale nejde ho zarezervovat — místo tlačítka výběru se u něj ukáže „Dočasně nedostupné“. Platí bez ohledu na datum; na jednotlivé termíny je Blokování termínů.
               </p>
 
-              <div style="display: flex; flex-direction: column; gap: 10px; max-height: 380px; overflow-y: auto; padding-right: 4px;">
+              <div style="display: flex; flex-direction: column; gap: 8px; max-height: 380px; overflow-y: auto; padding-right: 4px;">
                 ${MOCK_ROOMS.map(rm => {
                   const isBlocked = Boolean(rm.isDisabled);
                   return `
-                    <div class="room-disabled-card" data-roomid="${rm.id}" style="background: ${isBlocked ? '#fff5f5' : '#ffffff'}; border: 1px solid ${isBlocked ? '#f5c6cb' : '#e0dfd5'}; border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
-                      <div>
+                    <div class="room-disabled-card" data-roomid="${rm.id}" style="background: #ffffff; border: 1px solid #e4e2d8; border-left: 3px solid ${isBlocked ? '#c62828' : '#697947'}; border-radius: 6px; padding: 13px 15px; display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;">
+                      <div style="min-width: 0;">
                         <div style="font-weight: 700; font-size: 14.5px; color: #1c1c19;">${rm.name}</div>
-                        <div style="font-size: 12.5px; color: #777; margin-top: 2px;">
-                          Stav: ${isBlocked 
-                            ? '<strong style="color: #c62828;">🔒 Zablokovaný (Dočasně nedostupný)</strong>' 
-                            : '<strong style="color: #2e7d32;">✓ Aktivní (Dostupný ke zvolení)</strong>'}
-                        </div>
+                        <span style="display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; ${isBlocked ? 'background: #fbeaea; color: #a5231f;' : 'background: #eef2e4; color: #4a5a24;'}">
+                          <span style="width: 6px; height: 6px; border-radius: 50%; background: ${isBlocked ? '#c62828' : '#697947'};"></span>
+                          ${isBlocked ? 'Mimo provoz' : 'V provozu'}
+                        </span>
                       </div>
-                      <div>
-                        <button type="button" class="btn btn-toggle-room-disabled" data-roomid="${rm.id}" data-action="${isBlocked ? 'unblock' : 'block'}" style="height: 38px; padding: 0 16px; font-size: 13px; border-radius: 1px; ${isBlocked ? 'background: #2e7d32; color: #ffffff; border: none;' : 'background: #c62828; color: #ffffff; border: none;'}">
-                          ${isBlocked ? '🔓 Zrušit blokaci' : '🔒 Zablokovat pokoj'}
-                        </button>
-                      </div>
+                      <button type="button" class="btn btn-toggle-room-disabled" data-roomid="${rm.id}" data-action="${isBlocked ? 'unblock' : 'block'}" style="flex-shrink: 0; height: 38px; padding: 0 16px; font-size: 13px; font-weight: 700; border-radius: 4px; cursor: pointer; ${isBlocked ? 'background: #ffffff; color: #4a5a24; border: 1.5px solid #697947;' : 'background: #ffffff; color: #a5231f; border: 1.5px solid #d9a3a1;'}">
+                        ${isBlocked ? 'Vrátit do provozu' : 'Vyřadit z provozu'}
+                      </button>
                     </div>
                   `;
                 }).join('')}
+              </div>
+            </div>
+          </div>
+        ` : ''}
+
+        ${this.showConfirmRoomBlockModal && this.pendingRoomBlock ? `
+          <div class="admin-modal-overlay admin-modal-overlay-confirm-room-block" style="z-index: 10080;">
+            <div class="admin-confirm-modal" style="max-width: 460px; width: 92%; padding: 24px; border-radius: 12px; background: #ffffff; box-shadow: 0 10px 30px rgba(0,0,0,0.25);">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #ece8dd; padding-bottom: 12px;">
+                <h3 class="admin-modal-title" style="margin: 0; font-size: 18px; font-weight: 800; color: ${this.pendingRoomBlock.block ? '#c62828' : '#4a5a24'};">
+                  ${this.pendingRoomBlock.block ? 'Vyřadit pokoj z provozu?' : 'Vrátit pokoj do provozu?'}
+                </h3>
+                <button type="button" class="btn-cancel-room-block" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #888; padding: 0; line-height: 1;">&times;</button>
+              </div>
+
+              <p style="font-size: 14px; color: #444440; line-height: 1.55; margin: 0 0 20px 0;">
+                ${this.pendingRoomBlock.block
+                  ? `<strong>${this.pendingRoomBlock.name}</strong> přestane jít rezervovat — na webu u něj místo tlačítka výběru bude „Dočasně nedostupné“. Už uložených rezervací se to netýká.`
+                  : `<strong>${this.pendingRoomBlock.name}</strong> se vrátí do nabídky a hosté si ho budou moct zase zarezervovat.`}
+              </p>
+
+              <div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
+                <button type="button" class="btn-cancel-room-block" style="background: none; border: 1px solid #d8d5c9; border-radius: 4px; padding: 9px 18px; font-size: 13.5px; font-weight: 600; color: #444; cursor: pointer;">
+                  Zrušit
+                </button>
+                <button type="button" class="btn-confirm-room-block" style="border: none; border-radius: 4px; padding: 9px 20px; font-size: 13.5px; font-weight: 700; color: #ffffff; cursor: pointer; background: ${this.pendingRoomBlock.block ? '#c62828' : '#697947'};">
+                  ${this.pendingRoomBlock.block ? 'Ano, vyřadit z provozu' : 'Ano, vrátit do provozu'}
+                </button>
               </div>
             </div>
           </div>
@@ -2292,13 +2319,48 @@ export class AdminDashboard {
       });
     }
 
+    // Vyřazení pokoje z provozu se nejdřív potvrzuje — dřív stačilo
+    // jedno kliknutí a pokoj hned zmizel z nabídky.
     this.container.querySelectorAll('.btn-toggle-room-disabled').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const roomId = e.currentTarget.dataset.roomid;
-        const action = e.currentTarget.dataset.action;
-        this.toggleRoomDisabled(roomId, action === 'block');
+        const block = e.currentTarget.dataset.action === 'block';
+        const rm = MOCK_ROOMS.find(r => r.id === roomId);
+        this.pendingRoomBlock = { roomId, block, name: rm ? rm.name : roomId };
+        this.showConfirmRoomBlockModal = true;
+        this.render();
       });
     });
+
+    this.container.querySelectorAll('.btn-cancel-room-block').forEach(btn => {
+      btn.addEventListener('click', () => {
+        this.showConfirmRoomBlockModal = false;
+        this.pendingRoomBlock = null;
+        this.render();
+      });
+    });
+
+    const prekrytiRoomBlock = this.container.querySelector('.admin-modal-overlay-confirm-room-block');
+    if (prekrytiRoomBlock) {
+      prekrytiRoomBlock.addEventListener('click', (e) => {
+        if (e.target === prekrytiRoomBlock) {
+          this.showConfirmRoomBlockModal = false;
+          this.pendingRoomBlock = null;
+          this.render();
+        }
+      });
+    }
+
+    const btnPotvrdRoomBlock = this.container.querySelector('.btn-confirm-room-block');
+    if (btnPotvrdRoomBlock) {
+      btnPotvrdRoomBlock.addEventListener('click', () => {
+        if (!this.pendingRoomBlock) return;
+        const { roomId, block } = this.pendingRoomBlock;
+        this.showConfirmRoomBlockModal = false;
+        this.pendingRoomBlock = null;
+        this.toggleRoomDisabled(roomId, block);
+      });
+    }
 
     // Okno s ceníkem si obsluhuje vlastní modul (AdminCenik.js)
     bindCenikModal(this);
