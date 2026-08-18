@@ -14172,3 +14172,38 @@ html.anim-ready .review-card[data-anim].is-in {
   min-width: 160px;
   height: 44px;
 }
+
+/* ===================================================================
+   PŘEDVYPLNĚNÍ PROHLÍŽEČEM (autofill)
+
+   Chrome obarvuje předvyplněná políčka světle modrou a `background-color`
+   na to neplatí — prohlížeč si ji přebije vlastním vykreslením. Jediné,
+   co zabere, je obrovský vnitřní stín v barvě podkladu; text se přebarvuje
+   přes -webkit-text-fill-color, protože ani `color` autofill neposlouchá.
+
+   Dlouhý `transition` je pojistka: Chrome barvu nasazuje s animací, takže
+   odsunutím o pár let se nikdy nestihne ukázat.
+   =================================================================== */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  box-shadow: 0 0 0 1000px #ffffff inset !important;
+  -webkit-text-fill-color: #1c1c19 !important;
+  caret-color: #1c1c19;
+  transition: background-color 5000s ease-in-out 0s !important;
+}
+
+/* Kontaktní formulář má políčka průhledná, ale leží na bílé sekci —
+   bílý stín je tam proto správně a jen sjednotí barvu písma. */
+.contact-form-input:-webkit-autofill,
+.contact-form-textarea:-webkit-autofill {
+  -webkit-text-fill-color: #1c1c19 !important;
+}

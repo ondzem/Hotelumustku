@@ -422,6 +422,13 @@ na desktopu široká nejvýš ~440 px, takže 900 px pokryje i retinu. Složky
 magick vstup.webp -resize '900x900>' -quality 80 -strip vystup.webp
 ```
 
+**Autofill v prohlížeči se nedá přebarvit `background-color`.** Chrome
+předvyplněná políčka obarvuje světle modrou a vlastní vykreslení si
+přebije. Zabere jedině obrovský vnitřní stín v barvě podkladu plus
+`-webkit-text-fill-color` na písmo (`style.css`, oddíl „PŘEDVYPLNĚNÍ
+PROHLÍŽEČEM"). Nedá se to ověřit skriptem — autofill spouští prohlížeč
+přes vlastní rozhraní, ne stránka.
+
 **HERO FOTKY SE TAKHLE ZMENŠOVAT NESMÍ.** Jsou přes celou šířku okna, takže
 900 px je na nich vidět jako rozmazanina. Doplatily na to 18. 8. 2026 při
 hromadné optimalizaci — musely se obnovovat z historie gitu. Jsou to:
