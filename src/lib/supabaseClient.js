@@ -688,7 +688,11 @@ initStoredDisabledRoomsInMock();
 export const saveContactMessage = async (messageData) => {
   if (isSupabaseConfigured && supabase) {
     try {
-      const { data, error } = await supabase
+      // Bez `.select()`. Kdo zprávu píše, nemá právo si ji přečíst zpátky —
+      // kontaktní zprávy jsou vidět jen recepci. Vyžádané vrácení vloženého
+      // řádku by proto skončilo chybou 42501 a formulář by hlásil selhání,
+      // i když se zpráva ve skutečnosti uložila.
+      const { error } = await supabase
         .from('contact_messages')
         .insert([{
           name: messageData.name,
@@ -697,14 +701,13 @@ export const saveContactMessage = async (messageData) => {
           phone: messageData.phone || '',
           message: messageData.message || '',
           status: 'new'
-        }])
-        .select();
+        }]);
 
       if (error) {
         console.error('Chyba při ukládání kontaktní zprávy do Supabase:', error);
         return { success: false, error };
       }
-      return { success: true, data: data ? data[0] : null };
+      return { success: true, data: null };
     } catch (err) {
       console.error('Výjimka při ukládání kontaktní zprávy:', err);
       return { success: false, error: err };
@@ -1460,13 +1463,14 @@ export const saveStoredReview = async (reviewPayload) => {
   // Save to Supabase if available
   if (isSupabaseConfigured && supabase) {
     try {
-      const { data, error } = await supabase
+      // Taky bez `.select()`. Nová recenze čeká na schválení a veřejně
+      // čitelné jsou jen schválené, takže by se vložený řádek nevrátil.
+      const { error } = await supabase
         .from('reviews')
-        .insert([payload])
-        .select();
+        .insert([payload]);
 
-      if (!error && data) {
-        return { success: true, data: data[0] };
+      if (!error) {
+        return { success: true, data: payload };
       }
     } catch (err) {
       console.warn('Supabase insert review failed, stored locally:', err);
