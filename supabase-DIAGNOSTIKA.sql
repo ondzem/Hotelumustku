@@ -1,40 +1,34 @@
 -- ===================================================================
--- DIAGNOSTIKA ZABEZPEČENÍ — nic nemění, jen vypisuje stav.
--- Spustit v Supabase → SQL Editor a poslat výsledek.
+-- DIAGNOSTIKA ZABEZPEČENÍ — nic nemění, jen vypisuje.
+--
+-- JE TO JEDEN DOTAZ. SQL Editor ukazuje jen výsledek posledního příkazu,
+-- proto je všechno slepené do jedné tabulky.
+-- Spustit celé a poslat výsledek.
 -- ===================================================================
-
--- 1) Jaká pravidla na tabulkách opravdu jsou
+WITH tabulky AS (
+  SELECT unnest(ARRAY[
+    'reservations','contact_messages','reviews','aktuality','blocked_dates',
+    'room_prices','disabled_rooms','discount_codes',
+    'cenik_sezony','cenik_ceny','cenik_ceny_pokoj','cenik_nastaveni'
+  ]) AS t
+)
 SELECT
-  tablename                       AS tabulka,
-  policyname                      AS pravidlo,
-  cmd                             AS operace,
-  COALESCE(array_to_string(roles, ','), '(všichni)') AS pro_role
-FROM pg_policies
-WHERE schemaname = 'public'
-ORDER BY tablename, policyname;
-
--- 2) Kde je RLS zapnuté a kolik je tam pravidel
-SELECT
-  c.relname                                     AS tabulka,
-  c.relrowsecurity                              AS rls_zapnute,
-  (SELECT count(*) FROM pg_policies p
-     WHERE p.schemaname='public' AND p.tablename=c.relname) AS pravidel
-FROM pg_class c
-WHERE c.relnamespace = 'public'::regnamespace AND c.relkind = 'r'
-ORDER BY c.relname;
-
--- 3) Co přesně smí role anon u každé tabulky
-SELECT
-  table_name                             AS tabulka,
-  string_agg(DISTINCT privilege_type, ', ' ORDER BY privilege_type) AS opravneni
-FROM information_schema.table_privileges
-WHERE grantee = 'anon' AND table_schema = 'public'
-GROUP BY table_name
-ORDER BY table_name;
-
--- 4) Které sloupce rezervací smí anon číst (musí být právě čtyři)
-SELECT column_name AS sloupec
-FROM information_schema.column_privileges
-WHERE grantee='anon' AND table_schema='public'
-  AND table_name='reservations' AND privilege_type='SELECT'
-ORDER BY column_name;
+  tabulky.t AS tabulka,
+  CASE WHEN to_regclass('public.' || tabulky.t) IS NULL THEN 'NEEXISTUJE'
+       WHEN (SELECT c.relrowsecurity FROM pg_class c
+              WHERE c.oid = to_regclass('public.' || tabulky.t)) THEN 'ano'
+       ELSE 'NE !!' END AS rls,
+  COALESCE((SELECT string_agg(p.cmd || ':' || p.policyname, ', ' ORDER BY p.policyname)
+     FROM pg_policies p
+     WHERE p.schemaname = 'public' AND p.tablename = tabulky.t
+       AND p.policyname LIKE 'hm_%'), '—') AS nase_pravidla,
+  COALESCE((SELECT string_agg(p.policyname, ', ' ORDER BY p.policyname)
+     FROM pg_policies p
+     WHERE p.schemaname = 'public' AND p.tablename = tabulky.t
+       AND p.policyname NOT LIKE 'hm_%'), '—') AS CIZI_PRAVIDLA,
+  COALESCE((SELECT string_agg(DISTINCT tp.privilege_type, ',' ORDER BY tp.privilege_type)
+     FROM information_schema.table_privileges tp
+     WHERE tp.grantee = 'anon' AND tp.table_schema = 'public'
+       AND tp.table_name = tabulky.t), '—') AS opravneni_anon
+FROM tabulky
+ORDER BY 1;
