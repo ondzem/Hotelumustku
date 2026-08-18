@@ -1064,30 +1064,30 @@ export class AdminDashboard {
             <h2>Recepční portál</h2>
             <p>Správa rezervací a obsluha 30% záloh pro Hotel u Můstku</p>
           </div>
+          <!-- Pořadí je podle toho, jak často to recepční potřebuje:
+               ceník a dostupnost denně, aktuality a recenze občas.
+               Odhlásit se zůstává poslední. -->
           <div class="admin-top-actions">
-            <button type="button" class="btn btn-specs-secondary btn-admin-archive-tab${this.statusFilter === 'archived' ? ' is-active' : ''}">
-              📂 Archiv ${archivedCount > 0 ? `<span style="background: #4a5a24; color: #ffffff; border-radius: 99px; padding: 2px 7px; font-size: 11px; font-weight: 700; margin-left: 4px;">${archivedCount}</span>` : ''}
-            </button>
-            <button type="button" class="btn btn-specs-secondary btn-admin-reviews">
-              ⭐ Správa recenzí ${pendingReviewsCount > 0 ? `<span style="background: #e67e22; color: #ffffff; border-radius: 99px; padding: 2px 7px; font-size: 11px; font-weight: 700; margin-left: 4px;">${pendingReviewsCount}</span>` : ''}
-            </button>
-            <button type="button" class="btn btn-specs-secondary btn-admin-news">
-              📰 Správa aktualit ${this.newsItems.length > 0 ? `<span style="background: #2e3524; color: #ffffff; border-radius: 99px; padding: 2px 7px; font-size: 11px; font-weight: 700; margin-left: 4px;">${this.newsItems.length}</span>` : ''}
-            </button>
-            <button type="button" class="btn btn-specs-secondary btn-admin-nova-rezervace">
-              ➕ Přidat rezervaci
+            <button type="button" class="btn btn-specs-secondary btn-admin-prices">
+              💰 Ceník
             </button>
             <button type="button" class="btn btn-specs-secondary btn-admin-block-dates">
               📅 Blokovat termíny ${this.blockedDates.length > 0 ? `<span style="background: #e67e22; color: #ffffff; border-radius: 99px; padding: 2px 7px; font-size: 11px; font-weight: 700; margin-left: 4px;">${this.blockedDates.length}</span>` : ''}
             </button>
-            <button type="button" class="btn btn-specs-secondary btn-admin-discounts">
-              🏷️ Slevové kódy ${this.discountCodes.length > 0 ? `<span style="background: #4a5a24; color: #ffffff; border-radius: 99px; padding: 2px 7px; font-size: 11px; font-weight: 700; margin-left: 4px;">${this.discountCodes.length}</span>` : ''}
-            </button>
-            <button type="button" class="btn btn-specs-secondary btn-admin-prices">
-              💰 Ceník
-            </button>
             <button type="button" class="btn btn-specs-secondary btn-admin-disabled-rooms">
               🔒 Blokování pokojů
+            </button>
+            <button type="button" class="btn btn-specs-secondary btn-admin-archive-tab${this.statusFilter === 'archived' ? ' is-active' : ''}">
+              📂 Archiv ${archivedCount > 0 ? `<span style="background: #4a5a24; color: #ffffff; border-radius: 99px; padding: 2px 7px; font-size: 11px; font-weight: 700; margin-left: 4px;">${archivedCount}</span>` : ''}
+            </button>
+            <button type="button" class="btn btn-specs-secondary btn-admin-news">
+              📰 Správa aktualit ${this.newsItems.length > 0 ? `<span style="background: #2e3524; color: #ffffff; border-radius: 99px; padding: 2px 7px; font-size: 11px; font-weight: 700; margin-left: 4px;">${this.newsItems.length}</span>` : ''}
+            </button>
+            <button type="button" class="btn btn-specs-secondary btn-admin-reviews">
+              ⭐ Správa recenzí ${pendingReviewsCount > 0 ? `<span style="background: #e67e22; color: #ffffff; border-radius: 99px; padding: 2px 7px; font-size: 11px; font-weight: 700; margin-left: 4px;">${pendingReviewsCount}</span>` : ''}
+            </button>
+            <button type="button" class="btn btn-specs-secondary btn-admin-discounts">
+              🏷️ Slevové kódy ${this.discountCodes.length > 0 ? `<span style="background: #4a5a24; color: #ffffff; border-radius: 99px; padding: 2px 7px; font-size: 11px; font-weight: 700; margin-left: 4px;">${this.discountCodes.length}</span>` : ''}
             </button>
             <button type="button" class="btn btn-booking-submit btn-admin-logout">🚪 Odhlásit se</button>
           </div>
@@ -1122,12 +1122,19 @@ export class AdminDashboard {
             </button>
           </div>
 
-          <div class="admin-room-filter">
-            <label for="filter-room">Pokoj:</label>
-            <select id="filter-room" class="admin-room-select">
-              <option value="all">Všechny pokoje</option>
-              ${MOCK_ROOMS.map(r => `<option value="${r.id}" ${this.selectedRoomFilter === r.id ? 'selected' : ''}>${r.name}</option>`).join('')}
-            </select>
+          <div class="admin-toolbar-right">
+            <div class="admin-room-filter">
+              <label for="filter-room">Pokoj:</label>
+              <select id="filter-room" class="admin-room-select">
+                <option value="all">Všechny pokoje</option>
+                ${MOCK_ROOMS.map(r => `<option value="${r.id}" ${this.selectedRoomFilter === r.id ? 'selected' : ''}>${r.name}</option>`).join('')}
+              </select>
+            </div>
+            <!-- Mezi nástroji nahoře tohle tlačítko zapadlo. Patří k seznamu
+                 rezervací, se kterým pracuje, a proto je zvýrazněné. -->
+            <button type="button" class="btn btn-admin-nova-rezervace">
+              <span aria-hidden="true">＋</span> Nová rezervace
+            </button>
           </div>
         </div>
 
