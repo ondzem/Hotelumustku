@@ -2535,21 +2535,44 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 /* Mobilní zařízení (<768px) */
 @media (max-width: 767px) {
-  /* 1. Hero Sekce na mobilu */
+  /* 1. Hero Sekce na mobilu.
+     Výška se odvíjí od okna (svh kvůli liště prohlížeče, která se na
+     telefonu vysouvá), ale nikdy neklesne pod to, co potřebuje text. */
   .booking-hero-section {
     height: 52vh;
+    height: 52svh;
     min-height: 420px;
     max-height: 500px;
   }
 
+  /* Nadpis a podnadpis SE NEUMISŤUJÍ NATVRDO.
+     Dřív tu bylo `top: 230px`, jenže sekce je vysoká podle okna — na
+     displeji 667 px vysokém měřila 307 px a text z ní vytekl o třicet
+     pixelů do bílé sekce pod ní. Teď se vysází flexboxem odshora dolů,
+     takže se vejde vždycky, ať je okno jakkoli nízké. */
+  .booking-hero-section .hero-inner {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 92px 16px 24px 16px !important;
+    box-sizing: border-box !important;
+  }
+
   .booking-hero-center {
-    position: absolute !important;
-    top: 230px !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    width: 92% !important;
+    position: static !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
+  }
+
+  .booking-hero-center-group {
+    width: 100% !important;
+    gap: 6px !important;
   }
 
   .booking-hero-main-title {
@@ -2561,6 +2584,9 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   .booking-hero-subtitle {
     font-size: 14.5px !important;
     line-height: 1.4 !important;
+    max-width: 34ch !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
   }
 
   /* 2. Odsazení a blízkost karet na mobilu (Sjednoceno na 20px padding dle úvodní stránky) */

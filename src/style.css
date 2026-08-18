@@ -362,13 +362,16 @@ a {
 .btn-rooms {
   padding: 0 28px;
   background-color: transparent;
-  color: #ffffff;
+  /* Rámeček i písmo v barvě, kterou má Rezervovat pobyt v pozadí.
+     Bílý text vedle pískového rámečku vypadal, že k sobě nepatří. */
+  color: var(--accent-button);
   border: 1px solid var(--accent-button);
 }
 
 .btn-rooms:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  border-color: #ffffff;
+  background-color: var(--accent-button);
+  color: var(--primary-dark);
+  border-color: var(--accent-button);
 }
 
 /* Spodní ovládací prvky (Vycentrované na 100% výškovou osu se šipkou) */
@@ -2586,37 +2589,18 @@ h3 {
   display: none;
 }
 
-/* ----------------------------------------------------
-   MOBILNÍ ZAŘÍZENÍ (max-width: 768px)
-   ---------------------------------------------------- */
-@media (max-width: 768px) {
-  .hero-section {
-    height: 95vh;
-    min-height: min(540px, 88vh);
-    min-height: min(540px, 88svh);
-    max-height: 750px;
-  }
+/* ====================================================================
+   HLAVIČKA SE LÁME DŘÍV NEŽ ZBYTEK MOBILNÍHO ROZVRŽENÍ
 
-  .hero-inner {
-    width: 100%;
-    height: 100%;
-    padding: 0 20px;
-    box-sizing: border-box;
-  }
+   Mezi 769 a 820 px se odkazy (Nabídka pokojů, Stravování, …) dotýkaly
+   loga a lepily se na něj. Hamburger se proto objevuje už od 820 px,
+   kdežto zbytek mobilních stylů zůstává na 768 px — celé rozvržení na
+   telefon by na osmisetpixelovém tabletu bylo zbytečně hrubé.
 
-  .site-header {
-    height: 84px;
-    padding: 0 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-sizing: border-box;
-  }
-
-  .site-header.is-solid {
-    height: 68px;
-  }
-
+   Pravidla jsou PŘESUNUTÁ z @media (max-width: 768px), ne zkopírovaná;
+   ≤768 je podmnožina ≤820, takže mobil se chová přesně jako dřív.
+   ==================================================================== */
+@media (max-width: 820px) {
   .header-nav-right,
   .nav-left,
   .nav-right {
@@ -2797,6 +2781,57 @@ h3 {
     height: 24px;
   }
 
+  /* Výjimka pro tlačítko v rozbaleném mobilním menu (vyšší specifita) */
+  .mobile-menu-overlay .mobile-menu-booking {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: fit-content !important;
+    height: 46px !important;
+    padding: 0 26px !important;
+    font-size: 20px !important;
+    font-weight: 500 !important;
+    line-height: 1 !important;
+    border-radius: 1px !important;
+    background-color: var(--accent-button) !important;
+    color: var(--primary-dark) !important;
+    text-decoration: none !important;
+    white-space: nowrap !important;
+  }
+
+}
+
+/* ----------------------------------------------------
+   MOBILNÍ ZAŘÍZENÍ (max-width: 768px)
+   ---------------------------------------------------- */
+@media (max-width: 768px) {
+  .hero-section {
+    height: 95vh;
+    min-height: min(540px, 88vh);
+    min-height: min(540px, 88svh);
+    max-height: 750px;
+  }
+
+  .hero-inner {
+    width: 100%;
+    height: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
+  }
+
+  .site-header {
+    height: 84px;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+  }
+
+  .site-header.is-solid {
+    height: 68px;
+  }
+
   /* Středový mobilní nadpis (posunutý níže) */
   .hero-title {
     position: absolute;
@@ -2835,24 +2870,6 @@ h3 {
     background-color: var(--accent-button);
     color: var(--primary-dark);
     border-radius: 1px;
-  }
-
-  /* Výjimka pro tlačítko v rozbaleném mobilním menu (vyšší specifita) */
-  .mobile-menu-overlay .mobile-menu-booking {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: fit-content !important;
-    height: 46px !important;
-    padding: 0 26px !important;
-    font-size: 20px !important;
-    font-weight: 500 !important;
-    line-height: 1 !important;
-    border-radius: 1px !important;
-    background-color: var(--accent-button) !important;
-    color: var(--primary-dark) !important;
-    text-decoration: none !important;
-    white-space: nowrap !important;
   }
 
   .btn-rooms {
@@ -7105,7 +7122,9 @@ h3 {
 
   .room-breakdown-list {
     order: initial !important;
-    border-top: 1px solid #C8C8C8 !important;
+    /* Žádná čára nad prvním nadpisem skupiny — na desktopu tam taky není
+       a nad „Pokoje v přízemí" dělala druhou linku hned pod tou vlastní. */
+    border-top: none !important;
   }
 
   .btn-breakdown-cta {
@@ -9623,8 +9642,9 @@ html.is-route-loading #app {
   font-weight: 500 !important;
   border-radius: 1px !important;
   background-color: transparent !important;
-  color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.7) !important;
+  /* Stejná barva, jakou má v pozadí Přečíst více vedle. */
+  color: #ece8dd !important;
+  border: 1px solid #ece8dd !important;
   cursor: pointer;
   display: inline-flex !important;
   align-items: center !important;
@@ -9635,9 +9655,9 @@ html.is-route-loading #app {
 }
 
 .btn-events-inquiry:hover {
-  background-color: rgba(255, 255, 255, 0.15) !important;
-  border-color: #ffffff !important;
-  color: #ffffff !important;
+  background-color: #ece8dd !important;
+  border-color: #ece8dd !important;
+  color: #1c1c19 !important;
 }
 
 /* 2. CELÝ HOTEL JEN PRO VÁS A VAŠE HOSTY (1:1 Identická kopie sekce Zázemí z úvodní stránky) */
@@ -13704,7 +13724,22 @@ input:checked + .cookie-slider:before {
   .booking-hero-main-title { font-size: min(clamp(26px, 3vw, 34px), 5vh) !important; }
   .booking-hero-subtitle { font-size: clamp(15px, 2.2vh, 17px) !important; }
   .hero-inner { padding-top: 0 !important; padding-bottom: 0 !important; }
-  .scroll-down-btn { margin-top: 10px !important; transform: none !important; }
+  /* Šipka pod tlačítkem se na mobilu centruje přes `left: 50%` a posun
+     o vlastní polovinu. `transform: none` tady rušil svislé odsazení,
+     jenže shodil i to vodorovné — šipka se o 19 px odsunula doprava na
+     každém displeji nižším než 820 px. Svislý posun se ruší zvlášť. */
+  .scroll-down-btn {
+    margin-top: 10px !important;
+    transform: translateX(-50%) !important;
+  }
+
+  /* Hero sekce, kde šipka není vycentrovaná přes left: 50 %, ale drží se
+     pravého okraje — tam se posouvat nemá vůbec. */
+  .rooms-hero-section .scroll-down-btn,
+  .dining-hero-section .scroll-down-btn,
+  .room-detail-hero .scroll-down-btn {
+    transform: none !important;
+  }
 
   /* Obsah hero se na nízkých obrazovkách vysází flexboxem,
      aby nemohl přetéct ven ze sekce */

@@ -349,6 +349,51 @@ Platí ve dvou kalendářích: v Přehledu dostupnosti (`AdminDostupnost.js`)
 a v ručním zápisu (`AdminRucniRezervace.js`). Styl `is-turnover-day` byl
 v `booking.css` napsaný už dávno, ale do 18. 8. 2026 ho nikdo nenasadil.
 
+## Responzivita a rozvržení — co se tu už rozbilo
+
+- **Hlavička se láme na 820 px, zbytek mobilu na 768 px.** Mezi 769 a 820 px
+  se odkazy dotýkaly loga. Pravidla hlavičky a hamburger menu jsou proto
+  **přesunutá** (ne zkopírovaná) do `@media (max-width: 820px)` v `style.css`;
+  ≤768 je podmnožina, takže telefon se chová stejně jako dřív. Kdo bude
+  breakpoint měnit, musí hýbat celým blokem, ne jednotlivými pravidly.
+- **`transform: none` ruší i vodorovné vycentrování.** Pravidlo
+  v `@media (max-height: 820px)` mělo zrušit svislý posun šipky pod hero
+  tlačítkem, ale shodilo i `translateX(-50%)` — šipka se o 19 px odsunula
+  doprava na každém telefonu nižším než 820 px. Ruší se teď zvlášť.
+- **Hero na stránce Rezervace se nesmí umisťovat natvrdo.** V `booking.css`
+  bylo `top: 230px !important`, jenže sekce je vysoká `52svh`; na displeji
+  667 px vysokém z ní text vytekl do bílé sekce pod ní. Obsah se sází
+  flexboxem, ne absolutní pozicí.
+- **Prohlížeč obnovuje scroll i mezi statickými stránkami.** Kdo si prohlédl
+  patičku a pak klikl v navigaci, přistál na nové stránce zase dole. Řeší to
+  `history.scrollRestoration = 'manual'` v `main.js` plus dorovnání po `load`.
+- **Odrolování na sekci nesmí viset na jediném `requestAnimationFrame`.**
+  Fotky dotékají postupně a cíl se pod ním posune — tlačítko „Aktivity
+  v okolí" tím vypadalo jako nefunkční. Slouží k tomu `odrolujNaSekci()`,
+  která pozici přepočítá několikrát a naposledy po `load`; jakmile uživatel
+  sám zaroluje, přestane.
+
+## Posluchače na předrenderovaných stránkách
+
+`initInteractivity()` běží po **každém** přechodu. Když se DOM nevyměňuje
+(`isPreRenderedMatch`), přímé `btn.addEventListener` navrství druhý, třetí…
+posluchač na tomtéž prvku. U FAQ na stránce okolí to znamenalo, že klik
+otázku otevřel a hned zase zavřel — na produkci víc než v dev serveru,
+protože tam se statické HTML servíruje vždycky. FAQ se proto váže
+delegovaně na `document` a jen jednou (`window.__faqNavazano`). Nový
+interaktivní prvek na předrenderované stránce řeš stejně.
+
+## Fotky
+
+Fotky aktivit se zmenšují na **900 px delší stranu, kvalita 80**. Karta je
+na desktopu široká nejvýš ~440 px, takže 900 px pokryje i retinu. Originály
+měly 1600 px a přes 400 kB — složky `Fotky Aktivit` a `Aktivity v hotelu`
+šly z 11,6 MB na 6,5 MB. Nové fotky projeď stejně:
+
+```bash
+magick vstup.webp -resize '900x900>' -quality 80 -strip vystup.webp
+```
+
 ## Databáze
 
 Tabulky: `reservations`, `blocked_dates`, `room_prices`, `disabled_rooms`,

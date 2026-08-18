@@ -2078,32 +2078,34 @@ const initInteractivity = () => {
     }
   });
 
-  // Interaktivita FAQ Accordionu na stránce Aktivity
-  const faqQuestionBtns = document.querySelectorAll('.faq-question-btn');
-  faqQuestionBtns.forEach(btn => {
-    btn.addEventListener('click', (e) => {
+  // FAQ accordion se váže na dokument, a to JEDNOU ZA CELOU NÁVŠTĚVU.
+  //
+  // Dřív se posluchač připínal přímo na tlačítka. Jenže initInteractivity()
+  // běží po každém přechodu, a na předrenderované stránce se DOM nevyměňuje,
+  // takže na témže tlačítku skončily dva posluchače — klik otázku otevřel
+  // a hned zase zavřel. Na produkci to bylo vidět víc než v dev serveru,
+  // protože tam se statické HTML servíruje vždycky.
+  if (!window.__faqNavazano) {
+    window.__faqNavazano = true;
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.faq-question-btn');
+      if (!btn) return;
       e.preventDefault();
       const item = btn.closest('.faq-item');
       if (!item) return;
-      const isOpen = item.classList.contains('is-open');
+      const jeOtevrena = item.classList.contains('is-open');
 
-      document.querySelectorAll('.faq-item.is-open').forEach(otherItem => {
-        if (otherItem !== item) {
-          otherItem.classList.remove('is-open');
-          const otherBtn = otherItem.querySelector('.faq-question-btn');
-          if (otherBtn) otherBtn.setAttribute('aria-expanded', 'false');
-        }
+      document.querySelectorAll('.faq-item.is-open').forEach(jina => {
+        if (jina === item) return;
+        jina.classList.remove('is-open');
+        const jinyBtn = jina.querySelector('.faq-question-btn');
+        if (jinyBtn) jinyBtn.setAttribute('aria-expanded', 'false');
       });
 
-      if (isOpen) {
-        item.classList.remove('is-open');
-        btn.setAttribute('aria-expanded', 'false');
-      } else {
-        item.classList.add('is-open');
-        btn.setAttribute('aria-expanded', 'true');
-      }
+      item.classList.toggle('is-open', !jeOtevrena);
+      btn.setAttribute('aria-expanded', String(!jeOtevrena));
     });
-  });
+  }
 
   // Hero Video Handling (HomePage)
   const heroVideo = document.querySelector('.hero-video');
@@ -5944,6 +5946,38 @@ const initDestinationModal = () => {
 const app = document.querySelector('#app');
 let currentViewKey = null;
 
+/**
+ * Odroluje na sekci a drží se jí, i když se stránka pod rukama ještě sype.
+ *
+ * Původně to byl jediný `requestAnimationFrame`. Na mobilu se ale fotky
+ * dotahují postupně, takže sekce po doskočení odplula jinam a vypadalo to,
+ * že tlačítko nefunguje (hlášeno u „Aktivity v okolí"). Pozice se proto
+ * přepočítá ještě několikrát a naposledy po `load`, kdy má dokument
+ * konečnou výšku. Jakmile uživatel sám zaroluje, přestaneme mu do toho mluvit.
+ */
+const odrolujNaSekci = (selektor) => {
+  let zrus = false;
+  const prestat = () => { zrus = true; };
+  window.addEventListener('wheel', prestat, { once: true, passive: true });
+  window.addEventListener('touchstart', prestat, { once: true, passive: true });
+
+  const skoc = () => {
+    if (zrus) return;
+    const cil = document.querySelector(selektor);
+    if (!cil) return;
+    const hlavicka = document.querySelector('.site-header');
+    const odstup = hlavicka ? hlavicka.offsetHeight + 12 : 100;
+    const y = cil.getBoundingClientRect().top + window.pageYOffset - odstup;
+    window.scrollTo({ top: Math.max(0, y), behavior: 'auto' });
+  };
+
+  requestAnimationFrame(skoc);
+  [80, 250, 600, 1200].forEach(ms => setTimeout(skoc, ms));
+  if (document.readyState !== 'complete') {
+    window.addEventListener('load', () => setTimeout(skoc, 60), { once: true });
+  }
+};
+
 const route = (isInitial = false) => {
   // Ensure page scrolling is unlocked on every navigation/route change
   document.body.style.overflow = '';
@@ -6219,38 +6253,17 @@ const route = (isInitial = false) => {
 
   // Automatické odskrolování na sekci Nabídka pokojů při přechodu z tlačítka Nabídka pokojů
   if (pageKey === 'rooms' && hash === '#pokoje-nabidka') {
-    requestAnimationFrame(() => {
-      const roomsSec = document.querySelector('.rooms-list-section');
-      if (!roomsSec) return;
-      const hlavicka = document.querySelector('.site-header');
-      const odstup = hlavicka ? hlavicka.offsetHeight + 12 : 100;
-      const y = roomsSec.getBoundingClientRect().top + window.pageYOffset - odstup;
-      window.scrollTo({ top: Math.max(0, y), behavior: 'auto' });
-    });
+    odrolujNaSekci('.rooms-list-section');
   }
 
   // Automatické odskrolování na podsekci na stránce Stravování
   if (isSectionHashOnDining) {
-    requestAnimationFrame(() => {
-      const cil = document.querySelector(cleanHash);
-      if (!cil) return;
-      const hlavicka = document.querySelector('.site-header');
-      const odstup = hlavicka ? hlavicka.offsetHeight + 12 : 100;
-      const y = cil.getBoundingClientRect().top + window.pageYOffset - odstup;
-      window.scrollTo({ top: Math.max(0, y), behavior: 'auto' });
-    });
+    odrolujNaSekci(cleanHash);
   }
 
   // Automatické odskrolování na sekce na stránce Aktivity (#aktivity-v-hotelu / #aktivity-v-okoli)
   if (isActivitiesSectionHash) {
-    requestAnimationFrame(() => {
-      const cil = document.querySelector(cleanHash);
-      if (!cil) return;
-      const hlavicka = document.querySelector('.site-header');
-      const odstup = hlavicka ? hlavicka.offsetHeight + 12 : 100;
-      const y = cil.getBoundingClientRect().top + window.pageYOffset - odstup;
-      window.scrollTo({ top: Math.max(0, y), behavior: 'auto' });
-    });
+    odrolujNaSekci(cleanHash);
   }
 
   // Odstranění třídy is-route-loading po dokončení vykreslení cesty
@@ -6543,8 +6556,32 @@ const initCookieManager = () => {
 window.addEventListener('popstate', () => route(false));
 window.addEventListener('hashchange', () => route(false));
 
+// Prohlížeč si po každé stránce pamatuje, kam byla odrolovaná, a při
+// návratu na ni scroll obnoví. Jenže stránky tady jsou samostatné .html
+// soubory, takže klik v navigaci je plné načtení — a kdo si dřív prohlédl
+// patičku, přistál na nové stránce rovnou dole v patičce místo v hero
+// sekci. Obnovu proto řídíme sami: bez kotvy vždycky nahoru.
+if ('scrollRestoration' in history) {
+  history.scrollRestoration = 'manual';
+}
+
 // Immediate render on initial load without waiting for Supabase
 route(true);
+
+// Bez kotvy v adrese začíná každá stránka nahoře. Musí to proběhnout
+// i po `load` — obrázky a písma dorovnají výšku dokumentu a prohlížeč
+// by jinak stihl scroll vrátit ještě po nás.
+const naVrchol = () => {
+  if (window.location.hash) return;
+  window.scrollTo(0, 0);
+  document.body.scrollTop = 0;
+  document.documentElement.scrollTop = 0;
+};
+naVrchol();
+window.addEventListener('load', () => {
+  naVrchol();
+  requestAnimationFrame(naVrchol);
+}, { once: true });
 initCookieManager();
 
 initOznameni();
