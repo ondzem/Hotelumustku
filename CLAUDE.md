@@ -738,6 +738,41 @@ ještě není, a staré sloupce se doplní z `MOCK_ROOMS`.
 
 ---
 
+## Jak se dostat do administrace při testování
+
+Administrace stojí na Supabase Auth, takže bez přihlášení se v ní nedá
+nic proměřit. **Heslo majitele k tomu není potřeba a nemá se sdělovat** —
+jakmile jednou padne do chatu, je vidět v historii a musí se měnit.
+
+Místo toho dočasný účet. Trvá to dvě minuty:
+
+```bash
+set -a && . ./.env && set +a
+HESLO="Zkouska-$(openssl rand -hex 10)"; MAIL="zkouska-recepce@umustku.cz"
+curl -s -X POST "$VITE_SUPABASE_URL/auth/v1/admin/users" \
+  -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
+  -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+  -H "Content-Type: application/json" \
+  -d "{\"email\":\"$MAIL\",\"password\":\"$HESLO\",\"email_confirm\":true}"
+echo "VITE_ADMIN_EMAIL=$MAIL" > .env.local   # .env.local je v .gitignore (*.local)
+echo "$HESLO"                                # heslo si nech mimo repozitář
+```
+
+Pak restartovat vývojový server (`.env.local` se načte jen při startu),
+přihlásit se tím heslem a testovat. **Po sobě uklidit** — smazat účet
+přes `DELETE /auth/v1/admin/users/<id>`, smazat `.env.local` a ověřit,
+že v `/auth/v1/admin/users` zůstal jen `hotel@umustku.cz`.
+
+Pozor na dvě věci, které vypadají jako chyba a nejsou:
+
+- **Náhledové okno běží skryté, takže se v něm zmrazí animace i
+  `requestAnimationFrame`.** Screenshot pak ukáže zamrzlý mezistav —
+  třeba okno posunuté o stovky pixelů, protože se zastavila nabíhací
+  animace. Rozhoduje měření (`getBoundingClientRect`,
+  `elementFromPoint`), ne obrázek.
+- Klikání přes `computer` umí vypršet, když je okno skryté. Spolehlivější
+  je vyvolat kliknutí skriptem.
+
 ## Jak si ověřit, že to funguje
 
 Nespoléhej na to, že změna vypadá správně v kódu. Osvědčené postupy:
