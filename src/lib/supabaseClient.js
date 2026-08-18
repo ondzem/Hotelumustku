@@ -747,24 +747,14 @@ export const getStoredNewsItems = async () => {
   return data || [];
 };
 
-// Uložení / Úprava aktuality (s vymáháním pravidla: MAXIMÁLNĚ 1 AKTIVNÍ BANNER)
+// Uložení / Úprava aktuality
 export const saveStoredNewsItem = async (newsPayload) => {
   if (isSupabaseConfigured && supabase) {
     try {
-      // 1. Pokud je zapnut is_banner = true, zrušíme banner u všech ostatních
-      if (newsPayload.is_banner) {
-        await supabase
-          .from('aktuality')
-          .update({ is_banner: false })
-          .eq('is_banner', true);
-      }
-
       const payload = {
         title: newsPayload.title,
         content: newsPayload.content || '',
-        banner_text: newsPayload.banner_text || '',
         is_active: Boolean(newsPayload.is_active),
-        is_banner: Boolean(newsPayload.is_banner),
         image_url: newsPayload.image_url || null,
         updated_at: new Date().toISOString()
       };

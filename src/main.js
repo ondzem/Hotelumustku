@@ -4,7 +4,7 @@ import { BookingSystem } from './components/BookingSystem.js';
 import { AdminDashboard } from './components/AdminDashboard.js';
 import { getStoredRoomPrices, getStoredDisabledRooms, MOCK_ROOMS, saveContactMessage, getStoredNewsItems, getStoredReviews, saveStoredReview, formatGDPRName, getStoredCenik, fetchCenik, fetchRoomPrices } from './lib/supabaseClient.js';
 import { cenaZaOsobuNoc, maxOsobNaPokoji } from './utils/cenik.js';
-import { sendEmail, generateEmailContactNotification, generateEmailNewReviewNotification } from './utils/emailService.js';
+import { sendEmail, generateEmailContactNotification, generateEmailNewReviewNotification, RECEPCE_PRIJEMCE } from './utils/emailService.js';
 import { initScrollReveal } from './utils/scrollReveal.js';
 import { fotkyPokoje } from './utils/roomGalleries.js';
 
@@ -221,75 +221,6 @@ export const renderRoomBreakdownItem = (roomId, defaultRoomName, priceType, pric
   `;
 };
 
-// Správa a načtení oznamovacího banneru v liště nad navbarem
-let activeBannerCache = null;
-
-export async function refreshActiveBanner() {
-  try {
-    const items = await getStoredNewsItems();
-    activeBannerCache = (items || []).find(item => item.is_active && item.is_banner) || null;
-  } catch (err) {
-    activeBannerCache = null;
-  }
-}
-
-/**
- * Doplní oznámení do už vykreslené stránky.
- *
- * Banner se načítá až po prvním vykreslení, takže se do šablony nestihne
- * dostat — a na staticky předrenderovaných stránkách by se nedostal
- * vůbec. Tahle funkce ho tam vloží (nebo odebere) sama, ať přijde
- * kdykoli. Volá se po načtení i po každé změně stránky.
- */
-export function vlozOznameniDoStranky() {
-  document.querySelectorAll('#announcement-detail-modal, #announcement-side-tab').forEach(el => el.remove());
-  if (!activeBannerCache) return;
-  document.body.insertAdjacentHTML('beforeend', getTopAnnouncementBarHTML());
-}
-
-/**
- * Otevírání a zavírání okna s oznámením.
- *
- * Obsluha byla schovaná uvnitř initDestinationModal(), který běží jen na
- * stránce s výlety — na zbytku webu tedy na záložku šlo klikat, ale nic
- * se nestalo. Registruje se jednou pro celý web, proto ta pojistka.
- */
-let oznameniNapojeno = false;
-export function initOznameni() {
-  if (oznameniNapojeno) return;
-  oznameniNapojeno = true;
-
-  const zavri = () => {
-    const okno = document.getElementById('announcement-detail-modal');
-    if (okno) {
-      okno.classList.remove('is-active');
-      document.body.style.overflow = '';
-    }
-  };
-
-  document.addEventListener('click', (e) => {
-    if (!e.target || !e.target.closest) return;
-
-    if (e.target.closest('#announcement-side-tab') || e.target.closest('#btn-open-announcement-modal')) {
-      e.preventDefault();
-      const okno = document.getElementById('announcement-detail-modal');
-      if (okno) {
-        okno.classList.add('is-active');
-        document.body.style.overflow = 'hidden';
-      }
-      return;
-    }
-
-    if (e.target.closest('#btn-close-announcement-modal') || e.target.closest('#announcement-modal-overlay')) {
-      zavri();
-    }
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') zavri();
-  });
-}
-
 /**
  * Rozbalení textu v sekci O nás na mobilu.
  *
@@ -329,59 +260,6 @@ export function initOnasRozbaleni() {
       }
     }
   });
-}
-
-export function getTopAnnouncementBarHTML() {
-  if (!activeBannerCache) return '';
-
-  const text = activeBannerCache.banner_text || activeBannerCache.title || '';
-  const dateStr = activeBannerCache.updated_at || activeBannerCache.created_at;
-  let formattedDate = '';
-  if (dateStr) {
-    const d = new Date(dateStr);
-    if (!isNaN(d.getTime())) {
-      formattedDate = d.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' });
-    }
-  }
-
-  const imageHTML = activeBannerCache.image_url
-    ? `<div class="announcement-modal-image"><img src="${escUrl(activeBannerCache.image_url)}" alt="${esc(activeBannerCache.title || '')}" loading="lazy"></div>`
-    : '';
-
-  const paragraphs = (activeBannerCache.content || '').split('\n\n').filter(Boolean);
-  const contentHTML = paragraphs.length > 0
-    ? paragraphs.map(p => `<p class="announcement-modal-p">${esc(p).replace(/\n/g, '<br>')}</p>`).join('')
-    : `<p class="announcement-modal-p">${esc(text)}</p>`;
-
-  return `
-    <!-- Boční záložka, kterou se oznámení otevírá. Chyběla — v CSS
-         i v obsluze kliknutí byla, ale nikdo ji nevykresloval, takže
-         se návštěvník k oznámení neměl jak dostat. -->
-    <button type="button" class="announcement-side-tab" id="announcement-side-tab"
-            aria-label="Zobrazit aktuální oznámení hotelu">
-      <span class="side-tab-dot" aria-hidden="true"></span>
-      <span class="side-tab-text">${esc(text)}</span>
-    </button>
-
-    <!-- POP-UP MODAL PRO DETAIL OZNÁMENÍ -->
-    <div class="announcement-detail-modal" id="announcement-detail-modal" aria-hidden="true" role="dialog">
-      <div class="announcement-modal-overlay" id="announcement-modal-overlay"></div>
-      <div class="announcement-modal-content">
-        <button class="announcement-modal-close" id="btn-close-announcement-modal" aria-label="Zavřít detail oznámení">&times;</button>
-        ${imageHTML}
-        <div class="announcement-modal-body">
-          <div class="announcement-modal-header">
-            <span class="announcement-modal-badge-tag">AKTUÁLNÍ OZNÁMENÍ</span>
-            ${formattedDate ? `<span class="announcement-modal-date">${formattedDate}</span>` : ''}
-          </div>
-          <h2 class="announcement-modal-title">${esc(activeBannerCache.title || text)}</h2>
-          <div class="announcement-modal-text">
-            ${contentHTML}
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
 }
 
 const getHeaderHTML = () => `
@@ -1028,9 +906,6 @@ const getFooterHTML = () => `
       </div>
     </div>
   </footer>
-  <!-- Oznámení do patičky nepatří: v době vykreslení ještě není načtené
-       a na statických stránkách by chybělo úplně. Vkládá ho na konec
-       stránky vlozOznameniDoStranky() po každé změně stránky. -->
 
   <!-- LIGHTBOX MODAL PRO ZVĚTŠENÍ FOTEK POKOJŮ (PRO SENIORY) -->
   <div class="lightbox-modal" id="lightbox-modal" aria-hidden="true" role="dialog">
@@ -2597,13 +2472,13 @@ const initInteractivity = () => {
         console.error('Error saving review to store/DB:', saveErr);
       }
 
-      // Send email notification to admin ondra.zeman05@gmail.com
+      // Upozornění na novou recenzi — zatím na soukromou adresu majitele.
       try {
         const emailTemplate = generateEmailNewReviewNotification({
           review: { ...reviewRecord, date: new Date().toLocaleDateString('cs-CZ') }
         });
         await sendEmail({
-          to: 'ondra.zeman05@gmail.com',
+          to: RECEPCE_PRIJEMCE,
           subject: emailTemplate.subject,
           html: emailTemplate.html,
           type: 'new_review_notification'
@@ -5169,10 +5044,10 @@ const initContactPageInteractivity = () => {
           // 1. Uložení do Supabase databáze
           await saveContactMessage(payload);
 
-          // 2. Odeslání hezkého HTML e-mailu adminovi (ondra.zeman05@gmail.com)
+          // 2. Upozornění pro recepci — zatím na soukromou adresu majitele
           const emailTemplate = generateEmailContactNotification(payload);
           sendEmail({
-            to: 'ondra.zeman05@gmail.com',
+            to: RECEPCE_PRIJEMCE,
             subject: emailTemplate.subject,
             html: emailTemplate.html,
             type: 'contact_form_message'
@@ -6261,7 +6136,6 @@ const route = (isInitial = false) => {
   syncCustomRoomNamesToDOM();
   syncDynamicRoomPricesToDOM();
   syncDisabledRoomsToDOM();
-  vlozOznameniDoStranky();
   spustHeroVideo();
 
   // Ceník i pokoje se načtou na pozadí; než dorazí, ukážou se data
@@ -6610,9 +6484,7 @@ window.addEventListener('load', () => {
 }, { once: true });
 initCookieManager();
 
-initOznameni();
 initOnasRozbaleni();
-refreshActiveBanner().then(vlozOznameniDoStranky);
 
 window.addEventListener('load', () => {
   const v = document.querySelector('[data-hero-video]');

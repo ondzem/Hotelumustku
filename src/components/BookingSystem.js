@@ -1,7 +1,7 @@
 import { MOCK_ROOMS, isSupabaseConfigured, supabase, getStoredReservations, saveStoredReservation, sanitizeReservationForSupabase, getStoredBlockedDates, getStoredDiscountCodes, getStoredRoomPrices, getStoredDisabledRooms, getStoredCenik, fetchCenik, fetchRoomPrices, getDeviceRedeemedDiscountCodes, markDiscountCodeRedeemedOnDevice, incrementDiscountCodeUsage } from '../lib/supabaseClient.js';
 import { calculateReservationPrice, generateReservationCode, generateManageToken, BANK_ACCOUNT, BANK_NAME, formatCzechPrice, validateSystemDateIntegrity, isWinterSeason, VYCHOZI_NASTAVENI } from '../utils/pricing.js';
 import { maxOsobNaPokoji, obdobiSOmezenouDostupnosti } from '../utils/cenik.js';
-import { sendEmail, generateEmail1RequestReceived, generateEmail1ReceptionNotification } from '../utils/emailService.js';
+import { sendEmail, generateEmail1RequestReceived, generateEmail1ReceptionNotification, RECEPCE_PRIJEMCE } from '../utils/emailService.js';
 import { fotkyPokoje } from '../utils/roomGalleries.js';
 
 function getTodayDateString() {
@@ -1273,7 +1273,7 @@ export class BookingSystem {
 
       const email1Reception = generateEmail1ReceptionNotification({ reservation: reservationData, room, pricing });
       await sendEmail({
-        to: 'ondra.zeman05@gmail.com',
+        to: RECEPCE_PRIJEMCE,
         subject: email1Reception.subject,
         html: email1Reception.html,
         type: 'email_1_reception_notification',

@@ -32,6 +32,10 @@ const ODESILATELE = [
   'Hotel u Můstku <onboarding@resend.dev>'
 ];
 
+// Kam se pošta přesměruje, když ji Resend ještě nepustí na cizí adresu
+// (doména se teprve ověřuje). Musí sedět s RECEPCE_PRIJEMCE
+// v src/utils/emailService.js — až začne fungovat hotel@umustku.cz,
+// přepíše se to na obou místech.
 const RECEPCE = 'ondra.zeman05@gmail.com';
 
 /**

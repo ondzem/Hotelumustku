@@ -133,7 +133,7 @@ export class AdminDashboard {
     this.showNewsModal = false;
     this.newsItems = [];
     this.editingNewsItem = null;
-    this.newsForm = { title: '', banner_text: '', content: '', is_active: true, is_banner: false, image_url: '' };
+    this.newsForm = { title: '', content: '', is_active: true, image_url: '' };
     this.showCropModal = false;
     this.cropImageSrc = null;
     this.showReviewsModal = false;
@@ -1534,26 +1534,6 @@ export class AdminDashboard {
                     </label>
                   </div>
 
-                  <!-- OZNÁMENÍ V BOČNÍ ZÁLOŽCE
-                       Pole tu dřív chyběla, přestože se ukládala i vykreslovala —
-                       banner tedy nešlo z administrace vůbec zapnout ani přepsat. -->
-                  <div style="background: #ffffff; border: 1px solid #e8e7de; border-radius: 6px; padding: 14px 16px;">
-                    <label style="display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 700; color: #1c1c19; cursor: pointer;">
-                      <input type="checkbox" id="news-is-banner-check" ${this.newsForm.is_banner ? 'checked' : ''} style="width: 19px; height: 19px; accent-color: #4a5a24;">
-                      Připnout jako oznámení do boční záložky
-                    </label>
-                    <p style="margin: 8px 0 0 29px; font-size: 12.5px; color: #55554e; line-height: 1.5;">
-                      Oznámení může být na webu jen jedno — zapnutím se u ostatních aktualit vypne.
-                    </p>
-                    <div id="news-banner-text-wrap" style="margin-top: 12px; ${this.newsForm.is_banner ? '' : 'display: none;'}">
-                      <label style="font-size: 13px; font-weight: 700; color: #1c1c19; display: block; margin-bottom: 6px;">Text na záložce</label>
-                      <input type="text" id="news-banner-text-input" class="admin-discount-input" placeholder="Krátká věta, která se ukáže na záložce…" value="${(this.newsForm.banner_text || '').replace(/"/g, '&quot;')}">
-                      <p style="margin: 6px 0 0 0; font-size: 12.5px; color: #55554e;">
-                        Když zůstane prázdný, použije se název aktuality.
-                      </p>
-                    </div>
-                  </div>
-
                   <button type="button" class="btn btn-booking-submit btn-save-news-item" style="width: 100%; height: 46px; font-size: 15px; font-weight: 700; border-radius: 4px; margin-top: 4px;">
                     ${this.editingNewsItem ? 'Uložit změny aktuality' : 'Publikovat novou aktualitu'}
                   </button>
@@ -1595,7 +1575,7 @@ export class AdminDashboard {
                               `}
                             </div>
                             <div style="font-size: 12px; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                              ${item.banner_text || item.content}
+                              ${item.content}
                             </div>
                           </div>
                         </div>
@@ -2493,7 +2473,7 @@ export class AdminDashboard {
       btnCloseNewsModal.addEventListener('click', () => {
         this.showNewsModal = false;
         this.editingNewsItem = null;
-        this.newsForm = { title: '', banner_text: '', content: '', is_active: true, is_banner: false, image_url: '' };
+        this.newsForm = { title: '', content: '', is_active: true, image_url: '' };
         this.render();
       });
     }
@@ -2504,7 +2484,7 @@ export class AdminDashboard {
         if (e.target === newsModalOverlay) {
           this.showNewsModal = false;
           this.editingNewsItem = null;
-          this.newsForm = { title: '', banner_text: '', content: '', is_active: true, is_banner: false, image_url: '' };
+          this.newsForm = { title: '', content: '', is_active: true, image_url: '' };
           this.render();
         }
       });
@@ -2514,28 +2494,18 @@ export class AdminDashboard {
     if (btnResetNewsForm) {
       btnResetNewsForm.addEventListener('click', () => {
         this.editingNewsItem = null;
-        this.newsForm = { title: '', banner_text: '', content: '', is_active: true, is_banner: false, image_url: '' };
+        this.newsForm = { title: '', content: '', is_active: true, image_url: '' };
         this.render();
       });
     }
 
     const newsTitleInput = this.container.querySelector('#news-title-input');
-    const newsBannerTextInput = this.container.querySelector('#news-banner-text-input');
     const newsContentInput = this.container.querySelector('#news-content-input');
     const newsIsActiveCheck = this.container.querySelector('#news-is-active-check');
-    const newsIsBannerCheck = this.container.querySelector('#news-is-banner-check');
 
     if (newsTitleInput) newsTitleInput.addEventListener('input', e => { this.newsForm.title = e.target.value; });
-    if (newsBannerTextInput) newsBannerTextInput.addEventListener('input', e => { this.newsForm.banner_text = e.target.value; });
     if (newsContentInput) newsContentInput.addEventListener('input', e => { this.newsForm.content = e.target.value; });
     if (newsIsActiveCheck) newsIsActiveCheck.addEventListener('change', e => { this.newsForm.is_active = e.target.checked; });
-    if (newsIsBannerCheck) newsIsBannerCheck.addEventListener('change', e => {
-      this.newsForm.is_banner = e.target.checked;
-      // Přepnutí v DOM, ne přes render() — překreslení by zahodilo rozepsaný text.
-      const wrap = this.container.querySelector('#news-banner-text-wrap');
-      if (wrap) wrap.style.display = e.target.checked ? '' : 'none';
-    });
-
     const btnRemoveNewsPhoto = this.container.querySelector('.btn-remove-news-photo');
     if (btnRemoveNewsPhoto) {
       btnRemoveNewsPhoto.addEventListener('click', () => {
@@ -2571,9 +2541,7 @@ export class AdminDashboard {
       btnSaveNewsItem.addEventListener('click', async () => {
         const title = (newsTitleInput ? newsTitleInput.value : this.newsForm.title || '').trim();
         const content = (newsContentInput ? newsContentInput.value : this.newsForm.content || '').trim();
-        const banner_text = (newsBannerTextInput ? newsBannerTextInput.value : this.newsForm.banner_text || '').trim();
         const is_active = newsIsActiveCheck ? newsIsActiveCheck.checked : this.newsForm.is_active;
-        const is_banner = newsIsBannerCheck ? newsIsBannerCheck.checked : this.newsForm.is_banner;
 
         if (!title) {
           this.showAdminToast('⚠️ Vyplňte nadpis aktuality.');
@@ -2591,9 +2559,7 @@ export class AdminDashboard {
           id: this.editingNewsItem ? this.editingNewsItem.id : null,
           title,
           content,
-          banner_text,
           is_active,
-          is_banner,
           image_url: this.newsForm.image_url || null
         };
 
@@ -2601,7 +2567,7 @@ export class AdminDashboard {
         if (result.success) {
           this.showAdminToast(this.editingNewsItem ? '✓ Aktualita byla úspěšně upravena.' : '🎉 Nová aktualita byla úspěšně přidána.');
           this.editingNewsItem = null;
-          this.newsForm = { title: '', banner_text: '', content: '', is_active: true, is_banner: false, image_url: '' };
+          this.newsForm = { title: '', content: '', is_active: true, image_url: '' };
           await this.fetchNewsItems();
         } else {
           this.showAdminToast('⚠️ Aktualitu se nepodařilo uložit.');
@@ -2618,10 +2584,8 @@ export class AdminDashboard {
           this.editingNewsItem = item;
           this.newsForm = {
             title: item.title || '',
-            banner_text: item.banner_text || '',
             content: item.content || '',
             is_active: Boolean(item.is_active),
-            is_banner: Boolean(item.is_banner),
             image_url: item.image_url || ''
           };
           this.render();

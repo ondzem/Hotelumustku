@@ -3,6 +3,30 @@ import { BANK_ACCOUNT, BANK_NAME, generateSpaydQrUrl, formatCzechPrice, getVaria
 
 const LOCAL_STORAGE_EMAIL_LOGS_KEY = 'hotel_umustku_email_logs_v1';
 
+/**
+ * Adresa hotelu, kterou VIDÍ HOSTÉ.
+ *
+ * Píše se do textů e-mailů a do tiskových sestav jako kontakt na hotel.
+ * Dřív byly v kódu rozeseté tři různé adresy — mimo jiné
+ * info@hotelumustku.cz, která nikdy neexistovala, a přesto se posílala
+ * hostům v e-mailu o vypršení lhůty pro úhradu zálohy.
+ */
+export const HOTEL_EMAIL = 'hotel@umustku.cz';
+export const HOTEL_TELEFON = '+420 777 666 273';
+
+/**
+ * Kam CHODÍ UPOZORNĚNÍ pro recepci — nová žádost o rezervaci, zpráva
+ * z kontaktního formuláře, nová recenze.
+ *
+ * Schválně to NENÍ totéž co HOTEL_EMAIL: schránka hotel@umustku.cz zatím
+ * nefunguje, doména se teprve překlápí. Upozornění proto chodí majiteli
+ * na soukromou adresu, aby se neztrácela.
+ *
+ * AŽ BUDE hotel@umustku.cz doručovat, stačí tady napsat HOTEL_EMAIL
+ * a totéž v netlify/functions/send-email.js u konstanty RECEPCE.
+ */
+export const RECEPCE_PRIJEMCE = 'ondra.zeman05@gmail.com';
+
 export function getEmailLogs() {
   if (typeof localStorage === 'undefined') return [];
   try {
@@ -496,7 +520,7 @@ export function generateEmailPaymentExpired({ reservation, room }) {
         Pokud byla platba odeslána na poslední chvíli nebo máte o pobyt v našem hotelu stále zájem, rádi s vámi možnost ubytování prověříme:
       </p>
       <ul style="margin: 0 !important; padding-left: 20px !important; font-size: 14.5px !important; color: #2C2C28 !important; line-height: 1.6 !important;">
-        <li style="margin-bottom: 8px !important;"><strong>Osobní domluva na recepci:</strong> Zavolejte nám na <strong>+420 777 666 273</strong> nebo napište na <strong>info@hotelumustku.cz</strong>. Pokud je pokoj stále volný, rezervaci vám rádi obnovíme.</li>
+        <li style="margin-bottom: 8px !important;"><strong>Osobní domluva na recepci:</strong> Zavolejte nám na <strong>+420 777 666 273</strong> nebo napište na <strong>${HOTEL_EMAIL}</strong>. Pokud je pokoj stále volný, rezervaci vám rádi obnovíme.</li>
         <li style="margin-bottom: 8px !important;"><strong>Vytvořit novou rezervaci:</strong> Můžete si kdykoliv vybrat nový termín na našem webu <a href="https://umustku.cz/#rezervace" style="color: #697947 !important; font-weight: 700 !important;">umustku.cz</a>.</li>
       </ul>
     </div>
@@ -514,7 +538,7 @@ export function generateEmailPaymentExpired({ reservation, room }) {
   return { subject: `Informace k vaší žádosti o rezervaci ${reservation.code} — Vypršení lhůty pro úhradu zálohy | Hotel u Můstku`, html };
 }
 
-export function sendAllTestEmailsTo(recipientEmail = 'ondra.zeman05@gmail.com') {
+export function sendAllTestEmailsTo(recipientEmail = RECEPCE_PRIJEMCE) {
   const mockReservation = {
     id: 'res-test-1',
     code: 'HM-2026-TEST',

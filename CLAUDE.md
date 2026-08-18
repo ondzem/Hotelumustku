@@ -222,14 +222,13 @@ Další věci, které tu byly rozbité a stojí za hlídání:
   Nahrávání jde přes `netlify/functions/upload-news-image.js` servisním
   klíčem (`SUPABASE_SERVICE_ROLE_KEY`, bez předpony `VITE_`). Lokálně to
   funguje díky middleware ve `vite.config.js`, stejně jako u e-mailů.
-- Oznamovací banner se vkládá do `document.body` funkcí
-  `vlozOznameniDoStranky()`, ne do šablony patičky: načítá se až po
-  vykreslení a na statických stránkách by chyběl úplně.
-- Zapnout ho jde zaškrtnutím **Připnout jako oznámení do boční záložky**
-  ve formuláři aktuality. Ta dvě pole (`is_banner`, `banner_text`)
-  z formuláře kdysi vypadla, i když se dál ukládala a vykreslovala —
-  banner tedy nešlo z administrace vůbec zapnout. Oznámení může být jen
-  jedno, zapnutí ho ostatním aktualitám vypne (řeší `saveStoredNewsItem`).
+- **Oznamovací banner v boční záložce byl zrušen** (18. 8. 2026). Majitel
+  ho nikdy nechtěl — aktuality patří výhradně na stránku Aktuality.
+  Odstraněno z `main.js` (`activeBannerCache`, `refreshActiveBanner`,
+  `vlozOznameniDoStranky`, `initOznameni`, `getTopAnnouncementBarHTML`),
+  z formuláře v `AdminDashboard.js`, z ukládání v `supabaseClient.js`
+  i 22 pravidel ze `style.css`. Sloupce `is_banner` a `banner_text`
+  v tabulce `aktuality` zůstaly, jen se nepoužívají. Nevracej to.
 
 ### 7. Migrace se spouštějí ručně
 
@@ -487,6 +486,23 @@ návštěvníkovi včetně recepčního. Na adresy obrázků je `escUrl()`.
 
 Bezpečnostní hlavičky jsou v `public/_headers`; `/admin` má navíc
 `noindex` a `no-store`.
+
+## E-mailové adresy
+
+Jsou **dvě a mají různou roli**. Obě jsou v `src/utils/emailService.js`,
+nikam je nepiš natvrdo:
+
+- **`HOTEL_EMAIL`** = `hotel@umustku.cz` — adresa, kterou **vidí hosté**
+  v textech e-mailů a na tiskových sestavách.
+- **`RECEPCE_PRIJEMCE`** = `ondra.zeman05@gmail.com` — kam **chodí
+  upozornění** (nová žádost o rezervaci, zpráva z kontaktního formuláře,
+  nová recenze). Schválně to zatím není totéž: schránka na doméně ještě
+  nedoručuje. Až začne, přepíše se to tady a v `netlify/functions/send-email.js`
+  u konstanty `RECEPCE`.
+
+V kódu kdysi byly rozeseté tři různé adresy včetně `info@hotelumustku.cz`,
+která nikdy neexistovala — a přesto se posílala hostům v e-mailu
+o vypršení lhůty pro úhradu zálohy.
 
 ## Databáze
 

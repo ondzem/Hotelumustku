@@ -319,7 +319,7 @@ export function printReservationSheet(reservation) {
     <div class="hotel-brand">
       <h1>Hotel u Můstku</h1>
       <p>Hutní 660, 468 61 Desná v Jizerských horách</p>
-      <p>Tel: +420 777 666 273 | E-mail: info@hotelumustku.cz | Web: umustku.cz</p>
+      <p>Tel: +420 777 666 273 | E-mail: hotel@umustku.cz | Web: umustku.cz</p>
       <p>IČO: 76366052 | DIČ: CZ8905052738</p>
     </div>
     <div class="doc-meta">
