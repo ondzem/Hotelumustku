@@ -407,6 +407,8 @@ Než sáhnu na první nástroj u netriviálního zadání, projít tyhle čtyři
   `brainstorming` → `writing-plans` → `executing-plans` na novou věc,
   `verification-before-completion` než řeknu „hotovo".
 - **ruflo-core** — jen když zlobí tooling nebo MCP.
+- **graphify** — orientace v kódu přes znalostní graf místo grepu.
+  Podrobně níž v oddílu „graphify — znalostní graf projektu“.
 
 Nevyvolávat všechny naráz, to jde proti smyslu. Headroom není skill, je to
 lokální proxy na portu 8787 — nedá se vyvolat, buď běží, nebo ne.
@@ -426,3 +428,36 @@ lokální proxy na portu 8787 — nedá se vyvolat, buď běží, nebo ne.
 - Barvy: zelená `#697947`, tmavá `#1c1c19`, krémová `#ece8dd`.
 - Ceny se formátují přes `formatCzechPrice()`, datumy přes
   `formatCzechDateStr()`.
+
+## graphify — znalostní graf projektu
+
+Projekt má znalostní graf v `graphify-out/`. Staví ho `graphify` (tree-sitter
+AST, lokálně, bez LLM a bez placeného API). Slouží k tomu, aby se odpovědi
+na otázky o kódu hledaly v grafu, ne slepým grepováním.
+
+```bash
+graphify query "jak se počítá cena rezervace"   # podgraf k otázce
+graphify explain "BookingSystem"                # jeden uzel a jeho okolí
+graphify path "BookingSystem" "calculateReservationPrice()"
+graphify god-nodes                              # nejpropojenější místa
+graphify update .                               # obnovit graf po změně kódu
+```
+
+Pravidla:
+
+- **Na otázku o kódu nejdřív `graphify query`**, teprve pak čtení souborů.
+  Vrátí menší výřez než grep a rovnou s vazbami. Na tohle upozorňuje i
+  PreToolUse hook v `.claude/settings.json`.
+- **Po zásahu do kódu spustit `graphify update .`**, ať graf nezestárne.
+  Dělá to i post-commit hook, takže po commitu se to stane samo.
+- `graphify-out/GRAPH_REPORT.md` je na širší architektonický přehled,
+  `graph.html` na proklikání v prohlížeči.
+
+**Co v grafu NENÍ:** patnáct statických `.html` stránek. Graphify je bere
+jako dokumenty, ne kód, a ty potřebují sémantický průchod přes LLM
+(`/graphify .` v Claude Code, nebo API klíč a `graphify extract .`).
+V grafu je zatím jen JS, SQL a konfigurace. Na dvojí vykreslování stránek
+(oddíl 1 nahoře) proto graf **neupozorní** — to se pořád musí hlídat ručně.
+
+Graf běží i jako MCP server (`.mcp.json`), takže vedle CLI jsou k dispozici
+nástroje `query_graph`, `get_node`, `shortest_path`, `god_nodes` a další.

@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "graphify": {
+      "command": "/Users/ondrejzeman/.local/bin/graphify-mcp",
+      "args": ["graphify-out/graph.json"]
+    }
+  }
+}

@@ -1,0 +1,16 @@
+# Co nemá být v grafu projektu.
+# .gitignore se čte taky, tohle je navíc.
+
+# Dokumentace samotného graphify — je to cizí text o nástroji, ne o hotelu.
+# Bez tohohle přidá do grafu ~40 uzlů, které nikoho nezajímají.
+.claude/skills/
+
+# Média. Sémantický průchod by je posílal do LLM po jednom; graf z nich nic
+# nezíská, protože obsah stránek nesou HTML a JS, ne fotky pokojů.
+public/
+dist/
+
+# Odvozené a pracovní
+graphify-out/
+.netlify/
+scratch/
