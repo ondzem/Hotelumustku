@@ -5066,15 +5066,96 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   }
 }
 
-/* Kalendáře v administraci vypadají stejně jako ten v rezervaci na webu —
-   sdílí s ním třídy i barvy, aby vybraný termín, obsazeno a částečně
-   obsazeno znamenaly všude totéž. Zvýrazňovat je zvlášť se neosvědčilo,
-   sytější odstíny působily křiklavě.
+/* ====================================================
+   KALENDÁŘE V ADMINISTRACI
+   Odstíny z webu byly na malém displeji sotva rozeznatelné, plné firemní
+   barvy zase křičely. Tohle je mezistupeň: pastel o stupeň sytější než
+   na webu, tmavší text a tenký barevný rámeček, který stav odliší i bez
+   výrazné plochy. Web zůstává beze změny.
+   ==================================================== */
+.dostupnost-kalendar .cal-day,
+.rucni-cal-overlay .cal-day {
+  font-weight: 600;
+}
 
-   Vlastní je tu jen chování: obsazený den jde v administraci vybrat,
-   takže nesmí být přeškrtnutý ani mít kurzor „zakázáno". */
+/* Obsazeno. V administraci jde takový den vybrat, proto bez přeškrtnutí
+   a s kurzorem ruky — jinak by vzhled tvrdil opak než chování. */
 .dostupnost-kalendar .cal-day.is-full,
 .rucni-cal-overlay .cal-day.is-full {
+  background-color: #f9d9d4 !important;
+  color: #99302a !important;
+  border: 1px solid #e9b3ac !important;
+  font-weight: 700 !important;
   text-decoration: none !important;
   cursor: pointer !important;
+}
+
+.dostupnost-kalendar .cal-day.is-full:hover,
+.rucni-cal-overlay .cal-day.is-full:hover {
+  background-color: #f4c8c1 !important;
+  color: #99302a !important;
+}
+
+/* Částečně obsazeno */
+.dostupnost-kalendar .cal-day.is-partial,
+.rucni-cal-overlay .cal-day.is-partial {
+  background-color: #fcecc2 !important;
+  color: #7a5c12 !important;
+  border: 1px solid #eddca0 !important;
+  font-weight: 700 !important;
+}
+
+/* Dny mezi příjezdem a odjezdem */
+.dostupnost-kalendar .cal-day.in-range,
+.rucni-cal-overlay .cal-day.in-range {
+  background-color: #e3ecd5 !important;
+  color: #4a5a24 !important;
+  border: 1px solid #e3ecd5 !important;
+  font-weight: 700 !important;
+}
+
+/* Příjezd a odjezd — světlá zelená plocha s výrazným zeleným rámečkem.
+   Šikmý přechod z webu se ruší: tam znamená „dopoledne ještě volno",
+   při výběru rozsahu v administraci jen mate. */
+.dostupnost-kalendar .cal-day.is-selected,
+.rucni-cal-overlay .cal-day.is-selected,
+.dostupnost-kalendar .cal-day.is-from,
+.rucni-cal-overlay .cal-day.is-from,
+.dostupnost-kalendar .cal-day.is-to,
+.rucni-cal-overlay .cal-day.is-to {
+  background: #cadbb0 !important;
+  background-image: none !important;
+  color: #33401a !important;
+  border: 2px solid #697947 !important;
+  font-weight: 800 !important;
+  text-shadow: none !important;
+}
+
+.dostupnost-kalendar .cal-day.is-selected .dostupnost-pocet,
+.dostupnost-kalendar .cal-day.is-from .dostupnost-pocet,
+.dostupnost-kalendar .cal-day.is-to .dostupnost-pocet {
+  color: #33401a !important;
+}
+
+/* Obsazený den uvnitř vybraného rozsahu musí dál číst jako obsazený.
+   Na webu tahle situace nenastane (obsazené dny nejdou vybrat), tady ano —
+   proto pravidlo stojí až za rozsahem a přebíjí ho. */
+.dostupnost-kalendar .cal-day.is-full.in-range,
+.rucni-cal-overlay .cal-day.is-full.in-range {
+  background-color: #f9d9d4 !important;
+  color: #99302a !important;
+  border: 1px solid #e9b3ac !important;
+}
+
+.dostupnost-kalendar .cal-day.is-partial.in-range,
+.rucni-cal-overlay .cal-day.is-partial.in-range {
+  background-color: #fcecc2 !important;
+  color: #7a5c12 !important;
+  border: 1px solid #eddca0 !important;
+}
+
+/* Volné dny dostanou jemnou konturu, ať mřížka nevypadá prázdně */
+.dostupnost-kalendar .cal-day:not(.is-full):not(.is-partial):not(.is-selected):not(.in-range):not(.cal-day-empty),
+.rucni-cal-overlay .cal-day:not(.is-full):not(.is-partial):not(.is-selected):not(.in-range):not(.cal-day-empty) {
+  border: 1px solid #e7e5dc;
 }

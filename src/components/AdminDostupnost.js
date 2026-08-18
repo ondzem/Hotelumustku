@@ -46,6 +46,20 @@ function posunDatum(datum, oDnu) {
   return d.toISOString().split('T')[0];
 }
 
+/**
+ * Rozsah blokace pro člověka — VČETNĚ posledního dne.
+ *
+ * `date_to` je v databázi výlučné (první volný den), ale obsluze se ukazuje
+ * poslední zavřený den, jinak by to vypadalo, že blokace končí o den dřív.
+ */
+function zobrazRozsahBlokace(dateFrom, dateTo) {
+  if (!dateFrom) return '';
+  const posledni = dateTo ? posunDatum(dateTo, -1) : dateFrom;
+  if (posledni === dateFrom) return `${formatCzechDateStr(dateFrom)} (1 den)`;
+  const pocet = Math.round((new Date(posledni) - new Date(dateFrom)) / 86400000) + 1;
+  return `${formatCzechDateStr(dateFrom)} – ${formatCzechDateStr(posledni)} (${pocet} dnů)`;
+}
+
 function pocetNoci(od, doo) {
   if (!od || !doo) return 0;
   const r = (new Date(doo) - new Date(od)) / 86400000;
@@ -164,15 +178,23 @@ export function renderDostupnostModal(ad) {
             ? `Volných pokojů v celém termínu: <strong style="color: #4a5a24;">${volne.length}</strong> z ${radky.length}`
             : '<strong style="color: #c62828;">V tomto termínu není volný žádný pokoj.</strong>'}
         </p>
-        <div style="display: flex; flex-direction: column; gap: 6px; max-height: 220px; overflow-y: auto;">
+        <div style="display: flex; flex-direction: column; gap: 6px; max-height: 260px; overflow-y: auto;">
           ${radky.map(({ rm, kolize }) => `
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px; border-radius: 5px; border: 1px solid #e4e2d8; border-left: 3px solid ${kolize.length ? '#c62828' : '#697947'}; background: #fff;">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px; border-radius: 5px; border: 1px solid #e4e2d8; border-left: 3px solid ${kolize.length ? '#c62828' : '#697947'}; background: #fff; flex-wrap: wrap;">
               <span style="font-size: 13.5px; font-weight: 700; color: #1c1c19;">${escapuj(rm.name)}</span>
-              <span style="font-size: 12.5px; font-weight: 600; color: ${kolize.length ? '#a5231f' : '#4a5a24'}; text-align: right;">
-                ${kolize.length
-                  ? kolize.map(k => escapuj(k.typ === 'blokace' ? `Blokace: ${k.popis}` : k.popis)).join(', ')
-                  : 'Volno'}
-              </span>
+              ${kolize.length === 0 ? `
+                <span style="font-size: 12.5px; font-weight: 600; color: #4a5a24;">Volno</span>
+              ` : `
+                <span style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end;">
+                  ${kolize.map(k => k.typ === 'blokace' ? `
+                    <span style="font-size: 12.5px; font-weight: 600; color: #a5231f;">Blokace: ${escapuj(k.popis)}</span>
+                    <button type="button" class="btn-prehled-odblokovat" data-id="${escapuj(k.zaznam.id)}" style="border: 1px solid #d9a3a1; background: #fff; color: #a5231f; border-radius: 4px; padding: 4px 10px; font-size: 12px; font-weight: 700; cursor: pointer;">Zrušit blokaci</button>
+                  ` : `
+                    <span style="font-size: 12.5px; font-weight: 600; color: #a5231f;">${escapuj(k.popis)}${k.zaznam.code ? ` (${escapuj(k.zaznam.code)})` : ''}</span>
+                    <button type="button" class="btn-prehled-rezervace" data-kod="${escapuj(k.zaznam.code || '')}" style="border: 1px solid #c9c8bd; background: #fff; color: #1c1c19; border-radius: 4px; padding: 4px 10px; font-size: 12px; font-weight: 700; cursor: pointer;">Zobrazit rezervaci</button>
+                  `).join('')}
+                </span>
+              `}
             </div>
           `).join('')}
         </div>
@@ -233,9 +255,9 @@ export function renderDostupnostModal(ad) {
           <div class="cal-grid">${dny}</div>
 
           <div class="cal-legend" style="display:flex; flex-wrap:wrap; gap:14px; padding:12px 6px 2px 6px; border-top:1px solid #E7E5DC; margin-top:8px;">
-            <span class="cal-legend-item"><i class="cal-legend-box" style="background:#fbe3e0;"></i> ${p.roomId === 'all' ? 'Plně obsazeno' : 'Obsazeno'}</span>
-            ${p.roomId === 'all' ? '<span class="cal-legend-item"><i class="cal-legend-box" style="background:#fdf3d7;"></i> Částečně obsazeno</span>' : ''}
-            <span class="cal-legend-item"><i class="cal-legend-box" style="background:#eef3e6;"></i> Vybraný termín</span>
+            <span class="cal-legend-item"><i class="cal-legend-box" style="background:#f9d9d4;"></i> ${p.roomId === 'all' ? 'Plně obsazeno' : 'Obsazeno'}</span>
+            ${p.roomId === 'all' ? '<span class="cal-legend-item"><i class="cal-legend-box" style="background:#fcecc2;"></i> Částečně obsazeno</span>' : ''}
+            <span class="cal-legend-item"><i class="cal-legend-box" style="background:#cadbb0; border-color:#697947;"></i> Vybraný termín</span>
           </div>
 
           <p style="margin: 10px 6px 0 6px; font-size: 12.5px; color: #6b6b60;">
@@ -246,6 +268,27 @@ export function renderDostupnostModal(ad) {
         </div>
 
         ${vypisRozsahu}
+
+        ${(ad.blockedDates || []).length > 0 ? `
+          <div style="${S.blok}">
+            <strong style="display: block; font-size: 14px; font-weight: 800; color: #1c1c19; margin-bottom: 4px;">Zablokované termíny (${ad.blockedDates.length})</strong>
+            <p style="margin: 0 0 12px 0; font-size: 12.5px; color: #6b6b60;">Vše, co je teď zavřené pro rezervace přes web — u kterého pokoje a na jak dlouho.</p>
+            <div style="display: flex; flex-direction: column; gap: 8px; max-height: 260px; overflow-y: auto;">
+              ${[...ad.blockedDates].sort((x, y) => String(x.date_from).localeCompare(String(y.date_from))).map(b => `
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; border-radius: 5px; border: 1px solid #e4e2d8; border-left: 3px solid #c62828; background: #fff; flex-wrap: wrap;">
+                  <div style="min-width: 0;">
+                    <div style="font-size: 13.5px; font-weight: 700; color: #1c1c19;">
+                      ${b.room_id === 'all' ? 'Celý hotel — všechny pokoje' : escapuj((MOCK_ROOMS.find(m => m.id === b.room_id) || {}).name || b.room_id)}
+                    </div>
+                    <div style="font-size: 12.5px; font-weight: 600; color: #4a5a24; margin-top: 2px;">${zobrazRozsahBlokace(b.date_from, b.date_to)}</div>
+                    ${b.reason ? `<div style="font-size: 12px; color: #777; margin-top: 2px;">${escapuj(b.reason)}</div>` : ''}
+                  </div>
+                  <button type="button" class="btn-prehled-odblokovat" data-id="${escapuj(b.id)}" style="flex-shrink: 0; border: 1px solid #d9a3a1; background: #fff; color: #a5231f; border-radius: 4px; padding: 6px 12px; font-size: 12.5px; font-weight: 700; cursor: pointer;">Zrušit blokaci</button>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
       </div>
     </div>
   `;
@@ -307,6 +350,40 @@ export function bindDostupnostModal(ad) {
       ad.otevriRucniRezervaci({ room_id: p.roomId, date_from: p.od, date_to: p.doo });
     });
   }
+
+  // Zrušit blokaci — stejná cesta jako v okně Blokovat termíny, takže
+  // se maže i v databázi, ne jen na obrazovce.
+  ad.container.querySelectorAll('.btn-prehled-odblokovat').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.dataset.id;
+      if (!id) return;
+      btn.disabled = true;
+      btn.textContent = 'Ruším…';
+      await ad.removeBlockedDate(id);
+    });
+  });
+
+  // Rezervaci nelze z přehledu rušit jedním klikem — storno posílá hostovi
+  // e-mail, a to má zůstat u karty rezervace, kde je vidět celý kontext.
+  ad.container.querySelectorAll('.btn-prehled-rezervace').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const kod = btn.dataset.kod;
+      ad.showPrehledModal = false;
+      ad.statusFilter = 'all';
+      ad.selectedRoomFilter = 'all';
+      ad.render();
+      // Po překreslení odrolovat ke kartě té rezervace a zvýraznit ji.
+      setTimeout(() => {
+        const karta = [...ad.container.querySelectorAll('.admin-res-card')]
+          .find(el => el.textContent.includes(kod));
+        if (!karta) return;
+        karta.scrollIntoView({ block: 'center' });
+        karta.style.transition = 'box-shadow 0.3s ease';
+        karta.style.boxShadow = '0 0 0 3px rgba(105, 121, 71, 0.55)';
+        setTimeout(() => { karta.style.boxShadow = ''; }, 2200);
+      }, 120);
+    });
+  });
 
   // Zablokovat termín — zapíše se do blocked_dates stejně jako v okně
   // Blokovat termíny, tedy s výlučným date_to.
