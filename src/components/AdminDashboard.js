@@ -5,6 +5,7 @@ import { checkAndProcessExpiredUnpaidReservations } from '../utils/reservationEx
 import { printReservationSheet } from '../utils/printReservationService.js';
 import { renderCenikModal, bindCenikModal } from './AdminCenik.js';
 import { renderRucniRezervaceModal, bindRucniRezervaceModal, prazdnaRucniRezervace } from './AdminRucniRezervace.js';
+import { renderDostupnostModal, bindDostupnostModal, prazdnyPrehled } from './AdminDostupnost.js';
 
 function formatCzechDateStr(dateStr) {
   if (!dateStr) return '';
@@ -121,6 +122,8 @@ export class AdminDashboard {
     this.showConfirmRoomBlockModal = false;
     this.pendingRoomBlock = null;
     this.showRucniModal = false;
+    this.showPrehledModal = false;
+    this.prehled = prazdnyPrehled();
     this.rucniRezervace = prazdnaRucniRezervace();
     this.rucniChyba = '';
     this.rucniKolize = false;
@@ -524,6 +527,20 @@ export class AdminDashboard {
         console.error('Supabase toggleRoomDisabled failed:', err);
       }
     }
+  }
+
+  /**
+   * Otevře ruční zápis rezervace, případně s předvyplněnými údaji.
+   * Volá se z tlačítka nad seznamem i z přehledu dostupnosti.
+   */
+  otevriRucniRezervaci(predvyplneno = null) {
+    this.rucniRezervace = { ...prazdnaRucniRezervace(), ...(predvyplneno || {}) };
+    this.rucniChyba = '';
+    this.rucniKolize = false;
+    this.showPrehledModal = false;
+    this.showRucniModal = true;
+    this.zkontrolujKoliziRucni();
+    this.render();
   }
 
   /**
@@ -1023,6 +1040,7 @@ export class AdminDashboard {
       this.showDeleteModal ||
       this.showNewsModal ||
       this.showRucniModal ||
+      this.showPrehledModal ||
       this.showCropModal ||
       this.showDetailDrawerCode
     );
@@ -1069,6 +1087,9 @@ export class AdminDashboard {
                ceník a dostupnost denně, aktuality a recenze občas.
                Odhlásit se zůstává poslední. -->
           <div class="admin-top-actions">
+            <button type="button" class="btn btn-specs-secondary btn-admin-prehled">
+              📆 Dostupnost pokojů
+            </button>
             <button type="button" class="btn btn-specs-secondary btn-admin-prices">
               💰 Ceník
             </button>
@@ -1542,6 +1563,8 @@ export class AdminDashboard {
         ${this.showPricesModal ? renderCenikModal(this) : ''}
 
         ${this.showRucniModal ? renderRucniRezervaceModal(this) : ''}
+
+        ${this.showPrehledModal ? renderDostupnostModal(this) : ''}
 
         ${this.showDisabledRoomsModal ? `
           <div class="admin-modal-overlay admin-modal-overlay-block admin-modal-overlay-disabled">
@@ -2405,15 +2428,20 @@ export class AdminDashboard {
     // Ruční založení rezervace — vlastní modul (AdminRucniRezervace.js)
     const btnNovaRezervace = this.container.querySelector('.btn-admin-nova-rezervace');
     if (btnNovaRezervace) {
-      btnNovaRezervace.addEventListener('click', () => {
-        this.rucniRezervace = prazdnaRucniRezervace();
-        this.rucniChyba = '';
-        this.rucniKolize = false;
-        this.showRucniModal = true;
+      btnNovaRezervace.addEventListener('click', () => this.otevriRucniRezervaci());
+    }
+    bindRucniRezervaceModal(this);
+
+    // Přehled dostupnosti — vlastní modul (AdminDostupnost.js)
+    const btnPrehled = this.container.querySelector('.btn-admin-prehled');
+    if (btnPrehled) {
+      btnPrehled.addEventListener('click', () => {
+        this.prehled = prazdnyPrehled();
+        this.showPrehledModal = true;
         this.render();
       });
     }
-    bindRucniRezervaceModal(this);
+    bindDostupnostModal(this);
 
     const btnCloseBlockModal = this.container.querySelector('.btn-close-block-modal');
     if (btnCloseBlockModal) {

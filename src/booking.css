@@ -5030,3 +5030,38 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     justify-content: center;
   }
 }
+
+/* Přehled dostupnosti — počet volných pokojů pod číslem dne.
+   Kalendář sdílí třídy s tím na webu, tohle je jediné navíc. */
+.dostupnost-kalendar .cal-day {
+  flex-direction: column;
+  gap: 1px;
+  line-height: 1.1;
+}
+
+.dostupnost-pocet {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #4a5a24;
+}
+
+.dostupnost-kalendar .cal-day.is-full .dostupnost-pocet {
+  color: #a5231f;
+}
+
+/* Minulé dny zůstávají klikatelné (majitel se ptá i zpětně),
+   jen jsou tlumené, aby nepletly. */
+.dostupnost-kalendar .cal-day.je-minulost {
+  opacity: 0.45;
+}
+
+@media (max-width: 560px) {
+  .dostupnost-kalendar .cal-day,
+  .dostupnost-kalendar .cal-day-empty {
+    height: 44px;
+  }
+
+  .dostupnost-kalendar .cal-day {
+    font-size: 14px;
+  }
+}
