@@ -445,6 +445,18 @@ graphify update .                               # obnovit graf po změně kódu
 
 Pravidla:
 
+- **Značka v odpovědi.** Když odpověď stavím na datech z grafu, první řádek
+  odpovědi je `⬡ graphify — <dotaz, který jsem spustil>`. Značka musí nést
+  ten skutečný dotaz, ne jen symbol — aby šla ověřit. Když jsem se grafu
+  na otázku o kódu nezeptal, napíšu místo značky proč.
+- **Ověření, že značka nelže.** Každý dotaz se zapisuje s časem do
+  `~/.cache/graphify-queries.log` (zapnuto přes `GRAPHIFY_QUERY_LOG_ENABLE`
+  v `.claude/settings.json` a `.mcp.json`). Kontrola:
+  `tail -5 ~/.cache/graphify-queries.log`. Když je v odpovědi značka a v logu
+  ze stejné minuty nic, značka je vymyšlená.
+- **Vynucení, ne slib.** `GRAPHIFY_HOOK_STRICT=1` zablokuje první čtení
+  zdrojáku v session, dokud reálně neproběhl dotaz do grafu. Tohle na rozdíl
+  od slibu nejde obejít zapomenutím.
 - **Na otázku o kódu nejdřív `graphify query`**, teprve pak čtení souborů.
   Vrátí menší výřez než grep a rovnou s vazbami. Na tohle upozorňuje i
   PreToolUse hook v `.claude/settings.json`.

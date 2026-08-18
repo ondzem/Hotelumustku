@@ -2,7 +2,12 @@
   "mcpServers": {
     "graphify": {
       "command": "/Users/ondrejzeman/.local/bin/graphify-mcp",
-      "args": ["graphify-out/graph.json"]
+      "args": [
+        "graphify-out/graph.json"
+      ],
+      "env": {
+        "GRAPHIFY_QUERY_LOG_ENABLE": "1"
+      }
     }
   }
 }
