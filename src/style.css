@@ -12187,12 +12187,40 @@ html.is-route-loading #app {
   padding: 20px 0;
   font-family: 'Outfit', sans-serif;
   transform: translateY(0);
-  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  transition:
+    transform 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+    visibility 0s linear 0s,
+    box-shadow 0s linear 0s;
 }
 
+/* Odbytá lišta se musí PŘESTAT KRESLIT, ne jen odjet dolů.
+ *
+ * `transform: translateY(100%)` ji posune pod okraj okna, jenže stín
+ * `0 -4px 24px` míří NAHORU, takže se dál kreslil zpátky do obrazovky —
+ * na každé stránce zůstal u dolního okraje tmavý pruh. A protože je
+ * lišta `position: fixed`, jezdil s uživatelem nahoru dolů. Přesně tak
+ * to popisoval majitel z tabletu: „sjedu do patičky a od té chvíle mám
+ * dole zaseknutý stín". Na tabletu je to vidět víc než na stolním
+ * počítači, protože se při rolování schovává adresní řádek a fixní
+ * prvky se přepočítávají.
+ *
+ * `visibility` a `box-shadow` se přepínají až po dojetí animace
+ * (`0s linear 0.3s`), aby zmizení nebylo useknuté. */
 .cookie-banner-wrap.is-hidden {
   transform: translateY(100%);
   pointer-events: none;
+  visibility: hidden;
+  box-shadow: none;
+  /* Průhlednost je pojistka na dobu, kdy animace teprve běží. Mobilní
+   * prohlížeče při schovávání adresního řádku fixní prvky přepočítávají
+   * se zpožděním a umí nechat vykreslenou vrstvu stát na starém místě;
+   * průhledná vrstva ale nemá co ukázat. */
+  opacity: 0;
+  transition:
+    transform 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+    opacity 0.25s ease,
+    visibility 0s linear 0.3s,
+    box-shadow 0s linear 0.3s;
 }
 
 .cookie-banner-inner {

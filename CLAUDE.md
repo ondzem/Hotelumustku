@@ -463,6 +463,18 @@ oranžový u částečného) a barva čísla.
   skočí na začátek — ale **jen když v adrese není kotva**, jinak by vzal
   odrolování cíli, který si ho řídí sám.
 
+- **Odbytá cookie lišta nechávala dole zaseknutý stín.** Skrývá se
+  `transform: translateY(100%)`, jenže její stín `0 -4px 24px` míří
+  NAHORU, takže se dál kreslil zpátky do obrazovky — u dolního okraje
+  zůstal tmavý pruh a protože je lišta `position: fixed`, jezdil
+  s uživatelem. Na tabletu to bylo vidět nejvíc: lišta je tam vysoká
+  167 px a při schovávání adresního řádku prohlížeč fixní prvky
+  přepočítává se zpožděním, takže uměl nechat vykreslený i kus té tmavé
+  plochy. **Skrytý fixní prvek se musí přestat kreslit, ne jen odjet
+  z obrazu** — proto má `visibility: hidden`, `box-shadow: none`
+  a `opacity: 0` (přepínají se až po dojetí animace, `0s linear 0.3s`,
+  aby zmizení nebylo useknuté).
+
 ### Jak se responzivita kontroluje
 
 Ne okem, ale měřením: stránka se načte do iframu o pevné šířce (viz oddíl
