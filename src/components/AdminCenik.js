@@ -754,6 +754,45 @@ async function ulozDoTabulky(ad, tabulka, radky, konflikt) {
 }
 
 /**
+ * Uloží jedno období do tabulky cenik_sezony.
+ *
+ * Upsert tu použít NEJDE, ze stejného důvodu jako u room_prices:
+ * `nazev` je NOT NULL a PostgREST posílá upsert jako
+ * INSERT … ON CONFLICT, takže Postgres kontroluje povinné sloupce
+ * i u řádku, který se ve skutečnosti jen aktualizuje.
+ *
+ * Obrazovka Základního ceníku pole s názvem vůbec nemá — je to „celý
+ * rok" a nepřejmenovává se — takže se `nazev` neposílal a každé uložení
+ * skončilo chybou 23502 (null value in column "nazev"). Ceny se přitom
+ * uložily, takže to vypadalo, že se ukládání někdy povede a někdy ne.
+ *
+ * Existující období se proto mění přes update, který se povinných
+ * sloupců nedotkne. Insert je jen pro období, které v tabulce ještě
+ * není — tam název být musí a doplní se náhradní, kdyby chyběl.
+ */
+async function ulozObdobi(ad, radek) {
+  if (!isSupabaseConfigured || !supabase) {
+    return { ok: false, zprava: 'Databáze není připojená, změna se uložila jen v tomto prohlížeči.' };
+  }
+  try {
+    const uzExistuje = ((ad.cenik && ad.cenik.sezony) || []).some(s => s.id === radek.id);
+
+    if (uzExistuje) {
+      const { error } = await supabase.from('cenik_sezony').update(radek).eq('id', radek.id);
+      if (error) return { ok: false, zprava: error.message };
+      return { ok: true };
+    }
+
+    const novy = { ...radek, nazev: radek.nazev || 'Nové období' };
+    const { error } = await supabase.from('cenik_sezony').insert([novy]);
+    if (error) return { ok: false, zprava: error.message };
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, zprava: err && err.message };
+  }
+}
+
+/**
  * Uloží pokoje do tabulky room_prices.
  *
  * Upsert tu použít nejde. Tabulka drží ještě sloupce ze starého cenového
@@ -1150,7 +1189,7 @@ export function bindCenikModal(ad) {
         });
       });
 
-      const v0 = await ulozDoTabulky(ad, 'cenik_sezony', [obdobi], 'id');
+      const v0 = await ulozObdobi(ad, obdobi);
       const v1 = await ulozDoTabulky(ad, 'cenik_ceny', ceny, 'sezona_id,kategorie,pocet_osob');
       const v2 = vyjimky.length > 0
         ? await ulozDoTabulky(ad, 'cenik_ceny_pokoj', vyjimky, 'sezona_id,room_id,pocet_osob')

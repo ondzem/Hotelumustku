@@ -843,7 +843,7 @@ Dvě věci, které se tu už rozešly a stojí za kontrolu po každé změně:
   dvoulůžkový pokoj. Řeší to `fetchRoomPrices()` volané v `main.js`
   spolu s `fetchCenik()`; po doběhnutí se pouští obě `sync*ToDOM` funkce.
 
-**Do `room_prices` se nesmí psát upsertem.** Tabulka drží ještě sloupce
+**Do `room_prices` ani `cenik_sezony` se nesmí psát upsertem.** Tabulka drží ještě sloupce
 ze starého cenového modelu — `base_price`, `weekday_price`,
 `weekend_price` — a `base_price` je NOT NULL bez výchozí hodnoty.
 PostgREST posílá upsert jako `INSERT … ON CONFLICT`, takže Postgres
@@ -854,6 +854,15 @@ chybu, ale nikdo si toho nevšiml, protože data v paměti vypadala uložená.
 Existující řádek se proto mění přes `update()` (viz `ulozPokoje()`
 v `AdminCenik.js`), `insert()` se použije jen pro pokoj, který v tabulce
 ještě není, a staré sloupce se doplní z `MOCK_ROOMS`.
+
+**Přesně totéž potkalo `cenik_sezony`** (19. 8. 2026): `nazev` je NOT
+NULL, jenže obrazovka Základního ceníku pole s názvem vůbec nemá — je to
+„celý rok" a nepřejmenovává se — takže se neposílal a každé uložení
+skončilo hláškou `null value in column "nazev"`. Ceny se přitom uložily,
+takže to vypadalo, že se ukládání jednou povede a jednou ne. Období se
+proto ukládá přes `ulozObdobi()`, které existující řádek mění
+`update()`em; `insert()` je jen pro nové období. Kdyby přibyla další
+tabulka s povinným sloupcem, který obrazovka nevyplňuje, platí to samé.
 
 ---
 
