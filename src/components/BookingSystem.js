@@ -1,4 +1,5 @@
 import { MOCK_ROOMS, isSupabaseConfigured, supabase, getStoredReservations, saveStoredReservation, sanitizeReservationForSupabase, getStoredBlockedDates, getStoredDiscountCodes, getStoredRoomPrices, getStoredDisabledRooms, getStoredCenik, fetchCenik, fetchRoomPrices, getDeviceRedeemedDiscountCodes, markDiscountCodeRedeemedOnDevice, incrementDiscountCodeUsage } from '../lib/supabaseClient.js';
+import { obsazenostPulek, pulkyDne } from '../utils/obsazenost.js';
 import { calculateReservationPrice, generateReservationCode, generateManageToken, BANK_ACCOUNT, BANK_NAME, formatCzechPrice, validateSystemDateIntegrity, isWinterSeason, VYCHOZI_NASTAVENI } from '../utils/pricing.js';
 import { maxOsobNaPokoji, obdobiSOmezenouDostupnosti } from '../utils/cenik.js';
 import { sendEmail, generateEmail1RequestReceived, generateEmail1ReceptionNotification, RECEPCE_PRIJEMCE } from '../utils/emailService.js';
@@ -585,42 +586,35 @@ export class BookingSystem {
     });
   }
 
-  // Kolik prodejných pokojů je v daný den obsazeno.
-  // Vypnuté pokoje se nepočítají ani do jednoho čísla.
   /**
-   * Kolik prodejných pokojů má v ten den PŘÍJEZD, respektive ODJEZD.
+   * Jak je hotel obsazený dopoledne a jak odpoledne.
    *
-   * Přesně jako v administraci: `date_from` znamená obsazeno až od 15:00,
-   * `date_to` jen do 10:00. Host tak vidí, že den, kdy někdo odjíždí, je
-   * odpoledne volný — a nepřijde o termín kvůli tomu, že vypadá obsazeně.
+   * `date_from` znamená obsazeno až od 15:00, `date_to` jen do 10:00.
+   * Host tak vidí, že den, kdy někdo odjíždí, je odpoledne volný — a
+   * nepřijde o termín kvůli tomu, že vypadá obsazeně.
+   *
+   * Nepočítají se přestupy, ale obsazenost obou polovin. Rozdíl je vidět,
+   * jakmile se termíny překrývají: když jednomu pokoji blokace ve 25. ráno
+   * končí, ale jiný pokoj je 25. obsazený celý, hotel dopoledne prázdný
+   * NENÍ a půlit se nesmí. Podrobně v src/utils/obsazenost.js.
    */
-  spocitejPrestupy(dateStr) {
+  obsazenostPulekDne(dateStr) {
     const prodejne = (this.roomsList || []).filter((r) => !(
       r.isDisabled ||
       (this.disabledRooms || []).some((d) => d.room_id === r.id && d.is_disabled)
     ));
 
-    const zacina = (roomId) =>
-      (this.blockedDates || []).some(b => (b.room_id === 'all' || b.room_id === roomId) && b.date_from === dateStr)
-      || (this.activeReservations || []).some(r => r.room_id === roomId
-          && !(r.status && (r.status.startsWith('cancelled') || r.status === 'stornováno'))
-          && r.date_from === dateStr);
+    const jeAktivni = (r) => !(r.status && (r.status.startsWith('cancelled') || r.status === 'stornováno'));
 
-    const konci = (roomId) =>
-      (this.blockedDates || []).some(b => (b.room_id === 'all' || b.room_id === roomId) && b.date_to === dateStr)
-      || (this.activeReservations || []).some(r => r.room_id === roomId
-          && !(r.status && (r.status.startsWith('cancelled') || r.status === 'stornováno'))
-          && r.date_to === dateStr);
-
-    let prijezdy = 0, odjezdy = 0;
-    for (const r of prodejne) {
-      const obsazeny = this.isDateOccupied(dateStr, r.id);
-      // Příjezd hlásíme u obsazeného dne, odjezd u volného — plyne to
-      // z toho, že date_to je výlučné.
-      if (obsazeny && zacina(r.id) && !konci(r.id)) prijezdy++;
-      if (!obsazeny && konci(r.id) && !zacina(r.id)) odjezdy++;
-    }
-    return { prijezdy, odjezdy };
+    return obsazenostPulek(prodejne.map(r => r.id), {
+      obsazeno: (roomId) => this.isDateOccupied(dateStr, roomId),
+      zacina: (roomId) =>
+        (this.blockedDates || []).some(b => (b.room_id === 'all' || b.room_id === roomId) && b.date_from === dateStr)
+        || (this.activeReservations || []).some(r => r.room_id === roomId && jeAktivni(r) && r.date_from === dateStr),
+      konci: (roomId) =>
+        (this.blockedDates || []).some(b => (b.room_id === 'all' || b.room_id === roomId) && b.date_to === dateStr)
+        || (this.activeReservations || []).some(r => r.room_id === roomId && jeAktivni(r) && r.date_to === dateStr),
+    });
   }
 
   getDayOccupancy(dateStr) {
@@ -1555,11 +1549,14 @@ export class BookingSystem {
         : false;
       const lzeJakoOdjezd = !isPast && jePlne && dayStr === prvniPlnyPoPrijezdu && dostNoci;
 
-      const { prijezdy, odjezdy } = isPast ? { prijezdy: 0, odjezdy: 0 } : this.spocitejPrestupy(dayStr);
-      // Když se v jeden den odjíždí i přijíždí, jsou obě půlky zabrané
-      // a buňka zůstane celá — půlit ji by lhalo.
-      const jePrijezdovy = prijezdy > 0 && odjezdy === 0;
-      const jeOdjezdovy = odjezdy > 0 && prijezdy === 0;
+      const pulky = isPast ? { dopoledne: 0, odpoledne: 0 } : this.obsazenostPulekDne(dayStr);
+      // Půlí se jen tehdy, když je druhá polovina dne opravdu prázdná.
+      const { prijezdovy: jePrijezdovy, odjezdovy: jeOdjezdovy } = pulkyDne(pulky);
+      // Vybraný termín má přednost před obsazeností hotelu. Host si potřebuje
+      // přečíst, co si vybral; půlka v barvě obsazenosti mu přes vlastní
+      // příjezd přemalovala zelenou na oranžovou a vypadalo to, že den
+      // vybraný není.
+      const jeVybrany = isFrom || isTo || isInRange;
 
       let dayClass = 'cal-day';
       if (isPast) dayClass += ' is-disabled';
@@ -1571,8 +1568,8 @@ export class BookingSystem {
         else if (jeCastecne) dayClass += ' is-partial';
       }
       if (lzeJakoOdjezd) dayClass += ' je-jen-odjezd';
-      if (!isPast && jeOdjezdovy) dayClass += ' is-turnover-day';
-      if (!isPast && jePrijezdovy) dayClass += ' is-arrival-day';
+      if (!isPast && !jeVybrany && jeOdjezdovy) dayClass += ' is-turnover-day';
+      if (!isPast && !jeVybrany && jePrijezdovy) dayClass += ' is-arrival-day';
       if (isFrom) dayClass += ' is-from is-selected';
       if (isTo) dayClass += ' is-to is-selected';
       if (isInRange) dayClass += ' in-range';

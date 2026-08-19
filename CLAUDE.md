@@ -388,11 +388,41 @@ Odjezd se hlásí jen u dne, který je jinak **volný**, příjezd jen u dne
 odjíždí a hned nato jiný přijíždí, jsou obě půlky zabrané a buňka zůstane
 celá; půlit ji by lhalo.
 
+**Půlí se JEN tehdy, když je druhá polovina dne opravdu prázdná.**
+Rozhoduje obsazenost obou polovin, ne počty příjezdů a odjezdů —
+pravidlo je v `src/utils/obsazenost.js` (`obsazenostPulek`, `pulkyDne`)
+a sdílí ho administrace i web, aby se nemohly rozejít.
+
+Původní verze počítala přestupy a při překryvu termínů lhala:
+
+```
+blokace pokoje 1     21. → 25.   (končí 25. v 10:00)
+rezervace pokoje 3   24. → 26.   (běží celý 24. i 25.)
+```
+
+25. srpna vycházel půlený, protože „někdo odjíždí a nikdo nepřijíždí".
+Jenže pokoj 3 je ten den obsazený celý, takže hotel prázdný dopoledne
+není a buňka má být celá. Totéž 24. srpna: blokace pokoje 1 běží celý
+den, není co půlit, i když do pokoje 3 zrovna někdo přijíždí. Hlídá to
+`kontrola/pulene-dny.mjs` přesně na tomhle případu.
+
+Z téhož pravidla plyne i to, že když v jednom pokoji host odjíždí a týž
+den se do něj stěhuje další, zůstane buňka celá.
+
 Platí ve **třech** kalendářích: v Přehledu dostupnosti
 (`AdminDostupnost.js`), v ručním zápisu (`AdminRucniRezervace.js`)
 a od 18. 8. 2026 i ve veřejném rezervačním formuláři
-(`BookingSystem.spocitejPrestupy()`). Styl `is-turnover-day` byl
+(`BookingSystem.obsazenostPulekDne()`). Styl `is-turnover-day` byl
 v `booking.css` napsaný už dávno, ale dlouho ho nikdo nenasadil.
+
+**Vybraný termín přebíjí obsazenost — a to i na webu.** Půlka v barvě
+obsazenosti se hostovi kreslila přes jeho vlastní den příjezdu, takže
+zelená zmizela pod oranžovou a vypadalo to, že den vybraný není. Vybrané
+dny proto půlené třídy nedostávají vůbec (`jeVybrany` v obou
+komponentách) a celý rozsah drží zelený podklad: kraje sytěji
+(`#cadbb0`), dny mezi nimi světleji (`#eef3e6`). Že se přijíždí od 15:00
+a odjíždí do 10:00, říká popisek pod kalendářem a bublina u dne — na
+barvu se to věšet nesmí, protože tutéž úhlopříčku používá obsazenost.
 
 **Ve vybraném rozsahu patří podklad výběru, ne obsazenosti.** Obsluha
 potřebuje vidět, kam až výběr sahá; když vyhrávala obsazenost, prostřední

@@ -3543,24 +3543,25 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .cal-day.in-range {
-  background-color: #eef3e6 !important;
-  color: #697947 !important;
-  border: 1px solid #eef3e6 !important;
+  background: #eef3e6 !important;
+  color: #4a5a24 !important;
+  font-weight: 700 !important;
+  border: 1px solid #dbe4cd !important;
 }
 
-/* Váš den PŘÍJEZDU — dopoledne volno, od 15:00 jste tu vy */
-.cal-day.is-from {
+/* Váš den PŘÍJEZDU.
+   Celý zelený, ne půlený. Půlka tady dřív ukazovala, že se přijíždí až
+   v 15:00 — jenže tutéž úhlopříčku používá i obsazenost hotelu, takže
+   se hostovi na jeho vlastním příjezdu objevila oranžová a vypadalo to,
+   že den vybraný není. Vybraný termín má přednost; že se přijíždí od
+   15:00, říká popisek pod kalendářem i bublina u dne. */
+.cal-day.is-from,
+.cal-day.is-to {
   position: relative;
-  background: linear-gradient(to bottom right,
-              #ffffff 0 50%,
-              #eef3e6 50% 100%) !important;
-  color: #1c1c19 !important;
-  border-style: solid !important;
-  border-width: 1px !important;
-  border-top-color: #ddd9cf !important;
-  border-left-color: #ddd9cf !important;
-  border-right-color: #eef3e6 !important;
-  border-bottom-color: #eef3e6 !important;
+  background: #cadbb0 !important;
+  color: #2f3a16 !important;
+  font-weight: 800 !important;
+  border: 1px solid #697947 !important;
   text-shadow: none !important;
 }
 
@@ -3612,53 +3613,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   text-decoration: none !important;
 }
 
-/* Přestupní den vybraný jako PŘÍJEZDU — dopoledne obsazeno, odpoledne váš */
-.cal-day.is-turnover-day.is-from {
-  position: relative;
-  background: linear-gradient(to bottom right,
-              #fef5e7 0 50%,
-              #eef3e6 50% 100%) !important;
-  color: #1c1c19 !important;
-  border-style: solid !important;
-  border-width: 1px !important;
-  border-top-color: #fef5e7 !important;
-  border-left-color: #fef5e7 !important;
-  border-right-color: #eef3e6 !important;
-  border-bottom-color: #eef3e6 !important;
-  text-shadow: none !important;
-}
 
-/* Váš den ODJEZDU — dopoledne jste tu vy, odpoledne je volno */
-.cal-day.is-to {
-  position: relative;
-  background: linear-gradient(to bottom right,
-              #eef3e6 0 50%,
-              #ffffff 50% 100%) !important;
-  color: #1c1c19 !important;
-  border-style: solid !important;
-  border-width: 1px !important;
-  border-top-color: #eef3e6 !important;
-  border-left-color: #eef3e6 !important;
-  border-right-color: #ddd9cf !important;
-  border-bottom-color: #ddd9cf !important;
-  text-shadow: none !important;
-}
-
-/* Váš odjezd, který je zároveň přestupní pro dalšího hosta */
-.cal-day.is-to.is-turnover-day {
-  position: relative;
-  background: linear-gradient(to bottom right,
-              #eef3e6 0 50%,
-              #ffffff 50% 100%) !important;
-  color: #1c1c19 !important;
-  border-style: solid !important;
-  border-width: 1px !important;
-  border-top-color: #eef3e6 !important;
-  border-left-color: #eef3e6 !important;
-  border-right-color: #ddd9cf !important;
-  border-bottom-color: #ddd9cf !important;
-  text-shadow: none !important;
-}
 
 /* Legenda kalendáře */
 .cal-legend-item {
@@ -5194,17 +5149,9 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   background: linear-gradient(to bottom right, #ffffff 0 50%, #f9d9d4 50% 100%) !important;
 }
 
-.dostupnost-kalendar .cal-day.is-turnover-day.is-selected,
-.rucni-cal-overlay .cal-day.is-turnover-day.is-selected {
-  background: linear-gradient(to bottom right, #fcecc2 0 50%, #cadbb0 50% 100%) !important;
-  border-color: #697947 !important;
-}
-
-.dostupnost-kalendar .cal-day.is-arrival-day.is-selected,
-.rucni-cal-overlay .cal-day.is-arrival-day.is-selected {
-  background: linear-gradient(to bottom right, #cadbb0 0 50%, #fcecc2 50% 100%) !important;
-  border-color: #697947 !important;
-}
+/* Půlka v barvě obsazenosti se přes vybraný den už nekreslí — vybraný
+   rozsah drží podklad sám (viz AdminDostupnost.js, `jeVybrany`), aby ho
+   šlo přečíst vcelku. Obsazenost u vybraných dnů nese rámeček. */
 
 .dostupnost-kalendar .cal-day.je-minulost {
   opacity: 0.7;

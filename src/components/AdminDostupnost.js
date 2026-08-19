@@ -19,6 +19,7 @@
 
 import { MOCK_ROOMS } from '../lib/supabaseClient.js';
 import { renderPlachta, bindPlachta } from './AdminPlachta.js';
+import { obsazenostPulek, pulkyDne } from '../utils/obsazenost.js';
 
 export const MESICE = ['Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen',
   'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec'];
@@ -146,26 +147,48 @@ export function prodejnePokoje(ad) {
   return MOCK_ROOMS.filter(r => !r.isDisabled && !vypnute.has(r.id));
 }
 
+/**
+ * Obsazenost obou polovin dne — společné pravidlo s rezervačním
+ * formulářem, viz src/utils/obsazenost.js.
+ *
+ * Nepočítají se přestupy. Dřív ano, a lhalo to při překryvu termínů:
+ * když jednomu pokoji blokace 25. ráno skončila, ale jiný pokoj byl
+ * 25. obsazený celý, vycházel den půlený, přestože hotel dopoledne
+ * prázdný nebyl.
+ */
+function pulkyProDen(ad, den, roomId) {
+  const pokoje = roomId === 'all' ? prodejnePokoje(ad).map(r => r.id) : [roomId];
+  return obsazenostPulek(pokoje, {
+    obsazeno: (id) => Boolean(zabranyDuvod(ad, den, id)),
+    zacina: (id) => Boolean(prijezdVDen(ad, den, id)),
+    konci: (id) => Boolean(odjezdVDen(ad, den, id)),
+  });
+}
+
 function stavDne(ad, den, roomId) {
+  const pulky = pulkyProDen(ad, den, roomId);
+  const { prijezdovy, odjezdovy } = pulkyDne(pulky);
+
   if (roomId !== 'all') {
     const d = zabranyDuvod(ad, den, roomId);
-    // Odjezd se hlásí u dne, který je jinak volný (obsazenost skončila),
-    // příjezd naopak u dne obsazeného (obsazenost začíná až odpoledne).
-    // Když v jeden den někdo odjíždí a hned nato jiný přijíždí, jsou obě
-    // půlky zabrané a buňka zůstane celá — půlit ji by lhalo.
     return {
       volno: d ? 0 : 1,
       celkem: 1,
       duvod: d,
-      odjezd: d ? null : odjezdVDen(ad, den, roomId),
-      prijezd: d ? prijezdVDen(ad, den, roomId) : null,
+      odjezd: odjezdovy ? odjezdVDen(ad, den, roomId) : null,
+      prijezd: prijezdovy ? prijezdVDen(ad, den, roomId) : null,
     };
   }
+
   const pokoje = prodejnePokoje(ad);
-  const volne = pokoje.filter(r => !zabranyDuvod(ad, den, r.id));
-  const odjezdy = pokoje.filter(r => !zabranyDuvod(ad, den, r.id) && odjezdVDen(ad, den, r.id)).length;
-  const prijezdy = pokoje.filter(r => zabranyDuvod(ad, den, r.id) && prijezdVDen(ad, den, r.id)).length;
-  return { volno: volne.length, celkem: pokoje.length, duvod: null, odjezdy, prijezdy };
+  return {
+    volno: pokoje.length - pulky.odpoledne,
+    celkem: pokoje.length,
+    duvod: null,
+    // Počty jsou jen pro popisek; o půlení rozhoduje prázdná polovina dne.
+    odjezdy: odjezdovy ? pokoje.filter(r => odjezdVDen(ad, den, r.id)).length : 0,
+    prijezdy: prijezdovy ? pokoje.filter(r => prijezdVDen(ad, den, r.id)).length : 0,
+  };
 }
 
 export function renderDostupnostModal(ad) {
@@ -195,11 +218,16 @@ export function renderDostupnostModal(ad) {
     const jeOdjezdovy = maOdjezd && !maPrijezd;
     const jePrijezdovy = maPrijezd && !maOdjezd;
 
+    // Ve vybraném rozsahu patří podklad výběru, ne obsazenosti — obsluha
+    // potřebuje vidět, kam až výběr sahá. Půlka v barvě obsazenosti přes
+    // něj kreslila oranžovou a prostřední den vypadal nevybraně.
+    const jeVybrany = Boolean(den === p.od || den === p.doo || (p.od && p.doo && den > p.od && den < p.doo));
+
     let tridy = 'cal-day';
     if (plne) tridy += ' is-full';
     else if (castecne) tridy += ' is-partial';
-    if (jeOdjezdovy) tridy += ' is-turnover-day';
-    if (jePrijezdovy) tridy += ' is-arrival-day';
+    if (!jeVybrany && jeOdjezdovy) tridy += ' is-turnover-day';
+    if (!jeVybrany && jePrijezdovy) tridy += ' is-arrival-day';
     if (den === p.od) tridy += ' is-from is-selected';
     if (den === p.doo) tridy += ' is-to is-selected';
     if (p.od && p.doo && den > p.od && den < p.doo) tridy += ' in-range';

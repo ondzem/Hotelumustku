@@ -72,6 +72,7 @@ nadpis "Ceník a rezervace"
 if node kontrola/cenik.mjs; then zelena "matematika ceníku"; else cervena "matematika ceníku"; fi
 if node kontrola/rezervace.mjs; then zelena "pravidla rezervace a zálohy"; else cervena "pravidla rezervace a zálohy"; fi
 if node kontrola/plachta.mjs; then zelena "geometrie plachty dostupnosti"; else cervena "geometrie plachty dostupnosti"; fi
+if node kontrola/pulene-dny.mjs; then zelena "půlené dny při překryvu termínů"; else cervena "půlené dny při překryvu termínů"; fi
 
 # ------------------------------------------------------------------- klíče
 # Do prohlížeče smí jen anon klíč. Servisní klíč a klíč k Resendu tam
