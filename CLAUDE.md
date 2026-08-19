@@ -775,6 +775,29 @@ Pozor na dvě věci, které vypadají jako chyba a nejsou:
 
 ## Jak si ověřit, že to funguje
 
+Nejdřív `./zkontroluj.sh` (nebo `npm run zkontroluj`). Projde 29 kontrol:
+sestavení, shodu hlaviček napříč stránkami, matematiku ceníku a zálohy,
+klíče v balíčku, typy e-mailů, dostupnost nasazených stránek, odmítání
+neoprávněných volání serverových funkcí a pravidla v databázi. S přepínačem
+`--bez-site` běží jen offline část. Testy jsou v `kontrola/`.
+
+Dvě věci, které se v něm daly snadno splést, a proto jsou v kódu popsané:
+
+- **Prázdné pole `[]` z databáze znamená ZAVŘENO, ne rozbito.** Pravidla
+  RLS řádky filtrují, nevrací chybu. Kontrola, která čekala chybový objekt,
+  hlásila díru tam, kde žádná není.
+- **Zákaz zápisu nepozná stavový kód.** „Aktualizováno nula řádků" i
+  „zakázáno" vrátí 204. Rozhodne až `Prefer: return=representation`;
+  zavřený zápis vrátí `[]`. Zapisovat se přitom musí TÁŽ hodnota, jaká
+  v řádku už je, aby kontrola sama nic nezměnila.
+
+Skript neumí ověřit to, co vyžaduje přihlášenou recepci — tisk rezervace,
+ruční zápis, ořez fotky a rozvržení administrace na telefonu. Na to je
+oddíl výš o dočasném účtu.
+
+Zbytek se ověřuje takhle:
+
+
 Nespoléhej na to, že změna vypadá správně v kódu. Osvědčené postupy:
 
 - **Responzivita** — vlož do stránky iframe s pevnou šířkou a měř

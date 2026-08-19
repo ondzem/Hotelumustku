@@ -60,7 +60,16 @@ export function maZaplacenouZalohu(reservation) {
 
 /** Vytáhne číslo z nastavení, s návratem k výchozí hodnotě. */
 function nast(nastaveni, klic) {
-  const v = Number(nastaveni && nastaveni[klic]);
+  // Pozor na `Number(null)` — je to NULA, a nula je konečné číslo, takže
+  // by se u chybějícího nastavení vydávala za platnou hodnotu. Volající
+  // přitom předávají `cenik && cenik.nastaveni`, což je při nenačteném
+  // ceníku přesně null: záloha by vyšla 0 % a všechny příplatky nula.
+  // Nula OD ADMINA je naopak platná („bez příplatku") a musí projít.
+  const surova = nastaveni ? nastaveni[klic] : undefined;
+  if (surova === undefined || surova === null || surova === '') {
+    return VYCHOZI_NASTAVENI[klic];
+  }
+  const v = Number(surova);
   return Number.isFinite(v) ? v : VYCHOZI_NASTAVENI[klic];
 }
 
