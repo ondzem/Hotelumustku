@@ -5888,8 +5888,19 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
 }
 
-.plachta-pruh.je-rezervace { background: #697947; }
-.plachta-pruh.je-rezervace:hover { background: #56642f; }
+/* Rezervace je JANTAROVÁ, ne zelená.
+   Zelená v téhle tabulce čte jako „volno" — obsazený pokoj v ní vypadal
+   jako nabídka. Navíc si zelenou drží vybraný termín, takže by se dvě
+   různé věci hlásily stejnou barvou. Jantarová sedí k tomu, jak se
+   obsazenost značí i v kalendáři (`is-partial`), a proti šrafované
+   červené blokaci je rozeznatelná na první pohled.
+   Písmo je tmavé schválně: bílá na jantarové má mizerný kontrast. */
+.plachta-pruh.je-rezervace {
+  background: #e0a021;
+  color: #3a2a04;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18), inset 0 0 0 1px #c2851a;
+}
+.plachta-pruh.je-rezervace:hover { background: #cf9014; }
 
 /* Blokace je šrafovaná schválně: na první pohled se nesmí splést
    s hostem, protože se s ní zachází úplně jinak. */
@@ -5919,7 +5930,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   display: inline-block;
 }
 
-.plachta-vzorek.je-rezervace { background: #697947; border-color: #56642f; }
+.plachta-vzorek.je-rezervace { background: #e0a021; border-color: #c2851a; }
 .plachta-vzorek.je-blokace { background: repeating-linear-gradient(45deg, #c0504a, #c0504a 4px, #a5231f 4px, #a5231f 8px); border-color: #a5231f; }
 .plachta-vzorek.je-vikend { background: #f0eddf; }
 .plachta-vzorek.je-vyber { background: #cadbb0; border-color: #697947; }
