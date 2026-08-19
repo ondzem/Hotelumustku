@@ -111,10 +111,10 @@
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard",
       "community": 1,
       "community_name": "supabaseClient.js",
-      "norm_label": "admindashboard",
-      "id": "src_components_admindashboard_admindashboard"
+      "norm_label": "admindashboard"
     },
     {
       "label": "BookingSystem",
@@ -128,18 +128,6 @@
       "community": 4,
       "community_name": "BookingSystem",
       "norm_label": "bookingsystem"
-    },
-    {
-      "label": "fetchCenik()",
-      "file_type": "code",
-      "source_file": "src/lib/supabaseClient.js",
-      "source_location": "L1565",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "main.js",
-      "norm_label": "fetchcenik()",
-      "id": "src_lib_supabaseclient_fetchcenik"
     },
     {
       "label": "fetchRoomPrices()",
@@ -922,16 +910,28 @@
       "id": "src_utils_scrollreveal_odhalit"
     },
     {
+      "label": "obnovCenik()",
+      "file_type": "code",
+      "source_file": "src/components/AdminCenik.js",
+      "source_location": "L803",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "supabaseClient.js",
+      "norm_label": "obnovcenik()",
+      "id": "src_components_admincenik_obnovcenik"
+    },
+    {
       "label": ".addBlockedDate()",
       "file_type": "code",
       "source_file": "src/components/AdminDashboard.js",
       "source_location": "L599",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard_addblockeddate",
       "community": 1,
       "community_name": "supabaseClient.js",
-      "norm_label": ".addblockeddate()",
-      "id": "src_components_admindashboard_admindashboard_addblockeddate"
+      "norm_label": ".addblockeddate()"
     },
     {
       "label": ".addDiscountCode()",
@@ -940,10 +940,10 @@
       "source_location": "L230",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard_adddiscountcode",
       "community": 1,
       "community_name": "supabaseClient.js",
-      "norm_label": ".adddiscountcode()",
-      "id": "src_components_admindashboard_admindashboard_adddiscountcode"
+      "norm_label": ".adddiscountcode()"
     },
     {
       "label": ".attachAdminListeners()",
@@ -952,10 +952,10 @@
       "source_location": "L1936",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard_attachadminlisteners",
       "community": 1,
       "community_name": "supabaseClient.js",
-      "norm_label": ".attachadminlisteners()",
-      "id": "src_components_admindashboard_admindashboard_attachadminlisteners"
+      "norm_label": ".attachadminlisteners()"
     },
     {
       "label": ".checkBlockedDateConflictsForDates()",
@@ -964,10 +964,10 @@
       "source_location": "L645",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard_checkblockeddateconflictsfordates",
       "community": 1,
       "community_name": "supabaseClient.js",
-      "norm_label": ".checkblockeddateconflictsfordates()",
-      "id": "src_components_admindashboard_admindashboard_checkblockeddateconflictsfordates"
+      "norm_label": ".checkblockeddateconflictsfordates()"
     },
     {
       "label": ".deleteDiscountCode()",
@@ -976,10 +976,10 @@
       "source_location": "L304",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard_deletediscountcode",
       "community": 1,
       "community_name": "supabaseClient.js",
-      "norm_label": ".deletediscountcode()",
-      "id": "src_components_admindashboard_admindashboard_deletediscountcode"
+      "norm_label": ".deletediscountcode()"
     },
     {
       "label": ".fetchBlockedDates()",
@@ -988,10 +988,10 @@
       "source_location": "L584",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard_fetchblockeddates",
       "community": 1,
       "community_name": "supabaseClient.js",
-      "norm_label": ".fetchblockeddates()",
-      "id": "src_components_admindashboard_admindashboard_fetchblockeddates"
+      "norm_label": ".fetchblockeddates()"
     },
     {
       "label": ".fetchDisabledRooms()",
@@ -1000,10 +1000,10 @@
       "source_location": "L450",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard_fetchdisabledrooms",
       "community": 1,
       "community_name": "supabaseClient.js",
-      "norm_label": ".fetchdisabledrooms()",
-      "id": "src_components_admindashboard_admindashboard_fetchdisabledrooms"
+      "norm_label": ".fetchdisabledrooms()"
     },
     {
       "label": ".fetchDiscountCodes()",
@@ -1012,10 +1012,10 @@
       "source_location": "L190",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard_fetchdiscountcodes",
       "community": 1,
       "community_name": "supabaseClient.js",
-      "norm_label": ".fetchdiscountcodes()",
-      "id": "src_components_admindashboard_admindashboard_fetchdiscountcodes"
+      "norm_label": ".fetchdiscountcodes()"
     },
     {
       "label": ".fetchNewsItems()",
@@ -1024,10 +1024,22 @@
       "source_location": "L182",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard_fetchnewsitems",
       "community": 1,
       "community_name": "supabaseClient.js",
-      "norm_label": ".fetchnewsitems()",
-      "id": "src_components_admindashboard_admindashboard_fetchnewsitems"
+      "norm_label": ".fetchnewsitems()"
+    },
+    {
+      "label": ".fetchReservations()",
+      "file_type": "code",
+      "source_file": "src/components/AdminDashboard.js",
+      "source_location": "L552",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard_fetchreservations",
+      "community": 1,
+      "community_name": "supabaseClient.js",
+      "norm_label": ".fetchreservations()"
     },
     {
       "label": ".fetchReviews()",
@@ -1036,10 +1048,10 @@
       "source_location": "L174",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard_fetchreviews",
       "community": 1,
       "community_name": "supabaseClient.js",
-      "norm_label": ".fetchreviews()",
-      "id": "src_components_admindashboard_admindashboard_fetchreviews"
+      "norm_label": ".fetchreviews()"
     },
     {
       "label": ".fetchRoomPrices()",
@@ -1048,10 +1060,10 @@
       "source_location": "L327",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard_fetchroomprices",
       "community": 1,
       "community_name": "supabaseClient.js",
-      "norm_label": ".fetchroomprices()",
-      "id": "src_components_admindashboard_admindashboard_fetchroomprices"
+      "norm_label": ".fetchroomprices()"
     },
     {
       "label": ".handleLogin()",
@@ -1060,10 +1072,10 @@
       "source_location": "L666",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard_handlelogin",
       "community": 1,
       "community_name": "supabaseClient.js",
-      "norm_label": ".handlelogin()",
-      "id": "src_components_admindashboard_admindashboard_handlelogin"
+      "norm_label": ".handlelogin()"
     },
     {
       "label": ".init()",
@@ -1072,10 +1084,10 @@
       "source_location": "L147",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard_init",
       "community": 1,
       "community_name": "supabaseClient.js",
-      "norm_label": ".init()",
-      "id": "src_components_admindashboard_admindashboard_init"
+      "norm_label": ".init()"
     },
     {
       "label": ".nahrajFotkuAktuality()",
@@ -1084,10 +1096,10 @@
       "source_location": "L715",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard_nahrajfotkuaktuality",
       "community": 1,
       "community_name": "supabaseClient.js",
-      "norm_label": ".nahrajfotkuaktuality()",
-      "id": "src_components_admindashboard_admindashboard_nahrajfotkuaktuality"
+      "norm_label": ".nahrajfotkuaktuality()"
     },
     {
       "label": ".obnovPrihlaseni()",
@@ -1096,10 +1108,10 @@
       "source_location": "L704",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard_obnovprihlaseni",
       "community": 1,
       "community_name": "supabaseClient.js",
-      "norm_label": ".obnovprihlaseni()",
-      "id": "src_components_admindashboard_admindashboard_obnovprihlaseni"
+      "norm_label": ".obnovprihlaseni()"
     },
     {
       "label": ".otevriRucniRezervaci()",
@@ -1108,10 +1120,10 @@
       "source_location": "L525",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard_otevrirucnirezervaci",
       "community": 1,
       "community_name": "supabaseClient.js",
-      "norm_label": ".otevrirucnirezervaci()",
-      "id": "src_components_admindashboard_admindashboard_otevrirucnirezervaci"
+      "norm_label": ".otevrirucnirezervaci()"
     },
     {
       "label": ".removeBlockedDate()",
@@ -1120,10 +1132,10 @@
       "source_location": "L630",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard_removeblockeddate",
       "community": 1,
       "community_name": "supabaseClient.js",
-      "norm_label": ".removeblockeddate()",
-      "id": "src_components_admindashboard_admindashboard_removeblockeddate"
+      "norm_label": ".removeblockeddate()"
     },
     {
       "label": ".render()",
@@ -1132,10 +1144,10 @@
       "source_location": "L981",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard_render",
       "community": 1,
       "community_name": "supabaseClient.js",
-      "norm_label": ".render()",
-      "id": "src_components_admindashboard_admindashboard_render"
+      "norm_label": ".render()"
     },
     {
       "label": ".renderAdminCalendarModal()",
@@ -1144,10 +1156,10 @@
       "source_location": "L1815",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard_renderadmincalendarmodal",
       "community": 1,
       "community_name": "supabaseClient.js",
-      "norm_label": ".renderadmincalendarmodal()",
-      "id": "src_components_admindashboard_admindashboard_renderadmincalendarmodal"
+      "norm_label": ".renderadmincalendarmodal()"
     },
     {
       "label": ".renderReviewsModalMarkup()",
@@ -1156,10 +1168,10 @@
       "source_location": "L1739",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard_renderreviewsmodalmarkup",
       "community": 1,
       "community_name": "supabaseClient.js",
-      "norm_label": ".renderreviewsmodalmarkup()",
-      "id": "src_components_admindashboard_admindashboard_renderreviewsmodalmarkup"
+      "norm_label": ".renderreviewsmodalmarkup()"
     },
     {
       "label": ".showAdminToast()",
@@ -1168,10 +1180,10 @@
       "source_location": "L761",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard_showadmintoast",
       "community": 1,
       "community_name": "supabaseClient.js",
-      "norm_label": ".showadmintoast()",
-      "id": "src_components_admindashboard_admindashboard_showadmintoast"
+      "norm_label": ".showadmintoast()"
     },
     {
       "label": ".toggleDiscountCodeActive()",
@@ -1180,10 +1192,10 @@
       "source_location": "L285",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard_togglediscountcodeactive",
       "community": 1,
       "community_name": "supabaseClient.js",
-      "norm_label": ".togglediscountcodeactive()",
-      "id": "src_components_admindashboard_admindashboard_togglediscountcodeactive"
+      "norm_label": ".togglediscountcodeactive()"
     },
     {
       "label": ".toggleRoomDisabled()",
@@ -1192,10 +1204,10 @@
       "source_location": "L483",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard_toggleroomdisabled",
       "community": 1,
       "community_name": "supabaseClient.js",
-      "norm_label": ".toggleroomdisabled()",
-      "id": "src_components_admindashboard_admindashboard_toggleroomdisabled"
+      "norm_label": ".toggleroomdisabled()"
     },
     {
       "label": ".updateRoomNameAndPrice()",
@@ -1204,10 +1216,10 @@
       "source_location": "L374",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard_updateroomnameandprice",
       "community": 1,
       "community_name": "supabaseClient.js",
-      "norm_label": ".updateroomnameandprice()",
-      "id": "src_components_admindashboard_admindashboard_updateroomnameandprice"
+      "norm_label": ".updateroomnameandprice()"
     },
     {
       "label": ".updateRoomPrice()",
@@ -1216,10 +1228,10 @@
       "source_location": "L446",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard_updateroomprice",
       "community": 1,
       "community_name": "supabaseClient.js",
-      "norm_label": ".updateroomprice()",
-      "id": "src_components_admindashboard_admindashboard_updateroomprice"
+      "norm_label": ".updateroomprice()"
     },
     {
       "label": ".zamkniRolovaniStranky()",
@@ -1228,10 +1240,10 @@
       "source_location": "L727",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard_zamknirolovanistranky",
       "community": 1,
       "community_name": "supabaseClient.js",
-      "norm_label": ".zamknirolovanistranky()",
-      "id": "src_components_admindashboard_admindashboard_zamknirolovanistranky"
+      "norm_label": ".zamknirolovanistranky()"
     },
     {
       "label": ".zkontrolujKoliziRucni()",
@@ -1240,10 +1252,10 @@
       "source_location": "L542",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard_zkontrolujkolizirucni",
       "community": 1,
       "community_name": "supabaseClient.js",
-      "norm_label": ".zkontrolujkolizirucni()",
-      "id": "src_components_admindashboard_admindashboard_zkontrolujkolizirucni"
+      "norm_label": ".zkontrolujkolizirucni()"
     },
     {
       "label": "formatCzechDateStr()",
@@ -1252,10 +1264,10 @@
       "source_location": "L11",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_formatczechdatestr",
       "community": 1,
       "community_name": "supabaseClient.js",
-      "norm_label": "formatczechdatestr()",
-      "id": "src_components_admindashboard_formatczechdatestr"
+      "norm_label": "formatczechdatestr()"
     },
     {
       "label": "getDiscountValidityDisplay()",
@@ -1264,10 +1276,10 @@
       "source_location": "L20",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_getdiscountvaliditydisplay",
       "community": 1,
       "community_name": "supabaseClient.js",
-      "norm_label": "getdiscountvaliditydisplay()",
-      "id": "src_components_admindashboard_getdiscountvaliditydisplay"
+      "norm_label": "getdiscountvaliditydisplay()"
     },
     {
       "label": ".constructor()",
@@ -1328,6 +1340,30 @@
       "community_name": "supabaseClient.js",
       "norm_label": "deletestorednewsitem()",
       "id": "src_lib_supabaseclient_deletestorednewsitem"
+    },
+    {
+      "label": "fetchCenik()",
+      "file_type": "code",
+      "source_file": "src/lib/supabaseClient.js",
+      "source_location": "L1565",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "supabaseClient.js",
+      "norm_label": "fetchcenik()",
+      "id": "src_lib_supabaseclient_fetchcenik"
+    },
+    {
+      "label": "getDeviceRedeemedDiscountCodes()",
+      "file_type": "code",
+      "source_file": "src/lib/supabaseClient.js",
+      "source_location": "L376",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "supabaseClient.js",
+      "norm_label": "getdeviceredeemeddiscountcodes()",
+      "id": "src_lib_supabaseclient_getdeviceredeemeddiscountcodes"
     },
     {
       "label": "getStoredBlockedDates()",
@@ -1462,6 +1498,30 @@
       "id": "src_lib_supabaseclient_initstoredroompricesinmock"
     },
     {
+      "label": "markDiscountCodeRedeemedOnDevice()",
+      "file_type": "code",
+      "source_file": "src/lib/supabaseClient.js",
+      "source_location": "L385",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "supabaseClient.js",
+      "norm_label": "markdiscountcoderedeemedondevice()",
+      "id": "src_lib_supabaseclient_markdiscountcoderedeemedondevice"
+    },
+    {
+      "label": "nactiCenik()",
+      "file_type": "code",
+      "source_file": "src/lib/supabaseClient.js",
+      "source_location": "L1571",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "supabaseClient.js",
+      "norm_label": "nacticenik()",
+      "id": "src_lib_supabaseclient_nacticenik"
+    },
+    {
       "label": "nactiPokoje()",
       "file_type": "code",
       "source_file": "src/lib/supabaseClient.js",
@@ -1510,16 +1570,16 @@
       "id": "src_lib_supabaseclient_savestoredblockeddate"
     },
     {
-      "label": "saveStoredCustomRoomName()",
+      "label": "saveStoredCenik()",
       "file_type": "code",
       "source_file": "src/lib/supabaseClient.js",
-      "source_location": "L581",
+      "source_location": "L1544",
       "_callable": true,
       "_origin": "ast",
       "community": 1,
       "community_name": "supabaseClient.js",
-      "norm_label": "savestoredcustomroomname()",
-      "id": "src_lib_supabaseclient_savestoredcustomroomname"
+      "norm_label": "savestoredcenik()",
+      "id": "src_lib_supabaseclient_savestoredcenik"
     },
     {
       "label": "saveStoredDisabledRoom()",
@@ -1762,30 +1822,6 @@
       "id": "src_components_adminrucnirezervace_spoctirucnicenu"
     },
     {
-      "label": "sanitizeReservationForSupabase()",
-      "file_type": "code",
-      "source_file": "src/lib/supabaseClient.js",
-      "source_location": "L113",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 13,
-      "community_name": "AdminRucniRezervace.js",
-      "norm_label": "sanitizereservationforsupabase()",
-      "id": "src_lib_supabaseclient_sanitizereservationforsupabase"
-    },
-    {
-      "label": "saveStoredReservation()",
-      "file_type": "code",
-      "source_file": "src/lib/supabaseClient.js",
-      "source_location": "L146",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 13,
-      "community_name": "AdminRucniRezervace.js",
-      "norm_label": "savestoredreservation()",
-      "id": "src_lib_supabaseclient_savestoredreservation"
-    },
-    {
       "label": "maxOsobNaPokoji()",
       "file_type": "code",
       "source_file": "src/utils/cenik.js",
@@ -1876,10 +1912,10 @@
       "source_location": "L12",
       "_callable": true,
       "_origin": "ast",
-      "id": "kontrola_pulene_dny_overit",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "overit()"
+      "norm_label": "overit()",
+      "id": "kontrola_pulene_dny_overit"
     },
     {
       "label": "stav()",
@@ -1888,10 +1924,10 @@
       "source_location": "L25",
       "_callable": true,
       "_origin": "ast",
-      "id": "kontrola_pulene_dny_stav",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "stav()"
+      "norm_label": "stav()",
+      "id": "kontrola_pulene_dny_stav"
     },
     {
       "label": "stavJeden()",
@@ -1900,10 +1936,10 @@
       "source_location": "L82",
       "_callable": true,
       "_origin": "ast",
-      "id": "kontrola_pulene_dny_stavjeden",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "stavjeden()"
+      "norm_label": "stavjeden()",
+      "id": "kontrola_pulene_dny_stavjeden"
     },
     {
       "label": "stavSam()",
@@ -1912,10 +1948,10 @@
       "source_location": "L63",
       "_callable": true,
       "_origin": "ast",
-      "id": "kontrola_pulene_dny_stavsam",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "stavsam()"
+      "norm_label": "stavsam()",
+      "id": "kontrola_pulene_dny_stavsam"
     },
     {
       "label": "bindDostupnostModal()",
@@ -1924,10 +1960,10 @@
       "source_location": "L459",
       "_callable": true,
       "_origin": "ast",
-      "id": "src_components_admindostupnost_binddostupnostmodal",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "binddostupnostmodal()"
+      "norm_label": "binddostupnostmodal()",
+      "id": "src_components_admindostupnost_binddostupnostmodal"
     },
     {
       "label": "dnesStr()",
@@ -1936,10 +1972,10 @@
       "source_location": "L43",
       "_callable": true,
       "_origin": "ast",
-      "id": "src_components_admindostupnost_dnesstr",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "dnesstr()"
+      "norm_label": "dnesstr()",
+      "id": "src_components_admindostupnost_dnesstr"
     },
     {
       "label": "escapuj()",
@@ -1948,10 +1984,10 @@
       "source_location": "L33",
       "_callable": true,
       "_origin": "ast",
-      "id": "src_components_admindostupnost_escapuj",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "escapuj()"
+      "norm_label": "escapuj()",
+      "id": "src_components_admindostupnost_escapuj"
     },
     {
       "label": "formatCzechDateStr()",
@@ -1960,10 +1996,10 @@
       "source_location": "L36",
       "_callable": true,
       "_origin": "ast",
-      "id": "src_components_admindostupnost_formatczechdatestr",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "formatczechdatestr()"
+      "norm_label": "formatczechdatestr()",
+      "id": "src_components_admindostupnost_formatczechdatestr"
     },
     {
       "label": "odjezdVDen()",
@@ -1972,10 +2008,10 @@
       "source_location": "L108",
       "_callable": true,
       "_origin": "ast",
-      "id": "src_components_admindostupnost_odjezdvden",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "odjezdvden()"
+      "norm_label": "odjezdvden()",
+      "id": "src_components_admindostupnost_odjezdvden"
     },
     {
       "label": "pocetNoci()",
@@ -1984,10 +2020,10 @@
       "source_location": "L65",
       "_callable": true,
       "_origin": "ast",
-      "id": "src_components_admindostupnost_pocetnoci",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "pocetnoci()"
+      "norm_label": "pocetnoci()",
+      "id": "src_components_admindostupnost_pocetnoci"
     },
     {
       "label": "posunDatum()",
@@ -1996,10 +2032,10 @@
       "source_location": "L45",
       "_callable": true,
       "_origin": "ast",
-      "id": "src_components_admindostupnost_posundatum",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "posundatum()"
+      "norm_label": "posundatum()",
+      "id": "src_components_admindostupnost_posundatum"
     },
     {
       "label": "prazdnyPrehled()",
@@ -2008,10 +2044,10 @@
       "source_location": "L71",
       "_callable": true,
       "_origin": "ast",
-      "id": "src_components_admindostupnost_prazdnyprehled",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "prazdnyprehled()"
+      "norm_label": "prazdnyprehled()",
+      "id": "src_components_admindostupnost_prazdnyprehled"
     },
     {
       "label": "prijezdVDen()",
@@ -2020,10 +2056,10 @@
       "source_location": "L129",
       "_callable": true,
       "_origin": "ast",
-      "id": "src_components_admindostupnost_prijezdvden",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "prijezdvden()"
+      "norm_label": "prijezdvden()",
+      "id": "src_components_admindostupnost_prijezdvden"
     },
     {
       "label": "prodejnePokoje()",
@@ -2032,10 +2068,10 @@
       "source_location": "L145",
       "_callable": true,
       "_origin": "ast",
-      "id": "src_components_admindostupnost_prodejnepokoje",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "prodejnepokoje()"
+      "norm_label": "prodejnepokoje()",
+      "id": "src_components_admindostupnost_prodejnepokoje"
     },
     {
       "label": "pulkyProDen()",
@@ -2044,10 +2080,10 @@
       "source_location": "L159",
       "_callable": true,
       "_origin": "ast",
-      "id": "src_components_admindostupnost_pulkyproden",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "pulkyproden()"
+      "norm_label": "pulkyproden()",
+      "id": "src_components_admindostupnost_pulkyproden"
     },
     {
       "label": "renderDostupnostModal()",
@@ -2056,10 +2092,10 @@
       "source_location": "L194",
       "_callable": true,
       "_origin": "ast",
-      "id": "src_components_admindostupnost_renderdostupnostmodal",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "renderdostupnostmodal()"
+      "norm_label": "renderdostupnostmodal()",
+      "id": "src_components_admindostupnost_renderdostupnostmodal"
     },
     {
       "label": "stavDne()",
@@ -2068,10 +2104,10 @@
       "source_location": "L168",
       "_callable": true,
       "_origin": "ast",
-      "id": "src_components_admindostupnost_stavdne",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "stavdne()"
+      "norm_label": "stavdne()",
+      "id": "src_components_admindostupnost_stavdne"
     },
     {
       "label": "zabranyDuvod()",
@@ -2080,10 +2116,10 @@
       "source_location": "L85",
       "_callable": true,
       "_origin": "ast",
-      "id": "src_components_admindostupnost_zabranyduvod",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "zabranyduvod()"
+      "norm_label": "zabranyduvod()",
+      "id": "src_components_admindostupnost_zabranyduvod"
     },
     {
       "label": "zobrazRozsahBlokace()",
@@ -2092,94 +2128,106 @@
       "source_location": "L57",
       "_callable": true,
       "_origin": "ast",
-      "id": "src_components_admindostupnost_zobrazrozsahblokace",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "zobrazrozsahblokace()"
+      "norm_label": "zobrazrozsahblokace()",
+      "id": "src_components_admindostupnost_zobrazrozsahblokace"
     },
     {
       "label": "bindPlachta()",
       "file_type": "code",
       "source_file": "src/components/AdminPlachta.js",
-      "source_location": "L229",
+      "source_location": "L245",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_adminplachta_bindplachta",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "bindplachta()",
-      "id": "src_components_adminplachta_bindplachta"
+      "norm_label": "bindplachta()"
     },
     {
       "label": "den()",
       "file_type": "code",
       "source_file": "src/components/AdminPlachta.js",
-      "source_location": "L42",
+      "source_location": "L54",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_adminplachta_den",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "den()",
-      "id": "src_components_adminplachta_den"
+      "norm_label": "den()"
     },
     {
       "label": "denVTydnu()",
       "file_type": "code",
       "source_file": "src/components/AdminPlachta.js",
-      "source_location": "L46",
+      "source_location": "L58",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_adminplachta_denvtydnu",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "denvtydnu()",
-      "id": "src_components_adminplachta_denvtydnu"
+      "norm_label": "denvtydnu()"
+    },
+    {
+      "label": "fazePruhu()",
+      "file_type": "code",
+      "source_file": "src/components/AdminPlachta.js",
+      "source_location": "L35",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_components_adminplachta_fazepruhu",
+      "community": 14,
+      "community_name": "AdminDostupnost.js",
+      "norm_label": "fazepruhu()"
     },
     {
       "label": "indexVMesici()",
       "file_type": "code",
       "source_file": "src/components/AdminPlachta.js",
-      "source_location": "L49",
+      "source_location": "L61",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_adminplachta_indexvmesici",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "indexvmesici()",
-      "id": "src_components_adminplachta_indexvmesici"
+      "norm_label": "indexvmesici()"
     },
     {
       "label": "pruhyProPokoj()",
       "file_type": "code",
       "source_file": "src/components/AdminPlachta.js",
-      "source_location": "L61",
+      "source_location": "L73",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_adminplachta_pruhypropokoj",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "pruhypropokoj()",
-      "id": "src_components_adminplachta_pruhypropokoj"
+      "norm_label": "pruhypropokoj()"
     },
     {
       "label": "renderPlachta()",
       "file_type": "code",
       "source_file": "src/components/AdminPlachta.js",
-      "source_location": "L99",
+      "source_location": "L112",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_adminplachta_renderplachta",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "renderplachta()",
-      "id": "src_components_adminplachta_renderplachta"
+      "norm_label": "renderplachta()"
     },
     {
       "label": "rozdelNazev()",
       "file_type": "code",
       "source_file": "src/components/AdminPlachta.js",
-      "source_location": "L36",
+      "source_location": "L48",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_adminplachta_rozdelnazev",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "rozdelnazev()",
-      "id": "src_components_adminplachta_rozdelnazev"
+      "norm_label": "rozdelnazev()"
     },
     {
       "label": "obsazenostPulek()",
@@ -2188,10 +2236,10 @@
       "source_location": "L30",
       "_callable": true,
       "_origin": "ast",
-      "id": "src_utils_obsazenost_obsazenostpulek",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "obsazenostpulek()"
+      "norm_label": "obsazenostpulek()",
+      "id": "src_utils_obsazenost_obsazenostpulek"
     },
     {
       "label": "pulkyDne()",
@@ -2200,10 +2248,10 @@
       "source_location": "L52",
       "_callable": true,
       "_origin": "ast",
-      "id": "src_utils_obsazenost_pulkydne",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "pulkydne()"
+      "norm_label": "pulkydne()",
+      "id": "src_utils_obsazenost_pulkydne"
     },
     {
       "label": "obsazeno()",
@@ -2236,22 +2284,10 @@
       "source_location": "L783",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard_advancereservationphase",
       "community": 20,
       "community_name": "AdminDashboard.js",
-      "norm_label": ".advancereservationphase()",
-      "id": "src_components_admindashboard_admindashboard_advancereservationphase"
-    },
-    {
-      "label": ".fetchReservations()",
-      "file_type": "code",
-      "source_file": "src/components/AdminDashboard.js",
-      "source_location": "L552",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 20,
-      "community_name": "AdminDashboard.js",
-      "norm_label": ".fetchreservations()",
-      "id": "src_components_admindashboard_admindashboard_fetchreservations"
+      "norm_label": ".advancereservationphase()"
     },
     {
       "label": "posunDatum()",
@@ -2260,10 +2296,10 @@
       "source_location": "L35",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_posundatum",
       "community": 20,
       "community_name": "AdminDashboard.js",
-      "norm_label": "posundatum()",
-      "id": "src_components_admindashboard_posundatum"
+      "norm_label": "posundatum()"
     },
     {
       "label": "zobrazRozsahBlokace()",
@@ -2272,10 +2308,10 @@
       "source_location": "L46",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_zobrazrozsahblokace",
       "community": 20,
       "community_name": "AdminDashboard.js",
-      "norm_label": "zobrazrozsahblokace()",
-      "id": "src_components_admindashboard_zobrazrozsahblokace"
+      "norm_label": "zobrazrozsahblokace()"
     },
     {
       "label": "getDayAfterTomorrowDateString()",
@@ -2374,18 +2410,6 @@
       "id": "src_lib_supabaseclient_doplnpriznakyzestarychdat"
     },
     {
-      "label": "getDeviceRedeemedDiscountCodes()",
-      "file_type": "code",
-      "source_file": "src/lib/supabaseClient.js",
-      "source_location": "L376",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 20,
-      "community_name": "AdminDashboard.js",
-      "norm_label": "getdeviceredeemeddiscountcodes()",
-      "id": "src_lib_supabaseclient_getdeviceredeemeddiscountcodes"
-    },
-    {
       "label": "getStoredCenik()",
       "file_type": "code",
       "source_file": "src/lib/supabaseClient.js",
@@ -2410,18 +2434,6 @@
       "id": "src_lib_supabaseclient_getstoredreservations"
     },
     {
-      "label": "markDiscountCodeRedeemedOnDevice()",
-      "file_type": "code",
-      "source_file": "src/lib/supabaseClient.js",
-      "source_location": "L385",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 20,
-      "community_name": "AdminDashboard.js",
-      "norm_label": "markdiscountcoderedeemedondevice()",
-      "id": "src_lib_supabaseclient_markdiscountcoderedeemedondevice"
-    },
-    {
       "label": "ocistiHosty()",
       "file_type": "code",
       "source_file": "src/lib/supabaseClient.js",
@@ -2432,6 +2444,30 @@
       "community_name": "AdminDashboard.js",
       "norm_label": "ocistihosty()",
       "id": "src_lib_supabaseclient_ocistihosty"
+    },
+    {
+      "label": "sanitizeReservationForSupabase()",
+      "file_type": "code",
+      "source_file": "src/lib/supabaseClient.js",
+      "source_location": "L113",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 20,
+      "community_name": "AdminDashboard.js",
+      "norm_label": "sanitizereservationforsupabase()",
+      "id": "src_lib_supabaseclient_sanitizereservationforsupabase"
+    },
+    {
+      "label": "saveStoredReservation()",
+      "file_type": "code",
+      "source_file": "src/lib/supabaseClient.js",
+      "source_location": "L146",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 20,
+      "community_name": "AdminDashboard.js",
+      "norm_label": "savestoredreservation()",
+      "id": "src_lib_supabaseclient_savestoredreservation"
     },
     {
       "label": "toggleStoredReservationArchive()",
@@ -2456,18 +2492,6 @@
       "community_name": "AdminDashboard.js",
       "norm_label": "updatestoredreservationstatus()",
       "id": "src_lib_supabaseclient_updatestoredreservationstatus"
-    },
-    {
-      "label": "popisRozpisu()",
-      "file_type": "code",
-      "source_file": "src/utils/cenik.js",
-      "source_location": "L293",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 20,
-      "community_name": "AdminDashboard.js",
-      "norm_label": "popisrozpisu()",
-      "id": "src_utils_cenik_popisrozpisu"
     },
     {
       "label": "generateEmail1ReceptionNotification()",
@@ -2893,7 +2917,7 @@
       "label": ".attachEventListeners()",
       "file_type": "code",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L2845",
+      "source_location": "L2854",
       "_callable": true,
       "_origin": "ast",
       "id": "src_components_bookingsystem_bookingsystem_attacheventlisteners",
@@ -3241,7 +3265,7 @@
       "label": ".renderStep1()",
       "file_type": "code",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L1793",
+      "source_location": "L1802",
       "_callable": true,
       "_origin": "ast",
       "id": "src_components_bookingsystem_bookingsystem_renderstep1",
@@ -3253,7 +3277,7 @@
       "label": ".renderStep2Form()",
       "file_type": "code",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L2276",
+      "source_location": "L2285",
       "_callable": true,
       "_origin": "ast",
       "id": "src_components_bookingsystem_bookingsystem_renderstep2form",
@@ -3265,7 +3289,7 @@
       "label": ".renderStep3Confirmation()",
       "file_type": "code",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L2703",
+      "source_location": "L2712",
       "_callable": true,
       "_origin": "ast",
       "id": "src_components_bookingsystem_bookingsystem_renderstep3confirmation",
@@ -3277,7 +3301,7 @@
       "label": ".renderTermsModal()",
       "file_type": "code",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L1712",
+      "source_location": "L1721",
       "_callable": true,
       "_origin": "ast",
       "id": "src_components_bookingsystem_bookingsystem_rendertermsmodal",
@@ -3412,10 +3436,10 @@
       "source_location": "L75",
       "_callable": true,
       "_origin": "ast",
+      "id": "src_components_admindashboard_admindashboard_constructor",
       "community": 44,
       "community_name": "AdminFotoOrez.js",
-      "norm_label": ".constructor()",
-      "id": "src_components_admindashboard_admindashboard_constructor"
+      "norm_label": ".constructor()"
     },
     {
       "label": "bindOrezModal()",
@@ -3668,18 +3692,6 @@
       "community_name": "AdminCenik.js",
       "norm_label": "kartavolby()",
       "id": "src_components_admincenik_kartavolby"
-    },
-    {
-      "label": "obnovCenik()",
-      "file_type": "code",
-      "source_file": "src/components/AdminCenik.js",
-      "source_location": "L803",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "AdminCenik.js",
-      "norm_label": "obnovcenik()",
-      "id": "src_components_admincenik_obnovcenik"
     },
     {
       "label": "obrazovka()",
@@ -3958,28 +3970,16 @@
       "id": "src_components_admincenik_zeptejse"
     },
     {
-      "label": "nactiCenik()",
+      "label": "saveStoredCustomRoomName()",
       "file_type": "code",
       "source_file": "src/lib/supabaseClient.js",
-      "source_location": "L1571",
+      "source_location": "L581",
       "_callable": true,
       "_origin": "ast",
       "community": 5,
       "community_name": "AdminCenik.js",
-      "norm_label": "nacticenik()",
-      "id": "src_lib_supabaseclient_nacticenik"
-    },
-    {
-      "label": "saveStoredCenik()",
-      "file_type": "code",
-      "source_file": "src/lib/supabaseClient.js",
-      "source_location": "L1544",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "AdminCenik.js",
-      "norm_label": "savestoredcenik()",
-      "id": "src_lib_supabaseclient_savestoredcenik"
+      "norm_label": "savestoredcustomroomname()",
+      "id": "src_lib_supabaseclient_savestoredcustomroomname"
     },
     {
       "label": "cenaZaOsobuNoc()",
@@ -4064,6 +4064,18 @@
       "community_name": "AdminCenik.js",
       "norm_label": "obdobisomezenoudostupnosti()",
       "id": "src_utils_cenik_obdobisomezenoudostupnosti"
+    },
+    {
+      "label": "popisRozpisu()",
+      "file_type": "code",
+      "source_file": "src/utils/cenik.js",
+      "source_location": "L293",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "AdminCenik.js",
+      "norm_label": "popisrozpisu()",
+      "id": "src_utils_cenik_popisrozpisu"
     },
     {
       "label": "rozpisNoci()",
@@ -5101,10 +5113,10 @@
       "source_file": "kontrola/pulene-dny.mjs",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "kontrola_pulene_dny",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "pulene-dny.mjs"
+      "norm_label": "pulene-dny.mjs",
+      "id": "kontrola_pulene_dny"
     },
     {
       "label": "NAVAZUJE",
@@ -5112,10 +5124,10 @@
       "source_file": "kontrola/pulene-dny.mjs",
       "source_location": "L78",
       "_origin": "ast",
-      "id": "kontrola_pulene_dny_navazuje",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "navazuje"
+      "norm_label": "navazuje",
+      "id": "kontrola_pulene_dny_navazuje"
     },
     {
       "label": "POKOJE",
@@ -5123,10 +5135,10 @@
       "source_file": "kontrola/pulene-dny.mjs",
       "source_location": "L18",
       "_origin": "ast",
-      "id": "kontrola_pulene_dny_pokoje",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "pokoje"
+      "norm_label": "pokoje",
+      "id": "kontrola_pulene_dny_pokoje"
     },
     {
       "label": "SAM",
@@ -5134,10 +5146,10 @@
       "source_file": "kontrola/pulene-dny.mjs",
       "source_location": "L62",
       "_origin": "ast",
-      "id": "kontrola_pulene_dny_sam",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "sam"
+      "norm_label": "sam",
+      "id": "kontrola_pulene_dny_sam"
     },
     {
       "label": "ZAZNAMY",
@@ -5145,10 +5157,10 @@
       "source_file": "kontrola/pulene-dny.mjs",
       "source_location": "L19",
       "_origin": "ast",
-      "id": "kontrola_pulene_dny_zaznamy",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "zaznamy"
+      "norm_label": "zaznamy",
+      "id": "kontrola_pulene_dny_zaznamy"
     },
     {
       "label": "AdminDostupnost.js",
@@ -5156,10 +5168,10 @@
       "source_file": "src/components/AdminDostupnost.js",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "src_components_admindostupnost",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "admindostupnost.js"
+      "norm_label": "admindostupnost.js",
+      "id": "src_components_admindostupnost"
     },
     {
       "label": "MESICE",
@@ -5167,10 +5179,10 @@
       "source_file": "src/components/AdminDostupnost.js",
       "source_location": "L24",
       "_origin": "ast",
-      "id": "src_components_admindostupnost_mesice",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "mesice"
+      "norm_label": "mesice",
+      "id": "src_components_admindostupnost_mesice"
     },
     {
       "label": "S",
@@ -5178,10 +5190,10 @@
       "source_file": "src/components/AdminDostupnost.js",
       "source_location": "L27",
       "_origin": "ast",
-      "id": "src_components_admindostupnost_s",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "s"
+      "norm_label": "s",
+      "id": "src_components_admindostupnost_s"
     },
     {
       "label": "AdminPlachta.js",
@@ -5189,10 +5201,10 @@
       "source_file": "src/components/AdminPlachta.js",
       "source_location": "L1",
       "_origin": "ast",
+      "id": "src_components_adminplachta",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "adminplachta.js",
-      "id": "src_components_adminplachta"
+      "norm_label": "adminplachta.js"
     },
     {
       "label": "DNY_ZKRATKY",
@@ -5200,10 +5212,10 @@
       "source_file": "src/components/AdminPlachta.js",
       "source_location": "L27",
       "_origin": "ast",
+      "id": "src_components_adminplachta_dny_zkratky",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "dny_zkratky",
-      "id": "src_components_adminplachta_dny_zkratky"
+      "norm_label": "dny_zkratky"
     },
     {
       "label": "MOCK_ROOMS",
@@ -5222,10 +5234,10 @@
       "source_file": "src/utils/obsazenost.js",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "src_utils_obsazenost",
       "community": 14,
       "community_name": "AdminDostupnost.js",
-      "norm_label": "obsazenost.js"
+      "norm_label": "obsazenost.js",
+      "id": "src_utils_obsazenost"
     },
     {
       "label": "supabase-novy-projekt.sql",
@@ -5668,10 +5680,10 @@
         "kind": "file"
       },
       "_origin": "ast",
-      "id": "zkontroluj",
       "community": 2,
       "community_name": "zkontroluj.sh",
-      "norm_label": "zkontroluj.sh"
+      "norm_label": "zkontroluj.sh",
+      "id": "zkontroluj"
     },
     {
       "label": "cervena()",
@@ -5683,10 +5695,10 @@
         "kind": "bash_function"
       },
       "_origin": "ast",
-      "id": "zkontroluj_cervena",
       "community": 2,
       "community_name": "zkontroluj.sh",
-      "norm_label": "cervena()"
+      "norm_label": "cervena()",
+      "id": "zkontroluj_cervena"
     },
     {
       "label": "hlavicka()",
@@ -5698,10 +5710,10 @@
         "kind": "bash_function"
       },
       "_origin": "ast",
-      "id": "zkontroluj_hlavicka",
       "community": 2,
       "community_name": "zkontroluj.sh",
-      "norm_label": "hlavicka()"
+      "norm_label": "hlavicka()",
+      "id": "zkontroluj_hlavicka"
     },
     {
       "label": "nadpis()",
@@ -5713,10 +5725,10 @@
         "kind": "bash_function"
       },
       "_origin": "ast",
-      "id": "zkontroluj_nadpis",
       "community": 2,
       "community_name": "zkontroluj.sh",
-      "norm_label": "nadpis()"
+      "norm_label": "nadpis()",
+      "id": "zkontroluj_nadpis"
     },
     {
       "label": "prazdne_nebo_chyba()",
@@ -5728,10 +5740,10 @@
         "kind": "bash_function"
       },
       "_origin": "ast",
-      "id": "zkontroluj_prazdne_nebo_chyba",
       "community": 2,
       "community_name": "zkontroluj.sh",
-      "norm_label": "prazdne_nebo_chyba()"
+      "norm_label": "prazdne_nebo_chyba()",
+      "id": "zkontroluj_prazdne_nebo_chyba"
     },
     {
       "label": "seda()",
@@ -5743,10 +5755,10 @@
         "kind": "bash_function"
       },
       "_origin": "ast",
-      "id": "zkontroluj_seda",
       "community": 2,
       "community_name": "zkontroluj.sh",
-      "norm_label": "seda()"
+      "norm_label": "seda()",
+      "id": "zkontroluj_seda"
     },
     {
       "label": "zkontroluj.sh script",
@@ -5758,10 +5770,10 @@
         "kind": "bash_entrypoint"
       },
       "_origin": "ast",
-      "id": "zkontroluj_sh__entry",
       "community": 2,
       "community_name": "zkontroluj.sh",
-      "norm_label": "zkontroluj.sh script"
+      "norm_label": "zkontroluj.sh script",
+      "id": "zkontroluj_sh__entry"
     },
     {
       "label": "zelena()",
@@ -5773,10 +5785,10 @@
         "kind": "bash_function"
       },
       "_origin": "ast",
-      "id": "zkontroluj_zelena",
       "community": 2,
       "community_name": "zkontroluj.sh",
-      "norm_label": "zelena()"
+      "norm_label": "zelena()",
+      "id": "zkontroluj_zelena"
     },
     {
       "label": "rezervace.mjs",
@@ -5839,10 +5851,10 @@
       "source_file": "src/components/AdminDashboard.js",
       "source_location": "L1",
       "_origin": "ast",
+      "id": "src_components_admindashboard",
       "community": 20,
       "community_name": "AdminDashboard.js",
-      "norm_label": "admindashboard.js",
-      "id": "src_components_admindashboard"
+      "norm_label": "admindashboard.js"
     },
     {
       "label": "BookingSystem.js",
@@ -5876,17 +5888,6 @@
       "community_name": "AdminDashboard.js",
       "norm_label": "supabase",
       "id": "src_lib_supabaseclient_supabase"
-    },
-    {
-      "label": "PRAZDNY_CENIK",
-      "file_type": "code",
-      "source_file": "src/utils/cenik.js",
-      "source_location": "L33",
-      "_origin": "ast",
-      "community": 20,
-      "community_name": "AdminDashboard.js",
-      "norm_label": "prazdny_cenik",
-      "id": "src_utils_cenik_prazdny_cenik"
     },
     {
       "label": "emailService.js",
@@ -7419,6 +7420,17 @@
       "id": "src_utils_cenik_max_osob_v_ceniku"
     },
     {
+      "label": "PRAZDNY_CENIK",
+      "file_type": "code",
+      "source_file": "src/utils/cenik.js",
+      "source_location": "L33",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "AdminCenik.js",
+      "norm_label": "prazdny_cenik",
+      "id": "src_utils_cenik_prazdny_cenik"
+    },
+    {
       "label": "VYCHOZI_CENY",
       "file_type": "code",
       "source_file": "src/utils/cenik.js",
@@ -8532,22 +8544,6 @@
       "id": "table_reviews"
     },
     {
-      "label": "Supabase tabulka room_prices",
-      "file_type": "concept",
-      "source_file": "CLAUDE.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "rationale": "Dr\u017e\u00ed je\u0161t\u011b sloupce ze star\u00e9ho cenov\u00e9ho modelu (base_price NOT NULL bez default). Upsert spadne na 23502 \u2014 proto se pou\u017e\u00edv\u00e1 update() nebo insert() podle existence \u0159\u00e1dku.",
-      "community": 1,
-      "norm_label": "supabase tabulka room_prices",
-      "community_name": "supabaseClient.js",
-      "_origin": "semantic",
-      "id": "table_room_prices"
-    },
-    {
       "label": "Faktick\u00e9 z\u00e1kazy (bezbari\u00e9rovost, trampol\u00edna)",
       "file_type": "concept",
       "source_file": ".agents/SEO-CONTEXT.md",
@@ -8578,22 +8574,6 @@
       "community_name": ".agents/SEO-ROADMAP.md",
       "_origin": "semantic",
       "id": "faq_zakaz"
-    },
-    {
-      "label": "Storno podm\u00ednky",
-      "file_type": "concept",
-      "source_file": ".agents/SEO-CONTEXT.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "rationale": "V\u00edce ne\u017e 3 dny zdarma, m\u00e9n\u011b ne\u017e 3 dny nebo nedojezd 100%; z\u00e1vazn\u00e1 verze je z modalu v rezerva\u010dn\u00edm formul\u00e1\u0159i.",
-      "community": 12,
-      "norm_label": "storno podminky",
-      "community_name": ".agents/SEO-ROADMAP.md",
-      "_origin": "semantic",
-      "id": "storno_podminky"
     },
     {
       "label": "Okol\u00ed (Aktivity) Page",
@@ -8852,6 +8832,22 @@
       "id": "site_header_component"
     },
     {
+      "label": "Storno podm\u00ednky",
+      "file_type": "concept",
+      "source_file": ".agents/SEO-CONTEXT.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "V\u00edce ne\u017e 3 dny zdarma, m\u00e9n\u011b ne\u017e 3 dny nebo nedojezd 100%; z\u00e1vazn\u00e1 verze je z modalu v rezerva\u010dn\u00edm formul\u00e1\u0159i.",
+      "community": 19,
+      "norm_label": "storno podminky",
+      "community_name": "Okol\u00ed (Aktivity) Page",
+      "_origin": "semantic",
+      "id": "storno_podminky"
+    },
+    {
       "label": "Pravidlo pro v\u00fd\u0161ku okna",
       "file_type": "concept",
       "source_file": ".agents/AGENTS.md",
@@ -9074,6 +9070,22 @@
       "community_name": "AdminCenik.js",
       "_origin": "semantic",
       "id": "table_cenik_sezony"
+    },
+    {
+      "label": "Supabase tabulka room_prices",
+      "file_type": "concept",
+      "source_file": "CLAUDE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Dr\u017e\u00ed je\u0161t\u011b sloupce ze star\u00e9ho cenov\u00e9ho modelu (base_price NOT NULL bez default). Upsert spadne na 23502 \u2014 proto se pou\u017e\u00edv\u00e1 update() nebo insert() podle existence \u0159\u00e1dku.",
+      "community": 5,
+      "norm_label": "supabase tabulka room_prices",
+      "community_name": "AdminCenik.js",
+      "_origin": "semantic",
+      "id": "table_room_prices"
     },
     {
       "label": "public/404.html",
@@ -9529,9 +9541,9 @@
       "source_location": "L26",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "kontrola_pulene_dny_stav",
-      "target": "src_utils_obsazenost_obsazenostpulek",
-      "confidence_score": 1.0
+      "target": "src_utils_obsazenost_obsazenostpulek"
     },
     {
       "relation": "calls",
@@ -9541,9 +9553,9 @@
       "source_location": "L31",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "kontrola_pulene_dny_stav",
-      "target": "src_utils_obsazenost_pulkydne",
-      "confidence_score": 1.0
+      "target": "src_utils_obsazenost_pulkydne"
     },
     {
       "relation": "calls",
@@ -9553,9 +9565,9 @@
       "source_location": "L83",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "kontrola_pulene_dny_stavjeden",
-      "target": "src_utils_obsazenost_obsazenostpulek",
-      "confidence_score": 1.0
+      "target": "src_utils_obsazenost_obsazenostpulek"
     },
     {
       "relation": "calls",
@@ -9565,9 +9577,9 @@
       "source_location": "L88",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "kontrola_pulene_dny_stavjeden",
-      "target": "src_utils_obsazenost_pulkydne",
-      "confidence_score": 1.0
+      "target": "src_utils_obsazenost_pulkydne"
     },
     {
       "relation": "calls",
@@ -9577,9 +9589,9 @@
       "source_location": "L64",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "kontrola_pulene_dny_stavsam",
-      "target": "src_utils_obsazenost_obsazenostpulek",
-      "confidence_score": 1.0
+      "target": "src_utils_obsazenost_obsazenostpulek"
     },
     {
       "relation": "calls",
@@ -9589,9 +9601,9 @@
       "source_location": "L69",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "kontrola_pulene_dny_stavsam",
-      "target": "src_utils_obsazenost_pulkydne",
-      "confidence_score": 1.0
+      "target": "src_utils_obsazenost_pulkydne"
     },
     {
       "relation": "calls",
@@ -10285,9 +10297,9 @@
       "source_location": "L626",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_addblockeddate",
-      "target": "src_components_admindashboard_admindashboard_fetchblockeddates"
+      "target": "src_components_admindashboard_admindashboard_fetchblockeddates",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10297,9 +10309,9 @@
       "source_location": "L627",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_addblockeddate",
-      "target": "src_components_admindashboard_admindashboard_showadmintoast"
+      "target": "src_components_admindashboard_admindashboard_showadmintoast",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10321,9 +10333,9 @@
       "source_location": "L257",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_adddiscountcode",
-      "target": "src_components_admindashboard_admindashboard_showadmintoast"
+      "target": "src_components_admindashboard_admindashboard_showadmintoast",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10333,9 +10345,9 @@
       "source_location": "L260",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_adddiscountcode",
-      "target": "src_components_admindashboard_admindashboard_render"
+      "target": "src_components_admindashboard_admindashboard_render",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10393,9 +10405,9 @@
       "source_location": "L844",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_advancereservationphase",
-      "target": "src_components_admindashboard_admindashboard_showadmintoast"
+      "target": "src_components_admindashboard_admindashboard_showadmintoast",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10465,9 +10477,9 @@
       "source_location": "L922",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_advancereservationphase",
-      "target": "src_components_admindashboard_admindashboard_render"
+      "target": "src_components_admindashboard_admindashboard_render",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10501,9 +10513,9 @@
       "source_location": "L964",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_advancereservationphase",
-      "target": "src_components_admindashboard_admindashboard_fetchreservations"
+      "target": "src_components_admindashboard_admindashboard_fetchreservations",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10513,9 +10525,9 @@
       "source_location": "L1945",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_attachadminlisteners",
-      "target": "src_components_admindashboard_admindashboard_fetchdiscountcodes"
+      "target": "src_components_admindashboard_admindashboard_fetchdiscountcodes",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10525,9 +10537,9 @@
       "source_location": "L1947",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_attachadminlisteners",
-      "target": "src_components_admindashboard_admindashboard_render"
+      "target": "src_components_admindashboard_admindashboard_render",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10537,9 +10549,9 @@
       "source_location": "L2003",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_attachadminlisteners",
-      "target": "src_components_admindashboard_admindashboard_adddiscountcode"
+      "target": "src_components_admindashboard_admindashboard_adddiscountcode",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10549,9 +10561,9 @@
       "source_location": "L2124",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_attachadminlisteners",
-      "target": "src_components_admindashboard_admindashboard_togglediscountcodeactive"
+      "target": "src_components_admindashboard_admindashboard_togglediscountcodeactive",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10561,9 +10573,9 @@
       "source_location": "L2131",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_attachadminlisteners",
-      "target": "src_components_admindashboard_admindashboard_deletediscountcode"
+      "target": "src_components_admindashboard_admindashboard_deletediscountcode",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10573,9 +10585,9 @@
       "source_location": "L2157",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_attachadminlisteners",
-      "target": "src_components_admindashboard_admindashboard_fetchroomprices"
+      "target": "src_components_admindashboard_admindashboard_fetchroomprices",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10597,9 +10609,9 @@
       "source_location": "L2180",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_attachadminlisteners",
-      "target": "src_components_admindashboard_admindashboard_fetchdisabledrooms"
+      "target": "src_components_admindashboard_admindashboard_fetchdisabledrooms",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10609,9 +10621,9 @@
       "source_location": "L2243",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_attachadminlisteners",
-      "target": "src_components_admindashboard_admindashboard_toggleroomdisabled"
+      "target": "src_components_admindashboard_admindashboard_toggleroomdisabled",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10633,9 +10645,9 @@
       "source_location": "L2253",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_attachadminlisteners",
-      "target": "src_components_admindashboard_admindashboard_otevrirucnirezervaci"
+      "target": "src_components_admindashboard_admindashboard_otevrirucnirezervaci",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10681,9 +10693,9 @@
       "source_location": "L2319",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_attachadminlisteners",
-      "target": "src_components_admindashboard_admindashboard_fetchreservations"
+      "target": "src_components_admindashboard_admindashboard_fetchreservations",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10693,9 +10705,9 @@
       "source_location": "L2320",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_attachadminlisteners",
-      "target": "src_components_admindashboard_admindashboard_showadmintoast"
+      "target": "src_components_admindashboard_admindashboard_showadmintoast",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10705,9 +10717,9 @@
       "source_location": "L2330",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_attachadminlisteners",
-      "target": "src_components_admindashboard_admindashboard_advancereservationphase"
+      "target": "src_components_admindashboard_admindashboard_advancereservationphase",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10717,9 +10729,9 @@
       "source_location": "L2375",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_attachadminlisteners",
-      "target": "src_components_admindashboard_admindashboard_fetchreviews"
+      "target": "src_components_admindashboard_admindashboard_fetchreviews",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10765,9 +10777,9 @@
       "source_location": "L2564",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_attachadminlisteners",
-      "target": "src_components_admindashboard_admindashboard_fetchnewsitems"
+      "target": "src_components_admindashboard_admindashboard_fetchnewsitems",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10897,9 +10909,9 @@
       "source_location": "L322",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_deletediscountcode",
-      "target": "src_components_admindashboard_admindashboard_showadmintoast"
+      "target": "src_components_admindashboard_admindashboard_showadmintoast",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10909,9 +10921,9 @@
       "source_location": "L324",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_deletediscountcode",
-      "target": "src_components_admindashboard_admindashboard_render"
+      "target": "src_components_admindashboard_admindashboard_render",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11029,9 +11041,9 @@
       "source_location": "L673",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_handlelogin",
-      "target": "src_components_admindashboard_admindashboard_render"
+      "target": "src_components_admindashboard_admindashboard_render",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11041,9 +11053,9 @@
       "source_location": "L700",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_handlelogin",
-      "target": "src_components_admindashboard_admindashboard_init"
+      "target": "src_components_admindashboard_admindashboard_init",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11053,9 +11065,9 @@
       "source_location": "L152",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_init",
-      "target": "src_components_admindashboard_admindashboard_obnovprihlaseni"
+      "target": "src_components_admindashboard_admindashboard_obnovprihlaseni",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11065,9 +11077,9 @@
       "source_location": "L153",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_init",
-      "target": "src_components_admindashboard_admindashboard_render"
+      "target": "src_components_admindashboard_admindashboard_render",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11077,9 +11089,9 @@
       "source_location": "L160",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_init",
-      "target": "src_components_admindashboard_admindashboard_fetchreservations"
+      "target": "src_components_admindashboard_admindashboard_fetchreservations",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11089,9 +11101,9 @@
       "source_location": "L161",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_init",
-      "target": "src_components_admindashboard_admindashboard_fetchblockeddates"
+      "target": "src_components_admindashboard_admindashboard_fetchblockeddates",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11101,9 +11113,9 @@
       "source_location": "L162",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_init",
-      "target": "src_components_admindashboard_admindashboard_fetchdiscountcodes"
+      "target": "src_components_admindashboard_admindashboard_fetchdiscountcodes",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11113,9 +11125,9 @@
       "source_location": "L163",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_init",
-      "target": "src_components_admindashboard_admindashboard_fetchroomprices"
+      "target": "src_components_admindashboard_admindashboard_fetchroomprices",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11125,9 +11137,9 @@
       "source_location": "L164",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_init",
-      "target": "src_components_admindashboard_admindashboard_fetchdisabledrooms"
+      "target": "src_components_admindashboard_admindashboard_fetchdisabledrooms",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11137,9 +11149,9 @@
       "source_location": "L165",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_init",
-      "target": "src_components_admindashboard_admindashboard_fetchnewsitems"
+      "target": "src_components_admindashboard_admindashboard_fetchnewsitems",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11149,9 +11161,9 @@
       "source_location": "L166",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_init",
-      "target": "src_components_admindashboard_admindashboard_fetchreviews"
+      "target": "src_components_admindashboard_admindashboard_fetchreviews",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11185,9 +11197,9 @@
       "source_location": "L532",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_otevrirucnirezervaci",
-      "target": "src_components_admindashboard_admindashboard_zkontrolujkolizirucni"
+      "target": "src_components_admindashboard_admindashboard_zkontrolujkolizirucni",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11197,9 +11209,9 @@
       "source_location": "L533",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_otevrirucnirezervaci",
-      "target": "src_components_admindashboard_admindashboard_render"
+      "target": "src_components_admindashboard_admindashboard_render",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11221,9 +11233,9 @@
       "source_location": "L640",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_removeblockeddate",
-      "target": "src_components_admindashboard_admindashboard_fetchblockeddates"
+      "target": "src_components_admindashboard_admindashboard_fetchblockeddates",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11233,9 +11245,9 @@
       "source_location": "L641",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_removeblockeddate",
-      "target": "src_components_admindashboard_admindashboard_showadmintoast"
+      "target": "src_components_admindashboard_admindashboard_showadmintoast",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11245,9 +11257,9 @@
       "source_location": "L642",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_removeblockeddate",
-      "target": "src_components_admindashboard_admindashboard_render"
+      "target": "src_components_admindashboard_admindashboard_render",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11257,9 +11269,9 @@
       "source_location": "L1048",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_render",
-      "target": "src_components_admindashboard_admindashboard_zamknirolovanistranky"
+      "target": "src_components_admindashboard_admindashboard_zamknirolovanistranky",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11305,9 +11317,9 @@
       "source_location": "L1402",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_render",
-      "target": "src_components_admindashboard_getdiscountvaliditydisplay"
+      "target": "src_components_admindashboard_getdiscountvaliditydisplay",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11317,9 +11329,9 @@
       "source_location": "L1438",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_render",
-      "target": "src_components_admindashboard_formatczechdatestr"
+      "target": "src_components_admindashboard_formatczechdatestr",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11377,9 +11389,9 @@
       "source_location": "L1695",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_render",
-      "target": "src_components_admindashboard_admindashboard_renderreviewsmodalmarkup"
+      "target": "src_components_admindashboard_admindashboard_renderreviewsmodalmarkup",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11389,9 +11401,9 @@
       "source_location": "L1732",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_render",
-      "target": "src_components_admindashboard_admindashboard_renderadmincalendarmodal"
+      "target": "src_components_admindashboard_admindashboard_renderadmincalendarmodal",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11401,9 +11413,9 @@
       "source_location": "L1882",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_renderadmincalendarmodal",
-      "target": "src_components_admindashboard_formatczechdatestr"
+      "target": "src_components_admindashboard_formatczechdatestr",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11413,9 +11425,9 @@
       "source_location": "L764",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_showadmintoast",
-      "target": "src_components_admindashboard_admindashboard_render"
+      "target": "src_components_admindashboard_admindashboard_render",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11437,9 +11449,9 @@
       "source_location": "L301",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_togglediscountcodeactive",
-      "target": "src_components_admindashboard_admindashboard_render"
+      "target": "src_components_admindashboard_admindashboard_render",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11461,9 +11473,9 @@
       "source_location": "L508",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_toggleroomdisabled",
-      "target": "src_components_admindashboard_admindashboard_showadmintoast"
+      "target": "src_components_admindashboard_admindashboard_showadmintoast",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11473,9 +11485,9 @@
       "source_location": "L510",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_toggleroomdisabled",
-      "target": "src_components_admindashboard_admindashboard_render"
+      "target": "src_components_admindashboard_admindashboard_render",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11509,9 +11521,9 @@
       "source_location": "L440",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_updateroomnameandprice",
-      "target": "src_components_admindashboard_admindashboard_showadmintoast"
+      "target": "src_components_admindashboard_admindashboard_showadmintoast",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11521,9 +11533,9 @@
       "source_location": "L447",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard_updateroomprice",
-      "target": "src_components_admindashboard_admindashboard_updateroomnameandprice"
+      "target": "src_components_admindashboard_admindashboard_updateroomnameandprice",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11533,9 +11545,9 @@
       "source_location": "L22",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_getdiscountvaliditydisplay",
-      "target": "src_components_admindashboard_formatczechdatestr"
+      "target": "src_components_admindashboard_formatczechdatestr",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11545,9 +11557,9 @@
       "source_location": "L48",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_zobrazrozsahblokace",
-      "target": "src_components_admindashboard_posundatum"
+      "target": "src_components_admindashboard_posundatum",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11557,9 +11569,9 @@
       "source_location": "L50",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_zobrazrozsahblokace",
-      "target": "src_components_admindashboard_formatczechdatestr"
+      "target": "src_components_admindashboard_formatczechdatestr",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11581,9 +11593,9 @@
       "source_location": "L488",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost_binddostupnostmodal",
-      "target": "src_components_admindostupnost_dnesstr",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_dnesstr"
     },
     {
       "relation": "calls",
@@ -11593,9 +11605,9 @@
       "source_location": "L584",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost_binddostupnostmodal",
-      "target": "src_components_admindostupnost_prodejnepokoje",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_prodejnepokoje"
     },
     {
       "relation": "calls",
@@ -11605,9 +11617,9 @@
       "source_location": "L585",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost_binddostupnostmodal",
-      "target": "src_components_admindostupnost_posundatum",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_posundatum"
     },
     {
       "relation": "calls",
@@ -11617,9 +11629,9 @@
       "source_location": "L586",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost_binddostupnostmodal",
-      "target": "src_components_admindostupnost_zabranyduvod",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_zabranyduvod"
     },
     {
       "relation": "calls",
@@ -11629,9 +11641,9 @@
       "source_location": "L594",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost_binddostupnostmodal",
-      "target": "src_components_admindostupnost_formatczechdatestr",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_formatczechdatestr"
     },
     {
       "relation": "calls",
@@ -11641,9 +11653,9 @@
       "source_location": "L160",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost_pulkyproden",
-      "target": "src_components_admindostupnost_prodejnepokoje",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_prodejnepokoje"
     },
     {
       "relation": "calls",
@@ -11653,9 +11665,9 @@
       "source_location": "L161",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost_pulkyproden",
-      "target": "src_utils_obsazenost_obsazenostpulek",
-      "confidence_score": 1.0
+      "target": "src_utils_obsazenost_obsazenostpulek"
     },
     {
       "relation": "calls",
@@ -11665,9 +11677,9 @@
       "source_location": "L162",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost_pulkyproden",
-      "target": "src_components_admindostupnost_zabranyduvod",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_zabranyduvod"
     },
     {
       "relation": "calls",
@@ -11677,9 +11689,9 @@
       "source_location": "L163",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost_pulkyproden",
-      "target": "src_components_admindostupnost_prijezdvden",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_prijezdvden"
     },
     {
       "relation": "calls",
@@ -11689,9 +11701,9 @@
       "source_location": "L164",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost_pulkyproden",
-      "target": "src_components_admindostupnost_odjezdvden",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_odjezdvden"
     },
     {
       "relation": "calls",
@@ -11701,9 +11713,9 @@
       "source_location": "L195",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost_renderdostupnostmodal",
-      "target": "src_components_admindostupnost_prazdnyprehled",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_prazdnyprehled"
     },
     {
       "relation": "calls",
@@ -11713,9 +11725,9 @@
       "source_location": "L196",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost_renderdostupnostmodal",
-      "target": "src_components_admindostupnost_dnesstr",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_dnesstr"
     },
     {
       "relation": "calls",
@@ -11725,9 +11737,9 @@
       "source_location": "L211",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost_renderdostupnostmodal",
-      "target": "src_components_admindostupnost_stavdne",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_stavdne"
     },
     {
       "relation": "calls",
@@ -11737,9 +11749,9 @@
       "source_location": "L257",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost_renderdostupnostmodal",
-      "target": "src_components_admindostupnost_escapuj",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_escapuj"
     },
     {
       "relation": "calls",
@@ -11749,9 +11761,9 @@
       "source_location": "L260",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost_renderdostupnostmodal",
-      "target": "src_components_admindostupnost_pocetnoci",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_pocetnoci"
     },
     {
       "relation": "calls",
@@ -11761,9 +11773,9 @@
       "source_location": "L268",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost_renderdostupnostmodal",
-      "target": "src_components_admindostupnost_prodejnepokoje",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_prodejnepokoje"
     },
     {
       "relation": "calls",
@@ -11773,9 +11785,9 @@
       "source_location": "L271",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost_renderdostupnostmodal",
-      "target": "src_components_admindostupnost_posundatum",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_posundatum"
     },
     {
       "relation": "calls",
@@ -11785,9 +11797,9 @@
       "source_location": "L272",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost_renderdostupnostmodal",
-      "target": "src_components_admindostupnost_zabranyduvod",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_zabranyduvod"
     },
     {
       "relation": "calls",
@@ -11797,9 +11809,9 @@
       "source_location": "L285",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost_renderdostupnostmodal",
-      "target": "src_components_admindostupnost_formatczechdatestr",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_formatczechdatestr"
     },
     {
       "relation": "calls",
@@ -11821,9 +11833,9 @@
       "source_location": "L445",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost_renderdostupnostmodal",
-      "target": "src_components_admindostupnost_zobrazrozsahblokace",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_zobrazrozsahblokace"
     },
     {
       "relation": "calls",
@@ -11833,9 +11845,9 @@
       "source_location": "L169",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost_stavdne",
-      "target": "src_components_admindostupnost_pulkyproden",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_pulkyproden"
     },
     {
       "relation": "calls",
@@ -11845,9 +11857,9 @@
       "source_location": "L170",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost_stavdne",
-      "target": "src_utils_obsazenost_pulkydne",
-      "confidence_score": 1.0
+      "target": "src_utils_obsazenost_pulkydne"
     },
     {
       "relation": "calls",
@@ -11857,9 +11869,9 @@
       "source_location": "L173",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost_stavdne",
-      "target": "src_components_admindostupnost_zabranyduvod",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_zabranyduvod"
     },
     {
       "relation": "calls",
@@ -11869,9 +11881,9 @@
       "source_location": "L178",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost_stavdne",
-      "target": "src_components_admindostupnost_odjezdvden",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_odjezdvden"
     },
     {
       "relation": "calls",
@@ -11881,9 +11893,9 @@
       "source_location": "L179",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost_stavdne",
-      "target": "src_components_admindostupnost_prijezdvden",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_prijezdvden"
     },
     {
       "relation": "calls",
@@ -11893,9 +11905,9 @@
       "source_location": "L183",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost_stavdne",
-      "target": "src_components_admindostupnost_prodejnepokoje",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_prodejnepokoje"
     },
     {
       "relation": "calls",
@@ -11905,9 +11917,9 @@
       "source_location": "L59",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost_zobrazrozsahblokace",
-      "target": "src_components_admindostupnost_posundatum",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_posundatum"
     },
     {
       "relation": "calls",
@@ -11917,9 +11929,9 @@
       "source_location": "L60",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost_zobrazrozsahblokace",
-      "target": "src_components_admindostupnost_formatczechdatestr",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_formatczechdatestr"
     },
     {
       "relation": "calls",
@@ -12071,7 +12083,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/AdminPlachta.js",
-      "source_location": "L255",
+      "source_location": "L271",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminplachta_bindplachta",
@@ -12083,7 +12095,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/AdminPlachta.js",
-      "source_location": "L286",
+      "source_location": "L302",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminplachta_bindplachta",
@@ -12094,12 +12106,12 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminPlachta.js",
-      "source_location": "L62",
+      "source_location": "L74",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_adminplachta_pruhypropokoj",
-      "target": "src_components_adminplachta_den"
+      "target": "src_components_adminplachta_den",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -12107,7 +12119,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/AdminPlachta.js",
-      "source_location": "L63",
+      "source_location": "L75",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminplachta_pruhypropokoj",
@@ -12118,12 +12130,24 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminPlachta.js",
-      "source_location": "L71",
+      "source_location": "L83",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_adminplachta_pruhypropokoj",
-      "target": "src_components_adminplachta_indexvmesici"
+      "target": "src_components_adminplachta_indexvmesici",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/AdminPlachta.js",
+      "source_location": "L89",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_components_adminplachta_pruhypropokoj",
+      "target": "src_components_adminplachta_fazepruhu",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -12131,47 +12155,11 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/AdminPlachta.js",
-      "source_location": "L102",
+      "source_location": "L115",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminplachta_renderplachta",
       "target": "src_components_admindostupnost_dnesstr"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/components/AdminPlachta.js",
-      "source_location": "L103",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_components_adminplachta_renderplachta",
-      "target": "src_components_admindostupnost_prodejnepokoje"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/AdminPlachta.js",
-      "source_location": "L106",
-      "weight": 1.0,
-      "_origin": "ast",
-      "confidence_score": 1.0,
-      "source": "src_components_adminplachta_renderplachta",
-      "target": "src_components_adminplachta_den"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/AdminPlachta.js",
-      "source_location": "L110",
-      "weight": 1.0,
-      "_origin": "ast",
-      "confidence_score": 1.0,
-      "source": "src_components_adminplachta_renderplachta",
-      "target": "src_components_adminplachta_denvtydnu"
     },
     {
       "relation": "calls",
@@ -12183,6 +12171,42 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminplachta_renderplachta",
+      "target": "src_components_admindostupnost_prodejnepokoje"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/AdminPlachta.js",
+      "source_location": "L119",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_components_adminplachta_renderplachta",
+      "target": "src_components_adminplachta_den",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/AdminPlachta.js",
+      "source_location": "L123",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_components_adminplachta_renderplachta",
+      "target": "src_components_adminplachta_denvtydnu",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/AdminPlachta.js",
+      "source_location": "L129",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_components_adminplachta_renderplachta",
       "target": "src_components_admindostupnost_formatczechdatestr"
     },
     {
@@ -12191,7 +12215,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/AdminPlachta.js",
-      "source_location": "L125",
+      "source_location": "L138",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminplachta_renderplachta",
@@ -12202,12 +12226,12 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminPlachta.js",
-      "source_location": "L156",
+      "source_location": "L169",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_adminplachta_renderplachta",
-      "target": "src_components_adminplachta_pruhypropokoj"
+      "target": "src_components_adminplachta_pruhypropokoj",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -12215,7 +12239,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/AdminPlachta.js",
-      "source_location": "L161",
+      "source_location": "L174",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminplachta_renderplachta",
@@ -12227,7 +12251,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/AdminPlachta.js",
-      "source_location": "L163",
+      "source_location": "L177",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_adminplachta_renderplachta",
@@ -12238,12 +12262,12 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminPlachta.js",
-      "source_location": "L167",
+      "source_location": "L181",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_adminplachta_renderplachta",
-      "target": "src_components_adminplachta_rozdelnazev"
+      "target": "src_components_adminplachta_rozdelnazev",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -12706,7 +12730,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L2851",
+      "source_location": "L2860",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_attacheventlisteners",
@@ -12718,7 +12742,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L2865",
+      "source_location": "L2874",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_attacheventlisteners",
@@ -12730,7 +12754,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L2867",
+      "source_location": "L2876",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_attacheventlisteners",
@@ -12742,7 +12766,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L2899",
+      "source_location": "L2908",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_attacheventlisteners",
@@ -12754,7 +12778,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L2925",
+      "source_location": "L2934",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_attacheventlisteners",
@@ -12766,7 +12790,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L2951",
+      "source_location": "L2960",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_attacheventlisteners",
@@ -12778,7 +12802,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L2967",
+      "source_location": "L2976",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_attacheventlisteners",
@@ -12790,7 +12814,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L2976",
+      "source_location": "L2985",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_attacheventlisteners",
@@ -12802,7 +12826,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L3047",
+      "source_location": "L3056",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_attacheventlisteners",
@@ -12814,7 +12838,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L3073",
+      "source_location": "L3082",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_attacheventlisteners",
@@ -12826,7 +12850,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L3098",
+      "source_location": "L3107",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_attacheventlisteners",
@@ -12838,7 +12862,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L3120",
+      "source_location": "L3129",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_attacheventlisteners",
@@ -12850,7 +12874,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L3207",
+      "source_location": "L3216",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_attacheventlisteners",
@@ -12862,7 +12886,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L3335",
+      "source_location": "L3348",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_attacheventlisteners",
@@ -12874,7 +12898,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L3344",
+      "source_location": "L3357",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_attacheventlisteners",
@@ -13738,7 +13762,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L1524",
+      "source_location": "L1531",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_rendercustomcalendarmodal",
@@ -13750,7 +13774,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L1552",
+      "source_location": "L1559",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_rendercustomcalendarmodal",
@@ -13763,7 +13787,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L1554",
+      "source_location": "L1561",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_rendercustomcalendarmodal",
@@ -13774,7 +13798,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L1664",
+      "source_location": "L1673",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_rendercustomcalendarmodal",
@@ -13846,7 +13870,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L1794",
+      "source_location": "L1803",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_renderstep1",
@@ -13858,7 +13882,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L1797",
+      "source_location": "L1806",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_renderstep1",
@@ -13870,7 +13894,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L1810",
+      "source_location": "L1819",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_renderstep1",
@@ -13883,7 +13907,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L1812",
+      "source_location": "L1821",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_renderstep1",
@@ -13894,7 +13918,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L1874",
+      "source_location": "L1883",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_renderstep1",
@@ -13906,7 +13930,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L1904",
+      "source_location": "L1913",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_renderstep1",
@@ -13919,7 +13943,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L1918",
+      "source_location": "L1927",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_renderstep1",
@@ -13930,7 +13954,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L1955",
+      "source_location": "L1964",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_renderstep1",
@@ -13942,7 +13966,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L2000",
+      "source_location": "L2009",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_renderstep1",
@@ -13954,7 +13978,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L2040",
+      "source_location": "L2049",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_renderstep1",
@@ -13966,7 +13990,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L2281",
+      "source_location": "L2290",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_renderstep2form",
@@ -13978,7 +14002,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L2282",
+      "source_location": "L2291",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_renderstep2form",
@@ -13990,7 +14014,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L2284",
+      "source_location": "L2293",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_renderstep2form",
@@ -14002,7 +14026,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L2285",
+      "source_location": "L2294",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_renderstep2form",
@@ -14014,7 +14038,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L2590",
+      "source_location": "L2599",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_renderstep2form",
@@ -14027,7 +14051,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L2650",
+      "source_location": "L2659",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_renderstep2form",
@@ -14038,7 +14062,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L2705",
+      "source_location": "L2714",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_renderstep3confirmation",
@@ -14050,7 +14074,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L2707",
+      "source_location": "L2716",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_renderstep3confirmation",
@@ -14063,7 +14087,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L2754",
+      "source_location": "L2763",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem_renderstep3confirmation",
@@ -16693,9 +16717,9 @@
       "weight": 1.0,
       "context": "call",
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "zkontroluj_sh__entry",
-      "target": "zkontroluj_prazdne_nebo_chyba",
-      "confidence_score": 1.0
+      "target": "zkontroluj_prazdne_nebo_chyba"
     },
     {
       "relation": "calls",
@@ -16705,9 +16729,9 @@
       "weight": 1.0,
       "context": "call",
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "zkontroluj_sh__entry",
-      "target": "zkontroluj_nadpis",
-      "confidence_score": 1.0
+      "target": "zkontroluj_nadpis"
     },
     {
       "relation": "calls",
@@ -16717,9 +16741,9 @@
       "weight": 1.0,
       "context": "call",
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "zkontroluj_sh__entry",
-      "target": "zkontroluj_zelena",
-      "confidence_score": 1.0
+      "target": "zkontroluj_zelena"
     },
     {
       "relation": "calls",
@@ -16729,9 +16753,9 @@
       "weight": 1.0,
       "context": "call",
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "zkontroluj_sh__entry",
-      "target": "zkontroluj_cervena",
-      "confidence_score": 1.0
+      "target": "zkontroluj_cervena"
     },
     {
       "relation": "calls",
@@ -16741,9 +16765,9 @@
       "weight": 1.0,
       "context": "call",
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "zkontroluj_sh__entry",
-      "target": "zkontroluj_seda",
-      "confidence_score": 1.0
+      "target": "zkontroluj_seda"
     },
     {
       "relation": "contains",
@@ -16936,9 +16960,9 @@
       "source_location": "L9",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "kontrola_pulene_dny",
-      "target": "src_utils_obsazenost_obsazenostpulek",
-      "confidence_score": 1.0
+      "target": "src_utils_obsazenost_obsazenostpulek"
     },
     {
       "relation": "imports",
@@ -16948,9 +16972,9 @@
       "source_location": "L9",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "kontrola_pulene_dny",
-      "target": "src_utils_obsazenost_pulkydne",
-      "confidence_score": 1.0
+      "target": "src_utils_obsazenost_pulkydne"
     },
     {
       "relation": "imports",
@@ -17152,9 +17176,9 @@
       "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_lib_supabaseclient_deletestoredblockeddate"
+      "target": "src_lib_supabaseclient_deletestoredblockeddate",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17164,9 +17188,9 @@
       "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_lib_supabaseclient_deletestoreddiscountcode"
+      "target": "src_lib_supabaseclient_deletestoreddiscountcode",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17176,9 +17200,9 @@
       "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_lib_supabaseclient_deletestorednewsitem"
+      "target": "src_lib_supabaseclient_deletestorednewsitem",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17188,9 +17212,9 @@
       "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_lib_supabaseclient_deletestoredreservation"
+      "target": "src_lib_supabaseclient_deletestoredreservation",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17200,9 +17224,9 @@
       "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_lib_supabaseclient_doplnpriznakyzestarychdat"
+      "target": "src_lib_supabaseclient_doplnpriznakyzestarychdat",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17212,9 +17236,9 @@
       "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_lib_supabaseclient_fetchcenik"
+      "target": "src_lib_supabaseclient_fetchcenik",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17224,9 +17248,9 @@
       "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_lib_supabaseclient_getstoredblockeddates"
+      "target": "src_lib_supabaseclient_getstoredblockeddates",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17236,9 +17260,9 @@
       "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_lib_supabaseclient_getstoredcenik"
+      "target": "src_lib_supabaseclient_getstoredcenik",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17248,9 +17272,9 @@
       "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_lib_supabaseclient_getstoredcustomroomnames"
+      "target": "src_lib_supabaseclient_getstoredcustomroomnames",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17260,9 +17284,9 @@
       "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_lib_supabaseclient_getstoreddisabledrooms"
+      "target": "src_lib_supabaseclient_getstoreddisabledrooms",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17272,9 +17296,9 @@
       "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_lib_supabaseclient_getstoreddiscountcodes"
+      "target": "src_lib_supabaseclient_getstoreddiscountcodes",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17284,9 +17308,9 @@
       "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_lib_supabaseclient_getstorednewsitems"
+      "target": "src_lib_supabaseclient_getstorednewsitems",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17296,9 +17320,9 @@
       "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_lib_supabaseclient_getstoredreservations"
+      "target": "src_lib_supabaseclient_getstoredreservations",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17308,9 +17332,9 @@
       "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_lib_supabaseclient_getstoredreviews"
+      "target": "src_lib_supabaseclient_getstoredreviews",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17320,9 +17344,9 @@
       "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_lib_supabaseclient_getstoredroomprices"
+      "target": "src_lib_supabaseclient_getstoredroomprices",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17332,9 +17356,9 @@
       "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_lib_supabaseclient_issupabaseconfigured"
+      "target": "src_lib_supabaseclient_issupabaseconfigured",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17344,9 +17368,9 @@
       "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_lib_supabaseclient_mock_rooms"
+      "target": "src_lib_supabaseclient_mock_rooms",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17356,9 +17380,9 @@
       "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_lib_supabaseclient_ocistihosty"
+      "target": "src_lib_supabaseclient_ocistihosty",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17368,9 +17392,9 @@
       "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_lib_supabaseclient_reordernewsitem"
+      "target": "src_lib_supabaseclient_reordernewsitem",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17380,9 +17404,9 @@
       "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_lib_supabaseclient_savestoredblockeddate"
+      "target": "src_lib_supabaseclient_savestoredblockeddate",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17392,9 +17416,9 @@
       "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_lib_supabaseclient_savestoredcustomroomname"
+      "target": "src_lib_supabaseclient_savestoredcustomroomname",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17404,9 +17428,9 @@
       "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_lib_supabaseclient_savestoreddisabledroom"
+      "target": "src_lib_supabaseclient_savestoreddisabledroom",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17416,9 +17440,9 @@
       "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_lib_supabaseclient_savestoreddiscountcode"
+      "target": "src_lib_supabaseclient_savestoreddiscountcode",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17428,9 +17452,9 @@
       "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_lib_supabaseclient_savestorednewsitem"
+      "target": "src_lib_supabaseclient_savestorednewsitem",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17440,9 +17464,9 @@
       "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_lib_supabaseclient_savestoredroomprice"
+      "target": "src_lib_supabaseclient_savestoredroomprice",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17452,9 +17476,9 @@
       "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_lib_supabaseclient_supabase"
+      "target": "src_lib_supabaseclient_supabase",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17464,9 +17488,9 @@
       "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_lib_supabaseclient_togglestoredreservationarchive"
+      "target": "src_lib_supabaseclient_togglestoredreservationarchive",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17476,9 +17500,9 @@
       "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_lib_supabaseclient_updatestoredreservationstatus"
+      "target": "src_lib_supabaseclient_updatestoredreservationstatus",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17488,9 +17512,9 @@
       "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_lib_supabaseclient_updatestoredreviewstatus"
+      "target": "src_lib_supabaseclient_updatestoredreviewstatus",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17500,9 +17524,9 @@
       "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_lib_supabaseclient_uploadnewsimage"
+      "target": "src_lib_supabaseclient_uploadnewsimage",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17512,9 +17536,9 @@
       "source_location": "L2",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_utils_pricing_bank_account"
+      "target": "src_utils_pricing_bank_account",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17524,9 +17548,9 @@
       "source_location": "L2",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_utils_pricing_calculatereservationprice"
+      "target": "src_utils_pricing_calculatereservationprice",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17536,9 +17560,9 @@
       "source_location": "L2",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_utils_pricing_formatczechprice"
+      "target": "src_utils_pricing_formatczechprice",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17548,9 +17572,9 @@
       "source_location": "L2",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_utils_pricing_generatespaydqrurl"
+      "target": "src_utils_pricing_generatespaydqrurl",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17560,9 +17584,9 @@
       "source_location": "L2",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_utils_pricing_getvariablesymbol"
+      "target": "src_utils_pricing_getvariablesymbol",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17572,9 +17596,9 @@
       "source_location": "L2",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_utils_pricing_mazaplacenouzalohu"
+      "target": "src_utils_pricing_mazaplacenouzalohu",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17584,9 +17608,9 @@
       "source_location": "L2",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_utils_pricing_procentozalohy"
+      "target": "src_utils_pricing_procentozalohy",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17596,9 +17620,9 @@
       "source_location": "L3",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_components_adminfotoorez_bindorezmodal"
+      "target": "src_components_adminfotoorez_bindorezmodal",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17608,9 +17632,9 @@
       "source_location": "L3",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_components_adminfotoorez_prazdnyorez"
+      "target": "src_components_adminfotoorez_prazdnyorez",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17620,9 +17644,9 @@
       "source_location": "L3",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_components_adminfotoorez_renderorezmodal"
+      "target": "src_components_adminfotoorez_renderorezmodal",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17632,9 +17656,9 @@
       "source_location": "L4",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_utils_emailservice_generateemail2approvalandpaymentrequest"
+      "target": "src_utils_emailservice_generateemail2approvalandpaymentrequest",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17644,9 +17668,9 @@
       "source_location": "L4",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_utils_emailservice_generateemail3finalconfirmation"
+      "target": "src_utils_emailservice_generateemail3finalconfirmation",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17656,9 +17680,9 @@
       "source_location": "L4",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_utils_emailservice_generateemailcancellation"
+      "target": "src_utils_emailservice_generateemailcancellation",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17668,9 +17692,9 @@
       "source_location": "L4",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_utils_emailservice_generateemailcancellationrefund"
+      "target": "src_utils_emailservice_generateemailcancellationrefund",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17680,9 +17704,9 @@
       "source_location": "L4",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_utils_emailservice_getemaillogs"
+      "target": "src_utils_emailservice_getemaillogs",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17692,9 +17716,9 @@
       "source_location": "L4",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_utils_emailservice_sendalltestemailsto"
+      "target": "src_utils_emailservice_sendalltestemailsto",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17704,9 +17728,9 @@
       "source_location": "L4",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_utils_emailservice_sendemail"
+      "target": "src_utils_emailservice_sendemail",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17716,9 +17740,9 @@
       "source_location": "L5",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_utils_reservationexpiryservice_checkandprocessexpiredunpaidreservations"
+      "target": "src_utils_reservationexpiryservice_checkandprocessexpiredunpaidreservations",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17728,9 +17752,9 @@
       "source_location": "L6",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_utils_printreservationservice_printreservationsheet"
+      "target": "src_utils_printreservationservice_printreservationsheet",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17740,9 +17764,9 @@
       "source_location": "L7",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_components_admincenik_bindcenikmodal"
+      "target": "src_components_admincenik_bindcenikmodal",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17752,9 +17776,9 @@
       "source_location": "L7",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_components_admincenik_rendercenikmodal"
+      "target": "src_components_admincenik_rendercenikmodal",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17764,9 +17788,9 @@
       "source_location": "L8",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_components_adminrucnirezervace_bindrucnirezervacemodal"
+      "target": "src_components_adminrucnirezervace_bindrucnirezervacemodal",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17776,9 +17800,9 @@
       "source_location": "L8",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_components_adminrucnirezervace_prazdnarucnirezervace"
+      "target": "src_components_adminrucnirezervace_prazdnarucnirezervace",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17788,9 +17812,9 @@
       "source_location": "L8",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_components_adminrucnirezervace_renderrucnirezervacemodal"
+      "target": "src_components_adminrucnirezervace_renderrucnirezervacemodal",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17800,9 +17824,9 @@
       "source_location": "L9",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_components_admindostupnost_binddostupnostmodal"
+      "target": "src_components_admindostupnost_binddostupnostmodal",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17812,9 +17836,9 @@
       "source_location": "L9",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_components_admindostupnost_prazdnyprehled"
+      "target": "src_components_admindostupnost_prazdnyprehled",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17824,9 +17848,9 @@
       "source_location": "L9",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_components_admindostupnost_renderdostupnostmodal"
+      "target": "src_components_admindostupnost_renderdostupnostmodal",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17836,7 +17860,67 @@
       "source_location": "L20",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost",
+      "target": "src_lib_supabaseclient_mock_rooms"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/AdminDostupnost.js",
+      "source_location": "L21",
+      "weight": 1.0,
+      "_origin": "ast",
+      "confidence_score": 1.0,
+      "source": "src_components_admindostupnost",
+      "target": "src_components_adminplachta_bindplachta"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/AdminDostupnost.js",
+      "source_location": "L21",
+      "weight": 1.0,
+      "_origin": "ast",
+      "confidence_score": 1.0,
+      "source": "src_components_admindostupnost",
+      "target": "src_components_adminplachta_renderplachta"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/AdminDostupnost.js",
+      "source_location": "L22",
+      "weight": 1.0,
+      "_origin": "ast",
+      "confidence_score": 1.0,
+      "source": "src_components_admindostupnost",
+      "target": "src_utils_obsazenost_obsazenostpulek"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/AdminDostupnost.js",
+      "source_location": "L22",
+      "weight": 1.0,
+      "_origin": "ast",
+      "confidence_score": 1.0,
+      "source": "src_components_admindostupnost",
+      "target": "src_utils_obsazenost_pulkydne"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/AdminPlachta.js",
+      "source_location": "L21",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_components_adminplachta",
       "target": "src_lib_supabaseclient_mock_rooms",
       "confidence_score": 1.0
     },
@@ -17844,48 +17928,12 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "src/components/AdminDostupnost.js",
-      "source_location": "L21",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_components_admindostupnost",
-      "target": "src_components_adminplachta_bindplachta",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/AdminDostupnost.js",
-      "source_location": "L21",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_components_admindostupnost",
-      "target": "src_components_adminplachta_renderplachta",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/AdminDostupnost.js",
+      "source_file": "src/components/AdminPlachta.js",
       "source_location": "L22",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "src_components_admindostupnost",
-      "target": "src_utils_obsazenost_obsazenostpulek",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/AdminDostupnost.js",
-      "source_location": "L22",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_components_admindostupnost",
-      "target": "src_utils_obsazenost_pulkydne",
+      "source": "src_components_adminplachta",
+      "target": "src_components_admindostupnost_dnesstr",
       "confidence_score": 1.0
     },
     {
@@ -17893,12 +17941,12 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminPlachta.js",
-      "source_location": "L21",
+      "source_location": "L22",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_adminplachta",
-      "target": "src_lib_supabaseclient_mock_rooms"
+      "target": "src_components_admindostupnost_escapuj",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17908,9 +17956,9 @@
       "source_location": "L22",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_adminplachta",
-      "target": "src_components_admindostupnost_dnesstr"
+      "target": "src_components_admindostupnost_formatczechdatestr",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17920,9 +17968,9 @@
       "source_location": "L22",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_adminplachta",
-      "target": "src_components_admindostupnost_escapuj"
+      "target": "src_components_admindostupnost_mesice",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17932,9 +17980,9 @@
       "source_location": "L22",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_adminplachta",
-      "target": "src_components_admindostupnost_formatczechdatestr"
+      "target": "src_components_admindostupnost_posundatum",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17944,9 +17992,9 @@
       "source_location": "L22",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_adminplachta",
-      "target": "src_components_admindostupnost_mesice"
+      "target": "src_components_admindostupnost_prodejnepokoje",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -17956,33 +18004,9 @@
       "source_location": "L22",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_adminplachta",
-      "target": "src_components_admindostupnost_posundatum"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/AdminPlachta.js",
-      "source_location": "L22",
-      "weight": 1.0,
-      "_origin": "ast",
-      "confidence_score": 1.0,
-      "source": "src_components_adminplachta",
-      "target": "src_components_admindostupnost_prodejnepokoje"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/AdminPlachta.js",
-      "source_location": "L22",
-      "weight": 1.0,
-      "_origin": "ast",
-      "confidence_score": 1.0,
-      "source": "src_components_adminplachta",
-      "target": "src_components_admindostupnost_zabranyduvod"
+      "target": "src_components_admindostupnost_zabranyduvod",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -19036,9 +19060,9 @@
       "source_location": "L9",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "kontrola_pulene_dny",
-      "target": "src_utils_obsazenost",
-      "confidence_score": 1.0
+      "target": "src_utils_obsazenost"
     },
     {
       "relation": "imports_from",
@@ -19084,9 +19108,9 @@
       "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_lib_supabaseclient"
+      "target": "src_lib_supabaseclient",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports_from",
@@ -19096,9 +19120,9 @@
       "source_location": "L2",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_utils_pricing"
+      "target": "src_utils_pricing",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports_from",
@@ -19108,9 +19132,9 @@
       "source_location": "L3",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_components_adminfotoorez"
+      "target": "src_components_adminfotoorez",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports_from",
@@ -19120,9 +19144,9 @@
       "source_location": "L4",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_utils_emailservice"
+      "target": "src_utils_emailservice",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports_from",
@@ -19132,9 +19156,9 @@
       "source_location": "L5",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_utils_reservationexpiryservice"
+      "target": "src_utils_reservationexpiryservice",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports_from",
@@ -19144,9 +19168,9 @@
       "source_location": "L6",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_utils_printreservationservice"
+      "target": "src_utils_printreservationservice",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports_from",
@@ -19156,9 +19180,9 @@
       "source_location": "L7",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_components_admincenik"
+      "target": "src_components_admincenik",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports_from",
@@ -19168,9 +19192,9 @@
       "source_location": "L8",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_components_adminrucnirezervace"
+      "target": "src_components_adminrucnirezervace",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports_from",
@@ -19180,9 +19204,9 @@
       "source_location": "L9",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_components_admindostupnost"
+      "target": "src_components_admindostupnost",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports_from",
@@ -19192,9 +19216,9 @@
       "source_location": "L20",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost",
-      "target": "src_lib_supabaseclient",
-      "confidence_score": 1.0
+      "target": "src_lib_supabaseclient"
     },
     {
       "relation": "imports_from",
@@ -19204,9 +19228,9 @@
       "source_location": "L21",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost",
-      "target": "src_components_adminplachta",
-      "confidence_score": 1.0
+      "target": "src_components_adminplachta"
     },
     {
       "relation": "imports_from",
@@ -19216,9 +19240,9 @@
       "source_location": "L22",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost",
-      "target": "src_utils_obsazenost",
-      "confidence_score": 1.0
+      "target": "src_utils_obsazenost"
     },
     {
       "relation": "imports_from",
@@ -19228,9 +19252,9 @@
       "source_location": "L21",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_adminplachta",
-      "target": "src_lib_supabaseclient"
+      "target": "src_lib_supabaseclient",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports_from",
@@ -21276,9 +21300,9 @@
       "source_location": "L12",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "kontrola_pulene_dny",
-      "target": "kontrola_pulene_dny_overit",
-      "confidence_score": 1.0
+      "target": "kontrola_pulene_dny_overit"
     },
     {
       "relation": "contains",
@@ -21287,9 +21311,9 @@
       "source_location": "L18",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "kontrola_pulene_dny",
-      "target": "kontrola_pulene_dny_pokoje",
-      "confidence_score": 1.0
+      "target": "kontrola_pulene_dny_pokoje"
     },
     {
       "relation": "contains",
@@ -21298,9 +21322,9 @@
       "source_location": "L19",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "kontrola_pulene_dny",
-      "target": "kontrola_pulene_dny_zaznamy",
-      "confidence_score": 1.0
+      "target": "kontrola_pulene_dny_zaznamy"
     },
     {
       "relation": "contains",
@@ -21309,9 +21333,9 @@
       "source_location": "L25",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "kontrola_pulene_dny",
-      "target": "kontrola_pulene_dny_stav",
-      "confidence_score": 1.0
+      "target": "kontrola_pulene_dny_stav"
     },
     {
       "relation": "contains",
@@ -21320,9 +21344,9 @@
       "source_location": "L62",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "kontrola_pulene_dny",
-      "target": "kontrola_pulene_dny_sam",
-      "confidence_score": 1.0
+      "target": "kontrola_pulene_dny_sam"
     },
     {
       "relation": "contains",
@@ -21331,9 +21355,9 @@
       "source_location": "L63",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "kontrola_pulene_dny",
-      "target": "kontrola_pulene_dny_stavsam",
-      "confidence_score": 1.0
+      "target": "kontrola_pulene_dny_stavsam"
     },
     {
       "relation": "contains",
@@ -21342,9 +21366,9 @@
       "source_location": "L78",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "kontrola_pulene_dny",
-      "target": "kontrola_pulene_dny_navazuje",
-      "confidence_score": 1.0
+      "target": "kontrola_pulene_dny_navazuje"
     },
     {
       "relation": "contains",
@@ -21353,9 +21377,9 @@
       "source_location": "L82",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "kontrola_pulene_dny",
-      "target": "kontrola_pulene_dny_stavjeden",
-      "confidence_score": 1.0
+      "target": "kontrola_pulene_dny_stavjeden"
     },
     {
       "relation": "contains",
@@ -22497,9 +22521,9 @@
       "source_location": "L11",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_components_admindashboard_formatczechdatestr"
+      "target": "src_components_admindashboard_formatczechdatestr",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -22508,9 +22532,9 @@
       "source_location": "L20",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_components_admindashboard_getdiscountvaliditydisplay"
+      "target": "src_components_admindashboard_getdiscountvaliditydisplay",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -22519,9 +22543,9 @@
       "source_location": "L35",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_components_admindashboard_posundatum"
+      "target": "src_components_admindashboard_posundatum",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -22530,9 +22554,9 @@
       "source_location": "L46",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_components_admindashboard_zobrazrozsahblokace"
+      "target": "src_components_admindashboard_zobrazrozsahblokace",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -22541,9 +22565,9 @@
       "source_location": "L74",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard",
-      "target": "src_components_admindashboard_admindashboard"
+      "target": "src_components_admindashboard_admindashboard",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -22552,9 +22576,9 @@
       "source_location": "L108",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost",
-      "target": "src_components_admindostupnost_odjezdvden",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_odjezdvden"
     },
     {
       "relation": "contains",
@@ -22563,9 +22587,9 @@
       "source_location": "L129",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost",
-      "target": "src_components_admindostupnost_prijezdvden",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_prijezdvden"
     },
     {
       "relation": "contains",
@@ -22574,9 +22598,9 @@
       "source_location": "L145",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost",
-      "target": "src_components_admindostupnost_prodejnepokoje",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_prodejnepokoje"
     },
     {
       "relation": "contains",
@@ -22585,9 +22609,9 @@
       "source_location": "L159",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost",
-      "target": "src_components_admindostupnost_pulkyproden",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_pulkyproden"
     },
     {
       "relation": "contains",
@@ -22596,9 +22620,9 @@
       "source_location": "L168",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost",
-      "target": "src_components_admindostupnost_stavdne",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_stavdne"
     },
     {
       "relation": "contains",
@@ -22607,9 +22631,9 @@
       "source_location": "L194",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost",
-      "target": "src_components_admindostupnost_renderdostupnostmodal",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_renderdostupnostmodal"
     },
     {
       "relation": "contains",
@@ -22618,9 +22642,9 @@
       "source_location": "L24",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost",
-      "target": "src_components_admindostupnost_mesice",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_mesice"
     },
     {
       "relation": "contains",
@@ -22629,9 +22653,9 @@
       "source_location": "L27",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost",
-      "target": "src_components_admindostupnost_s",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_s"
     },
     {
       "relation": "contains",
@@ -22640,9 +22664,9 @@
       "source_location": "L33",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost",
-      "target": "src_components_admindostupnost_escapuj",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_escapuj"
     },
     {
       "relation": "contains",
@@ -22651,9 +22675,9 @@
       "source_location": "L36",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost",
-      "target": "src_components_admindostupnost_formatczechdatestr",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_formatczechdatestr"
     },
     {
       "relation": "contains",
@@ -22662,9 +22686,9 @@
       "source_location": "L43",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost",
-      "target": "src_components_admindostupnost_dnesstr",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_dnesstr"
     },
     {
       "relation": "contains",
@@ -22673,9 +22697,9 @@
       "source_location": "L45",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost",
-      "target": "src_components_admindostupnost_posundatum",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_posundatum"
     },
     {
       "relation": "contains",
@@ -22684,9 +22708,9 @@
       "source_location": "L459",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost",
-      "target": "src_components_admindostupnost_binddostupnostmodal",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_binddostupnostmodal"
     },
     {
       "relation": "contains",
@@ -22695,9 +22719,9 @@
       "source_location": "L57",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost",
-      "target": "src_components_admindostupnost_zobrazrozsahblokace",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_zobrazrozsahblokace"
     },
     {
       "relation": "contains",
@@ -22706,9 +22730,9 @@
       "source_location": "L65",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost",
-      "target": "src_components_admindostupnost_pocetnoci",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_pocetnoci"
     },
     {
       "relation": "contains",
@@ -22717,9 +22741,9 @@
       "source_location": "L71",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost",
-      "target": "src_components_admindostupnost_prazdnyprehled",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_prazdnyprehled"
     },
     {
       "relation": "contains",
@@ -22728,9 +22752,9 @@
       "source_location": "L85",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_components_admindostupnost",
-      "target": "src_components_admindostupnost_zabranyduvod",
-      "confidence_score": 1.0
+      "target": "src_components_admindostupnost_zabranyduvod"
     },
     {
       "relation": "contains",
@@ -22868,12 +22892,23 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminPlachta.js",
-      "source_location": "L229",
+      "source_location": "L112",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_adminplachta",
-      "target": "src_components_adminplachta_bindplachta"
+      "target": "src_components_adminplachta_renderplachta",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/AdminPlachta.js",
+      "source_location": "L245",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_components_adminplachta",
+      "target": "src_components_adminplachta_bindplachta",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -22882,53 +22917,53 @@
       "source_location": "L27",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_adminplachta",
-      "target": "src_components_adminplachta_dny_zkratky"
+      "target": "src_components_adminplachta_dny_zkratky",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminPlachta.js",
-      "source_location": "L36",
+      "source_location": "L35",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_adminplachta",
-      "target": "src_components_adminplachta_rozdelnazev"
+      "target": "src_components_adminplachta_fazepruhu",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminPlachta.js",
-      "source_location": "L42",
+      "source_location": "L48",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_adminplachta",
-      "target": "src_components_adminplachta_den"
+      "target": "src_components_adminplachta_rozdelnazev",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminPlachta.js",
-      "source_location": "L46",
+      "source_location": "L54",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_adminplachta",
-      "target": "src_components_adminplachta_denvtydnu"
+      "target": "src_components_adminplachta_den",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminPlachta.js",
-      "source_location": "L49",
+      "source_location": "L58",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_adminplachta",
-      "target": "src_components_adminplachta_indexvmesici"
+      "target": "src_components_adminplachta_denvtydnu",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -22937,20 +22972,20 @@
       "source_location": "L61",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_adminplachta",
-      "target": "src_components_adminplachta_pruhypropokoj"
+      "target": "src_components_adminplachta_indexvmesici",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/AdminPlachta.js",
-      "source_location": "L99",
+      "source_location": "L73",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_adminplachta",
-      "target": "src_components_adminplachta_renderplachta"
+      "target": "src_components_adminplachta_pruhypropokoj",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -24884,9 +24919,9 @@
       "source_location": "L30",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_utils_obsazenost",
-      "target": "src_utils_obsazenost_obsazenostpulek",
-      "confidence_score": 1.0
+      "target": "src_utils_obsazenost_obsazenostpulek"
     },
     {
       "relation": "contains",
@@ -24895,9 +24930,9 @@
       "source_location": "L52",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "src_utils_obsazenost",
-      "target": "src_utils_obsazenost_pulkydne",
-      "confidence_score": 1.0
+      "target": "src_utils_obsazenost_pulkydne"
     },
     {
       "relation": "contains",
@@ -25544,9 +25579,9 @@
       "source_location": "L1",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "zkontroluj",
-      "target": "zkontroluj_sh__entry",
-      "confidence_score": 1.0
+      "target": "zkontroluj_sh__entry"
     },
     {
       "relation": "defines",
@@ -25566,9 +25601,9 @@
       "source_location": "L175",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "zkontroluj",
-      "target": "zkontroluj_prazdne_nebo_chyba",
-      "confidence_score": 1.0
+      "target": "zkontroluj_prazdne_nebo_chyba"
     },
     {
       "relation": "defines",
@@ -25577,9 +25612,9 @@
       "source_location": "L24",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "zkontroluj",
-      "target": "zkontroluj_zelena",
-      "confidence_score": 1.0
+      "target": "zkontroluj_zelena"
     },
     {
       "relation": "defines",
@@ -25588,9 +25623,9 @@
       "source_location": "L25",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "zkontroluj",
-      "target": "zkontroluj_cervena",
-      "confidence_score": 1.0
+      "target": "zkontroluj_cervena"
     },
     {
       "relation": "defines",
@@ -25599,9 +25634,9 @@
       "source_location": "L26",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "zkontroluj",
-      "target": "zkontroluj_seda",
-      "confidence_score": 1.0
+      "target": "zkontroluj_seda"
     },
     {
       "relation": "defines",
@@ -25610,9 +25645,9 @@
       "source_location": "L27",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "zkontroluj",
-      "target": "zkontroluj_nadpis",
-      "confidence_score": 1.0
+      "target": "zkontroluj_nadpis"
     },
     {
       "relation": "defines",
@@ -25621,9 +25656,9 @@
       "source_location": "L45",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "zkontroluj",
-      "target": "zkontroluj_hlavicka",
-      "confidence_score": 1.0
+      "target": "zkontroluj_hlavicka"
     },
     {
       "relation": "dynamic_import",
@@ -25650,9 +25685,9 @@
       "source_location": "L147",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard",
-      "target": "src_components_admindashboard_admindashboard_init"
+      "target": "src_components_admindashboard_admindashboard_init",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -25661,9 +25696,9 @@
       "source_location": "L1739",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard",
-      "target": "src_components_admindashboard_admindashboard_renderreviewsmodalmarkup"
+      "target": "src_components_admindashboard_admindashboard_renderreviewsmodalmarkup",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -25672,9 +25707,9 @@
       "source_location": "L174",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard",
-      "target": "src_components_admindashboard_admindashboard_fetchreviews"
+      "target": "src_components_admindashboard_admindashboard_fetchreviews",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -25683,9 +25718,9 @@
       "source_location": "L1815",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard",
-      "target": "src_components_admindashboard_admindashboard_renderadmincalendarmodal"
+      "target": "src_components_admindashboard_admindashboard_renderadmincalendarmodal",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -25694,9 +25729,9 @@
       "source_location": "L182",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard",
-      "target": "src_components_admindashboard_admindashboard_fetchnewsitems"
+      "target": "src_components_admindashboard_admindashboard_fetchnewsitems",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -25705,9 +25740,9 @@
       "source_location": "L190",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard",
-      "target": "src_components_admindashboard_admindashboard_fetchdiscountcodes"
+      "target": "src_components_admindashboard_admindashboard_fetchdiscountcodes",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -25716,9 +25751,9 @@
       "source_location": "L1936",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard",
-      "target": "src_components_admindashboard_admindashboard_attachadminlisteners"
+      "target": "src_components_admindashboard_admindashboard_attachadminlisteners",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -25727,9 +25762,9 @@
       "source_location": "L230",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard",
-      "target": "src_components_admindashboard_admindashboard_adddiscountcode"
+      "target": "src_components_admindashboard_admindashboard_adddiscountcode",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -25738,9 +25773,9 @@
       "source_location": "L285",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard",
-      "target": "src_components_admindashboard_admindashboard_togglediscountcodeactive"
+      "target": "src_components_admindashboard_admindashboard_togglediscountcodeactive",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -25749,9 +25784,9 @@
       "source_location": "L304",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard",
-      "target": "src_components_admindashboard_admindashboard_deletediscountcode"
+      "target": "src_components_admindashboard_admindashboard_deletediscountcode",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -25760,9 +25795,9 @@
       "source_location": "L327",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard",
-      "target": "src_components_admindashboard_admindashboard_fetchroomprices"
+      "target": "src_components_admindashboard_admindashboard_fetchroomprices",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -25771,9 +25806,9 @@
       "source_location": "L374",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard",
-      "target": "src_components_admindashboard_admindashboard_updateroomnameandprice"
+      "target": "src_components_admindashboard_admindashboard_updateroomnameandprice",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -25782,9 +25817,9 @@
       "source_location": "L446",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard",
-      "target": "src_components_admindashboard_admindashboard_updateroomprice"
+      "target": "src_components_admindashboard_admindashboard_updateroomprice",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -25793,9 +25828,9 @@
       "source_location": "L450",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard",
-      "target": "src_components_admindashboard_admindashboard_fetchdisabledrooms"
+      "target": "src_components_admindashboard_admindashboard_fetchdisabledrooms",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -25804,9 +25839,9 @@
       "source_location": "L483",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard",
-      "target": "src_components_admindashboard_admindashboard_toggleroomdisabled"
+      "target": "src_components_admindashboard_admindashboard_toggleroomdisabled",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -25815,9 +25850,9 @@
       "source_location": "L525",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard",
-      "target": "src_components_admindashboard_admindashboard_otevrirucnirezervaci"
+      "target": "src_components_admindashboard_admindashboard_otevrirucnirezervaci",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -25826,9 +25861,9 @@
       "source_location": "L542",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard",
-      "target": "src_components_admindashboard_admindashboard_zkontrolujkolizirucni"
+      "target": "src_components_admindashboard_admindashboard_zkontrolujkolizirucni",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -25837,9 +25872,9 @@
       "source_location": "L552",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard",
-      "target": "src_components_admindashboard_admindashboard_fetchreservations"
+      "target": "src_components_admindashboard_admindashboard_fetchreservations",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -25848,9 +25883,9 @@
       "source_location": "L584",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard",
-      "target": "src_components_admindashboard_admindashboard_fetchblockeddates"
+      "target": "src_components_admindashboard_admindashboard_fetchblockeddates",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -25859,9 +25894,9 @@
       "source_location": "L599",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard",
-      "target": "src_components_admindashboard_admindashboard_addblockeddate"
+      "target": "src_components_admindashboard_admindashboard_addblockeddate",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -25870,9 +25905,9 @@
       "source_location": "L630",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard",
-      "target": "src_components_admindashboard_admindashboard_removeblockeddate"
+      "target": "src_components_admindashboard_admindashboard_removeblockeddate",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -25881,9 +25916,9 @@
       "source_location": "L645",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard",
-      "target": "src_components_admindashboard_admindashboard_checkblockeddateconflictsfordates"
+      "target": "src_components_admindashboard_admindashboard_checkblockeddateconflictsfordates",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -25892,9 +25927,9 @@
       "source_location": "L666",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard",
-      "target": "src_components_admindashboard_admindashboard_handlelogin"
+      "target": "src_components_admindashboard_admindashboard_handlelogin",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -25903,9 +25938,9 @@
       "source_location": "L704",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard",
-      "target": "src_components_admindashboard_admindashboard_obnovprihlaseni"
+      "target": "src_components_admindashboard_admindashboard_obnovprihlaseni",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -25914,9 +25949,9 @@
       "source_location": "L715",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard",
-      "target": "src_components_admindashboard_admindashboard_nahrajfotkuaktuality"
+      "target": "src_components_admindashboard_admindashboard_nahrajfotkuaktuality",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -25925,9 +25960,9 @@
       "source_location": "L727",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard",
-      "target": "src_components_admindashboard_admindashboard_zamknirolovanistranky"
+      "target": "src_components_admindashboard_admindashboard_zamknirolovanistranky",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -25936,9 +25971,9 @@
       "source_location": "L75",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard",
-      "target": "src_components_admindashboard_admindashboard_constructor"
+      "target": "src_components_admindashboard_admindashboard_constructor",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -25947,9 +25982,9 @@
       "source_location": "L761",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard",
-      "target": "src_components_admindashboard_admindashboard_showadmintoast"
+      "target": "src_components_admindashboard_admindashboard_showadmintoast",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -25958,9 +25993,9 @@
       "source_location": "L783",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard",
-      "target": "src_components_admindashboard_admindashboard_advancereservationphase"
+      "target": "src_components_admindashboard_admindashboard_advancereservationphase",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -25969,9 +26004,9 @@
       "source_location": "L981",
       "weight": 1.0,
       "_origin": "ast",
-      "confidence_score": 1.0,
       "source": "src_components_admindashboard_admindashboard",
-      "target": "src_components_admindashboard_admindashboard_render"
+      "target": "src_components_admindashboard_admindashboard_render",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -26120,7 +26155,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L1712",
+      "source_location": "L1721",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem",
@@ -26142,7 +26177,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L1793",
+      "source_location": "L1802",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem",
@@ -26164,7 +26199,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L2276",
+      "source_location": "L2285",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem",
@@ -26197,7 +26232,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L2703",
+      "source_location": "L2712",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem",
@@ -26208,7 +26243,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/components/BookingSystem.js",
-      "source_location": "L2845",
+      "source_location": "L2854",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_bookingsystem_bookingsystem",
@@ -28235,5 +28270,5 @@
       "source_file": "CLAUDE.md"
     }
   ],
-  "built_at_commit": "082d0ebcf64bc72b4a41ceb0245eb5bb3fb5e746"
+  "built_at_commit": "2066e04db219095f3c7a948e479d07972750d20a"
 }
