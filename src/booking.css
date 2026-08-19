@@ -5948,3 +5948,110 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 @media (max-width: 400px) {
   .plachta { --plachta-den: 28px; --plachta-nazev: 88px; }
 }
+
+/* =====================================================================
+   SEMAFOR FÁZÍ REZERVACE
+   Jedna paleta pro celý recepční portál. Fáze se čte jako semafor:
+   červená stůj (čeká to na tebe), oranžová připrav se (čekáme na
+   peníze), zelená jeď (zaplaceno, pobyt platí).
+
+   Platí na TŘECH místech naráz — odznak na kartě, barevný proužek karty
+   a pruh v plachtě dostupnosti. Díky tomu pozná recepční fázi rezervace
+   z přehledu dostupnosti a nemusí kvůli tomu proklikávat karty.
+
+   Tlačítko nese barvu fáze, do KTERÉ posouvá, ne té, ve které stojí.
+   Červené tlačítko vedle tlačítka Stornovat by vypadalo jako něco, co
+   se nedá vzít zpět.
+   ===================================================================== */
+:root {
+  --faze1: #d64541;          /* 1. Ke schválení — čeká na recepci */
+  --faze1-svetla: #fdeceb;
+  --faze1-tmava: #a5312e;
+
+  --faze2: #e0a021;          /* 2. Čeká na zálohu */
+  --faze2-svetla: #fdf3dc;
+  --faze2-tmava: #9c6c08;
+
+  --faze3: #3f8f4a;          /* 3. Závazně potvrzeno */
+  --faze3-svetla: #e7f5e9;
+  --faze3-tmava: #2c6a34;
+
+  --faze-storno: #95a5a6;
+  --faze-storno-svetla: #f2f4f4;
+}
+
+/* --- barevný proužek karty --------------------------------------- */
+.admin-res-card.status-card-pending_approval { border-left: 5px solid var(--faze1) !important; }
+.admin-res-card.status-card-awaiting_deposit { border-left: 5px solid var(--faze2) !important; }
+.admin-res-card.status-card-confirmed        { border-left: 5px solid var(--faze3) !important; }
+
+/* --- odznak fáze na kartě ----------------------------------------- */
+.res-odznak {
+  display: inline-block;
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+}
+
+.res-odznak.je-faze1 { color: var(--faze1-tmava); background: var(--faze1-svetla); border-color: #f6cdcb; }
+.res-odznak.je-faze2 { color: var(--faze2-tmava); background: var(--faze2-svetla); border-color: #f0dca6; }
+.res-odznak.je-faze3 { color: var(--faze3-tmava); background: var(--faze3-svetla); border-color: #bfe0c4; }
+.res-odznak.je-storno { color: #6b7778; background: var(--faze-storno-svetla); border-color: #dfe4e4; }
+
+/* --- hlavní tlačítko: barva fáze, do které posouvá ---------------- */
+.res-btn-approve-primary {
+  background-color: var(--faze2) !important;
+  border-color: var(--faze2) !important;
+  color: #3a2a04 !important;   /* bílá na oranžové má mizerný kontrast */
+}
+.res-btn-approve-primary:hover {
+  background-color: #cf9014 !important;
+  border-color: #cf9014 !important;
+}
+
+.res-btn-pay-primary {
+  background-color: var(--faze3) !important;
+  border-color: var(--faze3) !important;
+  color: #ffffff !important;
+}
+.res-btn-pay-primary:hover {
+  background-color: var(--faze3-tmava) !important;
+  border-color: var(--faze3-tmava) !important;
+}
+
+/* --- záložky filtru stavů ----------------------------------------- */
+.status-tab-btn[data-status="pending_approval"] .tab-count { background: var(--faze1-svetla); color: var(--faze1-tmava); }
+.status-tab-btn[data-status="awaiting_deposit"] .tab-count { background: var(--faze2-svetla); color: var(--faze2-tmava); }
+.status-tab-btn[data-status="confirmed"] .tab-count { background: var(--faze3-svetla); color: var(--faze3-tmava); }
+
+.status-tab-btn[data-status="pending_approval"].active { background: var(--faze1) !important; border-color: var(--faze1) !important; color: #fff !important; }
+.status-tab-btn[data-status="awaiting_deposit"].active { background: var(--faze2) !important; border-color: var(--faze2) !important; color: #3a2a04 !important; }
+.status-tab-btn[data-status="confirmed"].active { background: var(--faze3) !important; border-color: var(--faze3) !important; color: #fff !important; }
+.status-tab-btn[data-status="pending_approval"].active .tab-count,
+.status-tab-btn[data-status="confirmed"].active .tab-count { background: rgba(255,255,255,0.25); color: #fff; }
+.status-tab-btn[data-status="awaiting_deposit"].active .tab-count { background: rgba(0,0,0,0.15); color: #3a2a04; }
+
+/* --- pruhy v plachtě dostupnosti ---------------------------------- */
+.plachta-pruh.je-faze1 { background: var(--faze1); color: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.18), inset 0 0 0 1px var(--faze1-tmava); }
+.plachta-pruh.je-faze1:hover { background: var(--faze1-tmava); }
+
+.plachta-pruh.je-faze2 { background: var(--faze2); color: #3a2a04; box-shadow: 0 1px 2px rgba(0,0,0,0.18), inset 0 0 0 1px #c2851a; }
+.plachta-pruh.je-faze2:hover { background: #cf9014; }
+
+.plachta-pruh.je-faze3 { background: var(--faze3); color: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.18), inset 0 0 0 1px var(--faze3-tmava); }
+.plachta-pruh.je-faze3:hover { background: var(--faze3-tmava); }
+
+.plachta-vzorek.je-faze1 { background: var(--faze1); border-color: var(--faze1-tmava); }
+.plachta-vzorek.je-faze2 { background: var(--faze2); border-color: #c2851a; }
+.plachta-vzorek.je-faze3 { background: var(--faze3); border-color: var(--faze3-tmava); }
+
+/* Šipka na předchozí měsíc v rezervačním formuláři, když už není kam.
+   Nezmizí, jen zešedne — mizející tlačítko posouvá zbytek lišty a
+   uživatel si myslí, že se překlepl. */
+.cal-nav-btn.je-nedostupne {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}

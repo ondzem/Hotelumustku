@@ -1498,6 +1498,13 @@ export class BookingSystem {
 
     const { year, month } = this.state.calYearMonth;
 
+    // Do minulosti se rezervovat nedá, takže se do ní nedá ani listovat.
+    // Host by tam jen bloudil mezi samými nedostupnými dny a ptal se,
+    // proč nejde nic vybrat. V administraci to platit NESMÍ — majitel
+    // se do starých měsíců dívá schválně, když dohledává, kdo tam byl.
+    const [rokDnes, mesicDnes] = getTodayDateString().split('-').map(Number);
+    const jeNejstarsiMesic = year === rokDnes && month === mesicDnes;
+
     const monthNames = [
       'Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen',
       'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec'
@@ -1620,7 +1627,9 @@ export class BookingSystem {
               <span class="cal-month-title">${monthNames[month - 1]} ${year}</span>
             </div>
             <div style="display: flex; align-items: center; gap: 8px;">
-              <button type="button" class="btn btn-cal-nav cal-nav-btn" id="cal-prev-month" title="Předchozí měsíc">
+              <button type="button" class="btn btn-cal-nav cal-nav-btn${jeNejstarsiMesic ? ' je-nedostupne' : ''}" id="cal-prev-month"
+                ${jeNejstarsiMesic ? 'disabled aria-disabled="true"' : ''}
+                title="${jeNejstarsiMesic ? 'Dřívější měsíce už rezervovat nejde' : 'Předchozí měsíc'}">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
               </button>
               <button type="button" class="btn btn-cal-nav cal-nav-btn" id="cal-next-month" title="Následující měsíc">
@@ -3295,6 +3304,10 @@ export class BookingSystem {
           let { year, month } = this.state.calYearMonth;
           month--;
           if (month < 1) { month = 12; year--; }
+          // Zákaz se hlídá i tady, nejen vypnutým tlačítkem — atribut
+          // disabled jde v prohlížeči obejít a klávesnice ho obchází taky.
+          const [rokDnes, mesicDnes] = getTodayDateString().split('-').map(Number);
+          if (year < rokDnes || (year === rokDnes && month < mesicDnes)) return;
           this.state.calYearMonth = { year, month };
           this.render();
         });

@@ -330,6 +330,33 @@ Tři věci, které nejsou z kódu vidět:
   jednotlivých pokojů, takže součet rezervací odpovídá tomu, co se skupinou
   domluvíte. Poslední pokoj dostane zbytek, aby zaokrouhlení nikam neuteklo.
 
+## Semafor fází rezervace
+
+Fáze se čte jako semafor a **stejná barva platí na třech místech
+naráz** — odznak na kartě rezervace, barevný proužek karty a pruh
+v plachtě dostupnosti. Recepční díky tomu pozná stav rovnou z přehledu
+a nemusí kvůli tomu proklikávat jednotlivé karty:
+
+| Fáze | Význam | Barva |
+|---|---|---|
+| 1. Ke schválení | čeká to na recepci, host nic neplatil | červená `#d64541` |
+| 2. Čeká na zálohu | pokyny odešly, čekáme na peníze | oranžová `#e0a021` |
+| 3. Závazně potvrzeno | záloha na účtu, pobyt platí | zelená `#3f8f4a` |
+| Stornováno | mimo hru | šedá `#95a5a6` |
+
+Paleta je v proměnných `--faze1/2/3` v `booking.css` (oddíl SEMAFOR FÁZÍ
+REZERVACE). Nikde jinde se ty odstíny nepíšou natvrdo.
+
+Dvě věci, které nejsou z kódu vidět:
+
+- **Tlačítko nese barvu fáze, do KTERÉ posouvá, ne té, ve které stojí.**
+  „Schválit & poslat QR kód" je oranžové (posouvá do 2), „Potvrdit
+  přijetí zálohy" zelené (posouvá do 3). Červené tlačítko hned vedle
+  tlačítka Stornovat by vypadalo jako něco nevratného.
+- **Blokace zůstala červená šrafovaná.** Se rezervací ve fázi 1 ji
+  nespojí právě to šrafování — a hlavně je to jiná věc než host, takže
+  se nesmí splést. Legenda pod plachtou vypisuje všechny čtyři stavy.
+
 ## Plachta dostupnosti — pokoje v řádcích, dny ve sloupcích
 
 Okno 📆 Dostupnost a blokace má **dva pohledy** a přepínají se nahoře:
@@ -796,6 +823,12 @@ Dvě věci, které se tu už rozešly a stojí za kontrolu po každé změně:
   `pricing.depositPercentage`, u **už uložených** rezervací se procento
   dopočítá ze zapsaných částek (`procentoZalohy()` v `pricing.js`) —
   jinak by změna nastavení zpětně přepsala popisky u starých rezervací.
+- **Do minulosti se v rezervačním formuláři nelistuje.** Šipka na
+  předchozí měsíc je v aktuálním měsíci vypnutá — host by v minulosti
+  jen bloudil mezi samými nedostupnými dny a ptal se, proč nejde nic
+  vybrat. Hlídá to i obsluha kliknutí, ne jen atribut `disabled`, který
+  jde v prohlížeči obejít. **V administraci to platit NESMÍ** — majitel
+  se do starých měsíců dívá schválně, když dohledává, kdo tam byl.
 - **Pobyt na jednu noc se nepřijímá.** Rezervační formulář vyžaduje
   minimálně dvě noci (`hasValidDates()`), takže příplatek za jednu noc
   byl odstraněn z ceníku i z výpočtu — nemohl by nikdy nastat.

@@ -27,6 +27,18 @@ import {
 const DNY_ZKRATKY = ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'];
 
 /**
+ * Fáze rezervace jako semafor — červená stůj, oranžová připrav se,
+ * zelená jeď. Stejné barvy nese odznak na kartě rezervace, takže
+ * recepční pozná stav rovnou z plachty a nemusí kvůli tomu proklikávat
+ * jednotlivé karty. Paleta je v booking.css, oddíl SEMAFOR FÁZÍ.
+ */
+function fazePruhu(zaznam) {
+  if (zaznam.status === 'confirmed') return { trida: 'je-faze3', popis: 'závazně potvrzeno, záloha zaplacena' };
+  if (zaznam.status === 'awaiting_deposit') return { trida: 'je-faze2', popis: 'čeká na zálohu' };
+  return { trida: 'je-faze1', popis: 'čeká na schválení' };
+}
+
+/**
  * Rozdělí „Pokoj 3 - Nadstandard Mahagon" na „Pokoj 3" a „Mahagon".
  *
  * Sloupec s názvy je na telefonu široký 88 px a celý název se do něj
@@ -74,6 +86,7 @@ export function pruhyProPokoj(ad, roomId, year, month, dnuVMesici) {
 
     pruhy.push({
       typ, popis, kod,
+      faze: typ === 'rezervace' ? fazePruhu(zaznam) : null,
       // Sloupce mřížky se počítají od 1. Pruh sahá až za buňku dne odjezdu
       // a zpátky se stáhne okrajem o půl dne — proto konIdx + 1.
       zacLine: zacIdx,
@@ -159,8 +172,9 @@ export function renderPlachta(ad, year, month) {
         + (pr.konOrez ? '' : ' margin-right: calc(var(--plachta-den) / 2);');
       const titulek = pr.typ === 'blokace'
         ? `Blokace: ${pr.popis} · ${formatCzechDateStr(pr.zaznam.date_from)} – ${formatCzechDateStr(posunDatum(pr.zaznam.date_to, -1))}`
-        : `${pr.popis}${pr.kod ? ` (${pr.kod})` : ''} · příjezd ${formatCzechDateStr(pr.zaznam.date_from)}, odjezd ${formatCzechDateStr(pr.zaznam.date_to)}`;
-      return `<div class="plachta-pruh je-${pr.typ}" style="${styl}" title="${escapuj(titulek)}"
+        : `${pr.popis}${pr.kod ? ` (${pr.kod})` : ''} · ${pr.faze.popis} · příjezd ${formatCzechDateStr(pr.zaznam.date_from)}, odjezd ${formatCzechDateStr(pr.zaznam.date_to)}`;
+      const tridaBarvy = pr.typ === 'blokace' ? 'je-blokace' : pr.faze.trida;
+      return `<div class="plachta-pruh ${tridaBarvy}" style="${styl}" title="${escapuj(titulek)}"
         data-kod="${escapuj(pr.kod)}" data-typ="${pr.typ}">${escapuj(pr.popis)}</div>`;
     }).join('');
 
@@ -211,7 +225,9 @@ export function renderPlachta(ad, year, month) {
       </div>
 
       <div class="plachta-legenda">
-        <span class="plachta-legenda-polozka"><i class="plachta-vzorek je-rezervace"></i> Rezervace</span>
+        <span class="plachta-legenda-polozka"><i class="plachta-vzorek je-faze1"></i> Čeká na schválení</span>
+        <span class="plachta-legenda-polozka"><i class="plachta-vzorek je-faze2"></i> Čeká na zálohu</span>
+        <span class="plachta-legenda-polozka"><i class="plachta-vzorek je-faze3"></i> Závazně potvrzeno</span>
         <span class="plachta-legenda-polozka"><i class="plachta-vzorek je-blokace"></i> Blokace</span>
         <span class="plachta-legenda-polozka"><i class="plachta-vzorek je-vikend"></i> Víkend</span>
         <span class="plachta-legenda-polozka"><i class="plachta-vzorek je-vyber"></i> Vybraný termín</span>

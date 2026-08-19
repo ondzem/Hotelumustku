@@ -1197,12 +1197,12 @@ export class AdminDashboard {
                     <div class="res-deposit-sub">Záloha ${procentoZalohy(r)}%: ${formatCzechPrice(r.deposit_price || 0)}</div>
                     <div style="margin-top: 6px;">
                       ${r.status === 'pending_approval' ? `
-                        <span style="display:inline-block; font-size:12.5px; font-weight:700; color:#d35400; background:#fef5e7; padding:3px 10px; border-radius:4px;">1. Ke schválení</span>
+                        <span class="res-odznak je-faze1">1. Ke schválení</span>
                       ` : (r.status === 'awaiting_deposit' ? `
-                        <span style="display:inline-block; font-size:12.5px; font-weight:700; color:#2980b9; background:#ebf5fb; padding:3px 10px; border-radius:4px;">2. Čeká na zálohu</span>
+                        <span class="res-odznak je-faze2">2. Čeká na zálohu</span>
                       ` : (r.status === 'confirmed' ? `
-                        <span style="display:inline-block; font-size:12.5px; font-weight:700; color:#27ae60; background:#e8f8f5; padding:3px 10px; border-radius:4px;">3. Závazně potvrzeno</span>
-                      ` : `<span style="display:inline-block; font-size:12.5px; font-weight:700; color:#7f8c8d; background:#f2f4f4; padding:3px 10px; border-radius:4px;">Stornováno</span>`))}
+                        <span class="res-odznak je-faze3">3. Závazně potvrzeno</span>
+                      ` : `<span class="res-odznak je-storno">Stornováno</span>`))}
                     </div>
                   </div>
 
