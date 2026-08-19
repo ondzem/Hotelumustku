@@ -5626,3 +5626,367 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     grid-column: auto;
   }
 }
+
+/* =====================================================================
+   PLACHTA DOSTUPNOSTI — pokoje v řádcích, dny měsíce ve sloupcích
+   Logika je v src/components/AdminPlachta.js.
+
+   Šířka dne je JEDNA proměnná. Pruhy rezervací se o půl dne stahují
+   okrajem (`margin: calc(var(--plachta-den) / 2)`), takže kdyby se
+   šířka počítala procenty, půlka by při každé změně okna znamenala
+   něco jiného a pruh by přestal sedět na den příjezdu.
+   ===================================================================== */
+
+.plachta {
+  --plachta-den: 34px;
+  --plachta-nazev: 158px;
+  --plachta-vyska: 34px;
+  margin-bottom: 14px;
+}
+
+.plachta-listaakci {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 0 0 10px 0;
+}
+
+.plachta-mesic { display: flex; align-items: center; gap: 6px; }
+
+.plachta-mesic-nazev {
+  font-size: 15.5px;
+  font-weight: 800;
+  color: #1c1c19;
+  min-width: 132px;
+  text-align: center;
+}
+
+.plachta-nav {
+  width: 34px;
+  height: 34px;
+  border: 1.5px solid #d8d5c9;
+  background: #fff;
+  border-radius: 5px;
+  font-size: 20px;
+  line-height: 1;
+  color: #4a5a24;
+  cursor: pointer;
+}
+
+.plachta-nav:hover { background: #f2f5e9; border-color: #697947; }
+
+.plachta-listaakci-vpravo { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+.plachta-odkaz {
+  background: none;
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  color: #4a5a24;
+  cursor: pointer;
+  padding: 6px 8px;
+  text-decoration: underline;
+}
+
+/* Vodorovné rolování je záměr: měsíc má 31 dnů a na užší displej se
+   nevejde. Sloupec s názvy pokojů proto zůstává přilepený vlevo —
+   bez něj by uprostřed měsíce nikdo nevěděl, čí řádek to je. */
+.plachta-posuv {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  border: 1.5px solid #e0dfd5;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.plachta-mrizka { min-width: max-content; }
+
+.plachta-radek { display: flex; align-items: stretch; }
+
+.plachta-nazev {
+  position: sticky;
+  left: 0;
+  z-index: 5;
+  flex: 0 0 var(--plachta-nazev);
+  width: var(--plachta-nazev);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+  min-height: var(--plachta-vyska);
+  background: #fff;
+  border-right: 2px solid #ddd9c9;
+  border-bottom: 1px solid #eeece2;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #1c1c19;
+}
+
+.plachta-nazev-text {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  overflow: hidden;
+}
+
+.plachta-nazev-hlavni {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.plachta-nazev-typ {
+  min-width: 0;
+  font-weight: 600;
+  color: #7a7869;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.plachta-znacka-mimo {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 700;
+  color: #8a8879;
+  background: #f0eee5;
+  border-radius: 3px;
+  padding: 1px 5px;
+}
+
+.plachta-dny {
+  display: grid;
+  position: relative;
+  flex: 0 0 auto;
+}
+
+/* Buňky i pruhy leží ve stejném řádku mřížky a mají výslovně určený
+   sloupec. Automatické umisťování by je míchalo dohromady. */
+.plachta-bunka,
+.plachta-souhrn-bunka,
+.plachta-hlava-den,
+.plachta-pruh { grid-row: 1; }
+
+.plachta-bunka {
+  height: 100%;
+  min-height: var(--plachta-vyska);
+  border-right: 1px solid #f0eee5;
+  border-bottom: 1px solid #eeece2;
+  background: #fff;
+  padding: 0;
+  cursor: pointer;
+}
+
+.plachta-bunka.je-vikend { background: #f5f3ea; }
+.plachta-bunka.je-minulost { background-image: linear-gradient(rgba(120,118,105,0.08), rgba(120,118,105,0.08)); }
+.plachta-bunka.je-dnes { box-shadow: inset 1px 0 0 #697947, inset -1px 0 0 #697947; }
+.plachta-bunka.je-mimo-provoz {
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(140,138,125,0.18) 4px, rgba(140,138,125,0.18) 8px);
+  cursor: not-allowed;
+}
+.plachta-bunka:hover:not(.je-mimo-provoz) { background: #eef2e2; }
+
+/* Vybraný rozsah: u zvoleného pokoje sytě, u ostatních jen náznak,
+   aby bylo vidět, kterých dnů se výběr týká napříč celým hotelem. */
+.plachta-bunka.v-rozsahu { background: #f4f7ec; }
+.plachta-bunka.v-rozsahu-vyberu { background: #d8e6bd; }
+.plachta-bunka.je-kraj-vyberu {
+  background: #cadbb0;
+  box-shadow: inset 0 0 0 2px #697947;
+}
+
+.plachta-radek.je-vybrany .plachta-nazev { background: #f2f5e9; color: #3f4d1c; }
+
+.plachta-radek.je-mimo-provoz .plachta-nazev { color: #8a8879; }
+
+/* ---- záhlaví s čísly dnů */
+.plachta-radek-hlava {
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  background: #fbfaf6;
+}
+
+.plachta-radek-hlava .plachta-nazev,
+.plachta-radek-souhrn .plachta-nazev { z-index: 7; background: #fbfaf6; }
+
+.plachta-nazev-hlava,
+.plachta-nazev-souhrn { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.04em; color: #6b6b60; }
+
+.plachta-hlava-den {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 5px 0;
+  background: #fbfaf6;
+  border-right: 1px solid #f0eee5;
+  border-bottom: 1.5px solid #ddd9c9;
+  cursor: pointer;
+  line-height: 1.1;
+}
+
+.plachta-hlava-dvt { font-size: 9.5px; font-weight: 700; color: #8a8879; text-transform: uppercase; }
+.plachta-hlava-cislo { font-size: 12.5px; font-weight: 800; color: #1c1c19; }
+
+.plachta-hlava-den.je-vikend { background: #f0eddf; }
+.plachta-hlava-den.je-vikend .plachta-hlava-dvt { color: #a5231f; }
+.plachta-hlava-den.je-dnes { background: #697947; }
+.plachta-hlava-den.je-dnes .plachta-hlava-dvt,
+.plachta-hlava-den.je-dnes .plachta-hlava-cislo { color: #fff; }
+.plachta-hlava-den.v-rozsahu { background: #cadbb0; }
+.plachta-hlava-den:hover { background: #eef2e2; }
+
+/* ---- souhrnný řádek „kolik je volno" */
+.plachta-radek-souhrn { position: sticky; top: var(--plachta-vyska); z-index: 4; }
+
+.plachta-souhrn-bunka {
+  height: 100%;
+  min-height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: #3f4d1c;
+  background: #f3f7ea;
+  border-right: 1px solid #e6e9d9;
+  border-bottom: 1.5px solid #ddd9c9;
+  cursor: pointer;
+}
+
+.plachta-souhrn-bunka.je-skoro-plno { background: #fcecc2; color: #8a5b00; }
+.plachta-souhrn-bunka.je-plno { background: #f9d9d4; color: #a5231f; }
+.plachta-souhrn-bunka.je-vikend { box-shadow: inset 0 -2px 0 rgba(165,35,31,0.18); }
+.plachta-souhrn-bunka.je-minulost { opacity: 0.55; }
+.plachta-souhrn-bunka.v-rozsahu { outline: 2px solid #697947; outline-offset: -2px; }
+
+/* ---- pruhy rezervací a blokací */
+.plachta-pruh {
+  z-index: 2;
+  align-self: center;
+  height: calc(var(--plachta-vyska) - 12px);
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 7px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: auto;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+}
+
+.plachta-pruh.je-rezervace { background: #697947; }
+.plachta-pruh.je-rezervace:hover { background: #56642f; }
+
+/* Blokace je šrafovaná schválně: na první pohled se nesmí splést
+   s hostem, protože se s ní zachází úplně jinak. */
+.plachta-pruh.je-blokace {
+  background: repeating-linear-gradient(45deg, #c0504a, #c0504a 6px, #a5231f 6px, #a5231f 12px);
+  cursor: default;
+}
+
+/* ---- legenda a nápověda */
+.plachta-legenda {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 2px 0 2px;
+  font-size: 12px;
+  color: #55554e;
+}
+
+.plachta-legenda-polozka { display: inline-flex; align-items: center; gap: 6px; }
+
+.plachta-vzorek {
+  width: 16px;
+  height: 12px;
+  border-radius: 3px;
+  border: 1px solid #d8d5c9;
+  display: inline-block;
+}
+
+.plachta-vzorek.je-rezervace { background: #697947; border-color: #56642f; }
+.plachta-vzorek.je-blokace { background: repeating-linear-gradient(45deg, #c0504a, #c0504a 4px, #a5231f 4px, #a5231f 8px); border-color: #a5231f; }
+.plachta-vzorek.je-vikend { background: #f0eddf; }
+.plachta-vzorek.je-vyber { background: #cadbb0; border-color: #697947; }
+
+.plachta-legenda-poznamka { flex-basis: 100%; font-size: 11.5px; color: #8a8879; }
+
+.plachta-napoveda { margin: 10px 2px 0 2px; font-size: 12.5px; color: #6b6b60; line-height: 1.5; }
+
+/* ---- přepínač pohledu */
+.prehled-prepinac {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  background: #f2f1ea;
+  border: 1.5px solid #e0dfd5;
+  border-radius: 8px;
+  padding: 4px;
+  margin-bottom: 14px;
+}
+
+.prehled-prepinac-btn {
+  min-height: 38px;
+  border: none;
+  background: none;
+  border-radius: 5px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #6b6b60;
+  cursor: pointer;
+  padding: 6px 8px;
+  line-height: 1.25;
+}
+
+.prehled-prepinac-btn.je-aktivni {
+  background: #fff;
+  color: #1c1c19;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* ---- tablet */
+@media (max-width: 1100px) {
+  .plachta { --plachta-den: 32px; --plachta-nazev: 138px; }
+}
+
+/* ---- telefon
+   Sloupce se zúží a názvy pokojů zkrátí, ale mřížka zůstane mřížkou.
+   Zkoušet ji na 375 px přelámat do něčeho jiného by znamenalo druhý
+   způsob čtení téhož — a právě kvůli jednomu společnému pohledu to
+   celé vzniklo. Místo toho se plachta odroluje na dnešek a číslo dne
+   nahoře funguje jako zkratka „co mám volného zrovna tenhle den". */
+@media (max-width: 768px) {
+  .plachta { --plachta-den: 30px; --plachta-nazev: 104px; --plachta-vyska: 32px; }
+  .plachta-nazev { padding: 0 7px; font-size: 11.5px; gap: 4px; }
+  .plachta-nazev-text { flex-direction: column; align-items: flex-start; gap: 0; line-height: 1.2; }
+  .plachta-nazev-typ { font-size: 10.5px; max-width: 100%; }
+  .plachta-znacka-mimo { display: none; }
+  .plachta-nazev-souhrn { line-height: 1.15; }
+  .plachta-radek.je-mimo-provoz .plachta-nazev-text { text-decoration: line-through; }
+  .plachta-mesic-nazev { font-size: 14.5px; min-width: 108px; }
+  .plachta-pruh { font-size: 10.5px; padding: 0 5px; }
+  .plachta-legenda { gap: 10px; font-size: 11.5px; }
+  .prehled-prepinac-btn { font-size: 12px; }
+
+  /* Plachta je širší než 640 px, takže na ni okno nesmí být zúžené. */
+  .admin-modal-overlay-prehled > .je-plachta { max-width: none !important; }
+}
+
+@media (max-width: 400px) {
+  .plachta { --plachta-den: 28px; --plachta-nazev: 88px; }
+}

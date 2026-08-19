@@ -330,6 +330,50 @@ Tři věci, které nejsou z kódu vidět:
   jednotlivých pokojů, takže součet rezervací odpovídá tomu, co se skupinou
   domluvíte. Poslední pokoj dostane zbytek, aby zaokrouhlení nikam neuteklo.
 
+## Plachta dostupnosti — pokoje v řádcích, dny ve sloupcích
+
+Okno 📆 Dostupnost a blokace má **dva pohledy** a přepínají se nahoře:
+
+- **Tabulka měsíce** (výchozí, `AdminPlachta.js`) — všech dvanáct pokojů
+  pod sebou, dny měsíce ve sloupcích, rezervace a blokace jako pruhy.
+- **Kalendář jednoho pokoje** — původní měsíční kalendář, který je lepší
+  na otázku „které dny je volný zrovna tenhle pokoj".
+
+Plachta vznikla na přání majitele: když s hostem telefonuje, nepotřebuje
+proklikat dvanáct pokojů, ale jedním pohledem odpovědět „šestnáctého mám
+volný Mahagon a Pokoj 7". Tak to dělají hotelové systémy, které zná.
+
+Čtyři věci, které nejsou z kódu vidět:
+
+- **Obsazenost se v plachtě NEPOČÍTÁ ZNOVU.** Bere se ze stejných funkcí
+  jako kalendář (`zabranyDuvod`, `odjezdVDen`, `prijezdVDen`), které jsou
+  kvůli tomu z `AdminDostupnost.js` vyexportované. Kdyby si plachta
+  počítala své, byla by to druhá pravda o tomtéž — a ta se rozejde.
+- **Půlený den tu není úhlopříčka, ale posun pruhu o půl buňky.** Pruh
+  začíná uprostřed dne příjezdu a končí uprostřed dne odjezdu, takže
+  říká totéž co šrafovaná půlka, jen to jde přečíst přes celý pobyt.
+  Proto je šířka dne **pevná** (`--plachta-den`) a ne procentní: půl
+  buňky se počítá `calc(var(--plachta-den) / 2)` a s procenty by ta
+  polovina znamenala při každé změně okna něco jiného.
+- **Blokace celého hotelu (`room_id: 'all'`) musí být v řádku každého
+  pokoje.** Jinak by pokoj vypadal volný, přestože zavřený je.
+- **Na okraji měsíce se půlka vypouští.** Pobyt přesahující do dalšího
+  měsíce dojede až na kraj mřížky (`konOrez`), jinak by to vypadalo, že
+  tam končí. Hlídá to `kontrola/plachta.mjs`.
+
+Klepnutí do řádku pokoje vybírá termín **a zároveň přepíná pokoj**, takže
+se nemusí sahat na rozbalovátko. Klepnutí na **číslo dne v záhlaví** vybere
+tu jednu noc pro celý hotel — to je přesně dotaz, se kterým host volá.
+Všechno pod plachtou (zápis rezervace, blokace s důvodem, upozornění na
+kolizní rezervace) zůstalo beze změny.
+
+**Na telefonu se plachta neláme do jiného tvaru.** Sloupce se zúží na
+28 px, názvy pokojů jdou pod sebe („Pokoj 3" / „Mahagon") a mřížka roluje
+vodorovně se zamrzlým sloupcem názvů; po otevření se sama odroluje na
+dnešek. Přelámat ji na malém displeji do seznamu by znamenalo druhý způsob
+čtení téhož — a právě kvůli jednomu společnému pohledu to celé vzniklo.
+Pro úzký displej je od toho zkratka přes číslo dne v záhlaví.
+
 ## Půlené dny v kalendářích administrace
 
 Úhlopříčka čte čas: **levý horní roh je ráno, pravý dolní odpoledne.**

@@ -18,8 +18,9 @@
 // ---------------------------------------------------------------------
 
 import { MOCK_ROOMS } from '../lib/supabaseClient.js';
+import { renderPlachta, bindPlachta } from './AdminPlachta.js';
 
-const MESICE = ['Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen',
+export const MESICE = ['Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen',
   'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec'];
 
 const S = {
@@ -28,19 +29,19 @@ const S = {
   blok: 'background: #fff; border: 1.5px solid #e0dfd5; border-radius: 8px; padding: 16px 18px; margin-bottom: 14px;',
 };
 
-const escapuj = (t) => String(t == null ? '' : t)
+export const escapuj = (t) => String(t == null ? '' : t)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-function formatCzechDateStr(isoStr) {
+export function formatCzechDateStr(isoStr) {
   if (!isoStr) return '';
   const [rok, mesic, den] = String(isoStr).split('-');
   if (!den) return isoStr;
   return `${parseInt(den, 10)}. ${parseInt(mesic, 10)}. ${rok}`;
 }
 
-const dnesStr = () => new Date().toISOString().split('T')[0];
+export const dnesStr = () => new Date().toISOString().split('T')[0];
 
-function posunDatum(datum, oDnu) {
+export function posunDatum(datum, oDnu) {
   const d = new Date(datum + 'T12:00:00');
   d.setDate(d.getDate() + oDnu);
   return d.toISOString().split('T')[0];
@@ -69,6 +70,9 @@ function pocetNoci(od, doo) {
 export function prazdnyPrehled() {
   return {
     roomId: 'all',      // 'all' = celý hotel
+    // Výchozí je plachta — správce s hostem na telefonu potřebuje vidět
+    // všechny pokoje naráz, ne proklikávat jeden po druhém.
+    pohled: 'plachta',  // 'plachta' | 'kalendar'
     rokMesic: null,
     od: null,
     doo: null,
@@ -77,7 +81,7 @@ export function prazdnyPrehled() {
 }
 
 /** Je pokoj v daný den zabraný? Vrací důvod, nebo null. */
-function zabranyDuvod(ad, den, roomId) {
+export function zabranyDuvod(ad, den, roomId) {
   const rezervace = (ad.reservations || []).find(r =>
     r.room_id === roomId
     && !r.is_archived
@@ -100,7 +104,7 @@ function zabranyDuvod(ad, den, roomId) {
  * den. Protože je date_to výlučné, pokoj v ten den obsazený UŽ NENÍ, ale do
  * 10:00 v něm ještě někdo je. Vrací, kdo odjíždí, nebo null.
  */
-function odjezdVDen(ad, den, roomId) {
+export function odjezdVDen(ad, den, roomId) {
   const rezervace = (ad.reservations || []).find(r =>
     r.room_id === roomId
     && !r.is_archived
@@ -121,7 +125,7 @@ function odjezdVDen(ad, den, roomId) {
  * Zrcadlo k `odjezdVDen`: pozná se podle `date_from`. Ten den pokoj obsazený
  * JE (date_from je včetně), ale až od odpoledne.
  */
-function prijezdVDen(ad, den, roomId) {
+export function prijezdVDen(ad, den, roomId) {
   const rezervace = (ad.reservations || []).find(r =>
     r.room_id === roomId
     && !r.is_archived
@@ -137,7 +141,7 @@ function prijezdVDen(ad, den, roomId) {
 }
 
 /** Prodejné pokoje — vyřazené z provozu se do dostupnosti nepočítají. */
-function prodejnePokoje(ad) {
+export function prodejnePokoje(ad) {
   const vypnute = new Set((ad.disabledRooms || []).filter(d => d.is_disabled).map(d => d.room_id));
   return MOCK_ROOMS.filter(r => !r.isDisabled && !vypnute.has(r.id));
 }
@@ -334,16 +338,17 @@ export function renderDostupnostModal(ad) {
 
   return `
     <div class="admin-modal-overlay admin-modal-overlay-block admin-modal-overlay-prehled">
-      <div class="admin-confirm-modal admin-block-modal" style="max-width: 640px; padding: 0 24px 24px 24px;">
+      <div class="admin-confirm-modal admin-block-modal${p.pohled !== 'kalendar' ? ' je-plachta' : ''}" style="max-width: ${p.pohled !== 'kalendar' ? '1180px' : '640px'}; padding: 0 24px 24px 24px;">
         <div class="admin-modal-header-sticky">
           <h3 class="admin-modal-title" style="margin: 0; font-size: 18px; font-weight: 800; color: #1c1c19;">📆 Přehled dostupnosti</h3>
           <button type="button" class="btn-close-prehled" style="background: none; border: none; font-size: 26px; cursor: pointer; color: #777; line-height: 1; padding: 4px 8px;">&times;</button>
         </div>
 
         <p class="admin-modal-desc" style="margin-top: 14px; margin-bottom: 16px; font-size: 13.5px; color: #55554e;">
-          Kdo se ptá po telefonu, jestli máte volno. Vyberte pokoj nebo celý hotel, klepněte na příjezd a odjezd — a rovnou termín zapište nebo zablokujte.
+          Kdo se ptá po telefonu, jestli máte volno. Klepněte na příjezd a odjezd — a rovnou termín zapište nebo zablokujte.
         </p>
 
+        ${p.pohled === 'kalendar' ? `
         <div style="${S.blok}">
           <label style="${S.popisek}">Co chcete vidět</label>
           <select class="prehled-pokoj" style="${S.input}">
@@ -353,7 +358,14 @@ export function renderDostupnostModal(ad) {
             `).join('')}
           </select>
         </div>
+        ` : ''}
 
+        <div class="prehled-prepinac">
+          <button type="button" class="prehled-prepinac-btn${p.pohled !== 'kalendar' ? ' je-aktivni' : ''}" data-pohled="plachta">Tabulka měsíce</button>
+          <button type="button" class="prehled-prepinac-btn${p.pohled === 'kalendar' ? ' je-aktivni' : ''}" data-pohled="kalendar">Kalendář jednoho pokoje</button>
+        </div>
+
+        ${p.pohled !== 'kalendar' ? renderPlachta(ad, year, month) : `
         <div class="dostupnost-kalendar" style="${S.blok} padding: 8px 10px 14px 10px;">
           <div class="cal-modal-header" style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 6px 10px 6px;">
             <span class="cal-month-title">${MESICE[month - 1]} ${year}</span>
@@ -387,6 +399,7 @@ export function renderDostupnostModal(ad) {
               : 'Klepněte na den příjezdu, potom na den odjezdu.')}
           </p>
         </div>
+        `}
 
         ${vypisRozsahu}
 
@@ -423,6 +436,15 @@ export function bindDostupnostModal(ad) {
 
   const prekryti = ad.container.querySelector('.admin-modal-overlay-prehled');
   if (prekryti) prekryti.addEventListener('click', (e) => { if (e.target === prekryti) zavri(); });
+
+  ad.container.querySelectorAll('.prehled-prepinac-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      ad.prehled.pohled = btn.dataset.pohled;
+      ad.render();
+    });
+  });
+
+  bindPlachta(ad);
 
   const vyber = ad.container.querySelector('.prehled-pokoj');
   if (vyber) {
