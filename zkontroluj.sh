@@ -121,6 +121,38 @@ else
   cervena "chybí v POVOLENE_TYPY: $CHYBEJICI"
 fi
 
+# ------------------------------------------------- dialogy prohlížeče
+# Administrace se musí ptát vlastním oknem (AdminPotvrzeni.js). Nativní
+# confirm/alert vypadá jako hlášení prohlížeče, ne jako náš web, a Safari
+# na iPhonu ho umí přebít vlastní hláškou o „dalších dialozích".
+nadpis "Dialogy"
+NATIVNI=$(grep -rn -E "(^|[^.\w])(window\.)?(confirm|alert|prompt)\(" src --include='*.js' \
+  | grep -v "AdminPotvrzeni.js" \
+  | grep -vE ':[0-9]+: *(//|\*|/\*)' || true)   # komentáře o alert() nejsou volání
+if [ -z "$NATIVNI" ]; then
+  zelena "administrace nepoužívá dialogy prohlížeče"
+else
+  cervena "nativní dialog prohlížeče: $(echo "$NATIVNI" | head -3 | tr '\n' ' ')"
+fi
+
+# ------------------------------------------------- rozmazané náhledy hero
+# Bez náhledu svítí na místě hero fotky tmavá plocha, dokud se nestáhne —
+# na mobilu to byly klidně tři vteřiny.
+nadpis "Hero fotky"
+CHYBI_LQIP=""
+for TRIDA in hero-summer-poster hero-rooms-poster hero-events-poster \
+             hero-activities-poster hero-news-poster hero-contact-poster \
+             hero-category-poster-turistika hero-category-poster-cyklistika \
+             hero-category-poster-zimni-vylety hero-category-poster-vylety-autem; do
+  grep -q "^\.$TRIDA { background-image: url(\"data:image/webp;base64," src/style.css \
+    || CHYBI_LQIP="$CHYBI_LQIP $TRIDA"
+done
+if [ -z "$CHYBI_LQIP" ]; then
+  zelena "všechny hero fotky mají rozmazaný náhled v CSS"
+else
+  cervena "hero fotka bez náhledu:$CHYBI_LQIP"
+fi
+
 if [ $BEZ_SITE = 1 ]; then
   nadpis "Souhrn"
   printf "  prošlo %s, selhalo %s, přeskočeno %s (bez sítě)\n\n" "$PROSLO" "$SELHALO" "$PRESKOCENO"

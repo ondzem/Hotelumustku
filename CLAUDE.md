@@ -330,6 +330,52 @@ Tři věci, které nejsou z kódu vidět:
   jednotlivých pokojů, takže součet rezervací odpovídá tomu, co se skupinou
   domluvíte. Poslední pokoj dostane zbytek, aby zaokrouhlení nikam neuteklo.
 
+## Ruční zápis rezervace — pokoj se vybírá podle dostupnosti
+
+Výběr pokoje byl prosté `<select>` s názvy. Obsluha do něj mohla zapsat
+hosta na pokoj, který už byl na tentýž termín zabraný, a systém mlčel —
+majitel to našel tak, že si schválně zkusil zadat dvakrát tentýž termín
+a tentýž pokoj a dostal „dostupný".
+
+Teď je to seznam s dostupností (`renderVyberPokoje` v
+`AdminRucniRezervace.js`), stavěný podle výběru pokoje na webu: název,
+cena za celý pobyt, lůžka a odznak Volno / Obsazeno / Zavřeno / Mimo
+provoz. Nad seznamem je souhrn „volných 8 z 9".
+
+Čtyři věci, které nejsou z kódu vidět:
+
+- **Rozbaluje se v toku, ne jako plovoucí panel.** Uvnitř rolovacího okna
+  administrace se absolutně umístěný panel buď ořízne, nebo přeleze přes
+  patičku s tlačítkem Založit rezervaci.
+- **Dostupnost počítá `dostupnostPokoje()` z rezervací i blokací** —
+  zavřený pokoj se prodat nesmí zrovna tak jako obsazený. Blokace celého
+  hotelu (`room_id: 'all'`) platí i na jednotlivý pokoj.
+- **Obsazený pokoj jde vybrat jen vědomě.** Klepnutí otevře potvrzení
+  (recepční může vědět o výměně nebo o chystaném stornu) a teprve pak se
+  nastaví `povolitKolizi`. Ten souhlas se **ruší při každé změně
+  termínu** — jinak by přenesl kolizi, o které obsluha nikdy nevěděla.
+- **Poslední kontrola je až u tlačítka Založit**, ne jen při výběru.
+  Termín se dá změnit i potom, co byl pokoj vybraný jako volný.
+
+## Administrace se ptá vlastním oknem, ne prohlížečem
+
+`window.confirm` / `alert` / `prompt` v administraci nemají co dělat.
+Nativní dialog vypadá jako hlášení prohlížeče, ne jako náš web, a Safari
+na iPhonu ho navíc umí přebít vlastní hláškou „Zabránit této stránce
+v otevírání dalších dialogů".
+
+Slouží k tomu `adminPotvrzeni()` v `src/components/AdminPotvrzeni.js` —
+vrací slib s `true`/`false`, takže se použije jako `await`. Věší se
+přímo na `<body>`, **ne do administrace**: ta se celá překresluje přes
+`innerHTML`, takže by dialog uprostřed čekání na odpověď zmizel i
+s posluchači a slib by se nikdy nevyřídil.
+
+Datová vrstva (`supabaseClient.js`) o administraci nic neví a nemá jak
+zavolat toast, proto posílá `window.dispatchEvent(new CustomEvent(
+'admin-hlaska', { detail: '…' }))`; `AdminDashboard.init()` to poslouchá.
+
+Hlídá to kontrola „Dialogy" v `./zkontroluj.sh`.
+
 ## Semafor fází rezervace
 
 Fáze se čte jako semafor a **stejná barva platí na třech místech
@@ -615,6 +661,45 @@ hromadné optimalizaci — musely se obnovovat z historie gitu. Jsou to:
 | okoli-vylety-autem | `Fotky Aktivit/vylety autem.webp` |
 | aktuality | `Fotky Aktivit/Aktulity hero sekce.webp` |
 
+**Pod každou hero fotkou je rozmazaný náhled zapečený v CSS.** Hero je
+přes celou šířku okna a váží 100–500 kB; do jejího stažení tam nebylo
+nic — jen tmavá plocha, kterou majitel popisoval jako „tři vteřiny černá
+obrazovka". Každá má proto v `style.css` (oddíl „ROZMAZANÝ NÁHLED HERO
+FOTEK") svou miniaturu 28 × 28 px jako data URL; dohromady ~5 kB a žádný
+další požadavek na server. Vykreslí se s prvním stylem, tedy okamžitě.
+
+Klíčem je **třída, ne cesta k souboru** — kategorie okolí se vykresluje
+ze šablony s proměnnou adresou (`cat.heroImg`) a na tu by se v HTML
+nedalo sáhnout. Nová hero fotka potřebuje novou položku, jinak zůstane
+černá; hlídá to kontrola „Hero fotky" v `./zkontroluj.sh`. Generuje se:
+
+```bash
+magick vstup.webp -resize '28x28^' -gravity center -extent 28x28 \
+       -quality 55 -strip vystup.webp   # a base64 do url(data:…)
+```
+
+**V `srcset` se mezery musí zakódovat na `%20`.** Srcset odděluje
+kandidáty mezerami, takže `srcset="/Fotky Aktivit/x mobil.webp"` je
+neplatný zápis a prohlížeč ho tiše přeskočí — telefon pak dostane
+desktopovou fotku. Přesně takhle byl roky rozbitý hero na `okoli.html`:
+mobilní varianta existovala, byla v `<picture>` a stejně se nikdy
+nepoužila. V `src` mezery vadit nemusí, v `srcset` ano.
+
+**`<picture>` vložené přes `innerHTML` prohlížeč nevyhodnotí.** Obrázek
+si vezme adresu z `src` a `<source media>` ignoruje, protože se o rodiči
+dozví až po tom, co začal načítat. Na statické stránce to funguje, při
+přechodu uvnitř webu ne. Dorovnává to `srovnejHeroPodleSirky()`
+v `main.js`, volaná z routeru a při změně velikosti okna; nebere si
+žádné vlastní pravidlo, čte přesně to, co je v `media` u `<source>`.
+
+**Na telefon jde užší varianta `… mobil.webp`** přes `<picture>`
+(`-resize '1000x1000>' -quality 78`), což ušetří zhruba 60 % bajtů.
+Musí být na **třech** místech naráz: ve statické stránce, v šabloně
+v `main.js` a v `preloadCategory()`, který si fotku předstahuje. A pozor
+na `<link rel="preload">` — bez `media` stáhne prohlížeč obě varianty.
+Přesně tohle dělalo `okoli.html`: mobilní fotka existovala a `<picture>`
+ji bralo, ale preload k ní přihodil ještě těch 503 kB desktopové.
+
 Hero drž na **nativním rozlišení, nejméně 1600 px** na šířku. A pozor:
 překódovat už jednou zkomprimovaný WebP nic neušetří a jen ubere kvalitu —
 `cyklistika.webp` po překódování na kvalitu 90 **narostla** ze 457 kB na
@@ -736,6 +821,32 @@ tiše nedělalo nic, když se `cropBox` nestihl nastavit.
   `CIL_SIRKA × CIL_VYSKA` (1280 × 720), takže ať uživatel táhne kamkoli,
   ven vyleze pokaždé stejně velký obrázek a karty aktualit neposkakují.
   Formát se mění jen na tom jednom místě.
+
+**Vybraná fotka se drží jako objektová adresa, ne jako data URL.**
+Čtyřmegabajtová fotka se jako base64 rozroste na 5,4 MB textu, který se
+při KAŽDÉM překreslení administrace znovu vkládá do `innerHTML` a znovu
+dekóduje — na tom stálo ono „hrozně dlouho se to nahrávalo". Objektová
+adresa je jen odkaz do paměti; musí se ale při zavření uvolnit
+(`URL.revokeObjectURL`), jinak v paměti zůstávají fotky, které už nikdo
+nevidí.
+
+**Výstup je WebP, ne JPEG, a posílá se binárně, ne jako base64.** WebP je
+při stejně vypadající kvalitě zhruba o třetinu menší; prohlížeč, který ho
+neumí zakódovat, vrátí z `toBlob` PNG — pozná se to podle typu a spadne
+se zpátky na JPEG, jinak by se do koše nahrával několikamegový PNG. Tělo
+požadavku je samotný soubor a formát se čte z hlavičky `Content-Type`;
+base64 v JSONu byl o třetinu delší a navíc vyžadoval dvojí převod.
+Kdo bude tuhle cestu měnit, musí to udržet na třech místech —
+`uploadNewsImage`, `netlify/functions/upload-news-image.js` a middleware
+ve `vite.config.js` (ten musí přenést `Content-Type` i `Authorization`
+a tělo poslat jako binárku, ne jako text).
+
+Pozn.: Supabase Storage v tomhle projektu vrací u nahraných fotek
+`cache-control: no-cache` bez ohledu na to, co se při nahrávání pošle
+(zkoušená byla hlavička i pole `cacheControl` v multipartu). Fotky
+aktualit se tedy stahují při každém načtení stránky — proti limitu
+egressu (viz oddíl 6) to zatím nevadí, protože jsou po ořezu 1280 × 720,
+ale kdyby jich přibylo, patří na Netlify jako zbytek médií.
 
 Nahrávání samo funguje (ověřeno proti nasazené funkci s platným tokenem).
 Ve **vývoji** ale dřív selhávalo vždycky: middleware ve `vite.config.js`
@@ -903,7 +1014,7 @@ Pozor na dvě věci, které vypadají jako chyba a nejsou:
 
 ## Jak si ověřit, že to funguje
 
-Nejdřív `./zkontroluj.sh` (nebo `npm run zkontroluj`). Projde 29 kontrol:
+Nejdřív `./zkontroluj.sh` (nebo `npm run zkontroluj`). Projde 33 kontrol:
 sestavení, shodu hlaviček napříč stránkami, matematiku ceníku a zálohy,
 klíče v balíčku, typy e-mailů, dostupnost nasazených stránek, odmítání
 neoprávněných volání serverových funkcí a pravidla v databázi. S přepínačem

@@ -6055,3 +6055,174 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: not-allowed;
   pointer-events: none;
 }
+
+/* ============================================================
+   POTVRZOVACÍ OKNO ADMINISTRACE (AdminPotvrzeni.js)
+
+   Nahrazuje window.confirm(). Věší se přímo na <body>, aby ho
+   překreslení administrace nesmazalo uprostřed čekání na odpověď,
+   takže si nese vlastní hodnoty — nedědí nic z .admin-dashboard.
+   ============================================================ */
+
+.admin-potvrzeni-overlay {
+  /* 100vh je na telefonu vyšší než viditelná plocha, dokud je vidět
+     adresní řádek — okno by vylezlo horním okrajem mimo obrazovku. */
+  height: 100dvh;
+  align-items: flex-start;
+  overflow-y: auto;
+}
+
+.admin-potvrzeni-okno {
+  max-width: 520px;
+  margin: auto;   /* svisle na střed, ale jen když se vejde */
+  padding: 26px 28px;
+}
+
+.admin-potvrzeni-nadpis { margin-bottom: 14px; }
+
+.admin-potvrzeni-text {
+  font-size: 14.5px;
+  color: #55554e;
+  line-height: 1.6;
+  margin: 0 0 12px 0;
+}
+
+.admin-potvrzeni-text:last-of-type { margin-bottom: 0; }
+
+.admin-potvrzeni-tlacitka { flex-wrap: wrap; }
+
+.btn-modal-confirm {
+  height: 42px;
+  padding: 0 22px;
+  background-color: #4a5a24;
+  color: #ffffff;
+  border: 1px solid #4a5a24;
+  border-radius: 1px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  transition: background-color 0.2s ease;
+  line-height: 1;
+}
+
+.btn-modal-confirm:hover { background-color: #3c491d; border-color: #3c491d; }
+
+@media (max-width: 560px) {
+  .admin-potvrzeni-okno { padding: 20px 18px; }
+  .admin-potvrzeni-nadpis { font-size: 17px; }
+  /* Na úzkém displeji pod sebe a přes celou šířku — vedle sebe se
+     dlouhé české popisky lámaly doprostřed slova. */
+  .admin-potvrzeni-tlacitka { flex-direction: column-reverse; align-items: stretch; }
+  .admin-potvrzeni-tlacitka > * { width: 100%; }
+}
+
+/* ============================================================
+   VÝBĚR POKOJE V RUČNÍM ZÁPISU (AdminRucniRezervace.js)
+
+   Vypadá jako výběr pokoje na webu, ale rozbaluje se V TOKU, ne
+   jako plovoucí panel. Uvnitř rolovacího okna administrace se
+   absolutně umístěný panel buď ořízne, nebo přeleze přes patičku
+   s tlačítkem Založit rezervaci.
+   ============================================================ */
+
+.rucni-pokoj-vyber { position: relative; }
+
+.rucni-pokoj-spoust {
+  width: 100%;
+  min-height: 46px;
+  padding: 8px 12px;
+  background: #ffffff;
+  border: 1.5px solid #c9c8bd;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  text-align: left;
+  font-family: inherit;
+  transition: border-color 0.15s ease;
+}
+
+.rucni-pokoj-spoust:hover { border-color: #697947; }
+.rucni-pokoj-spoust.ma-vyber { border-color: #697947; background: #fbfcf8; }
+.rucni-pokoj-vyber.je-otevreny .rucni-pokoj-spoust { border-color: #697947; border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+
+.rucni-pokoj-spoust-text { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; min-width: 0; }
+.rucni-pokoj-nazev { font-size: 14.5px; font-weight: 700; color: #1c1c19; }
+.rucni-pokoj-vyzva { font-size: 14px; color: #8a8a80; font-weight: 600; }
+.rucni-pokoj-sipka { font-size: 11px; color: #697947; flex-shrink: 0; }
+
+.rucni-pokoj-panel {
+  border: 1.5px solid #697947;
+  border-top: none;
+  border-radius: 0 0 5px 5px;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.rucni-pokoj-hlavicka {
+  background: #faf9f5;
+  padding: 9px 13px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #4a5a24;
+  border-bottom: 1px solid #e2ded4;
+}
+
+/* Uvnitř okna se roluje jen překryv, ne vnořený rámeček — vnořené
+   rolovadlo znamená, že obsluha nevidí, že seznam pokračuje. */
+.rucni-pokoj-seznam { display: flex; flex-direction: column; }
+
+.rucni-pokoj-polozka {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 13px;
+  border-bottom: 1px solid #f4f3ee;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.rucni-pokoj-polozka:last-child { border-bottom: none; }
+.rucni-pokoj-polozka:hover { background: #f6f8f2; }
+.rucni-pokoj-polozka:focus-visible { outline: 2px solid #697947; outline-offset: -2px; }
+.rucni-pokoj-polozka.je-vybrana { background: #edf2e4; box-shadow: inset 4px 0 0 #697947; }
+
+/* Nedostupný pokoj se ztlumí, ale NEZAKÁŽE — recepční může vědět
+   o výměně nebo o chystaném stornu. Klepnutí se proto zeptá. */
+.rucni-pokoj-polozka.je-nedostupna { background: #faf9f8; }
+.rucni-pokoj-polozka.je-nedostupna .rucni-pokoj-jmeno { color: #77776e; }
+
+.rucni-pokoj-info { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.rucni-pokoj-radek { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.rucni-pokoj-jmeno { font-size: 14px; font-weight: 700; color: #1c1c19; }
+.rucni-pokoj-radek-spodni { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.rucni-pokoj-duvod { font-size: 12px; color: #a5231f; font-weight: 600; line-height: 1.4; }
+.rucni-pokoj-stav { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+.rucni-pokoj-varovani {
+  margin-top: 8px;
+  background: #fdecea;
+  border-left: 4px solid #c62828;
+  color: #a5231f;
+  padding: 9px 12px;
+  border-radius: 4px;
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+@media (max-width: 768px) {
+  /* Stav pod obsah, ne vedle něj — vedle sebe se název pokoje
+     smrskl na „Pokoj 3 – Nadstan…" a odznak stejně přetekl. */
+  .rucni-pokoj-polozka { flex-direction: column; align-items: flex-start; gap: 7px; }
+  .rucni-pokoj-stav { width: 100%; justify-content: flex-start; }
+  .rucni-pokoj-info { width: 100%; }
+}

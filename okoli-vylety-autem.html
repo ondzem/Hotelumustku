@@ -17,7 +17,8 @@
     <meta name="theme-color" content="#1c1c19" />
 
     <!-- High-Priority Preloading -->
-    <link rel="preload" href="/Fotky Aktivit/vylety autem.webp" as="image" fetchpriority="high">
+    <link rel="preload" href="/Fotky Aktivit/vylety autem.webp" as="image" media="(min-width: 768px)" fetchpriority="high">
+    <link rel="preload" href="/Fotky Aktivit/vylety autem mobil.webp" as="image" media="(max-width: 767px)" fetchpriority="high">
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
@@ -306,7 +307,12 @@
       <div class="category-detail-page">
         <!-- HERO SEKCE KATEGORIE -->
         <section class="hero-section category-hero-section room-detail-hero" id="uvod-kategorie">
-          <img class="hero-category-poster hero-category-poster-vylety-autem" src="/Fotky Aktivit/vylety autem.webp" alt="Výlety autem - Hotel u Můstku" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+          <!-- Na telefon jde užší varianta — plná fotka je pro displej
+               široký 390 px zbytečně těžká a na pomalém připojení se čeká. -->
+          <picture>
+            <source media="(max-width: 767px)" srcset="/Fotky%20Aktivit/vylety%20autem%20mobil.webp">
+            <img class="hero-category-poster hero-category-poster-vylety-autem" src="/Fotky Aktivit/vylety autem.webp" alt="Výlety autem - Hotel u Můstku" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+          </picture>
           <div class="hero-overlay"></div>
           <div class="hero-inner">
             

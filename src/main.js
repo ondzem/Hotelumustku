@@ -3138,10 +3138,12 @@ const preloadCategoryImages = (catId) => {
   if (!cat) return;
   preloadedCategories.add(catId);
 
-  // Preload Hero img
+  // Preload Hero img — na telefonu tu užší, ať se nestahují obě.
+  // Rozhoduje stejná hranice jako <source media> v šabloně (767 px).
   if (cat.heroImg) {
+    const jeUzky = typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
     const heroImg = new Image();
-    heroImg.src = cat.heroImg;
+    heroImg.src = (jeUzky && cat.heroImgMobil) ? cat.heroImgMobil : cat.heroImg;
   }
 
   // Preload vícenásobných položek asynchronně s lehkým rozestupem pro plynulost
@@ -3619,7 +3621,7 @@ const getActivitiesPageHTML = () => `
     <!-- 1. HERO SEKCE AKTIVITY -->
     <section class="hero-section activities-hero-section room-detail-hero" id="uvod-aktivity">
       <picture style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
-        <source media="(max-width: 767px)" srcset="/Aktivity v hotelu/vyhled na krajinu mobil.webp">
+        <source media="(max-width: 767px)" srcset="/Aktivity%20v%20hotelu/vyhled%20na%20krajinu%20mobil.webp">
         <img class="hero-activities-poster" src="/Aktivity v hotelu/vyhled na krajinu desktop.webp" alt="Jaké aktivity nabízíme v Hotelu u Můstku" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; filter: brightness(0.85);">
       </picture>
       <div class="hero-overlay"></div>
@@ -3957,7 +3959,10 @@ const getNewsPageHTML = (allItems = []) => {
     <div class="news-page-wrapper">
       <!-- 1. HERO SEKCE AKTUALIT -->
       <section class="hero-section rooms-hero-section room-detail-hero news-hero-section" id="uvod-aktuality">
-        <img class="hero-news-poster" src="/Fotky Aktivit/Aktulity hero sekce.webp" alt="Aktuality Hotel u Můstku" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+        <picture>
+          <source media="(max-width: 767px)" srcset="/Fotky%20Aktivit/Aktulity%20hero%20sekce%20mobil.webp">
+          <img class="hero-news-poster" src="/Fotky Aktivit/Aktulity hero sekce.webp" alt="Aktuality Hotel u Můstku" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+        </picture>
         <div class="hero-overlay"></div>
         <div class="hero-inner">
           ${getHeaderHTML()}
@@ -5236,6 +5241,7 @@ const CATEGORIES_DATA = {
     title: 'Turistika',
     subtitle: 'Objevte nejkrásnější pěší trasy a přírodní skvosty Jizerských hor přímo od našeho hotelu.',
     heroImg: '/Fotky Aktivit/Turistika.webp',
+    heroImgMobil: '/Fotky Aktivit/Turistika mobil.webp',
     items: [
       {
         id: 'riedlova-hrobka',
@@ -5315,6 +5321,7 @@ const CATEGORIES_DATA = {
     title: 'Cyklistika',
     subtitle: 'Nekonečné kilometry cyklostezek, singltreky a horské hřebenovky pro začátečníky i náročné bikery.',
     heroImg: '/Fotky Aktivit/cyklistika.webp',
+    heroImgMobil: '/Fotky Aktivit/cyklistika mobil.webp',
     items: [
       {
         id: 'cyklostezka-udolim-kamenice',
@@ -5394,6 +5401,7 @@ const CATEGORIES_DATA = {
     title: 'Výlety v zimě',
     subtitle: 'Zimní pohádka v Jizerských horách — špičkové ski areály, upravované běžecké stopy i rodinná zábava.',
     heroImg: '/Fotky Aktivit/Zimni vylety.webp',
+    heroImgMobil: '/Fotky Aktivit/Zimni vylety mobil.webp',
     items: [
       {
         id: 'skiareal-tanvaldsky-spicak',
@@ -5516,6 +5524,7 @@ const CATEGORIES_DATA = {
     title: 'Výlety autem',
     subtitle: 'Pohodlné výlety za kulturou, zábavou a památkami v širším okolí Jizerských hor a Severních Čech.',
     heroImg: '/Fotky Aktivit/vylety autem.webp',
+    heroImgMobil: '/Fotky Aktivit/vylety autem mobil.webp',
     items: [
       {
         id: 'rozhledna-bramberk',
@@ -5706,7 +5715,13 @@ const getCategoryPageHTML = (catId) => {
     <div class="category-detail-page">
       <!-- HERO SEKCE KATEGORIE -->
       <section class="hero-section category-hero-section room-detail-hero" id="uvod-kategorie">
-        <img class="hero-category-poster hero-category-poster-${catId}" src="${cat.heroImg}" alt="${cat.title} - Hotel u Můstku" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+        <!-- Na telefon jde užší varianta; musí to sedět se statickou
+             stránkou okoli-*.html, jinak se po prokliku zevnitř webu
+             stáhne jiná fotka než při přímém načtení. -->
+        <picture>
+          ${cat.heroImgMobil ? `<source media="(max-width: 767px)" srcset="${encodeURI(cat.heroImgMobil)}">` : ''}
+          <img class="hero-category-poster hero-category-poster-${catId}" src="${cat.heroImg}" alt="${cat.title} - Hotel u Můstku" fetchpriority="high" loading="eager" decoding="async" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+        </picture>
         <div class="hero-overlay"></div>
         <div class="hero-inner">
           ${getHeaderHTML()}
@@ -5862,6 +5877,37 @@ const initDestinationModal = () => {
     });
   });
 };
+
+/**
+ * Dosadí do hero fotky variantu podle šířky okna.
+ *
+ * `<picture>` vložené přes `innerHTML` prohlížeč nevyhodnotí — obrázek
+ * si vezme adresu z `src` a `<source media>` ignoruje, protože se
+ * o rodiči dozví až po tom, co začal načítat. Na statické stránce to
+ * funguje (tam HTML parsuje rovnou), při přechodu uvnitř webu ne, takže
+ * telefon dostal desktopovou fotku o půl megabajtu.
+ *
+ * Nekopíruje se tu žádné pravidlo navíc: bere se přesně to, co je
+ * napsané v `media` u `<source>`, takže statická stránka i šablona
+ * vyberou totéž.
+ */
+function srovnejHeroPodleSirky() {
+  document.querySelectorAll('picture > img').forEach(img => {
+    const zdroje = [...img.parentElement.querySelectorAll('source[media][srcset]')];
+    const sedici = zdroje.find(z => window.matchMedia(z.media).matches);
+    const chtena = sedici ? sedici.srcset.trim().split(/\s+/)[0] : img.dataset.hero;
+    if (!chtena) return;
+    // Původní adresa se schová, aby se šlo vrátit, když se okno rozšíří.
+    if (!img.dataset.hero) img.dataset.hero = img.getAttribute('src');
+    if (img.getAttribute('src') !== chtena) img.setAttribute('src', chtena);
+  });
+}
+
+// Při otočení telefonu nebo změně okna se musí vybrat znovu — jinak by
+// na širokém displeji zůstala viset mobilní fotka roztažená do šířky.
+if (typeof window !== 'undefined') {
+  window.addEventListener('resize', srovnejHeroPodleSirky, { passive: true });
+}
 
 const app = document.querySelector('#app');
 let currentViewKey = null;
@@ -6152,6 +6198,7 @@ const route = (isInitial = false) => {
   }
 
   initInteractivity();
+  srovnejHeroPodleSirky();
   syncCustomRoomNamesToDOM();
   syncDynamicRoomPricesToDOM();
   syncDisabledRoomsToDOM();

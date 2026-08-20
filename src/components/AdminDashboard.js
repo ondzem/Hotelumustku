@@ -145,6 +145,15 @@ export class AdminDashboard {
   }
 
   async init() {
+    // Hlášky z datové vrstvy. Ta o administraci nic neví a nemá jak zavolat
+    // showAdminToast, dřív proto sahala po alert() prohlížeče.
+    if (!this._hlaskyNavazany) {
+      this._hlaskyNavazany = true;
+      window.addEventListener('admin-hlaska', (e) => {
+        if (e && e.detail) this.showAdminToast(String(e.detail));
+      });
+    }
+
     // Nejdřív se zeptáme Supabase, jestli platí přihlášení z minule.
     // Bez tohohle by po obnovení stránky recepční vypadl, i když má
     // token pořád platný.

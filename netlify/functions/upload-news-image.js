@@ -72,26 +72,17 @@ export default async function handler(request) {
     return odpoved(401, { error: 'Nahrávat fotky může jen přihlášená recepce.' });
   }
 
-  let data;
-  try {
-    data = await request.json();
-  } catch {
-    return odpoved(400, { error: 'Neplatný požadavek.' });
-  }
-
-  const contentType = String(data.contentType || 'image/jpeg');
+  // Fotka chodí jako binárka v těle požadavku. Dřív to byl base64 v JSONu,
+  // což je o třetinu víc bajtů na drátě a navíc dvojí převod — jednou
+  // v prohlížeči do řetězce, podruhé tady zpátky do bajtů.
+  const contentType = String(request.headers.get('content-type') || '').split(';')[0].trim();
   if (!POVOLENE_TYPY.has(contentType)) {
     return odpoved(400, { error: 'Povolené jsou jen obrázky JPEG, PNG a WebP.' });
   }
 
-  const base64 = String(data.base64 || '').split(',').pop();
-  if (!base64) {
-    return odpoved(400, { error: 'Chybí obsah fotky.' });
-  }
-
   let bajty;
   try {
-    bajty = Buffer.from(base64, 'base64');
+    bajty = Buffer.from(await request.arrayBuffer());
   } catch {
     return odpoved(400, { error: 'Fotku se nepodařilo přečíst.' });
   }

@@ -20,6 +20,7 @@
 import { MOCK_ROOMS } from '../lib/supabaseClient.js';
 import { renderPlachta, bindPlachta } from './AdminPlachta.js';
 import { obsazenostPulek, pulkyDne } from '../utils/obsazenost.js';
+import { adminPotvrzeni } from './AdminPotvrzeni.js';
 
 export const MESICE = ['Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen',
   'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec'];
@@ -590,11 +591,15 @@ export function bindDostupnostModal(ad) {
       });
       if (koliznich.length > 0) {
         const jmena = koliznich.map(rm => rm.name).join(', ');
-        const potvrzeno = window.confirm(
-          `V termínu ${formatCzechDateStr(p.od)} – ${formatCzechDateStr(p.doo)} už jsou rezervace: ${jmena}.\n\n`
-          + 'Blokace je nezruší — hostům zůstane potvrzený pobyt na termín, který zavíráte. '
-          + 'Budete jim muset napsat nebo zavolat a rezervaci stornovat.\n\nOpravdu termín zablokovat?'
-        );
+        const potvrzeno = await adminPotvrzeni({
+          nadpis: 'V tomto termínu už jsou rezervace',
+          text: `V termínu ${formatCzechDateStr(p.od)} – ${formatCzechDateStr(p.doo)} jsou obsazené tyto pokoje: ${jmena}.\n\n`
+            + 'Blokace je nezruší — hostům zůstane potvrzený pobyt na termín, který zavíráte. '
+            + 'Budete jim muset napsat nebo zavolat a rezervaci stornovat.',
+          potvrdit: 'Přesto zablokovat',
+          zrusit: 'Nechat být',
+          nebezpecne: true,
+        });
         if (!potvrzeno) return;
       }
 

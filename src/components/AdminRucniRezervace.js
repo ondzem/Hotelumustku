@@ -19,6 +19,7 @@
 import { MOCK_ROOMS, saveStoredReservation } from '../lib/supabaseClient.js';
 import { calculateReservationPrice, generateReservationCode, generateManageToken, formatCzechPrice } from '../utils/pricing.js';
 import { maxOsobNaPokoji } from '../utils/cenik.js';
+import { adminPotvrzeni } from './AdminPotvrzeni.js';
 
 const S = {
   input: 'width: 100%; height: 42px; font-size: 14.5px; padding: 0 11px; border-radius: 5px; border: 1.5px solid #c9c8bd; box-sizing: border-box; background: #fff; color: #1c1c19;',
@@ -71,6 +72,11 @@ export function prazdnaRucniRezervace() {
     status: 'confirmed',
     total_price: '',      // prázdné = vzít cenu z ceníku
     zaplaceno: false,
+    // Rozbalený seznam pokojů s dostupností
+    pokojOtevreny: false,
+    // Obsluha vědomě potvrdila zápis na obsazený pokoj (výměna, chystané
+    // storno). Bez toho uložení na obsazený pokoj neprojde.
+    povolitKolizi: false,
     // Kalendář — stejný jako na webu, jen se otevírá uvnitř tohoto okna
     calOtevreny: false,
     calRokMesic: null,
@@ -241,6 +247,199 @@ function obsazenostDne(ad, den, roomId) {
 }
 
 /**
+ * Je pokoj v zadaném termínu volný — a když ne, čím?
+ *
+ * Odpovídá na přesně tu otázku, kterou má obsluha před sebou: „můžu sem
+ * teď někoho zapsat?". Bere v úvahu obojí, rezervace i blokace, protože
+ * zavřený pokoj se prodat nesmí zrovna tak jako obsazený.
+ *
+ * Konvence date_to je výlučná (viz CLAUDE.md), takže dva pobyty se
+ * překrývají teprve tehdy, když `a.od < b.doo && a.doo > b.od`. Den
+ * odjezdu se s dnem příjezdu dalšího hosta nebije.
+ */
+export function dostupnostPokoje(ad, rm, od, doo) {
+  if (rm.isDisabled) {
+    return { stav: 'mimo', popis: 'Mimo provoz — pokoj se neprodává' };
+  }
+  if (!od || !doo || doo <= od) {
+    return { stav: 'nezname', popis: 'Nejdřív vyberte termín' };
+  }
+
+  const jeStorno = (r) => r.status && (String(r.status).startsWith('cancelled') || r.status === 'stornováno');
+
+  const kolizniRezervace = (ad.reservations || []).filter(r =>
+    r.room_id === rm.id && !jeStorno(r) && r.date_from < doo && r.date_to > od);
+
+  if (kolizniRezervace.length > 0) {
+    const r = kolizniRezervace[0];
+    const kdo = String(r.guest_name || '').trim() || 'host';
+    const dalsi = kolizniRezervace.length > 1 ? ` (+ ${kolizniRezervace.length - 1} další)` : '';
+    return {
+      stav: 'obsazeno',
+      popis: `Obsazeno: ${kdo}, ${formatCzechDateStr(r.date_from)} – ${formatCzechDateStr(r.date_to)}${dalsi}`,
+      kolize: kolizniRezervace,
+    };
+  }
+
+  // Blokace celého hotelu (room_id 'all') platí i na tenhle pokoj — jinak
+  // by vypadal volný, přestože je zavřený.
+  const kolizniBlokace = (ad.blockedDates || []).filter(b =>
+    (b.room_id === 'all' || b.room_id === rm.id) && b.date_from < doo && b.date_to > od);
+
+  if (kolizniBlokace.length > 0) {
+    const b = kolizniBlokace[0];
+    const duvod = String(b.reason || b.duvod || '').trim() || 'Uzávěrka recepce';
+    return { stav: 'blokace', popis: `Zavřeno: ${duvod}`, kolize: kolizniBlokace };
+  }
+
+  return { stav: 'volno', popis: 'Volný v celém termínu' };
+}
+
+/** Popis lůžek — stejná věta jako na webu, ať recepční vidí totéž co host. */
+function popisLuzek(rm) {
+  const luzka = Number(rm.zakladni_luzka ?? rm.capacity ?? 2);
+  const pristylky = Number(rm.max_pristylek ?? rm.extraBeds ?? 0);
+  const slovoL = luzka === 1 ? 'lůžko' : (luzka < 5 ? 'lůžka' : 'lůžek');
+  if (!pristylky) return `${luzka} ${slovoL}`;
+  const slovoP = pristylky === 1 ? 'přistýlka' : (pristylky < 5 ? 'přistýlky' : 'přistýlek');
+  return `${luzka} ${slovoL} + ${pristylky} ${slovoP}`;
+}
+
+const TRIDY_STAVU = {
+  volno:   { pill: 'status-available', dot: 'dot-available', text: 'Volno' },
+  obsazeno:{ pill: 'status-occupied',  dot: 'dot-occupied',  text: 'Obsazeno' },
+  blokace: { pill: 'status-occupied',  dot: 'dot-occupied',  text: 'Zavřeno' },
+  mimo:    { pill: 'status-blocked',   dot: 'dot-blocked',   text: 'Mimo provoz' },
+  nezname: { pill: 'status-blocked',   dot: 'dot-blocked',   text: 'Neznámo' },
+};
+
+/**
+ * Výběr pokoje jako seznam s dostupností — ne prosté rozbalovátko.
+ *
+ * Prosté <select> ukazovalo jen názvy, takže obsluha zapsala hosta do
+ * pokoje, který už byl na tentýž termín zabraný, a systém mlčel. Tady je
+ * u každého pokoje vidět stav v tomhle termínu, cena za celý pobyt
+ * a kapacita — přesně to, co ukazuje výběr pokoje na webu.
+ *
+ * Seznam se rozbaluje V TOKU, ne jako plovoucí panel nad obsahem. Panel
+ * je uvnitř rolovacího okna administrace nespolehlivý: buď se ořízne,
+ * nebo přeteče přes patičku s tlačítkem Založit rezervaci.
+ */
+function renderVyberPokoje(ad, f) {
+  const maTermin = Boolean(f.date_from && f.date_to && f.date_to > f.date_from);
+  const noci = pocetNoci(f.date_from, f.date_to);
+  const celyHotel = f.room_id === CELY_HOTEL;
+  const vybrany = MOCK_ROOMS.find(r => r.id === f.room_id) || null;
+
+  const polozky = MOCK_ROOMS.map(rm => {
+    const dostupnost = dostupnostPokoje(ad, rm, f.date_from, f.date_to);
+    const maxOsob = maxOsobNaPokoji(rm);
+    const osob = Math.max(1, Math.min(maxOsob, parseInt(f.adults_count, 10) || 1));
+    // Cena se počítá pro tenhle pokoj, ne pro vybraný — obsluha si tak může
+    // porovnat, o kolik vyjde jinak nadstandard.
+    const cena = maTermin ? spoctiRucniCenu({ ...f, room_id: rm.id, adults_count: osob, total_price: '' }, ad.cenik) : null;
+    return { rm, dostupnost, maxOsob, cena, maloMista: maxOsob < (parseInt(f.adults_count, 10) || 1) };
+  });
+
+  const volnych = polozky.filter(x => x.dostupnost.stav === 'volno').length;
+  const prodejnych = polozky.filter(x => !x.rm.isDisabled).length;
+
+  const stavVybraneho = vybrany ? dostupnostPokoje(ad, vybrany, f.date_from, f.date_to) : null;
+  const t = stavVybraneho ? TRIDY_STAVU[stavVybraneho.stav] : null;
+
+  const spousteciObsah = celyHotel
+    ? `<span class="rucni-pokoj-nazev">🏨 Celý hotel — skupinová akce (${pokojeHotelu().length} pokojů)</span>`
+    : (vybrany
+      ? `<span class="rucni-pokoj-nazev">${escapuj(vybrany.name)}</span>
+         <span class="room-status-pill ${t.pill}"><span class="status-dot ${t.dot}"></span>${t.text}</span>`
+      : `<span class="rucni-pokoj-vyzva">— Vyberte pokoj —</span>`);
+
+  return `
+    <div style="grid-column: 1 / -1;">
+      <label style="${S.popisek}">Pokoj</label>
+
+      <div class="rucni-pokoj-vyber ${f.pokojOtevreny ? 'je-otevreny' : ''}">
+        <button type="button" class="rucni-pokoj-spoust ${f.room_id ? 'ma-vyber' : ''}" aria-expanded="${f.pokojOtevreny ? 'true' : 'false'}">
+          <span class="rucni-pokoj-spoust-text">${spousteciObsah}</span>
+          <span class="rucni-pokoj-sipka">${f.pokojOtevreny ? '▲' : '▼'}</span>
+        </button>
+
+        ${f.pokojOtevreny ? `
+          <div class="rucni-pokoj-panel">
+            <div class="rucni-pokoj-hlavicka">
+              ${maTermin
+                ? `Dostupnost pro ${formatCzechDateStr(f.date_from)} – ${formatCzechDateStr(f.date_to)} · volných ${volnych} z ${prodejnych}`
+                : 'Nejdřív vyberte termín — bez něj nejde dostupnost spočítat'}
+            </div>
+
+            <div class="rucni-pokoj-seznam">
+              <div class="rucni-pokoj-polozka ${celyHotel ? 'je-vybrana' : ''}" data-pokoj="${CELY_HOTEL}" role="button" tabindex="0">
+                <div class="rucni-pokoj-info">
+                  <div class="rucni-pokoj-radek">
+                    <span class="rucni-pokoj-jmeno">🏨 Celý hotel</span>
+                    <span class="option-floor-tag">skupinová akce</span>
+                  </div>
+                  <div class="rucni-pokoj-radek-spodni">
+                    <span class="option-capacity-tag">${pokojeHotelu().length} pokojů · až ${kapacitaHotelu()} osob</span>
+                    ${maTermin && volnych < prodejnych ? `<span class="rucni-pokoj-duvod">Pozor: ${prodejnych - volnych} ${prodejnych - volnych === 1 ? 'pokoj není' : 'pokojů není'} volných</span>` : ''}
+                  </div>
+                </div>
+                <div class="rucni-pokoj-stav">${celyHotel ? '<span class="option-checkmark">✓</span>' : ''}</div>
+              </div>
+
+              ${polozky.map(({ rm, dostupnost, maxOsob, cena, maloMista }) => {
+                const tr = TRIDY_STAVU[dostupnost.stav];
+                const vybrana = rm.id === f.room_id;
+                const nelze = dostupnost.stav !== 'volno';
+                return `
+                  <div class="rucni-pokoj-polozka ${vybrana ? 'je-vybrana' : ''} ${nelze ? 'je-nedostupna' : ''}"
+                       data-pokoj="${rm.id}" data-stav="${dostupnost.stav}" role="button" tabindex="0">
+                    <div class="rucni-pokoj-info">
+                      <div class="rucni-pokoj-radek">
+                        <span class="rucni-pokoj-jmeno">${escapuj(rm.name)}</span>
+                        <span class="option-floor-tag">${rm.floor === 'prizemi' ? 'Přízemí' : '1. patro'}</span>
+                      </div>
+                      <div class="rucni-pokoj-radek-spodni">
+                        ${cena && dostupnost.stav !== 'mimo' ? `<span class="option-price-tag">${formatCzechPrice(cena.totalPrice)} <small>/ ${noci} ${noci === 1 ? 'noc' : (noci < 5 ? 'noci' : 'nocí')}</small></span>` : ''}
+                        <span class="option-capacity-tag">${popisLuzek(rm)}</span>
+                      </div>
+                      ${nelze ? `<div class="rucni-pokoj-duvod">${escapuj(dostupnost.popis)}</div>` : ''}
+                      ${maloMista && !nelze ? `<div class="rucni-pokoj-duvod">Pojme nejvýš ${maxOsob} ${maxOsob === 1 ? 'osobu' : 'osoby'} — pro ${parseInt(f.adults_count, 10) || 1} osob nestačí.</div>` : ''}
+                    </div>
+                    <div class="rucni-pokoj-stav">
+                      <span class="room-status-pill ${tr.pill}"><span class="status-dot ${tr.dot}"></span>${tr.text}</span>
+                      ${vybrana ? '<span class="option-checkmark">✓</span>' : ''}
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        ` : ''}
+      </div>
+
+      ${stavVybraneho && stavVybraneho.stav !== 'volno' && stavVybraneho.stav !== 'nezname' ? `
+        <div class="rucni-pokoj-varovani">
+          ⚠️ ${escapuj(stavVybraneho.popis)}${f.povolitKolizi ? ' — zápis jste potvrdili, uloží se i tak.' : ''}
+        </div>
+      ` : ''}
+
+      ${celyHotel ? (() => {
+        const rozpis = rozdelOsobyPoPokojich(parseInt(f.adults_count, 10) || 1);
+        const uctovano = rozpis.reduce((a, x) => a + x.osob, 0);
+        const zadano = Math.max(1, parseInt(f.adults_count, 10) || 1);
+        return `
+          <p style="margin: 8px 0 0 0; font-size: 12px; color: #6b6b60; line-height: 1.45;">
+            Rozdělení po pokojích: ${rozpis.map(x => `${escapuj(x.pokoj.name.replace(/ - .*/, ''))} ${x.osob}`).join(', ')}.
+            ${uctovano > zadano ? `<strong>Účtuje se ${uctovano} osob</strong> — cena je za osobu a noc, takže i pokoj, na který se nikdo nedostal, se počítá aspoň za jednu. Když to skupině nesedí, přepište částku dole.` : ''}
+          </p>
+        `;
+      })() : ''}
+    </div>
+  `;
+}
+
+/**
  * Kalendář ve stejné podobě jako v rezervaci na webu — sdílí s ním
  * i třídy, takže i vybarvení a legenda vypadají stejně.
  *
@@ -383,27 +582,7 @@ export function renderRucniRezervaceModal(ad) {
                 <span style="color: #697947; font-weight: 700;">Otevřít kalendář</span>
               </button>
             </div>
-            <div>
-              <label style="${S.popisek}">Pokoj</label>
-              <select class="rucni-pole" data-pole="room_id" style="${S.input}">
-                <option value="" ${!f.room_id ? 'selected' : ''}>— Vyberte pokoj —</option>
-                <option value="${CELY_HOTEL}" ${f.room_id === CELY_HOTEL ? 'selected' : ''}>🏨 Celý hotel — skupinová akce (${pokojeHotelu().length} pokojů)</option>
-                ${MOCK_ROOMS.map(rm => `
-                  <option value="${rm.id}" ${rm.id === f.room_id ? 'selected' : ''}>${escapuj(rm.name)}${rm.isDisabled ? ' — mimo provoz' : ''}</option>
-                `).join('')}
-              </select>
-              ${celyHotel ? (() => {
-                const rozpis = rozdelOsobyPoPokojich(parseInt(f.adults_count, 10) || 1);
-                const uctovano = rozpis.reduce((a, x) => a + x.osob, 0);
-                const zadano = Math.max(1, parseInt(f.adults_count, 10) || 1);
-                return `
-                  <p style="margin: 6px 0 0 0; font-size: 12px; color: #6b6b60; line-height: 1.45;">
-                    Rozdělení po pokojích: ${rozpis.map(x => `${escapuj(x.pokoj.name.replace(/ - .*/, ''))} ${x.osob}`).join(', ')}.
-                    ${uctovano > zadano ? `<strong>Účtuje se ${uctovano} osob</strong> — cena je za osobu a noc, takže i pokoj, na který se nikdo nedostal, se počítá aspoň za jednu. Když to skupině nesedí, přepište částku dole.` : ''}
-                  </p>
-                `;
-              })() : ''}
-            </div>
+            ${renderVyberPokoje(ad, f)}
             <div>
               <label style="${S.popisek}">${celyHotel ? `Počet osob celkem (max ${maxOsob})` : `Počet osob (max ${maxOsob})`}</label>
               <input type="number" min="1" max="${maxOsob}" class="rucni-pole" data-pole="adults_count" value="${escapuj(f.adults_count)}" style="${S.input}">
@@ -673,6 +852,64 @@ export function bindRucniRezervaceModal(ad) {
     prekryti.addEventListener('click', (e) => { if (e.target === prekryti) zavri(); });
   }
 
+  // ---- výběr pokoje s dostupností ----
+  const spoust = ad.container.querySelector('.rucni-pokoj-spoust');
+  if (spoust) {
+    spoust.addEventListener('click', () => {
+      ad.rucniRezervace.pokojOtevreny = !ad.rucniRezervace.pokojOtevreny;
+      ad.render();
+    });
+  }
+
+  const vyberPokoj = async (polozka) => {
+    const f = ad.rucniRezervace;
+    const id = polozka.dataset.pokoj;
+    const stav = polozka.dataset.stav || 'volno';
+
+    // Obsazený pokoj jde vybrat jen vědomě. Bez téhle zábrany šlo zapsat
+    // dva hosty do jednoho pokoje na tentýž termín a nic to neřeklo.
+    if (stav !== 'volno' && id !== CELY_HOTEL) {
+      const rm = MOCK_ROOMS.find(r => r.id === id);
+      const d = dostupnostPokoje(ad, rm, f.date_from, f.date_to);
+      const potvrzeno = await adminPotvrzeni({
+        nadpis: stav === 'mimo' ? 'Tento pokoj je mimo provoz' : 'Tento pokoj není v termínu volný',
+        text: `${rm ? rm.name : 'Pokoj'} — ${d.popis}.\n\n`
+          + (stav === 'mimo'
+            ? 'Pokoj je vyřazený z provozu v Blokování pokojů. Rezervaci na něj lze založit, ale na webu se neprodává.'
+            : 'Zapsat sem další rezervaci znamená dva pobyty na jeden pokoj ve stejném termínu. Dělejte to jen tehdy, když víte o výměně pokoje nebo o rezervaci, která se má zrušit.'),
+        potvrdit: 'Vím to, přesto vybrat',
+        zrusit: 'Vybrat jiný pokoj',
+        nebezpecne: true,
+      });
+      if (!potvrzeno) return;
+      f.povolitKolizi = true;
+    } else {
+      f.povolitKolizi = false;
+    }
+
+    f.room_id = id;
+    f.pokojOtevreny = false;
+    ad.rucniChyba = '';
+
+    // Počet osob se srazí na kapacitu pokoje, jinak by uložení spadlo na
+    // hlášku o překročené kapacitě až po vyplnění celého formuláře.
+    const rm = MOCK_ROOMS.find(r => r.id === id);
+    if (rm) {
+      const max = maxOsobNaPokoji(rm);
+      if ((parseInt(f.adults_count, 10) || 1) > max) f.adults_count = max;
+    }
+
+    ad.zkontrolujKoliziRucni();
+    ad.render();
+  };
+
+  ad.container.querySelectorAll('.rucni-pokoj-polozka').forEach(polozka => {
+    polozka.addEventListener('click', () => vyberPokoj(polozka));
+    polozka.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); vyberPokoj(polozka); }
+    });
+  });
+
   // ---- kalendář ----
   const otevri = ad.container.querySelector('.rucni-otevri-kalendar');
   if (otevri) {
@@ -748,6 +985,10 @@ export function bindRucniRezervaceModal(ad) {
       f.date_from = f.tempFrom || '';
       f.date_to = f.tempTo || '';
       f.calOtevreny = false;
+      // Souhlas s obsazeným pokojem platil pro starý termín. S novým se
+      // dostupnost musí posoudit znovu, jinak by souhlas přenesl kolizi,
+      // o které obsluha nikdy nevěděla.
+      f.povolitKolizi = false;
       f.tempFrom = null;
       f.tempTo = null;
       ad.rucniChyba = '';
@@ -798,6 +1039,21 @@ export function bindRucniRezervaceModal(ad) {
         ad.rucniChyba = chyba;
         ad.render();
         return;
+      }
+
+      // Poslední zábrana proti dvěma pobytům na jeden pokoj. Termín se dá
+      // změnit i potom, co byl pokoj vybraný jako volný, takže se stav
+      // musí ověřit znovu těsně před zápisem — ne jen při výběru.
+      const f = ad.rucniRezervace;
+      if (f.room_id !== CELY_HOTEL && !f.povolitKolizi) {
+        const rm = MOCK_ROOMS.find(r => r.id === f.room_id);
+        const d = rm ? dostupnostPokoje(ad, rm, f.date_from, f.date_to) : null;
+        if (d && (d.stav === 'obsazeno' || d.stav === 'blokace')) {
+          ad.rucniChyba = `${rm.name} v tomto termínu volný není — ${d.popis}. Vyberte jiný pokoj nebo jiný termín.`;
+          ad.rucniRezervace.pokojOtevreny = true;
+          ad.render();
+          return;
+        }
       }
 
       const zapisovane = skupina || [rezervace];

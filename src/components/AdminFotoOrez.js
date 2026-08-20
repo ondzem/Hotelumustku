@@ -33,7 +33,8 @@ const MAX_BAJTU = 5 * 1024 * 1024;
 /** Prázdný stav editoru. */
 export function prazdnyOrez() {
   return {
-    src: null,          // data URL vybrané fotky
+    src: null,          // adresa vybrané fotky (objektová, viz zpracujSoubor)
+    objektURL: null,    // tatáž adresa; drží se zvlášť kvůli uvolnění
     prirozene: null,    // { w, h } skutečné rozlišení souboru
     vyrez: null,        // { x, y, w, h } — VŽDY v pixelech originálu
     nahrava: false,
@@ -79,15 +80,17 @@ export function zpracujSoubor(ad, soubor) {
     return;
   }
 
-  const ctecka = new FileReader();
-  ctecka.onload = (e) => {
-    ad.orez = prazdnyOrez();
-    ad.orez.src = String(e.target.result);
-    ad.showCropModal = true;
-    ad.render();
-  };
-  ctecka.onerror = () => ad.showAdminToast('⚠️ Fotku se nepodařilo přečíst.');
-  ctecka.readAsDataURL(soubor);
+  // Objektová adresa, ne data URL. Čtyřmegabajtová fotka se jako base64
+  // rozroste na 5,4 MB textu, který se navíc při KAŽDÉM překreslení
+  // administrace znovu vkládá do innerHTML a znovu dekóduje — na tom
+  // stálo ono „hrozně dlouho se to nahrávalo". Objektová adresa je jen
+  // odkaz do paměti, vytvoří se okamžitě a nic se nekopíruje.
+  if (ad.orez && ad.orez.objektURL) URL.revokeObjectURL(ad.orez.objektURL);
+  ad.orez = prazdnyOrez();
+  ad.orez.objektURL = URL.createObjectURL(soubor);
+  ad.orez.src = ad.orez.objektURL;
+  ad.showCropModal = true;
+  ad.render();
 }
 
 // ---------------------------------------------------------------- vykreslení
@@ -130,7 +133,7 @@ export function renderOrezModal(ad) {
           <button type="button" class="orez-btn-jemny" id="btn-orez-cela">Celá fotka</button>
           <div class="orez-patka-vpravo">
             <button type="button" class="orez-btn-jemny btn-orez-zrusit">Zrušit</button>
-            <button type="button" class="btn btn-booking-submit btn-orez-potvrdit">Oříznout a nahrát</button>
+            <button type="button" class="orez-btn-hlavni btn-orez-potvrdit">Oříznout a nahrát</button>
           </div>
         </div>
       </div>
@@ -339,6 +342,9 @@ export function bindOrezModal(ad) {
 
 export function zavriOrez(ad) {
   if (ad._orezUklid) { ad._orezUklid(); ad._orezUklid = null; }
+  // Objektová adresa drží soubor v paměti, dokud se neuvolní. Bez tohohle
+  // by po pár ořezech ležely v paměti megabajty fotek, které už nikdo nevidí.
+  if (ad.orez && ad.orez.objektURL) URL.revokeObjectURL(ad.orez.objektURL);
   ad.showCropModal = false;
   ad.orez = prazdnyOrez();
   ad.render();
@@ -359,7 +365,14 @@ function vyrobBlob(obrazek, vyrez) {
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
     ctx.drawImage(obrazek, vyrez.x, vyrez.y, vyrez.w, vyrez.h, 0, 0, CIL_SIRKA, CIL_VYSKA);
-    platno.toBlob(hotovo, 'image/jpeg', 0.88);
+    // WebP místo JPEGu: při stejně vypadající kvalitě je zhruba o třetinu
+    // menší, takže se rychleji nahraje i stahuje. Prohlížeč, který ho
+    // neumí zakódovat, vrátí PNG — pozná se to podle typu a spadne se
+    // zpátky na JPEG, jinak by se do koše nahrával několikamegový PNG.
+    platno.toBlob((blob) => {
+      if (blob && blob.type === 'image/webp') { hotovo(blob); return; }
+      platno.toBlob(hotovo, 'image/jpeg', 0.86);
+    }, 'image/webp', 0.85);
   });
 }
 

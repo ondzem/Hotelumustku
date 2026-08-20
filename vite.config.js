@@ -130,12 +130,15 @@ export default defineConfig(({ mode }) => {
               // Hlavička Authorization se MUSÍ přenést. Bez ní funkce
               // nepozná přihlášenou recepci a lokálně vždycky vrátí 401,
               // takže nahrání fotky ve vývoji nešlo vůbec vyzkoušet.
-              const hlavicky = { 'Content-Type': 'application/json' };
+              // Typ obsahu se MUSÍ přenést — funkce z něj pozná formát fotky
+              // a bez něj by odmítla i platný WebP. Tělo jde jako binárka,
+              // ne jako text; převod na utf8 by fotku rozbil.
+              const hlavicky = { 'Content-Type': req.headers['content-type'] || 'application/octet-stream' };
               if (req.headers.authorization) hlavicky.Authorization = req.headers.authorization;
               const pozadavek = new Request('http://localhost/.netlify/functions/upload-news-image', {
                 method: req.method || 'POST',
                 headers: hlavicky,
-                body: (req.method === 'GET' || req.method === 'HEAD') ? undefined : Buffer.concat(kusy).toString('utf8')
+                body: (req.method === 'GET' || req.method === 'HEAD') ? undefined : Buffer.concat(kusy)
               });
               const odpoved = await handler(pozadavek);
               res.statusCode = odpoved.status;

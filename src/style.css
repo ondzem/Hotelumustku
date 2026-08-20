@@ -14403,17 +14403,22 @@ select:-webkit-autofill:focus {
 .orez-uchyt-w  { left: 0;    top: 50%;  cursor: ew-resize; }
 .orez-uchyt-e  { left: 100%; top: 50%;  cursor: ew-resize; }
 
+/* Mřížka, ne flex se space-between: „Celá fotka" drží vlevo,
+   dvojice vpravo. Dřív bylo potvrzovací tlačítko třídy
+   .btn-booking-submit, která má width: 100 % — roztáhlo se přes celou
+   pravou půlku, vytlačilo „Zrušit" na další řádek a patka vypadala
+   rozházeně. Hlavní tlačítko má proto vlastní třídu a nedědí nic
+   z rezervačního formuláře. */
 .orez-patka {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr;
   align-items: center;
-  justify-content: space-between;
   gap: 12px;
-  flex-wrap: wrap;
   border-top: 1px solid #ece8dd;
   padding-top: 14px;
 }
 
-.orez-patka-vpravo { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.orez-patka-vpravo { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
 
 .orez-btn-jemny {
   background: #ffffff;
@@ -14427,20 +14432,96 @@ select:-webkit-autofill:focus {
   min-height: 42px;
 }
 
-.orez-patka .btn-orez-potvrdit {
+.orez-btn-hlavni {
   height: 42px;
+  min-height: 42px;
   padding: 0 22px;
+  width: auto;
+  font-family: inherit;
   font-size: 14px;
   font-weight: 700;
+  color: #ffffff;
+  background-color: #4a5a24;
+  border: 1px solid #4a5a24;
   border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  box-sizing: border-box;
+  transition: background-color 0.2s ease;
+}
+
+.orez-btn-hlavni:hover { background-color: #3c491d; border-color: #3c491d; }
+.orez-btn-hlavni:disabled { background-color: #a8ad95; border-color: #a8ad95; cursor: progress; }
+
+/* Pod 620 px se vedle sebe „Celá fotka | Zrušit | Oříznout a nahrát"
+   nevejde a lámalo se to doprostřed popisků. */
+@media (max-width: 620px) {
+  .orez-patka { grid-template-columns: 1fr; }
+  .orez-patka-vpravo { justify-content: stretch; }
+  .orez-patka-vpravo > * { flex: 1 1 0; }
+  /* Pořadí odshora: pomocník „Celá fotka", pak Zrušit a úplně dole
+     hlavní akce — palec na telefonu dosáhne nejsnáz dolů a hlavní
+     tlačítko nemá být to, na které se sáhne omylem první. */
+  .orez-patka > .orez-btn-jemny { width: 100%; }
 }
 
 @media (max-width: 560px) {
   .orez-okno { padding: 16px; border-radius: 10px; }
   .orez-nadpis { font-size: 15.5px; }
   .orez-napoveda { font-size: 12.5px; }
-  .orez-patka { flex-direction: column-reverse; align-items: stretch; }
-  .orez-patka-vpravo { width: 100%; }
-  .orez-patka-vpravo > * { flex: 1 1 0; }
-  .orez-btn-jemny, .orez-patka .btn-orez-potvrdit { width: 100%; }
 }
+
+/* Na nejužších displejích i dvojice vpravo pod sebe — „Oříznout
+   a nahrát" se do 140 px nevejde a text by se ořízl. */
+@media (max-width: 400px) {
+  .orez-patka-vpravo { flex-direction: column; }
+  .orez-patka-vpravo > * { width: 100%; }
+}
+
+/* ============================================================
+   ROZMAZANÝ NÁHLED HERO FOTEK (LQIP)
+
+   Hero fotka je přes celou šířku okna a váží 100–500 kB. Na
+   pomalejším připojení tam do jejího stažení nebylo NIC — jen
+   tmavá plocha, kterou majitel popisoval jako „tři vteřiny černá
+   obrazovka".
+
+   Každá hero fotka má proto pod sebou svou vlastní miniaturu
+   28 × 28 px zapečenou přímo do CSS (dohromady ~5 kB, žádný další
+   požadavek na server). Vykreslí se s prvním stylem, tedy okamžitě,
+   a roztažením na celou šířku vznikne rozmazaná předloha ve
+   správných barvách. Jakmile dojde skutečná fotka, překreslí ji.
+
+   Miniatury se generují z originálů:
+     magick vstup.webp -resize '28x28^' -gravity center \
+            -extent 28x28 -quality 55 -strip vystup.webp
+   a vloží jako data URL. Klíčem je TŘÍDA, ne cesta k souboru —
+   kategorie okolí se vykresluje ze šablony s proměnnou adresou
+   a na tu by se v HTML nedalo sáhnout.
+   ============================================================ */
+
+.hero-summer-poster,
+.hero-rooms-poster,
+.hero-events-poster,
+.hero-activities-poster,
+.hero-news-poster,
+.hero-contact-poster,
+.hero-category-poster {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.hero-summer-poster { background-image: url("data:image/webp;base64,UklGRk4BAABXRUJQVlA4IEIBAADQBgCdASocABwAPsFapk4npSOiKAgA8BgJQBb3gQOyXMCVTt5g2YeDbbk+JmSdUJTEegffgef1AFnhjdcDRdAA/u7d032SpTUlOwdAGq/4CCr4ejQ2Bh99sRQmXm0bCR6bL61sEIjVHLDe94WETETTbe2fzvKZXH5pV3gRkYIfZMd5cjCKm9mr1dYrm/KRc622GlQuGlxaPl38x0eR5aDx8moTJldzttgAbPIUtqf+P06Dy/fn2Sm3u/LNUSqkgUjhMdAEWYPmpVS7HACRa713mRCwvqZwCy+GRoviDdMS5bJOKdBt5tEjiyxdMe2AN0DiXCMSsPx3SLVXkUc7b5jdmEfe6VYEC9xEhllsya3j8tDazHzI8qXf6+uGj5yta17DU+Hc2Dsyp6PHVXCKcOYynap+wjHan50T6qaME4TOKAAA"); }
+.hero-rooms-poster { background-image: url("data:image/webp;base64,UklGRqIBAABXRUJQVlA4IJYBAADQBwCdASocABwAPrFInEqnJCKht/qoAOAWCWwAsRSr2oOeqZpXFy/yw2/iQB5NoX0swDVt827WGWVssTcuqDBWqVV804jrkAD+9NvosC9JpEhWFE2jG83IkKO6n3vTxHsmGSwaiDgLPY8p8HpTXYkz37MCGPk/gk4P1L5FowrDCvlXv1QB8ZzA+4g5Sz51lIrmEakC7HqFxFc+38CGh2Vx16FYNIR5A5r2Aw67HfIomAedJ7ssbVs6RprDx/zqey1OXJi3FLV9YSMvxznlXR29852+sy1D+sW/5cC68bdXG5gf/5WzeId3X11bjOzjgTreZW6vv85NesQFg+BY3BlqQVLI8vfJk0ROxecTnGQ1o0muBsbtVazTHdgfUS6mhwcdOsX7XG7wSqu9az0z9BL1vtuE55yVaAvpt1QI17f7zHHSn/1/59jj4VgNM9G3nKc5PP4Vuv5Tkxi6CyodPPOl9elTYP3CRYm+a3+kbTN73R/Lc3ASUmu38daFb1P+DNfsE0OldL6ca8KmRLDmaFQAkjSwkAAA"); }
+.hero-events-poster { background-image: url("data:image/webp;base64,UklGRmQBAABXRUJQVlA4IFgBAABQBwCdASocABwAPsFWpE0npKOiKAqo8BgJYgCdM3V6BsRMAOKTG0i4n5aTqnAf6x77avsPneB2vdWm2+z7mqa83SAAAP5PIfQjH+5a/x2wJ0mkSHrjR7f6g/N8gLaFA3fP/2zwEcJr80G70bCjQ/y2oigt6bv4AFX3M/kFcV1HXYZsV6e0bTv9CWBRU7s4lGALO40RuZo4gMouZ7gJadTUsOA7PhXc9W1/sRvfNcqFAvYoYeCmZ+vFAgaEv0/Z9AjesDcYNdxDA0c0bDIH78WQ+WIov3yEid61hXMIMT1YLN2xRKU2edfwEkQuUv/ZEzWPPWYrAg32VqPA784h+65ArvhILR29iDzI7qLPI7TvWE9nsz4Ucr5CbV87nUXsLPPbHOAtXktCUHu3h2KH3yU1k/KXFBkgMTe2Gn+vUYf0d9Qw1g43AwkMHAebV437FjhjWv22+DwAAA=="); }
+.hero-activities-poster { background-image: url("data:image/webp;base64,UklGRjYBAABXRUJQVlA4ICoBAACQBgCdASocABwAPrlKnUqnJCKhsAwA4BcJbACdMyX+Ff/jeisOZDH9DbPdM3SUWx87OwtiAhK93q+Xi30AAMqbEUMN3o0GEWvsNDZjiAzHJFIFTOEzdJY3dsCG+fEf8a1YF8DePBnhmnb9nrv/nLL4n/yfMSDA9f9h6OEpP8G/5yeBGoyt497V/a7MJ4Kua9Rf/cqfUKGDZjoWTLr46AJ83x4m8dMeq8/SSHl8nLvek8ijL1nPrSR7yYYz5rTqqWznvZFekGBmpEF5DVg6f1AtgLCoPUwR36085pLjtzPEX0uzatEoX+jViQ3TjLKTSaP4RaqWzDxbtMp2T2WDSYWzAS6Gs7O7v1/dIHNdFtU9QRUImBBzYk0DlmxNL5/WRo/8iCbVvQygvQAA"); }
+.hero-news-poster { background-image: url("data:image/webp;base64,UklGRlYBAABXRUJQVlA4IEoBAABQBgCdASocABwAPsFQoUqnpSMhsBgMAPAYCWgAnTKEgppID3SjVn+Jqh/AmUEuC+Yk29KgFBVWOk360AD+8OYtHI2izMV9xU+o38bCoLVBIY4A8rbvbD7qmuEXkRgi0eUpNuidcrjWjezsIC3F7qVmXzyLF99HPcpt19QJo2xeorzbc1hYBmwKNhh1ZbcJNAOxJ+ZHWKOpKjjJ5A/9kWzIz1QVvBlK2ZjsiHIdzzQl3PkLlDaVf5R6WLb5zQXvrgozk0Q+XXCOA3bCCQ5BVwYS/S3Y5c+tcIRqDIPsLafxvFxGCi83XdufEPujnJbuusao4aHN1Vy836HVwyDDbizID/D+oKptTJ4u5RZv90P7QBA6J21kn3AwTbUuAZl6+9YoLMKtTHT5dpu5UeSl9lA9E3hFpaUm8PIwWNHUxRcKwgL9jTvJ7nnQAAA="); }
+.hero-contact-poster { background-image: url("data:image/webp;base64,UklGRgQBAABXRUJQVlA4IPgAAAAwBgCdASocABwAPsFWok2npKMiKAqo8BgJaAC3ud0jiU/OEr0H9ZCmpY0inJvXoWXaOCCkt/EPdboAAP6QFRoB8adFjRN+eQR9alNA+B/FeDyDuYA0EymCdXJjDPQciict4QN12osfVbNyxv9nH35/uFWt14U0PvkN0Al7cDeGOHRcHQ5JLFjR+ATtjfOddf+mokE2PO+BcbLbAurc7bHagke3zRoT5aYZd487Ch37Yi5BK5BBeopKgJwSEEj+iUaZKcBapM567WXQy9cLrmk3eQE/ok9Qux6OPycsjEFzZYWEGE7d6bN1HiUe5F8/LFYPx09fPl5gAA=="); }
+.hero-category-poster-turistika { background-image: url("data:image/webp;base64,UklGRhwBAABXRUJQVlA4IBABAAAwBwCdASocABwAPrlKnUqnJCKhsAwA4BcJagCdMoSBarhfRuf/PDmVVK4nlW9f3Rg/suWZ+L77cGZnXnnYOuaKPAAA/e/qHcDy1cSLVc+e9LXLDUnCjFm0Ma2ffMsPxBq3QDrMBcLpgJ+ZJiKR270xTo1n9EKCbmKgvTVAq7w+qIxz3xFpvuHqFyDFSUBdBoCSAy2Nqfqw2ryKiQ0T67lh8tksl8OA+YWw8y5wAbZa0KT4ok8BRgV7t//ikYUCUutaRBL0kbQ6c/noMDCED2pPARng4uWFnxXQToL43apQt/+I2dwDXGlmgK5OFnevFM7b/TzdmTjCuG69BYHnGOYJWnZRXgnHXg+7UFTlctE4AA=="); }
+.hero-category-poster-cyklistika { background-image: url("data:image/webp;base64,UklGRlIBAABXRUJQVlA4IEYBAAAQBgCdASocABwAPsFYpE4npKMiKAgA8BgJQBajbJegJ973GkyWZgNQHprQx83ELT/QNKmpGAgJFYAA/sTv1ONI1jUx09x7F949dFfb4OsHk7/iWdncCuIqIPtHdb1Gx4qRZrbsGJ3YPSz7vZLSen4R/hcqSLpQwntMNN+kEG3sUoTyliWZ+/qqwVpgEA+alh7GeeTKsAwdsR66roz4at+L0TCpIVKPsK3LYN7J5OQ4+SXGUCz6NbZgYQ1qPIMyMVQg6jpXm/fvFP0ysEwFpGBv7EBGqLPY2Jnk4wtr9d41bm8naGcjR1HYoJhf/SZp5x3KlVWiLwsJy1ZcwoWXlZZe2TYAufbdDZ9wxoaXR6vyojWR2Hm4RBzRcVzesK92sBqSSzOMaon1DBc43Wz2R6JgOTkJMmqvWJW6tjvXKcnNZ95uR0AAAA=="); }
+.hero-category-poster-zimni-vylety { background-image: url("data:image/webp;base64,UklGRkwBAABXRUJQVlA4IEABAADwBQCdASocABwAPsFOn0qnpCKhsAgA8BgJZACsL6BK8TKTu9IhbFyunynrJVX9ejTSiY7i1G4h4AD+IZ57phuYjpbZaNNMqYCOQSvFGvMvUFUWBm2PnGVjBPANJ1Wl4ay2S1SeOayQf8/ifxc1cwAR3176JbD00HcAeCyczJk4OYx5OKl/sZLB1INJaZPsTFsyFTwrmrkMvDLtqLAv7y4ccXRE/OlkKIRIVjR81k/RtNtjh2iD8yi+qJuBgAUDdEn/1ejq29zKMXBgnIHIQKNc1r35+Wgr9TdjdgzshH4LhlKq6Gsfll5W6s/rKadDLYs2d0CzoQ3+MK5EqxqLihD92f07n4Jcuq3Qucqs3O0w2pD82HO5zv8yb+3a7VfX9TaHqbr7ZiBrT+BEZTkYbVCCNVWf88bZOXoFv7sBovgAAA=="); }
+.hero-category-poster-vylety-autem { background-image: url("data:image/webp;base64,UklGRiIBAABXRUJQVlA4IBYBAAAwBgCdASocABwAPrVInkqnJCKht/qoAOAWiWIAsPGyZTux19WmKHHyGxEmXR1nbSOHGiF7c3BBh+MEAP7wRwuiyDGerWj/2gJjZ8NbZjBrJ9mtVwiQGlwpzmz8J2VpQCgu4TfT4LsfIJ/cXTcXy8+aVKU3bcHTAMPS7i73teCrZ+CPEb1TNHQv0e3k20RayzAtpGrCqQB3tmAjXqKTFk23n1XGT7agh7pFQrxWHQ0oRSK/pGjOFUQN6OkCIZ+8iCbKixG4MPpIyeGILWw/HmM2/Np3OtuXXtUVC030Golj+WgCXWRDDYW7Sp7iJMM6PxIRHVe57iJK9fyXhNM978RgXfIGCy0Hsl6awR4o48DxcgzndYAAAA=="); }

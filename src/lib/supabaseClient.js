@@ -225,8 +225,13 @@ export const toggleStoredReservationArchive = (id, isArchived) => {
       .then(({ error }) => {
         if (error) {
           console.error('Supabase update archive state error:', error);
-          if (typeof window !== 'undefined' && window.alert && /column .* does not exist/i.test(error.message || '')) {
-            window.alert('Archivace se neuložila do databáze — chybí sloupec is_archived.\nSpusť prosím soubor supabase-archiv.sql v Supabase → SQL Editor.');
+          // Hlásí se přes toast administrace, ne přes alert() prohlížeče —
+          // nativní dialog vypadá jako hlášení Chromu, ne jako náš web,
+          // a na mobilu ho systém umí přebít vlastní hláškou.
+          if (typeof window !== 'undefined' && /column .* does not exist/i.test(error.message || '')) {
+            window.dispatchEvent(new CustomEvent('admin-hlaska', {
+              detail: '⚠️ Archivace se neuložila do databáze — chybí sloupec is_archived. Spusťte prosím supabase-archiv.sql v Supabase → SQL Editor.'
+            }));
           }
         }
       })
@@ -858,12 +863,10 @@ export const uploadNewsImage = async (fileOrBlob) => {
   try {
     const contentType = fileOrBlob.type || 'image/jpeg';
 
-    const base64 = await new Promise((hotovo, chyba) => {
-      const ctecka = new FileReader();
-      ctecka.onload = () => hotovo(String(ctecka.result).split(',').pop());
-      ctecka.onerror = () => chyba(new Error('Fotku se nepodařilo přečíst.'));
-      ctecka.readAsDataURL(fileOrBlob);
-    });
+    // Fotka jde po drátě jako binárka, ne jako base64 v JSONu. Base64 je
+    // o třetinu delší a navíc se musel celý soubor nejdřív přečíst přes
+    // FileReader do jednoho velkého řetězce — obojí se sčítalo do čekání,
+    // které obsluha viděla jako „nahrává se hrozně dlouho".
 
     // Serverová funkce má servisní klíč, takže si musí ověřit, kdo volá.
     // Přiložíme token přihlášené recepce ze Supabase Auth.
@@ -878,8 +881,8 @@ export const uploadNewsImage = async (fileOrBlob) => {
 
     const res = await fetch('/.netlify/functions/upload-news-image', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ base64, contentType })
+      headers: { 'Content-Type': contentType, Authorization: `Bearer ${token}` },
+      body: fileOrBlob
     });
 
     const odpoved = await res.json().catch(() => ({}));
