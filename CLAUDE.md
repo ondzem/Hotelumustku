@@ -661,36 +661,31 @@ hromadné optimalizaci — musely se obnovovat z historie gitu. Jsou to:
 | okoli-vylety-autem | `Fotky Aktivit/vylety autem.webp` |
 | aktuality | `Fotky Aktivit/Aktulity hero sekce.webp` |
 
-**Pod každou hero fotkou je rozmazaný náhled zapečený v CSS.** Hero je
+**Pod každou hero fotkou je barevný přechod zapečený v CSS.** Hero je
 přes celou šířku okna a váží 100–500 kB; do jejího stažení tam nebylo
 nic — jen tmavá plocha, kterou majitel popisoval jako „tři vteřiny černá
-obrazovka". Každá má proto v `style.css` (oddíl „ROZMAZANÝ NÁHLED HERO
-FOTEK") svou miniaturu 28 × 28 px jako data URL; dohromady ~5 kB a žádný
-další požadavek na server. Vykreslí se s prvním stylem, tedy okamžitě.
+obrazovka".
+
+Nejdřív tam byla zmenšenina té fotky (28 × 28 px roztažená přes celé
+okno). Vyplnilo to černotu hned, ale majitel to zamítl: rozmazaná fotka
+vypadá jako rozbité vykreslení, ne jako načítání — „přijdeš na stránku
+a uvidíš takovouhle hrůzu". **Nevracej to.**
+
+Je tam proto svislý přechod ze čtyř barev odečtených z té konkrétní
+fotky (oddíl „PODKLAD HERO FOTEK" ve `style.css`). Vypadá jako záměr,
+barevně sedí k tomu, co za chvíli dojde, a pod ztmavením a bílým textem
+je k nerozeznání od pozadí fotky. Váží dohromady necelý kilobajt a je
+přímo ve stylu, takže je na místě s prvním vykreslením.
 
 Klíčem je **třída, ne cesta k souboru** — kategorie okolí se vykresluje
 ze šablony s proměnnou adresou (`cat.heroImg`) a na tu by se v HTML
 nedalo sáhnout. Nová hero fotka potřebuje novou položku, jinak zůstane
-černá; hlídá to kontrola „Hero fotky" v `./zkontroluj.sh`. Generuje se:
+černá; hlídá to kontrola „Hero fotky" v `./zkontroluj.sh`. Barvy se
+odečtou takhle:
 
 ```bash
-magick vstup.webp -resize '28x28^' -gravity center -extent 28x28 \
-       -quality 55 -strip vystup.webp   # a base64 do url(data:…)
+magick vstup.webp -resize 1x4! -depth 8 txt:-   # čtyři barvy shora dolů
 ```
-
-**V `srcset` se mezery musí zakódovat na `%20`.** Srcset odděluje
-kandidáty mezerami, takže `srcset="/Fotky Aktivit/x mobil.webp"` je
-neplatný zápis a prohlížeč ho tiše přeskočí — telefon pak dostane
-desktopovou fotku. Přesně takhle byl roky rozbitý hero na `okoli.html`:
-mobilní varianta existovala, byla v `<picture>` a stejně se nikdy
-nepoužila. V `src` mezery vadit nemusí, v `srcset` ano.
-
-**`<picture>` vložené přes `innerHTML` prohlížeč nevyhodnotí.** Obrázek
-si vezme adresu z `src` a `<source media>` ignoruje, protože se o rodiči
-dozví až po tom, co začal načítat. Na statické stránce to funguje, při
-přechodu uvnitř webu ne. Dorovnává to `srovnejHeroPodleSirky()`
-v `main.js`, volaná z routeru a při změně velikosti okna; nebere si
-žádné vlastní pravidlo, čte přesně to, co je v `media` u `<source>`.
 
 **Na telefon jde užší varianta `… mobil.webp`** přes `<picture>`
 (`-resize '1000x1000>' -quality 78`), což ušetří zhruba 60 % bajtů.

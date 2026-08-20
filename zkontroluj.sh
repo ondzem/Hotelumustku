@@ -135,7 +135,7 @@ else
   cervena "nativní dialog prohlížeče: $(echo "$NATIVNI" | head -3 | tr '\n' ' ')"
 fi
 
-# ------------------------------------------------- rozmazané náhledy hero
+# ------------------------------------------------- podklad hero fotek
 # Bez náhledu svítí na místě hero fotky tmavá plocha, dokud se nestáhne —
 # na mobilu to byly klidně tři vteřiny.
 nadpis "Hero fotky"
@@ -144,13 +144,13 @@ for TRIDA in hero-summer-poster hero-rooms-poster hero-events-poster \
              hero-activities-poster hero-news-poster hero-contact-poster \
              hero-category-poster-turistika hero-category-poster-cyklistika \
              hero-category-poster-zimni-vylety hero-category-poster-vylety-autem; do
-  grep -q "^\.$TRIDA { background-image: url(\"data:image/webp;base64," src/style.css \
+  grep -q "^\.$TRIDA { background-image: linear-gradient(" src/style.css \
     || CHYBI_LQIP="$CHYBI_LQIP $TRIDA"
 done
 if [ -z "$CHYBI_LQIP" ]; then
-  zelena "všechny hero fotky mají rozmazaný náhled v CSS"
+  zelena "všechny hero fotky mají barevný podklad v CSS"
 else
-  cervena "hero fotka bez náhledu:$CHYBI_LQIP"
+  cervena "hero fotka bez podkladu:$CHYBI_LQIP"
 fi
 
 if [ $BEZ_SITE = 1 ]; then
