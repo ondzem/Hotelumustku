@@ -841,30 +841,36 @@ Kdo bude tuhle cestu měnit, musí to udržet na třech místech —
 ve `vite.config.js` (ten musí přenést `Content-Type` i `Authorization`
 a tělo poslat jako binárku, ne jako text).
 
-**Cache hlavička se objektu zapisuje při NAHRÁNÍ, ale tenhle projekt ji
-stejně neservíruje.** Rozlišuj dvě různá místa, na kterých se snadno
-udělá špatný závěr:
+**Cache hlavička se objektu zapisuje při NAHRÁNÍ, ne při čtení.** Storage
+si `cache-control` z nahrávání uloží do metadat řádku a při stažení ji
+vrací; nedá se tedy dodatečně přenastavit u koše ani v projektu, jen
+novým nahráním. Proto ji `upload-news-image.js` posílá — kdo ji odtud
+odstraní, dostane výchozí `no-cache` a fotky aktualit se začnou stahovat
+znovu a znovu (viz limit egressu v oddílu 6).
 
-- **Metadata řádku v úložišti** — Storage si `cache-control` z nahrávání
-  uloží a `POST /storage/v1/object/list/<koš>` ho vypíše. U všech fotek
-  v koši tam poctivě stojí `public, max-age=31536000, immutable`, protože
-  to `upload-news-image.js` posílá. Ta hlavička v nahrávání není na okrasu,
-  neodstraňuj ji.
-- **Co dostane prohlížeč** — něco jiného. Veřejná adresa
-  `/storage/v1/object/public/<koš>/<soubor>` vrací `cache-control:
-  no-cache` a `cf-cache-status: REVALIDATED`, ať jsou metadata jakákoli.
-  Uložená hodnota se tedy ven nepropíše.
+Ověřeno 20. 8. 2026 proti nasazenému projektu: všechny fotky v koši mají
+v metadatech `public, max-age=31536000, immutable`, veřejná adresa tuhle
+hlavičku vrací a Cloudflare před Storage hlásí `cf-cache-status: HIT`.
+Fotky aktualit tedy cachované jsou a **stěhovat je na Netlify není proč.**
 
-**Neznamená to ale, že se fotka stahuje pořád dokola.** Odpověď nese
-`ETag`, takže při další návštěvě pošle prohlížeč podmíněný dotaz
-a dostane `304 Not Modified` — nula bajtů. Změřeno 20. 8. 2026 na fotce
-v koši: první stažení 220 872 B / 0,24 s, podmíněný dotaz 0 B / 0,11 s.
-Cenou je jedno kolo tam a zpět na fotku a načtení stránky, ne data.
+**Měř to GETem, ne HEADem.** Na téže adrese vrací každá metoda něco
+jiného, deterministicky:
 
-Limit egressu (viz oddíl 6) tím pádem v ohrožení není a **stěhovat fotky
-aktualit na Netlify není proč.** Kdyby se k tomu někdo v budoucnu chystal,
-musí nejdřív ukázat čísla — a měřit obojí: hlavičku na veřejné adrese
-i to, co vrátí podmíněný dotaz s `If-None-Match`.
+```bash
+curl -s -D - -o /dev/null "<URL>" | grep -i cache   # GET  → max-age=31536000, HIT
+curl -sI                  "<URL>" | grep -i cache   # HEAD → no-cache, REVALIDATED
+```
+
+Ta druhá hodnota je artefakt HEADu, ne to, co dostane návštěvník —
+prohlížeč si obrázek v `<img>` bere GETem a HEAD na něj nepošle nikdy.
+Kdo změří `curl -I` a uvěří mu, dojde k závěru, že cachování nefunguje,
+a začne fotky zbytečně stěhovat jinam. Přesně tahle chyba se tu už
+jednou stala. (Uložená metadata se čtou přes
+`POST /storage/v1/object/list/<koš>`.)
+
+Podmíněný GET s `If-None-Match` vrátí `304` a nula bajtů, ale k tomu se
+prohlížeč dostane, jen když z nějakého důvodu mezipaměť obejde. Běžná
+druhá návštěva neodešle požadavek vůbec.
 
 Nahrávání samo funguje (ověřeno proti nasazené funkci s platným tokenem).
 Ve **vývoji** ale dřív selhávalo vždycky: middleware ve `vite.config.js`
