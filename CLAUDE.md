@@ -841,12 +841,30 @@ Kdo bude tuhle cestu měnit, musí to udržet na třech místech —
 ve `vite.config.js` (ten musí přenést `Content-Type` i `Authorization`
 a tělo poslat jako binárku, ne jako text).
 
-Pozn.: Supabase Storage v tomhle projektu vrací u nahraných fotek
-`cache-control: no-cache` bez ohledu na to, co se při nahrávání pošle
-(zkoušená byla hlavička i pole `cacheControl` v multipartu). Fotky
-aktualit se tedy stahují při každém načtení stránky — proti limitu
-egressu (viz oddíl 6) to zatím nevadí, protože jsou po ořezu 1280 × 720,
-ale kdyby jich přibylo, patří na Netlify jako zbytek médií.
+**Cache hlavička se objektu zapisuje při NAHRÁNÍ, ale tenhle projekt ji
+stejně neservíruje.** Rozlišuj dvě různá místa, na kterých se snadno
+udělá špatný závěr:
+
+- **Metadata řádku v úložišti** — Storage si `cache-control` z nahrávání
+  uloží a `POST /storage/v1/object/list/<koš>` ho vypíše. U všech fotek
+  v koši tam poctivě stojí `public, max-age=31536000, immutable`, protože
+  to `upload-news-image.js` posílá. Ta hlavička v nahrávání není na okrasu,
+  neodstraňuj ji.
+- **Co dostane prohlížeč** — něco jiného. Veřejná adresa
+  `/storage/v1/object/public/<koš>/<soubor>` vrací `cache-control:
+  no-cache` a `cf-cache-status: REVALIDATED`, ať jsou metadata jakákoli.
+  Uložená hodnota se tedy ven nepropíše.
+
+**Neznamená to ale, že se fotka stahuje pořád dokola.** Odpověď nese
+`ETag`, takže při další návštěvě pošle prohlížeč podmíněný dotaz
+a dostane `304 Not Modified` — nula bajtů. Změřeno 20. 8. 2026 na fotce
+v koši: první stažení 220 872 B / 0,24 s, podmíněný dotaz 0 B / 0,11 s.
+Cenou je jedno kolo tam a zpět na fotku a načtení stránky, ne data.
+
+Limit egressu (viz oddíl 6) tím pádem v ohrožení není a **stěhovat fotky
+aktualit na Netlify není proč.** Kdyby se k tomu někdo v budoucnu chystal,
+musí nejdřív ukázat čísla — a měřit obojí: hlavičku na veřejné adrese
+i to, co vrátí podmíněný dotaz s `If-None-Match`.
 
 Nahrávání samo funguje (ověřeno proti nasazené funkci s platným tokenem).
 Ve **vývoji** ale dřív selhávalo vždycky: middleware ve `vite.config.js`
