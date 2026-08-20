@@ -1132,11 +1132,23 @@ lokální proxy na portu 8787 — nedá se vyvolat, buď běží, nebo ne.
 
 ## Zvyklosti
 
-- **Odpovídej maximálně stručně.** Stačí výsledek — „Hotovo, upravil jsem X."
-  Žádné shrnutí postupu, tabulky, seznamy provedených kroků ani opakování
-  zadání. Default 1–3 věty. Delší odpověď jen na dotaz „proč / jak to
-  funguje" nebo když uživatel potřebuje víc kroků k provedení. Práci tím
-  neodbývej — dělá se celá a pořádně, jen se o ní nepíše slohovka.
+- **Odpovídej maximálně stručně. Tohle je nejčastěji vytýkaná věc.**
+  Odpověď má jen dvě části: **(1) co má uživatel udělat** — když nic, tak
+  „hotovo" a tečka; **(2) důležitá informace, pokud nějaká je** — jedna
+  věta. Nic dalšího.
+
+  Nepiš, co jsi udělal, co jsi ověřil, kdo měl pravdu, proč chyba vznikla
+  ani co se dělo v jiné session. Žádné nadpisy, tabulky ani odrážky
+  s provedenými kroky.
+
+  **Délka nesmí růst s tím, jak sezení pokračuje.** Sklouzává to takhle:
+  krátká odpověď, krátká, o něco delší, a pak odstavce s nadpisy. Po
+  velkém kusu práce je nutkání vypsat, co všechno se ověřilo, největší —
+  a je to přesně ta chyba. Čím víc práce, tím kratší odpověď.
+
+  Default 1–3 věty. Delší jen na dotaz „proč / jak to funguje" nebo když
+  uživatel potřebuje víc kroků k provedení. Práci tím neodbývej — dělá se
+  celá a pořádně, jen se o ní nepíše slohovka.
 - Komentáře a názvy nových proměnných česky, tak jako ve zbytku projektu.
 - Komentář má vysvětlovat **proč**, ne co je z kódu vidět. Zvlášť
   u míst, kde předchozí zjevné řešení nefungovalo.
