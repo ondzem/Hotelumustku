@@ -1,6 +1,7 @@
 import { MOCK_ROOMS, getStoredReservations, updateStoredReservationStatus, toggleStoredReservationArchive, deleteStoredReservation, getStoredBlockedDates, saveStoredBlockedDate, deleteStoredBlockedDate, getStoredDiscountCodes, saveStoredDiscountCode, deleteStoredDiscountCode, getStoredRoomPrices, saveStoredRoomPrice, getStoredCustomRoomNames, saveStoredCustomRoomName, getStoredDisabledRooms, saveStoredDisabledRoom, getStoredNewsItems, saveStoredNewsItem, deleteStoredNewsItem, reorderNewsItem, uploadNewsImage, isSupabaseConfigured, supabase, getStoredReviews, updateStoredReviewStatus, getStoredCenik, fetchCenik, doplnPriznakyZeStarychDat, ocistiHosty } from '../lib/supabaseClient.js';
 import { calculateReservationPrice, generateSpaydQrUrl, BANK_ACCOUNT, formatCzechPrice, getVariableSymbol, procentoZalohy, maZaplacenouZalohu } from '../utils/pricing.js';
 import { renderOrezModal, bindOrezModal, prazdnyOrez } from './AdminFotoOrez.js';
+import { renderExportModal, bindExportModal, prazdnyExport } from './AdminExport.js';
 import { sendEmail, generateEmail2ApprovalAndPaymentRequest, generateEmail3FinalConfirmation, generateEmailCancellation, generateEmailCancellationRefund, getEmailLogs, sendAllTestEmailsTo } from '../utils/emailService.js';
 import { checkAndProcessExpiredUnpaidReservations } from '../utils/reservationExpiryService.js';
 import { printReservationSheet } from '../utils/printReservationService.js';
@@ -162,6 +163,8 @@ export class AdminDashboard {
     // administrace se překresluje přes innerHTML a políčko by se vyprázdnilo
     // pokaždé, když se na pozadí načtou nová data.
     this.hledanyVyraz = '';
+    this.showExportModal = false;
+    this.exportVolby = prazdnyExport();
     this.expandedReservationId = null;
     this.activeEmailPreview = null;
     this.showEmailModal = false;
@@ -1308,6 +1311,9 @@ export class AdminDashboard {
             <button type="button" class="btn btn-specs-secondary btn-admin-discounts">
               🏷️ Slevové kódy ${this.discountCodes.length > 0 ? `<span style="background: #4a5a24; color: #ffffff; border-radius: 99px; padding: 2px 7px; font-size: 11px; font-weight: 700; margin-left: 4px;">${this.discountCodes.length}</span>` : ''}
             </button>
+            <button type="button" class="btn btn-specs-secondary btn-admin-export">
+              📥 Export kontaktů
+            </button>
             <button type="button" class="btn btn-specs-secondary btn-admin-archive-tab${this.statusFilter === 'archived' ? ' is-active' : ''}">
               📂 Archiv ${archivedCount > 0 ? `<span style="background: #4a5a24; color: #ffffff; border-radius: 99px; padding: 2px 7px; font-size: 11px; font-weight: 700; margin-left: 4px;">${archivedCount}</span>` : ''}
             </button>
@@ -1900,6 +1906,7 @@ export class AdminDashboard {
         ` : ''}
 
         ${renderOrezModal(this)}
+        ${renderExportModal(this)}
 
         ${this.showDeleteNewsModal && this.pendingDeleteNewsItem ? `
           <div class="admin-modal-overlay admin-modal-overlay-delete-news" style="z-index: 10060;">
@@ -2506,6 +2513,14 @@ export class AdminDashboard {
       });
     }
 
+    const btnExport = this.container.querySelector('.btn-admin-export');
+    if (btnExport) {
+      btnExport.addEventListener('click', () => {
+        this.showExportModal = true;
+        this.render();
+      });
+    }
+
     const btnArchiveTab = this.container.querySelector('.btn-admin-archive-tab');
     if (btnArchiveTab) {
       btnArchiveTab.addEventListener('click', () => {
@@ -2804,6 +2819,7 @@ export class AdminDashboard {
     // Výběr souboru, přetažení fotky i celé ovládání ořezu má na starost
     // AdminFotoOrez.js.
     bindOrezModal(this);
+    bindExportModal(this);
 
     const btnSaveNewsItem = this.container.querySelector('.btn-save-news-item');
     if (btnSaveNewsItem) {

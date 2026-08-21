@@ -388,6 +388,46 @@ prochází stavy. Pozor na to, že lišta filtrů je tam sloupec — `flex-basis
 100 %` z desktopu tam přestane znamenat šířku a začne znamenat výšku,
 takže se políčko srazí na 24 px. Ve sloupci musí být `flex: 0 0 auto`.
 
+## Export kontaktů a rezervací
+
+Tlačítko **📥 Export kontaktů** stáhne CSV. Matematika je v `src/utils/
+exportKontaktu.js` (čistý modul, testuje ho `kontrola/export.mjs`),
+ovládání v `src/components/AdminExport.js`.
+
+Dvě podoby výstupu, protože slouží dvěma různým věcem:
+
+- **Adresář hostů** — jeden řádek na hosta, pobyty sečtené. Kvůli tomu to
+  celé vzniklo: majitel chce občas poslat novinku. Slučuje se podle
+  e-mailu malými písmeny; host bez e-mailu (zapsaný po telefonu) se
+  sloučí podle jména a telefonu, aby se všichni bezmailoví neslili
+  do jednoho řádku.
+- **Soupis rezervací** — jeden řádek na rezervaci, s termínem a částkami.
+
+Pět věcí, které nejsou z kódu vidět:
+
+- **Oddělovač je STŘEDNÍK a soubor začíná značkou UTF-8 (BOM).** Excel
+  v české lokalizaci čte čárku jako desetinnou značku, takže soubor
+  oddělený čárkami naskládá celý řádek do jedné buňky; bez BOM přečte
+  soubor v systémovém kódování a z „Němec" udělá „NÄ›mec". Tohle je
+  nejčastější důvod, proč „export nefunguje". Řádky končí CRLF.
+- **Hodnota začínající na `=` `+` `-` `@` dostane apostrof.** Excel by ji
+  vyhodnotil jako vzorec — host podepsaný `=SUM(...)` by tak dostal kód
+  do cizího počítače. U telefonů (`+420…`) to má vedlejší užitek: bez
+  apostrofu z nich Excel udělá rozbitý vzorec.
+- **Období se počítá buď podle data vzniku rezervace, nebo podle data
+  příjezdu**, a není to jedno: „kdo si u nás objednal v posledním měsíci"
+  a „kdo u nás v létě bydlel" jsou dvě různé otázky. Přepíná se to a pod
+  přepínačem je věta, která říká, co která volba znamená.
+- **Horní mez rozsahu je VČETNĚ**, na rozdíl od `date_to` u rezervací.
+  Obsluha vybírá „od 1. do 31. srpna" a čeká, že jednatřicátý bude uvnitř.
+- **Storna jsou ve výchozím stavu venku, archiv uvnitř.** Archivovaná
+  rezervace je jen odklizený pobyt, kontakt platí dál; stornovaný host
+  u nás nikdy nebyl.
+
+Pod souhrnem je věta o tom, že soubor nese osobní údaje a že obchodní
+sdělení musí nést možnost odhlášení. Nemazat — je to jediné místo, kde se
+to obsluze připomene.
+
 ## Administrace se ptá vlastním oknem, ne prohlížečem
 
 `window.confirm` / `alert` / `prompt` v administraci nemají co dělat.
@@ -1064,7 +1104,7 @@ Pozor na dvě věci, které vypadají jako chyba a nejsou:
 
 ## Jak si ověřit, že to funguje
 
-Nejdřív `./zkontroluj.sh` (nebo `npm run zkontroluj`). Projde 33 kontrol:
+Nejdřív `./zkontroluj.sh` (nebo `npm run zkontroluj`). Projde 34 kontrol:
 sestavení, shodu hlaviček napříč stránkami, matematiku ceníku a zálohy,
 klíče v balíčku, typy e-mailů, dostupnost nasazených stránek, odmítání
 neoprávněných volání serverových funkcí a pravidla v databázi. S přepínačem

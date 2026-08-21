@@ -125,6 +125,14 @@ fi
 # Administrace se musí ptát vlastním oknem (AdminPotvrzeni.js). Nativní
 # confirm/alert vypadá jako hlášení prohlížeče, ne jako náš web, a Safari
 # na iPhonu ho umí přebít vlastní hláškou o „dalších dialozích".
+# ------------------------------------------------------------- export
+nadpis "Export kontaktů"
+if VYSTUP=$(node kontrola/export.mjs 2>&1); then
+  zelena "export kontaktů a rezervací"
+else
+  cervena "export kontaktů: $(echo "$VYSTUP" | grep '✗' | head -2 | tr '\n' ' ')"
+fi
+
 nadpis "Dialogy"
 NATIVNI=$(grep -rn -E "(^|[^.\w])(window\.)?(confirm|alert|prompt)\(" src --include='*.js' \
   | grep -v "AdminPotvrzeni.js" \

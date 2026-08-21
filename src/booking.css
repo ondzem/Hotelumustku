@@ -6341,3 +6341,85 @@ input[type="date"]::-webkit-calendar-picker-indicator {
    zákaz kliknutí by vypadal jako porucha. */
 .status-tab-btn.je-bez-shody { opacity: 0.42; }
 .status-tab-btn.je-bez-shody.active { opacity: 1; }
+
+/* ============================================================
+   EXPORT KONTAKTŮ A REZERVACÍ (AdminExport.js)
+   ============================================================ */
+
+.export-prepinac { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.export-volba {
+  text-align: left;
+  background: #fafaf7;
+  border: 1.5px solid #e0dfd5;
+  border-radius: 8px;
+  padding: 12px 14px;
+  cursor: pointer;
+  font-family: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.export-volba:hover { border-color: #b9bda6; }
+.export-volba.je-vybrana { border-color: #697947; background: #edf2e4; }
+
+.export-volba-nazev { font-size: 14px; font-weight: 800; color: #1c1c19; }
+.export-volba-popis { font-size: 12px; color: #6b6b60; line-height: 1.45; }
+
+.export-obdobi { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.export-chip {
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1.5px solid #e0dfd5;
+  background: #fafaf7;
+  color: #55554e;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.export-chip:hover { background: #f0efe8; color: #1c1c19; }
+.export-chip.je-vybrany { background: #4a5a24; border-color: #4a5a24; color: #ffffff; }
+
+.export-souhrn {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #edf2e4;
+  border: 1.5px solid #cadbb0;
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin-bottom: 12px;
+}
+
+.export-souhrn-cislo { font-size: 30px; font-weight: 800; color: #4a5a24; line-height: 1; flex-shrink: 0; }
+.export-souhrn-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.export-souhrn-text strong { font-size: 14px; font-weight: 800; color: #1c1c19; }
+.export-souhrn-text span { font-size: 12.5px; color: #55554e; }
+.export-souhrn-pozn { color: #8a6d1f !important; font-weight: 600; }
+
+.export-pravni {
+  margin: 0 0 4px 0;
+  font-size: 12px;
+  color: #6b6b60;
+  line-height: 1.5;
+  border-left: 3px solid #e0dfd5;
+  padding-left: 10px;
+}
+
+@media (max-width: 620px) {
+  /* Dvě karty vedle sebe se pod 620 px smrsknou na dva sloupce textu
+     po pár znacích a popisek se láme doprostřed slova. */
+  .export-prepinac { grid-template-columns: 1fr; }
+  .export-vlastni { grid-template-columns: 1fr !important; }
+  .export-souhrn { gap: 12px; padding: 12px 14px; }
+  .export-souhrn-cislo { font-size: 26px; }
+  .export-akce { flex-direction: column-reverse; align-items: stretch; }
+  .export-akce > * { width: 100%; }
+}
