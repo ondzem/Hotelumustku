@@ -4818,14 +4818,17 @@ const getContactPageHTML = () => `
     <section class="contact-about-section" id="o-nas">
       <div class="contact-about-inner">
         <div class="contact-about-grid" data-anim-group>
-          <!-- Fotka majitelů -->
-          <figure class="contact-about-figure" data-anim="up">
-            <img src="/spravce-foto.webp" alt="Majitelé horského hotelu u Můstků před vchodem do hotelu v Desné" class="contact-about-photo" width="1056" height="1489" loading="lazy" decoding="async">
-          </figure>
+          <!-- Fotka majitelů odsud byla odstraněna na přání majitele
+               (21. 8. 2026). Sekce proto stojí jen na textu: nadpis
+               vlevo, příběh vpravo — dvě poloviny se prázdným místem po
+               fotce by vypadaly jako nedodělek. -->
+          <div class="contact-about-uvod">
+            <h2 class="contact-about-title" data-anim="up">Hory jsou pro nás poslání,<br>ne jen podnikání</h2>
+            <p class="contact-about-podnadpis" data-anim="up">Desná v Jizerských horách</p>
+          </div>
 
           <!-- Text -->
           <div class="contact-about-text">
-            <h2 class="contact-about-title" data-anim="up">Hory jsou pro nás poslání,<br>ne jen podnikání</h2>
 
             <!-- Na mobilu se odstavce sbalí a rozbaluje je tlačítko níž;
                  na větších obrazovkách je zkrácení vypnuté v CSS. -->

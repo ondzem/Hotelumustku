@@ -11407,43 +11407,52 @@ html.is-route-loading #app {
   box-sizing: border-box;
 }
 
-/* Dvě stejné poloviny a stejná mezera jako u sekce Jak se k nám dostat —
-   sekce tak drží šířku stránky a text nekončí v půlce s prázdnem vpravo. */
+/* Sekce stojí jen na textu — fotka majitelů byla odstraněna na jejich
+   přání. Dvě stejné poloviny by po ní nechaly poloprázdnou plochu, proto
+   je rozvržení redakční: nadpis v užším sloupci vlevo, příběh v širším
+   vpravo. Vypadá to jako sazba v časopise, ne jako místo, odkud něco
+   vypadlo.
+
+   Nadpis se drží nahoře (align-items: start), aby začínal na stejné
+   účaří jako první řádek textu vedle. */
 .contact-about-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(40px, 5vw, 80px);
-  align-items: center;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(40px, 6vw, 96px);
+  align-items: start;
 }
 
-.contact-about-figure {
-  margin: 0;
-  position: relative;
+/* Při rolování zůstane nadpis stát, dokud pod ním běží příběh. Drží to
+   sekci pohromadě na vysokých displejích, kde by jinak nadpis odjel
+   nahoru a text zbyl sám. */
+.contact-about-uvod {
+  position: sticky;
+  top: 120px;
 }
 
-/* Tenký rámeček posunutý za fotku jí dodá hloubku, aniž by přebíjel obsah. */
-.contact-about-figure::before {
-  content: '';
-  position: absolute;
-  inset: 20px -20px -20px 20px;
-  border: 1px solid #d3d0c4;
-  border-radius: 2px;
-  pointer-events: none;
+.contact-about-podnadpis {
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8a8a80;
+  margin: 18px 0 0 0;
 }
 
-/* Předloha je na výšku (1056 × 1509). Poměr 4:3 z ní ubere shora i zdola
-   a nechá širší výřez — v rozvržení pak fotka drží celou polovinu sekce
-   místo úzkého sloupku. Svislé posunutí je nastavené tak, aby ořez shora
-   nezasáhl hlavy: při tomhle poměru přebývá zhruba 430 px výšky. */
-.contact-about-photo {
-  position: relative;
-  display: block;
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-  object-position: center 24%;
-  border-radius: 2px;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.13);
+/* Svislá linka mezi sloupci. Bez fotky potřebuje sazba něco, co ji
+   drží — hairline je na to dost a nepřetahuje pozornost. */
+.contact-about-text {
+  border-left: 1px solid #dcd9cd;
+  padding-left: clamp(28px, 4vw, 56px);
+}
+
+/* První odstavec je perex: o kousek větší a tmavší, takže oko ví, kde
+   začít číst. */
+.contact-about-p:first-child {
+  font-size: clamp(17px, 1.35vw, 19px);
+  color: #3a3a35;
+  line-height: 1.62;
 }
 
 /* Velikosti písma stejné jako u nadpisu Jak se k nám dostat pod touhle
@@ -11495,8 +11504,15 @@ html.is-route-loading #app {
     align-items: start;
   }
 
-  .contact-about-figure {
-    max-width: 520px;
+  /* Pod 1024 px jeden sloupec: nadpis nahoře, text pod ním. Lepící se
+     nadpis se musí vypnout, jinak by na telefonu překryl text. */
+  .contact-about-uvod {
+    position: static;
+  }
+
+  .contact-about-text {
+    border-left: none;
+    padding-left: 0;
   }
 
   .contact-about-inner {
@@ -11513,16 +11529,17 @@ html.is-route-loading #app {
     padding: 0 20px;
   }
 
-  .contact-about-figure {
-    max-width: 100%;
-  }
-
-  .contact-about-figure::before {
-    inset: 14px -14px -14px 14px;
-  }
-
   .contact-about-title {
     font-size: 24px;
+  }
+
+  .contact-about-podnadpis {
+    font-size: 12.5px;
+    margin-top: 14px;
+  }
+
+  .contact-about-p:first-child {
+    font-size: 16px;
   }
 
   .contact-about-p {
