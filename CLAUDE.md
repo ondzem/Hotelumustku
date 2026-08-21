@@ -424,6 +424,11 @@ Pět věcí, které nejsou z kódu vidět:
   rezervace je jen odklizený pobyt, kontakt platí dál; stornovaný host
   u nás nikdy nebyl.
 
+**Export do databáze nic nezapisuje.** Čte jen to, co má administrace
+načtené, a soubor sestaví v prohlížeči — žádná tabulka na uložené exporty
+není a není proč ji zakládat. Kdo bude hledat, kam se exporty ukládají,
+hledá zbytečně.
+
 Pod souhrnem je věta o tom, že soubor nese osobní údaje a že obchodní
 sdělení musí nést možnost odhlášení. Nemazat — je to jediné místo, kde se
 to obsluze připomene.
@@ -1002,6 +1007,16 @@ Zdrojem pravdy je Supabase, `localStorage` slouží jako záloha pro případ
 výpadku. Vzor: `getStored*()` čte zálohu, `fetch*()` načte z databáze
 a zálohu přepíše. Rezervační formulář tak ukáže ceny i offline.
 
+**PostgREST vrací nejvýš 1000 řádků na dotaz a přebytek MLČKY zahodí** —
+nevrátí chybu ani příznak. Prosté `select('*')` proto nad tisícem
+rezervací vypadá, že funguje, jen v administraci část hostů chybí:
+nejsou v seznamu, nenajde je hledání a hlavně nejsou v exportu kontaktů,
+kde by si toho nikdo nevšiml. Administrace proto chodí po stránkách
+(`nactiVsechnyRadky` v `AdminDashboard.js`) a stejně musí načítat každý
+další seznam, který může přerůst tisícovku. Ověřeno 21. 8. 2026 na 1100
+zkušebních řádcích: jeden dotaz jich vrátil 1000, stránkované načtení
+všech 1100.
+
 `ALLOWED_SUPABASE_COLUMNS` v `supabaseClient.js` filtruje, co se posílá
 do tabulky `reservations`. Nový sloupec je potřeba dopsat i sem, jinak
 se zápis tiše zahodí.
@@ -1112,6 +1127,13 @@ neoprávněných volání serverových funkcí a pravidla v databázi. S přepí
 
 Dvě věci, které se v něm daly snadno splést, a proto jsou v kódu popsané:
 
+- **Klíče se hledají jen v textových souborech balíčku.** `grep -r dist/`
+  sahá i do videa a fotek a regulární výraz s `{20,}` nad binárními daty
+  tam běží minuty — celá kontrola pak vypadá zaseknutě. Klíč se do
+  `.webp` ani `.mp4` zabalit nemůže, takže se prohledávají jen `.js`,
+  `.css`, `.html` a spol. Pozor při ověřování, že kontrola umí selhat:
+  skript si `dist/` na začátku **sám znovu sestaví**, takže podstrčený
+  klíč se z něj vymaže dřív, než na kontrolu dojde řada.
 - **Prázdné pole `[]` z databáze znamená ZAVŘENO, ne rozbito.** Pravidla
   RLS řádky filtrují, nevrací chybu. Kontrola, která čekala chybový objekt,
   hlásila díru tam, kde žádná není.

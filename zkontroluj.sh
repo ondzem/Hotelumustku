@@ -79,9 +79,18 @@ if node kontrola/pulene-dny.mjs; then zelena "půlené dny při překryvu termí
 # kdysi skončily a viděl je každý návštěvník.
 nadpis "Klíče v balíčku"
 if [ -d dist ]; then
+  # Prohledávají se jen textové soubory, do kterých se klíč může dostat.
+  # Prosté `grep -r dist/` sahá i do videa a fotek; regulární výraz
+  # s {20,} nad binárními daty tam pak běží MINUTY a celá kontrola vypadá
+  # zaseknutě. Klíč se navíc do .webp ani .mp4 zabalit nemůže.
+  TEXTOVE=$(find dist -type f \( -name '*.js' -o -name '*.mjs' -o -name '*.css' \
+    -o -name '*.html' -o -name '*.json' -o -name '*.map' -o -name '*.txt' \
+    -o -name '*.svg' -o -name '_headers' -o -name '*.xml' \) 2>/dev/null)
   NALEZ=0
   for vzorek in "service_role" "re_[A-Za-z0-9_]{20,}" "SUPABASE_SERVICE_ROLE" "sbp_[A-Za-z0-9]{20,}"; do
-    if grep -rqsE "$vzorek" dist/; then cervena "v dist/ je něco jako '$vzorek'"; NALEZ=1; fi
+    if [ -n "$TEXTOVE" ] && printf '%s\n' "$TEXTOVE" | tr '\n' '\0' | xargs -0 grep -lsE "$vzorek" 2>/dev/null | grep -q .; then
+      cervena "v dist/ je něco jako '$vzorek'"; NALEZ=1
+    fi
   done
   [ $NALEZ = 0 ] && zelena "v balíčku není servisní klíč ani klíč k Resendu"
   if [ -f .env ]; then

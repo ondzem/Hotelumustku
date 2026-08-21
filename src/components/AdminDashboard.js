@@ -105,6 +105,37 @@ function textProHledani(r, nazevPokoje) {
   ].filter(Boolean).join(' '));
 }
 
+/**
+ * Načte CELOU tabulku, ne jen první stránku.
+ *
+ * PostgREST vrací nejvýš 1000 řádků na dotaz a přebytek MLČKY zahodí —
+ * nevrátí chybu ani příznak. Prosté `select('*')` proto nad tisícem
+ * rezervací vypadá, že funguje, jen v administraci část hostů chybí:
+ * nejsou v seznamu, nenajde je hledání a hlavně nejsou v exportu
+ * kontaktů, kde by si toho nikdo nevšiml.
+ *
+ * Chodí se proto po stránkách, dokud přichází plná dávka. Ověřeno
+ * 21. 8. 2026 na 1100 zkušebních řádcích: jeden dotaz jich vrátil 1000,
+ * tahle funkce všech 1100.
+ */
+const DAVKA = 1000;
+
+async function nactiVsechnyRadky(klient, tabulka, sloupceRazeni) {
+  const vse = [];
+  for (let od = 0; ; od += DAVKA) {
+    let dotaz = klient.from(tabulka).select('*');
+    if (sloupceRazeni) dotaz = dotaz.order(sloupceRazeni, { ascending: false });
+    const { data, error } = await dotaz.range(od, od + DAVKA - 1);
+    if (error) throw error;
+    if (!data || data.length === 0) break;
+    vse.push(...data);
+    // Neúplná dávka znamená konec. Kdyby se testovalo jen na prázdnou
+    // dávku, poslední kolo by bylo zbytečné navíc.
+    if (data.length < DAVKA) break;
+  }
+  return vse;
+}
+
 export class AdminDashboard {
   constructor(containerId) {
     this.container = document.getElementById(containerId);
@@ -607,8 +638,8 @@ export class AdminDashboard {
 
     if (isSupabaseConfigured && supabase) {
       try {
-        const { data, error } = await supabase.from('reservations').select('*').order('created_at', { ascending: false });
-        if (!error && data) {
+        const data = await nactiVsechnyRadky(supabase, 'reservations', 'created_at');
+        if (data) {
           // doplnPriznakyZeStarychDat zároveň vyčistí pole guests od
           // technických položek, které tam zapsala starší verze archivace
           this.reservations = data.map(doplnPriznakyZeStarychDat);
@@ -633,8 +664,8 @@ export class AdminDashboard {
   async fetchBlockedDates() {
     if (isSupabaseConfigured && supabase) {
       try {
-        const { data, error } = await supabase.from('blocked_dates').select('*').order('created_at', { ascending: false });
-        if (!error && data) {
+        const data = await nactiVsechnyRadky(supabase, 'blocked_dates', 'created_at');
+        if (data) {
           this.blockedDates = data;
           return;
         }
@@ -1311,9 +1342,6 @@ export class AdminDashboard {
             <button type="button" class="btn btn-specs-secondary btn-admin-discounts">
               🏷️ Slevové kódy ${this.discountCodes.length > 0 ? `<span style="background: #4a5a24; color: #ffffff; border-radius: 99px; padding: 2px 7px; font-size: 11px; font-weight: 700; margin-left: 4px;">${this.discountCodes.length}</span>` : ''}
             </button>
-            <button type="button" class="btn btn-specs-secondary btn-admin-export">
-              📥 Export kontaktů
-            </button>
             <button type="button" class="btn btn-specs-secondary btn-admin-archive-tab${this.statusFilter === 'archived' ? ' is-active' : ''}">
               📂 Archiv ${archivedCount > 0 ? `<span style="background: #4a5a24; color: #ffffff; border-radius: 99px; padding: 2px 7px; font-size: 11px; font-weight: 700; margin-left: 4px;">${archivedCount}</span>` : ''}
             </button>
@@ -1380,7 +1408,13 @@ export class AdminDashboard {
         <!-- Ruční založení rezervace patří k seznamu pod ním, ne mezi
              nástroje nahoře ani mezi filtry. Vzhled má stejný jako
              ostatní tlačítka administrace. -->
+        <!-- Export patří k seznamu pod ním, ne mezi nástroje nahoře:
+             vybírá se z toho, co je v seznamu vidět. Vlevo od Nové
+             rezervace, protože ta je hlavní akce a má zůstat u kraje. -->
         <div class="admin-nova-rezervace-radek">
+          <button type="button" class="btn btn-specs-secondary btn-admin-export">
+            📥 Export kontaktů
+          </button>
           <button type="button" class="btn btn-specs-secondary btn-admin-nova-rezervace">
             ➕ Nová rezervace
           </button>

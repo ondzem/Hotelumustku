@@ -3959,7 +3959,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   .admin-top-actions button,
   .admin-top-actions .btn,
   .admin-top-actions .btn-admin-logout,
-  .admin-nova-rezervace-radek .btn-admin-nova-rezervace {
+  .admin-nova-rezervace-radek .btn-admin-nova-rezervace,
+  .admin-nova-rezervace-radek .btn-admin-export {
     width: auto !important;
     flex: 0 0 auto !important;
     max-width: none !important;
@@ -3999,7 +4000,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   .admin-top-actions button,
   .admin-top-actions .btn,
   .admin-top-actions .btn-admin-logout,
-  .admin-nova-rezervace-radek .btn-admin-nova-rezervace {
+  .admin-nova-rezervace-radek .btn-admin-nova-rezervace,
+  .admin-nova-rezervace-radek .btn-admin-export {
     width: 100% !important;
     max-width: 100% !important;
     flex: none !important;
@@ -4471,7 +4473,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   }
 
   .admin-top-actions .btn-admin-logout,
-  .admin-nova-rezervace-radek .btn-admin-nova-rezervace {
+  .admin-nova-rezervace-radek .btn-admin-nova-rezervace,
+  .admin-nova-rezervace-radek .btn-admin-export {
     grid-column: span 1 !important;
   }
 
@@ -5088,12 +5091,40 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .admin-nova-rezervace-radek {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
   margin: -12px 0 20px 0;
 }
 
+/* Export má stejný vzhled jako ostatní nástroje, jen se nesmí roztáhnout
+   — stejná pravidla jako u Nové rezervace vedle něj. */
+.admin-nova-rezervace-radek .btn-admin-export {
+  width: auto !important;
+  flex: 0 0 auto !important;
+  max-width: none !important;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
 @media (max-width: 768px) {
-  .admin-nova-rezervace-radek .btn-admin-nova-rezervace {
+  /* Pod sebe a přes celou šířku. Vedle sebe se dvě tlačítka s emoji
+     a dlouhými českými popisky na 375px displej nevejdou a text se
+     usekne uprostřed slova. */
+  .admin-nova-rezervace-radek {
+    /* `column`, ne `column-reverse` — pořadí shora dolů má odpovídat
+       tomu zleva doprava na širokém displeji, jinak obsluha po přepnutí
+       mezi počítačem a telefonem sahá vedle. */
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .admin-nova-rezervace-radek .btn-admin-nova-rezervace,
+  .admin-nova-rezervace-radek .btn-admin-export {
     width: 100% !important;
+    max-width: 100% !important;
+    flex: none !important;
     justify-content: center;
   }
 }
@@ -5388,7 +5419,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     width: 100% !important;
   }
 
-  .admin-nova-rezervace-radek .btn-admin-nova-rezervace {
+  .admin-nova-rezervace-radek .btn-admin-nova-rezervace,
+  .admin-nova-rezervace-radek .btn-admin-export {
     width: 100% !important;
     box-sizing: border-box !important;
   }
