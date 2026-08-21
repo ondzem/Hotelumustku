@@ -6226,3 +6226,118 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   .rucni-pokoj-stav { width: 100%; justify-content: flex-start; }
   .rucni-pokoj-info { width: 100%; }
 }
+
+/* ============================================================
+   HLEDÁNÍ V SEZNAMU REZERVACÍ
+
+   Vlastní řádek přes celou šířku lišty filtrů. Vedle záložek
+   stavů by se na užším displeji smrsklo na pár znaků, vedle
+   rozbalovátka pokojů by se s ním pralo o místo.
+   ============================================================ */
+
+.admin-hledani {
+  /* Zlom na vlastní řádek uvnitř .admin-toolbar (ta je flex-wrap). */
+  flex: 1 0 100%;
+  order: 3;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  background: #fafaf7;
+  border: 1px solid #e0dfd5;
+  border-radius: 8px;
+  padding: 0 12px;
+  height: 42px;
+  box-sizing: border-box;
+}
+
+.admin-hledani:focus-within { border-color: #697947; background: #ffffff; }
+
+.admin-hledani-ikona { display: inline-flex; color: #8a8a80; flex-shrink: 0; }
+.admin-hledani:focus-within .admin-hledani-ikona { color: #4a5a24; }
+
+.admin-hledani-pole {
+  flex: 1 1 auto;
+  min-width: 0;          /* jinak input vytlačí odznak s počtem z rámečku */
+  height: 100%;
+  border: none;
+  background: none;
+  outline: none;
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #1c1c19;
+}
+
+.admin-hledani-pole::placeholder { color: #9a9a90; font-weight: 500; }
+
+/* Prohlížeč kreslí u type="search" vlastní křížek, který vypadá jinak
+   na každé platformě a nedá se obarvit. Máme svůj. */
+.admin-hledani-pole::-webkit-search-cancel-button { display: none; }
+
+.admin-hledani-zrusit {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 50%;
+  background: #e7e5dc;
+  color: #55554e;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-hledani-zrusit:hover { background: #d8d5c9; color: #1c1c19; }
+.admin-hledani-zrusit[hidden] { display: none; }
+
+.admin-hledani-vysledek {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #4a5a24;
+  white-space: nowrap;
+}
+
+.admin-hledani-vysledek[hidden], .admin-hledani-jinde[hidden] { display: none; }
+.admin-hledani-jinde { color: #8a8a80; font-weight: 600; }
+
+.admin-hledani-prazdno { text-align: center; padding: 40px 24px; }
+.admin-hledani-prazdno[hidden] { display: none; }
+.admin-hledani-prazdno-hlavni { margin: 0; font-size: 16px; font-weight: 700; color: #1c1c19; }
+.admin-hledani-prazdno-vedlejsi { margin: 8px 0 0 0; font-size: 13.5px; color: #666660; }
+
+.admin-hledani-vsude {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 700;
+  color: #4a5a24;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  /* Nad záložky stavů: recepční na telefonu hledá konkrétního hosta
+     mnohem častěji, než prochází stavy, a nemá se kvůli tomu prorolovat
+     přes vodorovný pás záložek. */
+  /* Lišta je na mobilu sloupec, takže `flex-basis: 100 %` z desktopu
+     přestane znamenat „zaber celou šířku" a začne znamenat „zaber celou
+     VÝŠKU rodiče" — políčko se pak srazilo na 24 px. Ve sloupci se šířka
+     řeší roztažením (align-items: stretch), basis proto musí být auto. */
+  .admin-hledani { order: -1; flex: 0 0 auto; height: 44px; }
+  .admin-hledani-pole { font-size: 16px; }   /* pod 16 px iOS stránku přiblíží */
+  .admin-hledani-vysledek { font-size: 12px; }
+}
+
+/* Záložka, ve které hledaný výraz nic nemá. Ztlumená, ale klikatelná —
+   zákaz kliknutí by vypadal jako porucha. */
+.status-tab-btn.je-bez-shody { opacity: 0.42; }
+.status-tab-btn.je-bez-shody.active { opacity: 1; }

@@ -357,6 +357,37 @@ provoz. Nad seznamem je souhrn „volných 8 z 9".
 - **Poslední kontrola je až u tlačítka Založit**, ne jen při výběru.
   Termín se dá změnit i potom, co byl pokoj vybraný jako volný.
 
+## Hledání v seznamu rezervací
+
+Nad záložkami stavů je políčko, které filtruje karty podle kódu, jména,
+e-mailu, telefonu, města, poznámky, pokoje i termínu. Platí i v archivu —
+je to tentýž seznam, jen jiná sekce.
+
+Čtyři věci, které nejsou z kódu vidět:
+
+- **Psaní NEPŘEKRESLUJE administraci.** `render()` vyměňuje celý DOM přes
+  `innerHTML`, takže by po každém úhozu vypadl kurzor a psát by šlo jen
+  po jednom písmenu. Karty se proto jen skrývají (`prefiltrujSeznamRezervaci`).
+  Plné vykreslení filtruje týmž výrazem, takže po překreslení z jiného
+  důvodu — třeba když doběhne načtení dat — seznam pořád sedí.
+- **Porovnává se bez diakritiky** (`normalizuj`). Recepční napíše „nemec"
+  a musí najít „Němec"; funguje to i obráceně. Podklad k porovnání nese
+  každá karta v `data-hledat`, takže se při psaní už nic nenormalizuje.
+- **Hledá se i mimo vybranou záložku a hlásí se to.** Když výraz nic
+  nenajde ve vybraném stavu, ukáže se, kolik shod leží jinde, a tlačítko
+  přepne tam, kde doopravdy jsou. Rozlišuje se archiv od aktivních
+  (`kamSHledanim`) — archiv je vlastní sekce, ne stav, takže přepnutí na
+  „Všechny" by hosta z archivu nenašlo a tlačítko by slibovalo něco, co
+  neudělá.
+- **Čísla v záložkách se při hledání přepočítají** na počet shod v tom
+  kterém stavu a záložka bez shody se ztlumí. Původní hodnoty se drží
+  v `data-celkem`, aby se po vymazání výrazu měly kam vrátit.
+
+Na mobilu je políčko **nad** záložkami (`order: -1`): hledá se častěji než
+prochází stavy. Pozor na to, že lišta filtrů je tam sloupec — `flex-basis:
+100 %` z desktopu tam přestane znamenat šířku a začne znamenat výšku,
+takže se políčko srazí na 24 px. Ve sloupci musí být `flex: 0 0 auto`.
+
 ## Administrace se ptá vlastním oknem, ne prohlížečem
 
 `window.confirm` / `alert` / `prompt` v administraci nemají co dělat.

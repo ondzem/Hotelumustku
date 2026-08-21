@@ -71,6 +71,39 @@ const ADMIN_SESSION_KEY = 'hotel_mustku_admin_auth_v1';
  */
 const ADMIN_EMAIL = (import.meta.env && import.meta.env.VITE_ADMIN_EMAIL) || '';
 
+/** Hledaný výraz jde zpátky do HTML, takže se musí escapovat. */
+const escapujText = (t) => String(t == null ? '' : t)
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+/**
+ * Text pro porovnávání při hledání — bez diakritiky a malými písmeny.
+ *
+ * Bez odstranění diakritiky by recepční nenašel „Němec" napsáním „nemec",
+ * což je přesně to, co při hledání na klávesnici udělá. Funguje to i
+ * obráceně: napsané „Němec" najde uložené „Nemec".
+ */
+function normalizuj(text) {
+  return String(text == null ? '' : text)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+}
+
+/**
+ * Vše, v čem se u jedné rezervace hledá.
+ *
+ * Schválně i kód, e-mail a telefon — recepční často hledá podle toho, co
+ * má host právě po ruce (dorazil e-mail, volá číslo), ne podle jména.
+ */
+function textProHledani(r, nazevPokoje) {
+  return normalizuj([
+    r.code, r.guest_name, r.guest_email, r.guest_phone,
+    r.guest_city, r.guest_note, nazevPokoje,
+    r.date_from, r.date_to,
+  ].filter(Boolean).join(' '));
+}
+
 export class AdminDashboard {
   constructor(containerId) {
     this.container = document.getElementById(containerId);
@@ -125,6 +158,10 @@ export class AdminDashboard {
     this.tempValidUntil = '';
     this.selectedRoomFilter = 'all';
     this.statusFilter = 'all';
+    // Hledaný výraz v seznamu rezervací. Drží se na instanci, ne v DOM —
+    // administrace se překresluje přes innerHTML a políčko by se vyprázdnilo
+    // pokaždé, když se na pozadí načtou nová data.
+    this.hledanyVyraz = '';
     this.expandedReservationId = null;
     this.activeEmailPreview = null;
     this.showEmailModal = false;
@@ -726,6 +763,156 @@ export class AdminDashboard {
   }
 
   /**
+   * Přepíše čísla v záložkách stavů na počty shod s hledaným výrazem.
+   *
+   * Prázdný výraz vrátí původní hodnoty — drží se v `data-celkem`, aby
+   * se nemusely počítat znovu a aby přežily i to, že se mezitím na
+   * pozadí načetla nová data.
+   */
+  prepocitejPoctyZalozek(vyraz) {
+    const jeArchivovana = (r) => Boolean(r.is_archived || r.isArchived);
+    const sedi = (r) => {
+      if (!vyraz) return true;
+      const rm = MOCK_ROOMS.find(x => x.id === r.room_id);
+      return textProHledani(r, (rm && rm.name) || r.room_name || '').includes(vyraz);
+    };
+    const shody = this.reservations.filter(sedi);
+    const aktivni = shody.filter(r => !jeArchivovana(r));
+
+    const proStav = {
+      all: aktivni.length,
+      pending_approval: aktivni.filter(r => r.status === 'pending_approval').length,
+      awaiting_deposit: aktivni.filter(r => r.status === 'awaiting_deposit').length,
+      confirmed: aktivni.filter(r => r.status === 'confirmed').length,
+      cancelled: aktivni.filter(r => r.status === 'cancelled').length,
+      archived: shody.filter(jeArchivovana).length,
+    };
+
+    this.container.querySelectorAll('.status-tab-btn').forEach(tab => {
+      const cislo = tab.querySelector('.tab-count');
+      if (!cislo) return;
+      const stav = tab.dataset.status;
+      cislo.textContent = vyraz ? String(proStav[stav] ?? 0) : (cislo.dataset.celkem || cislo.textContent);
+      // Záložka bez jediné shody se ztlumí — recepční tak vidí rovnou,
+      // kam má kliknout, a nemusí je proklikávat jednu po druhé.
+      tab.classList.toggle('je-bez-shody', Boolean(vyraz) && !proStav[stav]);
+    });
+  }
+
+  /**
+   * Kde jinde hledaný výraz sedí a kam kvůli tomu přepnout.
+   *
+   * Archiv je vlastní sekce, ne stav — přepnutí na „Všechny" by hosta
+   * z archivu nenašlo, takže by tlačítko slibovalo něco, co neudělá.
+   * Proto se rozlišuje, jestli zbylé shody leží mezi aktivními, nebo
+   * v archivu, a cíl se tomu přizpůsobí.
+   */
+  /** Přepne filtry tam, kde hledaný host doopravdy je. */
+  prepniHledaniNa(cil) {
+    this.statusFilter = cil === 'archived' ? 'archived' : 'all';
+    this.selectedRoomFilter = 'all';
+    this.render();
+    // Kurzor zpátky do políčka, ať jde rovnou psát dál.
+    const pole = this.container.querySelector('#admin-hledat');
+    if (pole) { pole.focus(); pole.setSelectionRange(pole.value.length, pole.value.length); }
+  }
+
+  kamSHledanim(vyraz, viditelnych) {
+    if (!vyraz) return { jinde: 0, cil: null, popisek: '' };
+
+    const jeArchivovana = (r) => Boolean(r.is_archived || r.isArchived);
+    const sedi = (r) => {
+      const rm = MOCK_ROOMS.find(x => x.id === r.room_id);
+      return textProHledani(r, (rm && rm.name) || r.room_name || '').includes(vyraz);
+    };
+
+    const shody = this.reservations.filter(sedi);
+    const jinde = shody.length - viditelnych;
+    if (jinde <= 0) return { jinde: 0, cil: null, popisek: '' };
+
+    // Když stojíme v archivu, všechno ostatní leží mezi aktivními.
+    if (this.statusFilter === 'archived') {
+      return { jinde, cil: 'all', popisek: 'Hledat v aktivních' };
+    }
+
+    // Jinak: zbývá ještě něco mezi aktivními (jiný stav nebo pokoj),
+    // nebo je zbytek celý v archivu?
+    const mezi = shody.filter(r => !jeArchivovana(r)).length;
+    return mezi > viditelnych
+      ? { jinde, cil: 'all', popisek: 'Hledat ve všech' }
+      : { jinde, cil: 'archived', popisek: 'Hledat v archivu' };
+  }
+
+  /**
+   * Skryje karty, které neodpovídají hledanému výrazu.
+   *
+   * Dělá se to sáhnutím do DOM, ne překreslením — viz posluchač na
+   * políčku. Podklad pro porovnání nese každá karta v `data-hledat`,
+   * takže se tady už nic nenormalizuje a hledání je jen `includes`.
+   */
+  prefiltrujSeznamRezervaci() {
+    const vyraz = normalizuj(this.hledanyVyraz);
+    const karty = [...this.container.querySelectorAll('.admin-res-card[data-hledat]')];
+
+    let videt = 0;
+    karty.forEach(karta => {
+      const sedi = !vyraz || (karta.dataset.hledat || '').includes(vyraz);
+      karta.hidden = !sedi;
+      if (sedi) videt++;
+    });
+
+    // Kolik by se našlo mimo právě vybraný stav, pokoj a sekci. Bez toho
+    // vypadá host, který je o záložku vedle nebo v archivu, jako by
+    // v systému vůbec nebyl.
+    const kam = this.kamSHledanim(vyraz, videt);
+    const jinde = kam.jinde;
+
+    // Počty v záložkách ukazují při hledání shody v tom kterém stavu.
+    // Bez toho svítí u „Všechny" trojka, přestože je vidět jedna karta,
+    // a hlavně není poznat, ve které záložce hledaný host leží.
+    this.prepocitejPoctyZalozek(vyraz);
+
+    const vysledek = this.container.querySelector('.admin-hledani-vysledek');
+    const pocet = this.container.querySelector('.admin-hledani-pocet');
+    const jindeEl = this.container.querySelector('.admin-hledani-jinde');
+    const zrusit = this.container.querySelector('.admin-hledani-zrusit');
+    if (pocet) pocet.textContent = String(videt);
+    if (vysledek) vysledek.hidden = !vyraz;
+    if (zrusit) zrusit.hidden = !vyraz;
+    if (jindeEl) {
+      jindeEl.hidden = !(vyraz && jinde > 0);
+      jindeEl.textContent = `· ${jinde} jinde`;
+    }
+
+    // Hláška o prázdném seznamu má dvě podoby: „nic nenalezeno" při
+    // hledání a „žádné rezervace" bez něj. Prohodit je nestačí schováním
+    // karet, protože prázdný stav se vykresluje jen při plném renderu.
+    const seznam = this.container.querySelector('.admin-reservations-container');
+    if (seznam) {
+      const hlaska = videt === 0 && karty.length > 0;
+      let el = this.container.querySelector('.admin-hledani-prazdno');
+      if (hlaska && !el) {
+        el = document.createElement('div');
+        el.className = 'admin-res-card admin-hledani-prazdno';
+        seznam.appendChild(el);
+      }
+      if (el) {
+        el.hidden = !hlaska;
+        if (hlaska) {
+          el.innerHTML = `
+            <p class="admin-hledani-prazdno-hlavni">Nic neodpovídá výrazu „${escapujText(this.hledanyVyraz)}".</p>
+            ${jinde > 0
+              ? `<p class="admin-hledani-prazdno-vedlejsi">Jinde ${jinde === 1 ? 'je 1 rezervace, která odpovídá' : `jsou ${jinde} rezervace, které odpovídají`}. <button type="button" class="admin-hledani-vsude">${kam.popisek}</button></p>`
+              : '<p class="admin-hledani-prazdno-vedlejsi">Zkuste kratší výraz — hledá se v kódu, jméně, e-mailu, telefonu i pokoji.</p>'}
+          `;
+          const vsude = el.querySelector('.admin-hledani-vsude');
+          if (vsude) vsude.addEventListener('click', () => this.prepniHledaniNa(kam.cil));
+        }
+      }
+    }
+  }
+
+  /**
    * Zámek rolování stránky pod otevřeným oknem.
    *
    * Samotné `overflow: hidden` na `body` nestačí — Safari na iPhonu si
@@ -1065,11 +1252,25 @@ export class AdminDashboard {
     const cancelledCount = activeReservations.filter(r => r.status === 'cancelled').length;
     const archivedCount = archivedReservations.length;
 
-    const filteredReservations = (this.statusFilter === 'archived' ? archivedReservations : activeReservations).filter(r => {
+    const hledani = normalizuj(this.hledanyVyraz);
+    const nazevPokoje = (r) => {
+      const rm = MOCK_ROOMS.find(x => x.id === r.room_id);
+      return (rm && rm.name) || r.room_name || '';
+    };
+    const sediHledani = (r) => !hledani || textProHledani(r, nazevPokoje(r)).includes(hledani);
+
+    const vSekci = this.statusFilter === 'archived' ? archivedReservations : activeReservations;
+    const filteredReservations = vSekci.filter(r => {
       const matchRoom = this.selectedRoomFilter === 'all' || r.room_id === this.selectedRoomFilter;
       const matchStatus = this.statusFilter === 'all' || this.statusFilter === 'archived' || r.status === this.statusFilter;
-      return matchRoom && matchStatus;
+      return matchRoom && matchStatus && sediHledani(r);
     });
+
+    // Kolik by hledání našlo, kdyby se nekoukalo na stav, pokoj a archiv.
+    // Recepční hledá hosta, ne stav — a když je host o záložku vedle nebo
+    // v archivu, prázdný seznam vypadá, že v systému není vůbec.
+    const kam = this.kamSHledanim(hledani, filteredReservations.length);
+    const nalezenoJinde = kam.jinde;
 
     const pendingReviewsCount = (this.reviews || []).filter(r => r.status === 'pending_approval').length;
     const approvedReviewsCount = (this.reviews || []).filter(r => r.status === 'approved').length;
@@ -1119,28 +1320,46 @@ export class AdminDashboard {
           <div class="admin-status-tabs">
             <button type="button" class="status-tab-btn ${this.statusFilter === 'all' ? 'active' : ''}" data-status="all">
               <span>Všechny</span>
-              <span class="tab-count">${activeReservations.length}</span>
+              <span class="tab-count" data-celkem="${activeReservations.length}">${activeReservations.length}</span>
             </button>
             <button type="button" class="status-tab-btn tab-pending ${pendingCount > 0 ? 'has-pending' : ''} ${this.statusFilter === 'pending_approval' ? 'active' : ''}" data-status="pending_approval">
               <span>1. Ke schválení</span>
-              <span class="tab-count">${pendingCount}</span>
+              <span class="tab-count" data-celkem="${pendingCount}">${pendingCount}</span>
             </button>
             <button type="button" class="status-tab-btn ${this.statusFilter === 'awaiting_deposit' ? 'active' : ''}" data-status="awaiting_deposit">
               <span>2. Čeká na zálohu</span>
-              <span class="tab-count">${awaitingDepositCount}</span>
+              <span class="tab-count" data-celkem="${awaitingDepositCount}">${awaitingDepositCount}</span>
             </button>
             <button type="button" class="status-tab-btn ${this.statusFilter === 'confirmed' ? 'active' : ''}" data-status="confirmed">
               <span>3. Závazně potvrzeno</span>
-              <span class="tab-count">${confirmedCount}</span>
+              <span class="tab-count" data-celkem="${confirmedCount}">${confirmedCount}</span>
             </button>
             <button type="button" class="status-tab-btn ${this.statusFilter === 'cancelled' ? 'active' : ''}" data-status="cancelled">
               <span>Stornováno</span>
-              <span class="tab-count">${cancelledCount}</span>
+              <span class="tab-count" data-celkem="${cancelledCount}">${cancelledCount}</span>
             </button>
             <button type="button" class="status-tab-btn ${this.statusFilter === 'archived' ? 'active' : ''}" data-status="archived">
               <span>📂 Archiv</span>
-              <span class="tab-count">${archivedCount}</span>
+              <span class="tab-count" data-celkem="${archivedCount}">${archivedCount}</span>
             </button>
+          </div>
+
+          <!-- Hledání je vlastní řádek přes celou šířku lišty. Vedle
+               záložek stavů by se na užším displeji smrsklo na pár znaků
+               a vedle rozbalovátka pokojů by se s ním pralo o místo. -->
+          <div class="admin-hledani">
+            <span class="admin-hledani-ikona" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </span>
+            <input type="search" id="admin-hledat" class="admin-hledani-pole" autocomplete="off"
+                   placeholder="Hledat hosta, kód, e-mail nebo telefon…"
+                   value="${escapujText(this.hledanyVyraz)}"
+                   aria-label="Hledat v rezervacích">
+            <button type="button" class="admin-hledani-zrusit" aria-label="Zrušit hledání" ${this.hledanyVyraz ? '' : 'hidden'}>&times;</button>
+            <span class="admin-hledani-vysledek" ${this.hledanyVyraz ? '' : 'hidden'}>
+              <span class="admin-hledani-pocet">${filteredReservations.length}</span>
+              <span class="admin-hledani-jinde"${nalezenoJinde > 0 ? '' : ' hidden'}>· ${nalezenoJinde} jinde</span>
+            </span>
           </div>
 
           <div class="admin-room-filter">
@@ -1164,8 +1383,13 @@ export class AdminDashboard {
         <!-- SEZNAM KARET REZERVACÍ -->
         <div class="admin-reservations-container">
           ${filteredReservations.length === 0 ? `
-            <div class="admin-res-card" style="text-align: center; padding: 48px 24px; color: #666660;">
-              <p style="margin: 0; font-size: 16px; font-weight: 600;">Žádné rezervace neodpovídají vybraným filtrům.</p>
+            <div class="admin-res-card admin-prazdny-seznam" style="text-align: center; padding: 48px 24px; color: #666660;">
+              <p style="margin: 0; font-size: 16px; font-weight: 600;">${this.hledanyVyraz
+                ? `Nic neodpovídá výrazu „${escapujText(this.hledanyVyraz)}".`
+                : 'Žádné rezervace neodpovídají vybraným filtrům.'}</p>
+              ${this.hledanyVyraz && nalezenoJinde > 0
+                ? `<p style="margin: 8px 0 0 0; font-size: 13.5px;">Jinde ${nalezenoJinde === 1 ? 'je 1 rezervace, která odpovídá' : `jsou ${nalezenoJinde} rezervace, které odpovídají`}. <button type="button" class="admin-hledani-vsude" data-cil="${kam.cil}">${kam.popisek}</button></p>`
+                : ''}
             </div>
           ` : filteredReservations.map(r => {
             const isExpanded = this.expandedReservationId === r.id;
@@ -1173,7 +1397,7 @@ export class AdminDashboard {
             const formattedCreated = r.created_at ? new Date(r.created_at).toLocaleDateString('cs-CZ') + ' ' + new Date(r.created_at).toLocaleTimeString('cs-CZ', {hour:'2-digit', minute:'2-digit'}) : 'Není k dispozici';
 
             return `
-              <div class="admin-res-card status-card-${r.status}" data-id="${r.id || r.code}">
+              <div class="admin-res-card status-card-${r.status}" data-id="${r.id || r.code}" data-hledat="${escapujText(textProHledani(r, room.name || r.room_name || ''))}">
                 <div class="res-card-grid">
 
                   <!-- COL 1: KÓD A DATUM -->
@@ -2294,6 +2518,49 @@ export class AdminDashboard {
       filterRoom.addEventListener('change', (e) => {
         this.selectedRoomFilter = e.target.value;
         this.render();
+      });
+    }
+
+    // Po plném vykreslení sedí karty samy (render filtruje týmž výrazem),
+    // ale čísla v záložkách se počítají v JS — bez tohohle by po
+    // překreslení ukazovala celkové počty, přestože hledání pořád běží.
+    if (this.hledanyVyraz) this.prepocitejPoctyZalozek(normalizuj(this.hledanyVyraz));
+
+    // Hledání NEPŘEKRESLUJE administraci. Překreslení vyměňuje celý DOM
+    // přes innerHTML, takže by po každém úhozu vypadl kurzor z políčka
+    // a psaní by šlo jen po jednom písmenu. Karty se proto jen skrývají
+    // a odkrývají; plné vykreslení respektuje tentýž výraz, takže po
+    // překreslení z jiného důvodu (třeba po načtení dat) seznam sedí.
+    const poleHledani = this.container.querySelector('#admin-hledat');
+    if (poleHledani) {
+      poleHledani.addEventListener('input', (e) => {
+        this.hledanyVyraz = e.target.value;
+        this.prefiltrujSeznamRezervaci();
+      });
+      // Escape vyprázdní políčko — recepční se tím rychle vrátí k celému
+      // seznamu, aniž by musel mazat po písmenech.
+      poleHledani.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && this.hledanyVyraz) {
+          e.preventDefault();
+          this.hledanyVyraz = '';
+          poleHledani.value = '';
+          this.prefiltrujSeznamRezervaci();
+        }
+      });
+    }
+
+    // Tlačítko v prázdném seznamu z plného vykreslení. (To, které si
+    // dokresluje prefiltrujSeznamRezervaci, si posluchač věší samo.)
+    this.container.querySelectorAll('.admin-prazdny-seznam .admin-hledani-vsude').forEach(b => {
+      b.addEventListener('click', () => this.prepniHledaniNa(b.dataset.cil));
+    });
+
+    const zrusHledani = this.container.querySelector('.admin-hledani-zrusit');
+    if (zrusHledani) {
+      zrusHledani.addEventListener('click', () => {
+        this.hledanyVyraz = '';
+        if (poleHledani) { poleHledani.value = ''; poleHledani.focus(); }
+        this.prefiltrujSeznamRezervaci();
       });
     }
 
