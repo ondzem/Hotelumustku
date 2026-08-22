@@ -21,7 +21,7 @@ export const VYCHOZI_NASTAVENI = {
   polopenze: 195,        // Kč / osoba / noc
   pes: 150,              // Kč / noc
   elektrokolo: 15,       // Kč / kus / den
-  zimni_parkovani: 50,   // Kč / auto / noc
+  zimni_parkovani: 100,  // Kč / auto / POBYT, ne za noc — viz výpočet níž
   mestsky_poplatek: 0,   // Kč / osoba / noc, 0 = zahrnuto v ceně
   zaloha_procent: 30,    // % z celkové ceny
 };
@@ -78,7 +78,7 @@ export const CITY_TAX_PER_ADULT_NIGHT = VYCHOZI_NASTAVENI.mestsky_poplatek;
 export const HALF_BOARD_PER_PERSON_NIGHT = VYCHOZI_NASTAVENI.polopenze;
 export const DOG_PER_DAY = VYCHOZI_NASTAVENI.pes;
 export const EBIKE_PER_DAY = VYCHOZI_NASTAVENI.elektrokolo;
-export const WINTER_PARKING_PER_CAR_NIGHT = VYCHOZI_NASTAVENI.zimni_parkovani;
+export const WINTER_PARKING_PER_CAR = VYCHOZI_NASTAVENI.zimni_parkovani;
 
 /**
  * Single source of truth for Variable Symbol generation across Admin & QR codes
@@ -232,8 +232,12 @@ export function calculateReservationPrice({
   const safeParkingCarsCount = (isWinter && hasWinterParking)
     ? Math.max(1, parseInt(parkingCarsCount || 1))
     : 1;
+  // Zimní parkování je JEDNORÁZOVÉ za celý pobyt, ne za noc. Majitel to
+  // tak chce od 22. 8. 2026: je to příspěvek na zimní údržbu příjezdové
+  // cesty, a ta se nedělá znovu každou noc. Nenásobit počtem nocí —
+  // u týdenního pobytu by z toho vyšlo sedminásobek.
   const winterParkingPriceTotal = (isWinter && hasWinterParking)
-    ? safeParkingCarsCount * nast(nastaveni, 'zimni_parkovani') * safeNights
+    ? safeParkingCarsCount * nast(nastaveni, 'zimni_parkovani')
     : 0;
 
   const addonsPrice = halfBoardPriceTotal + dogPriceTotal + ebikePriceTotal + winterParkingPriceTotal;

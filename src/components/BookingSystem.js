@@ -2047,7 +2047,7 @@ export class BookingSystem {
                     <input type="checkbox" id="addon-halfboard" ${this.state.hasHalfBoard ? 'checked' : ''}>
                     <span class="addon-text">
                       <strong>Dokoupit polopenzi</strong> (+${this.castka('polopenze')} Kč / osoba / noc)
-                      <small>Poctivá teplá večeře podávaná v hotelové restauraci.</small>
+                      <small>Poctivá teplá večeře podávaná v hotelové restauraci bez možnosti výběru.</small>
                     </span>
                   </label>
                   ${this.state.hasHalfBoard ? `
@@ -2095,8 +2095,8 @@ export class BookingSystem {
                     <label class="checkbox-addon-item">
                       <input type="checkbox" id="addon-winter-parking" ${this.state.hasWinterParking ? 'checked' : ''}>
                       <span class="addon-text">
-                        <strong>Zimní parkování u hotelu</strong> (+${this.castka('zimni_parkovani')} Kč / auto / noc)
-                        <small>Příspěvek na pravidelnou zimní údržbu, odhrnování sněhu a údržbu příjezdové dráhy v zimním období (1. 11. – 15. 4.).</small>
+                        <strong>Zimní parkování u hotelu</strong> (+${this.castka('zimni_parkovani')} Kč / auto, jednorázově za pobyt)
+                        <small>Jednorázový poplatek bez ohledu na délku pobytu. Příspěvek na pravidelnou zimní údržbu, odhrnování sněhu a údržbu příjezdové dráhy v zimním období (1. 11. – 15. 4.). V létě je parkování u hotelu zdarma.</small>
                       </span>
                     </label>
                     ${this.state.hasWinterParking ? `
@@ -2216,7 +2216,7 @@ export class BookingSystem {
                     <div class="summary-row">
                       <div class="row-info">
                         <span class="row-label">Zimní parkování u hotelu</span>
-                        <span class="row-details">(+${this.castka('zimni_parkovani')} Kč/noc • ${pricing.parkingCarsCount}x auto, ${nights}x noc)</span>
+                        <span class="row-details">(+${this.castka('zimni_parkovani')} Kč za auto a pobyt • ${pricing.parkingCarsCount}x auto)</span>
                       </div>
                       <span class="row-price">+${pricing.winterParkingPriceTotal} Kč</span>
                     </div>
@@ -2636,7 +2636,7 @@ export class BookingSystem {
                       <div class="summary-row">
                         <div class="row-info">
                           <span class="row-label">Zimní parkování u hotelu</span>
-                          <span class="row-details">(+${this.castka('zimni_parkovani')} Kč/noc • ${currentPricing.parkingCarsCount}x auto, ${nights}x noc)</span>
+                          <span class="row-details">(+${this.castka('zimni_parkovani')} Kč za auto a pobyt • ${currentPricing.parkingCarsCount}x auto)</span>
                         </div>
                         <span class="row-price">+${currentPricing.winterParkingPriceTotal} Kč</span>
                       </div>

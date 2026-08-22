@@ -1589,7 +1589,7 @@ export class AdminDashboard {
                           <li><span>Polopenze:</span> <strong>${r.has_half_board ? `${r.half_board_count || r.adults_count || 1} osob` : 'Ne'}</strong></li>
                           <li><span>Pobyt s pejskem:</span> <strong>${r.has_dog ? 'Ano (150 Kč/den)' : 'Ne'}</strong></li>
                           <li><span>Elektrokolo:</span> <strong>${r.has_ebike ? `${r.ebike_count || 1}x ks` : 'Ne'}</strong></li>
-                          <li><span>Zimní parkování:</span> <strong>${r.has_winter_parking ? `${r.parking_cars_count || 1}x auto (${(r.parking_cars_count || 1) * 50} Kč/noc)` : 'Ne (0 Kč)'}</strong></li>
+                          <li><span>Zimní parkování:</span> <strong>${r.has_winter_parking ? `${r.parking_cars_count || 1}x auto (${r.winter_parking_price_total || 0} Kč za pobyt)` : 'Ne (0 Kč)'}</strong></li>
                           <li><span>Poznámka hosta:</span> <strong>${r.guest_note || 'Bez poznámky'}</strong></li>
                         </ul>
                       </div>

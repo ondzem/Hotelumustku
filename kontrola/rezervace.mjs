@@ -69,4 +69,29 @@ const nulovaZaloha = calculateReservationPrice({
 });
 overit('nula od admina se respektuje', nulovaZaloha.depositPercentage, 0);
 
+// --- Zimní parkování je JEDNORÁZOVÉ za pobyt --------------------------
+// Do 22. 8. 2026 se násobilo počtem nocí; u týdenního pobytu z toho
+// vyšel sedminásobek toho, co majitel účtuje.
+{
+  const nastaveni = { polopenze: 195, pes: 150, elektrokolo: 15, zimni_parkovani: 100, mestsky_poplatek: 0, zaloha_procent: 30 };
+  const parkovne = (nights, cars, dateFrom) => calculateReservationPrice({
+    roomId: 'p6', dateFrom, nights, adults: 2,
+    hasWinterParking: true, parkingCarsCount: cars, nastaveni,
+  }).winterParkingPriceTotal;
+
+  overit('parkování: 2 noci, 1 auto', parkovne(2, 1, '2026-12-10'), 100);
+  overit('parkování: 7 nocí, 1 auto — pořád jednou', parkovne(7, 1, '2026-12-10'), 100);
+  overit('parkování: 7 nocí, 2 auta', parkovne(7, 2, '2026-12-10'), 200);
+  overit('parkování se v létě neúčtuje', parkovne(3, 2, '2026-07-10'), 0);
+
+  // Pes a elektrokolo se naopak počítají za noc dál — kdyby se změna
+  // parkování dotkla i jich, bylo by to vidět tady.
+  const p = calculateReservationPrice({
+    roomId: 'p6', dateFrom: '2026-12-10', nights: 3, adults: 2,
+    hasDog: true, hasEbike: true, ebikeCount: 2, nastaveni,
+  });
+  overit('pes zůstal za noc', p.dogPriceTotal, 150 * 3);
+  overit('elektrokolo zůstalo za noc a kus', p.ebikePriceTotal, 15 * 2 * 3);
+}
+
 process.exit(chyb ? 1 : 0);

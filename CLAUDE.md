@@ -155,6 +155,13 @@ Nastavuje se v Příplatcích (`cenik_nastaveni`: `vikend_standard`,
 `vikend_nadstandard`). Starý sloupec `cenik_sezony.vikendovy_priplatek`
 v databázi zůstal, ale výpočet ho už nečte.
 
+**Zimní parkování je JEDNORÁZOVÉ za pobyt, ne za noc.** Je to příspěvek
+na zimní údržbu příjezdové cesty a ta se nedělá znovu každou noc; majitel
+to tak určil 22. 8. 2026 (100 Kč / auto). Do té doby se násobilo počtem
+nocí, takže týdenní pobyt platil sedminásobek. Násobí se jen počtem aut.
+Hlídá to `kontrola/rezervace.mjs`. Pes a elektrokolo se za noc počítají
+dál — pozor na to při úpravách, jsou hned vedle v témže výpočtu.
+
 **Příplatek za sólo obsazení se nepřipočítává.** Sloupec „1 osoba" už ho
 obsahuje — kdyby se přidal zvlášť, počítal by se dvakrát. Příplatek za
 pobyt na jednu noc (+200 / osoba) platí dál.

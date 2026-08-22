@@ -1324,7 +1324,7 @@ const getRoomsPageHTML = () => `
             <div class="service-card-desc-wrap">
               <p class="service-card-desc">
                 <span class="desktop-sub-text">Domácí dvouchodové večeře (polévka a hlavní chod) připravované z poctivých surovin podle tradičních receptů české i mezinárodní kuchyně.</span>
-                <span class="mobile-sub-text">+195 Kč / osoba / den - ryze domácí česká kuchyně, jednotné 2chodové menu podávané v 18:00 hod.</span>
+                <span class="mobile-sub-text">+195 Kč / osoba / noc - ryze domácí česká kuchyně, jednotné 2chodové menu bez možnosti výběru, podávané od 18:00 do 18:30 hod.</span>
               </p>
               <button class="btn btn-booking btn-dining-more mobile-dining-btn">Zjistit více o stravování</button>
             </div>
@@ -3266,7 +3266,7 @@ const getStravovaniPageHTML = () => `
       <div class="dining-section-header" data-anim="left">
         <h2 class="dining-section-title">Večeře formou polopenze</h2>
         <p class="dining-section-lead">
-          Užijte si poctivou českou domácí kuchyni formou dvouchodového týdenního menu — polévka a hlavní jídlo, které pro vás vaříme z čerstvých sezónních surovin. Máte-li zdravotní omezení nebo držíte dietu, domluvte se s námi předem a podle možností vám vyjdeme vstříc. Jelikož nejsme veřejná restaurace, večeře podáváme ubytovaným hostům společně, podle sezóny v 18:00 nebo v 19:00 hodin. Při pozdním návratu z výletu či túry vám jídlo po předchozí domluvě rádi uchováme a ohřejeme.
+          Užijte si poctivou českou domácí kuchyni formou dvouchodového týdenního menu — polévka a hlavní jídlo, které pro vás vaříme z čerstvých sezónních surovin. Máte-li zdravotní omezení nebo držíte dietu, domluvte se s námi předem a podle možností vám vyjdeme vstříc. Jelikož nejsme veřejná restaurace, večeře podáváme ubytovaným hostům společně od 18:00 do 18:30 hodin.
         </p>
       </div>
 
@@ -4383,7 +4383,7 @@ export const getPodminkyPageHTML = () => `
                   </tr>
                   <tr>
                     <td>Zimní parkování<br><span style="opacity: 0.75;">1. 11. – 15. 4., volitelná služba</span></td>
-                    <td>50 Kč / auto / noc</td>
+                    <td>100 Kč / auto, jednorázově za pobyt</td>
                   </tr>
                   <tr>
                     <td>Parkování u hotelu se závorou a kamerovým systémem</td>
@@ -4458,7 +4458,7 @@ export const getPodminkyPageHTML = () => `
               <h2 class="legal-article-title">8. Stravování</h2>
               <ul style="line-height: 1.7; color: #4a4a46; padding-left: 20px;">
                 <li><strong>Snídaně</strong> formou švédského stolu podáváme od 8:00 do 9:00. Jsou v ceně ubytování.</li>
-                <li><strong>Večeře</strong> podáváme v 18:00 hostům, kteří si objednali polopenzi. Jde o jednotné dvouchodové menu bez možnosti výběru z jídelního lístku.</li>
+                <li><strong>Večeře</strong> podáváme od 18:00 do 18:30 hostům, kteří si objednali polopenzi. Jde o jednotné dvouchodové menu bez možnosti výběru z jídelního lístku.</li>
                 <li>Hotel <strong>není veřejnou restaurací</strong> — vaříme výhradně pro ubytované hosty.</li>
                 <li>Máte-li dietní omezení nebo alergii, dejte nám prosím vědět <strong>nejpozději 3 dny před příjezdem</strong>. Běžné úpravy včetně bezlepkové stravy zvládneme, ale potřebujeme čas na nákup surovin.</li>
                 <li>Polopenzi lze doobjednat i na místě, pokud to kapacita kuchyně dovolí.</li>
@@ -4866,6 +4866,7 @@ const getContactPageHTML = () => `
             <h3 class="directions-parking-title">Parkování v létě zdarma přímo u hotelu</h3>
             <p class="directions-parking-desc">
               Uzamykatelné a hlídané kamerovým systémem, bez nutnosti rezervace místa.
+              V zimě (1. 11. – 15. 4.) za jednorázový poplatek 100 Kč za auto bez ohledu na délku pobytu — přispívá na odhrnování sněhu a údržbu příjezdové cesty.
             </p>
           </div>
 
@@ -4892,7 +4893,7 @@ const getContactPageHTML = () => `
               <div class="directions-mode-content">
                 <h3 class="directions-mode-title">Vlakem</h3>
                 <p class="directions-mode-desc">
-                  Vlaková zastávka v Desné je vzdálená 1,5 km od hotelu. V případě potřeby rádi zajistíme bezplatný odvoz vašich zavazadel od vlaku přímo k hotelu.
+                  Vlaková zastávka v Desné je vzdálená 1,2 km od hotelu. V případě potřeby rádi zajistíme odvoz vašich zavazadel od vlaku přímo k hotelu.
                 </p>
               </div>
             </div>

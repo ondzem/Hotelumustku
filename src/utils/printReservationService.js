@@ -398,7 +398,7 @@ export function printReservationSheet(reservation) {
     <tr><td class="label" style="width: 25%;">Polopenze:</td><td class="value">${reservation.has_half_board ? `${reservation.half_board_count || reservation.adults_count || 1} osob` : 'Ne'}</td></tr>
     <tr><td class="label" style="width: 25%;">Pobyt s pejskem:</td><td class="value">${reservation.has_dog ? 'Ano (150 Kč/den)' : 'Ne'}</td></tr>
     <tr><td class="label" style="width: 25%;">Elektrokolo:</td><td class="value">${reservation.has_ebike ? `${reservation.ebike_count || 1}x ks` : 'Ne'}</td></tr>
-    <tr><td class="label" style="width: 25%;">Zimní parkování:</td><td class="value">${reservation.has_winter_parking ? `${reservation.parking_cars_count || 1}x auto (${(reservation.parking_cars_count || 1) * 50} Kč/noc)` : 'Ne (0 Kč)'}</td></tr>
+    <tr><td class="label" style="width: 25%;">Zimní parkování:</td><td class="value">${reservation.has_winter_parking ? `${reservation.parking_cars_count || 1}x auto (${reservation.winter_parking_price_total || 0} Kč za pobyt)` : 'Ne (0 Kč)'}</td></tr>
     <tr><td class="label" style="width: 25%;">Poznámka hosta:</td><td class="value">${reservation.guest_note || 'Bez poznámky'}</td></tr>
   </table>
 
