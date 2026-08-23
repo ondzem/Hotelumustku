@@ -33,11 +33,10 @@ const ODESILATELE = [
   'Hotel u Můstku <onboarding@resend.dev>'
 ];
 
-// Kam se pošta přesměruje, když ji Resend ještě nepustí na cizí adresu
-// (doména se teprve ověřuje). Musí sedět s RECEPCE_PRIJEMCE
-// v src/utils/emailService.js — až začne fungovat hotel@umustku.cz,
-// přepíše se to na obou místech.
-const RECEPCE = 'ondra.zeman05@gmail.com';
+// Kam chodí upozornění pro recepci a kam se pošta přesměruje, když ji
+// Resend nepustí na cizí adresu. Musí sedět s RECEPCE_PRIJEMCE
+// v src/utils/emailService.js — mění se to na obou místech naráz.
+const RECEPCE = 'hotel@umustku.cz';
 
 /**
  * Netlify Functions v2 vyžaduje vrácení standardního objektu Response,

@@ -18,14 +18,16 @@ export const HOTEL_TELEFON = '+420 777 666 273';
  * Kam CHODÍ UPOZORNĚNÍ pro recepci — nová žádost o rezervaci, zpráva
  * z kontaktního formuláře, nová recenze.
  *
- * Schválně to NENÍ totéž co HOTEL_EMAIL: schránka hotel@umustku.cz zatím
- * nefunguje, doména se teprve překlápí. Upozornění proto chodí majiteli
- * na soukromou adresu, aby se neztrácela.
+ * Od 23. 8. 2026 je to tatáž adresa jako HOTEL_EMAIL. Dřív tu byla
+ * soukromá schránka majitele, protože doména se teprve překlápěla
+ * a upozornění by se ztrácela; soukromá adresa se sem vracet nemá —
+ * hotelu chodí pošta na hotelovou adresu.
  *
- * AŽ BUDE hotel@umustku.cz doručovat, stačí tady napsat HOTEL_EMAIL
- * a totéž v netlify/functions/send-email.js u konstanty RECEPCE.
+ * Musí sedět s konstantou RECEPCE v netlify/functions/send-email.js —
+ * mění se to na obou místech naráz. Hlídá to kontrola „Adresa recepce"
+ * v ./zkontroluj.sh.
  */
-export const RECEPCE_PRIJEMCE = 'ondra.zeman05@gmail.com';
+export const RECEPCE_PRIJEMCE = HOTEL_EMAIL;
 
 export function getEmailLogs() {
   if (typeof localStorage === 'undefined') return [];

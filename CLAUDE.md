@@ -994,11 +994,19 @@ nikam je nepiš natvrdo:
 
 - **`HOTEL_EMAIL`** = `hotel@umustku.cz` — adresa, kterou **vidí hosté**
   v textech e-mailů a na tiskových sestavách.
-- **`RECEPCE_PRIJEMCE`** = `ondra.zeman05@gmail.com` — kam **chodí
-  upozornění** (nová žádost o rezervaci, zpráva z kontaktního formuláře,
-  nová recenze). Schválně to zatím není totéž: schránka na doméně ještě
-  nedoručuje. Až začne, přepíše se to tady a v `netlify/functions/send-email.js`
-  u konstanty `RECEPCE`.
+- **`RECEPCE_PRIJEMCE`** = `HOTEL_EMAIL` — kam **chodí upozornění**
+  (nová žádost o rezervaci, zpráva z kontaktního formuláře, nová
+  recenze). Od 23. 8. 2026 je to tatáž adresa jako `HOTEL_EMAIL`.
+
+  Dřív tu byla soukromá schránka majitele, protože doména se teprve
+  překlápěla a upozornění by se ztrácela. **Soukromou adresu sem
+  nevracej** — hotelu chodí pošta na hotelovou adresu. Když by
+  `hotel@umustku.cz` nedoručovala, řeší se to na doméně, ne přesměrováním
+  do kódu.
+
+  Musí sedět s konstantou `RECEPCE` v `netlify/functions/send-email.js`
+  (ta se používá i jako záloha, když Resend nepustí e-mail na cizí
+  adresu) — mění se to na obou místech naráz.
 
 V kódu kdysi byly rozeseté tři různé adresy včetně `info@hotelumustku.cz`,
 která nikdy neexistovala — a přesto se posílala hostům v e-mailu
@@ -1126,7 +1134,7 @@ Pozor na dvě věci, které vypadají jako chyba a nejsou:
 
 ## Jak si ověřit, že to funguje
 
-Nejdřív `./zkontroluj.sh` (nebo `npm run zkontroluj`). Projde 34 kontrol:
+Nejdřív `./zkontroluj.sh` (nebo `npm run zkontroluj`). Projde 35 kontrol:
 sestavení, shodu hlaviček napříč stránkami, matematiku ceníku a zálohy,
 klíče v balíčku, typy e-mailů, dostupnost nasazených stránek, odmítání
 neoprávněných volání serverových funkcí a pravidla v databázi. S přepínačem

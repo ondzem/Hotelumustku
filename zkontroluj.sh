@@ -110,6 +110,18 @@ fi
 # ------------------------------------------------------------- typy e-mailů
 # Nový typ zprávy musí přibýt i do POVOLENE_TYPY, jinak ho serverová
 # funkce odmítne se stavem 400 a e-mail hostu nedojde.
+# --------------------------------------------------- adresa recepce
+# Upozornění pro recepci musí chodit na hotelovou adresu. Soukromá
+# schránka majitele tu kdysi byla, dokud se doména překlápěla; do kódu
+# se vracet nemá a v repozitáři (který je veřejný) nemá co dělat.
+nadpis "Adresa recepce"
+SOUKROMA=$(grep -rlE "ondra\.zeman05@|@gmail\.com" src netlify *.html 2>/dev/null | head -3)
+if [ -z "$SOUKROMA" ]; then
+  zelena "v kódu není soukromá adresa, jen hotelová"
+else
+  cervena "soukromá adresa v kódu: $(echo "$SOUKROMA" | tr '\n' ' ')"
+fi
+
 nadpis "Typy e-mailů"
 CHYBEJICI=$(node --input-type=module -e "
 import { readFileSync, readdirSync, statSync } from 'fs';

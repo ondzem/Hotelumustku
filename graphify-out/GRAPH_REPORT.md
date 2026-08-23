@@ -1,16 +1,16 @@
-# Graph Report - Hotel u mustku  (2026-08-21)
+# Graph Report - Hotel u mustku  (2026-08-22)
 
 ## Corpus Check
-- 58 files · ~185,237 words
+- 58 files · ~185,592 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 815 nodes · 1750 edges · 50 communities (44 shown, 6 thin omitted)
+- 815 nodes · 1750 edges · 52 communities (46 shown, 6 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 26 edges (avg confidence: 0.73)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `95022a24`
+- Built from commit: `a6fa6b7f`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -56,8 +56,10 @@
 - AdminFotoOrez.js
 - AdminDashboard
 - AdminDashboard.js
-- emailService.js
-- printReservationService.js
+- getStoredDisabledRooms
+- getStoredBlockedDates
+- src/style.css (Global Stylesheet)
+- getStoredDiscountCodes
 
 ## God Nodes (most connected - your core abstractions)
 1. `BookingSystem` - 45 edges
@@ -94,15 +96,15 @@
 - **Sdílená HTML kostra stránek (nav, header, styly, schema)** — okoli, podminky, stravovani, ubytovani, site_header_component, src_style, schema_hotel_jsonld [EXTRACTED 0.95]
 - **Tři nástroje na zavírání provozu** — table_blocked_dates, table_disabled_rooms, src_components_admindostupnost, src_utils_cenik [EXTRACTED 0.95]
 
-## Communities (50 total, 6 thin omitted)
+## Communities (52 total, 6 thin omitted)
 
 ### Community 0 - "main.js"
 Cohesion: 0.07
 Nodes (65): isPreRenderedMatch — kontrola shody, formatGDPRName(), saveContactMessage(), saveStoredReview(), app, CATEGORIES_DATA, closePromoCodeModal(), esc() (+57 more)
 
 ### Community 1 - "supabaseClient.js"
-Cohesion: 0.06
-Nodes (45): Pravidlo — date_to je výlučné, obnovCenik(), ALLOWED_SUPABASE_COLUMNS, decrementDiscountCodeUsage(), DEFAULT_REVIEWS, deleteStoredDiscountCode(), deleteStoredNewsItem(), fetchCenik() (+37 more)
+Cohesion: 0.08
+Nodes (32): Pravidlo — date_to je výlučné, obnovCenik(), ALLOWED_SUPABASE_COLUMNS, DEFAULT_REVIEWS, deleteStoredNewsItem(), fetchCenik(), getStoredCustomRoomNames(), getStoredNewsItems() (+24 more)
 
 ### Community 2 - "zkontroluj.sh"
 Cohesion: 0.43
@@ -145,12 +147,12 @@ Cohesion: 0.11
 Nodes (17): dependencies, qrcode, @supabase/supabase-js, devDependencies, vite, name, private, scripts (+9 more)
 
 ### Community 12 - ".agents/SEO-ROADMAP.md"
-Cohesion: 0.14
+Cohesion: 0.15
 Nodes (13): FÁZE 0 — Přístupy a základna měření ✅, FÁZE 5 — Optimalizace pro AI vyhledávače ✅ (co jde udělat před spuštěním), FÁZE 6 — Lokální SEO ⏹️ VYŘAZENO ZE ZAKÁZKY, FÁZE 8 — Měření ✅, JAK POZNÁME, ŽE JE TO 100 %, ⚠️ Jak číst nezaškrtnuté položky, 🔁 Pravidelná údržba — NENÍ TO CHECKLIST, PRŮBĚH (+5 more)
 
 ### Community 13 - "AdminRucniRezervace.js"
-Cohesion: 0.18
-Nodes (27): adminPotvrzeni(), escapuj(), bindRucniRezervaceModal(), CELY_HOTEL, dnesStr(), dostupnostPokoje(), escapuj(), formatCzechDateStr() (+19 more)
+Cohesion: 0.19
+Nodes (26): adminPotvrzeni(), escapuj(), bindRucniRezervaceModal(), CELY_HOTEL, dnesStr(), dostupnostPokoje(), escapuj(), formatCzechDateStr() (+18 more)
 
 ### Community 14 - "AdminDostupnost.js"
 Cohesion: 0.10
@@ -169,12 +171,12 @@ Cohesion: 0.20
 Nodes (10): 1. Co je projekt, 2. Cílová skupina (priorita shora dolů), 3. USP — o co se copy vždycky opírá, 4. Fakta pro texty (nikdy si nevymýšlet jiná), 5. Stav SEO — co chybí (audit k 31. 7. 2026), 6. Copy pravidla, 7. Kde jsou zdrojová data, Fakturační údaje — ověřeno v ARES 1. 8. 2026 (+2 more)
 
 ### Community 19 - "Okolí (Aktivity) Page"
-Cohesion: 0.18
-Nodes (17): Button Design System, Ceník 2026, Hero Section System, Hlavní navigační stránky, Okolí (Aktivity) Page, Obchodní podmínky Page, BreadcrumbList JSON-LD, FAQPage schema (okoli) (+9 more)
+Cohesion: 0.20
+Nodes (13): Ceník 2026, Hlavní navigační stránky, Okolí (Aktivity) Page, Obchodní podmínky Page, BreadcrumbList JSON-LD, FAQPage schema (okoli), FAQPage schema (ubytování), Hotel JSON-LD schema (+5 more)
 
 ### Community 20 - "BookingSystem.js"
 Cohesion: 0.07
-Nodes (29): this.castka(klic) v BookingSystem, Živé procento zálohy, Minimum dvě noci (hasValidDates), bezNastaveni, bezNastaveni2, nulovaZaloha, p, isDummyIdNumber() (+21 more)
+Nodes (54): this.castka(klic) v BookingSystem, Živé procento zálohy, Minimum dvě noci (hasValidDates), bezNastaveni, bezNastaveni2, nulovaZaloha, p, isDummyIdNumber() (+46 more)
 
 ### Community 21 - "FÁZE 7 — Rychlost a přístupnost ✅ UZAVŘENO"
 Cohesion: 0.25
@@ -225,44 +227,52 @@ Cohesion: 0.14
 Nodes (26): REZERVACE, bindExportModal(), escapuj(), prazdnyExport(), renderExportModal(), rozsahZVoleb(), S, stahniSoubor() (+18 more)
 
 ### Community 44 - "AdminFotoOrez.js"
-Cohesion: 0.20
+Cohesion: 0.21
 Nodes (16): bindOrezModal(), naKonec(), naPohyb(), prekresliRamecek(), pripravVyrez(), CIL_SIRKA, CIL_VYSKA, omez() (+8 more)
 
 ### Community 45 - "AdminDashboard"
-Cohesion: 0.14
-Nodes (8): AdminDashboard, escapujText(), formatCzechDateStr(), getDiscountValidityDisplay(), nactiVsechnyRadky(), normalizuj(), textProHledani(), saveStoredRoomPrice()
+Cohesion: 0.17
+Nodes (4): AdminDashboard, escapujText(), normalizuj(), textProHledani()
 
 ### Community 46 - "AdminDashboard.js"
-Cohesion: 0.20
-Nodes (18): posunDatum(), zobrazRozsahBlokace(), deleteStoredBlockedDate(), deleteStoredReservation(), doplnPriznakyZeStarychDat(), getStoredBlockedDates(), getStoredReservations(), isSupabaseConfigured (+10 more)
+Cohesion: 0.24
+Nodes (15): formatCzechDateStr(), getDiscountValidityDisplay(), posunDatum(), zobrazRozsahBlokace(), deleteStoredReservation(), doplnPriznakyZeStarychDat(), getStoredReservations(), isSupabaseConfigured (+7 more)
 
-### Community 47 - "emailService.js"
-Cohesion: 0.28
-Nodes (18): generateEmail1ReceptionNotification(), generateEmail1RequestReceived(), generateEmail2ApprovalAndPaymentRequest(), generateEmail3FinalConfirmation(), generateEmailCancellation(), generateEmailCancellationRefund(), generateEmailContactNotification(), generateEmailNewReviewNotification() (+10 more)
+### Community 47 - "getStoredDisabledRooms"
+Cohesion: 0.21
+Nodes (11): fetchRoomPrices(), getStoredCenik(), getStoredDisabledRooms(), getStoredRoomPrices(), initStoredDisabledRoomsInMock(), initStoredRoomPricesInMock(), nactiPokoje(), saveStoredDisabledRoom() (+3 more)
 
-### Community 48 - "printReservationService.js"
-Cohesion: 0.57
-Nodes (6): getVariableSymbol(), formatCzechDateStr(), formatCzechDateTimeNow(), getStatusLabel(), printReservationSheet(), renderGuestRowsHTML()
+### Community 48 - "getStoredBlockedDates"
+Cohesion: 0.38
+Nodes (4): nactiVsechnyRadky(), deleteStoredBlockedDate(), getStoredBlockedDates(), saveStoredBlockedDate()
+
+### Community 49 - "src/style.css (Global Stylesheet)"
+Cohesion: 0.70
+Nodes (4): Button Design System, Hero Section System, src/style.css (Global Stylesheet), Pravidlo pro výšku okna
+
+### Community 50 - "getStoredDiscountCodes"
+Cohesion: 0.60
+Nodes (5): decrementDiscountCodeUsage(), deleteStoredDiscountCode(), getStoredDiscountCodes(), incrementDiscountCodeUsage(), saveStoredDiscountCode()
 
 ## Knowledge Gaps
-- **266 isolated node(s):** `GUEST_REVIEWS`, `SIPKY_DOLU`, `preloadedCategories`, `CATEGORIES_DATA`, `app` (+261 more)
+- **266 isolated node(s):** `p`, `bezNastaveni`, `bezNastaveni2`, `nulovaZaloha`, `GUEST_REVIEWS` (+261 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `src/style.css (Global Stylesheet)` connect `Okolí (Aktivity) Page` to `main.js`?**
+- **Why does `src/style.css (Global Stylesheet)` connect `src/style.css (Global Stylesheet)` to `main.js`, `Okolí (Aktivity) Page`?**
   _High betweenness centrality (0.270) - this node is a cross-community bridge._
-- **Why does `Okolí (Aktivity) Page` connect `Okolí (Aktivity) Page` to `.agents/SEO-ROADMAP.md`?**
+- **Why does `Okolí (Aktivity) Page` connect `Okolí (Aktivity) Page` to `src/style.css (Global Stylesheet)`?**
   _High betweenness centrality (0.171) - this node is a cross-community bridge._
 - **Why does `index.html — úvodní stránka` connect `CLAUDE.md — projektová dokumentace` to `main.js`?**
   _High betweenness centrality (0.088) - this node is a cross-community bridge._
-- **What connects `GUEST_REVIEWS`, `SIPKY_DOLU`, `preloadedCategories` to the rest of the system?**
+- **What connects `p`, `bezNastaveni`, `bezNastaveni2` to the rest of the system?**
   _266 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `main.js` be split into smaller, more focused modules?**
   _Cohesion score 0.0684931506849315 - nodes in this community are weakly interconnected._
 - **Should `supabaseClient.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.06382978723404255 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.0766488413547237 - nodes in this community are weakly interconnected._
 - **Should `Výlety autem — SEO texty` be split into smaller, more focused modules?**
   _Cohesion score 0.13333333333333333 - nodes in this community are weakly interconnected._
