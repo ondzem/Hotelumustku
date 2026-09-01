@@ -34,7 +34,14 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
-  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  # BEZ includeSubDomains. Poštovní subdomény (webmail, imap, pop3, smtp)
+  # jsou CNAME na forpsi.com a jejich certifikát na umustku.cz nesedí —
+  # ověřeno, webmail.umustku.cz vrací neplatný certifikát. S
+  # includeSubDomains by prohlížeč každému, kdo jednou otevřel web,
+  # na rok TVRDĚ zakázal webmail otevřít a nešlo by to proklikat.
+  # Apex i www jsou chráněné dál; přidat to zpátky jde, až budou
+  # všechny subdomény na platném HTTPS.
+  Strict-Transport-Security: max-age=31536000
 
 # Administrace se nesmí ukládat do mezipaměti ani indexovat.
 /admin
