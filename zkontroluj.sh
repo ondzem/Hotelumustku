@@ -345,6 +345,43 @@ else
   fi
 fi
 
+# --------------------------------------------- registrace a zápisová pravidla
+# Tyhle tři věci se nastavují RUČNĚ v Supabase (viz supabase-ZABEZPECENI-2.sql
+# a přepínač registrací v Auth). Kontrola je tu proto, že se dají kdykoli
+# omylem vrátit zpátky — a poznat by to šlo až podle podvržené recenze.
+nadpis "Zápis z veřejného klíče"
+if [ ! -f .env ]; then
+  seda ".env chybí, zápisová pravidla nelze zkontrolovat"
+else
+  set -a; . ./.env; set +a
+  H="apikey: ${VITE_SUPABASE_ANON_KEY}"
+  J="Content-Type: application/json"
+
+  ODP=$(curl -s --max-time 15 -X POST "$VITE_SUPABASE_URL/auth/v1/signup" -H "$H" -H "$J" \
+    -d '{"email":"kontrola-registrace@umustku.cz","password":"Kontrola-Hesloo-123456"}')
+  if echo "$ODP" | grep -q "signup_disabled"; then
+    zelena "veřejné registrace jsou vypnuté"
+  else
+    cervena "REGISTRACE JSOU OTEVŘENÉ — kdokoli si založí účet do administrace"
+  fi
+
+  ODP=$(curl -s --max-time 15 -X POST "$VITE_SUPABASE_URL/rest/v1/reviews" -H "$H" -H "$J" \
+    -d '{"id":"kontrola-rls-recenze","full_name":"Kontrola","author_name":"Kontrola","text":"x","date":"01. 01. 2026","status":"approved","created_at":"2026-01-01T00:00:00.000Z"}')
+  if echo "$ODP" | grep -q "42501"; then
+    zelena "recenzi nejde vložit rovnou jako schválenou"
+  else
+    cervena "PODVRŽENÁ RECENZE PROJDE — vloží se rovnou jako schválená"
+  fi
+
+  ODP=$(curl -s --max-time 15 -X POST "$VITE_SUPABASE_URL/rest/v1/reservations" -H "$H" -H "$J" \
+    -d '{"id":"00000000-0000-0000-0000-0000000000aa","code":"KONTROLA-RLS","manage_token":"x","room_id":"p6","room_name":"Pokoj 6 - Standard","date_from":"2027-01-10","date_to":"2027-01-12","adults_count":2,"guest_name":"Kontrola","guest_email":"kontrola@example.com","guest_phone":"1","status":"confirmed","total_price":0,"deposit_price":0,"remaining_price":0}')
+  if echo "$ODP" | grep -q "42501"; then
+    zelena "rezervaci nejde vložit rovnou jako potvrzenou"
+  else
+    cervena "PODVRŽENÁ REZERVACE PROJDE — vloží se rovnou jako potvrzená"
+  fi
+fi
+
 nadpis "Souhrn"
 if [ "$SELHALO" -gt 0 ]; then
   printf "  \033[31mprošlo %s, SELHALO %s\033[0m, přeskočeno %s\n\n" "$PROSLO" "$SELHALO" "$PRESKOCENO"

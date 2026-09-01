@@ -30,7 +30,10 @@ CREATE POLICY hm_reviews_zapis ON public.reviews
 -- Sloupce, do kterých smí návštěvník psát. Bez tohohle by šlo přepsat
 -- `created_at` a posunout recenzi na začátek seznamu.
 REVOKE INSERT ON public.reviews FROM anon;
-GRANT  INSERT (id, author_name, full_name, text, date, status) ON public.reviews TO anon;
+-- created_at MUSÍ být v seznamu — formulář recenzí ho posílá.
+-- Bez něj vrátí zápis 42501 „permission denied for table reviews"
+-- a hostovi se recenze tiše neuloží.
+GRANT  INSERT (id, author_name, full_name, text, date, status, created_at) ON public.reviews TO anon;
 
 -- ===================================================================
 -- 2) NOVÁ REZERVACE JE VŽDY „KE SCHVÁLENÍ“

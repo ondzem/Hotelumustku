@@ -926,6 +926,26 @@ stránky bez ohledu na cookie lištu — přesně proti tomu, co slibuje
 `cookies.html`. Po udělení souhlasu se pak načetl podruhé. Vkládá ho
 výhradně `initGA4()` v `main.js` po souhlasu.
 
+**8. Zápis z veřejného klíče je omezený i OBSAHEM, ne jen tabulkou.**
+Návštěvník smí založit recenzi a rezervaci, ale RLS mu nedovolí zvolit si
+stav: recenze jde vložit jen jako `pending_approval`, rezervace jen jako
+`pending_approval` a nearchivovaná. Bez toho by si kdokoli anonymním
+klíčem vložil rovnou schválenou recenzi na web, nebo potvrzenou rezervaci
+do knihy. Pravidla jsou v `supabase-ZABEZPECENI-2.sql`.
+
+U recenzí je k tomu **oprávnění na sloupce**, aby host nemohl přepsat
+třeba `created_at` u cizího řádku. Do seznamu patří VŠECHNY sloupce,
+které formulář posílá — a ten posílá i `created_at`. Když se zapomene,
+zápis skončí na 42501 „permission denied for table reviews" a hostovi se
+recenze tiše neuloží. Přesně tahle chyba tu při psaní pravidel vznikla.
+
+**Veřejné registrace v Supabase Auth musí být vypnuté.** Jinak si kdokoli
+založí účet a přihlásí se do administrace — role `authenticated` má podle
+RLS přístup ke všem tabulkám. Je to přepínač „Allow new users to sign up"
+v Authentication → Sign In / Providers, tedy nastavení mimo repozitář;
+hlídá ho proto kontrola „Zápis z veřejného klíče" v `./zkontroluj.sh`,
+která zkusí registraci a čeká `signup_disabled`.
+
 Bezpečnostní hlavičky jsou v `public/_headers`; `/admin` má navíc
 `noindex` a `no-store`.
 
@@ -1224,7 +1244,7 @@ Pozor na dvě věci, které vypadají jako chyba a nejsou:
 
 ## Jak si ověřit, že to funguje
 
-Nejdřív `./zkontroluj.sh` (nebo `npm run zkontroluj`). Projde 39 kontrol:
+Nejdřív `./zkontroluj.sh` (nebo `npm run zkontroluj`). Projde 42 kontrol:
 sestavení, shodu hlaviček napříč stránkami, matematiku ceníku a zálohy,
 klíče v balíčku, typy e-mailů, dostupnost nasazených stránek, odmítání
 neoprávněných volání serverových funkcí a pravidla v databázi. S přepínačem
