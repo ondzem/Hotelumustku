@@ -1,6 +1,18 @@
 import { MOCK_ROOMS, getStoredCenik } from '../lib/supabaseClient.js';
 import { calculateReservationPrice, formatCzechPrice, getVariableSymbol } from './pricing.js';
 
+/**
+ * Escapování pro tiskovou sestavu.
+ *
+ * Sestava se skládá do řetězce a sype do `printWindow.document.write()`.
+ * Tiskové okno se otevírá přes `window.open('')`, takže dědí původ webu —
+ * značka ve jméně nebo v poznámce hosta by se v něm spustila jako skript
+ * s platnou relací recepce.
+ */
+const escapujTisk = (t) => String(t == null ? '' : t)
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
 function formatCzechDateStr(dateStr) {
   if (!dateStr) return '';
   const parts = dateStr.split('-');
@@ -48,18 +60,20 @@ function renderGuestRowsHTML(reservation) {
   for (let i = 0; i < Math.max(guests.length, expectedTotal); i++) {
     const g = guests[i] || {};
     const isMain = i === 0;
-    const name = g.name || (isMain ? reservation.guest_name : '');
-    const birthDate = g.birth_date ? formatCzechDateStr(g.birth_date) : '';
-    const idNumber = g.id_number || '';
-    const phone = g.phone || (isMain ? reservation.guest_phone : '');
-    const email = g.email || (isMain ? reservation.guest_email : '');
-    
+    // Escapuje se hned tady, u zdroje — dál už se s hodnotami jen skládá
+    // řetězec a bylo by snadné na některou zapomenout.
+    const name = escapujTisk(g.name || (isMain ? reservation.guest_name : ''));
+    const birthDate = g.birth_date ? escapujTisk(formatCzechDateStr(g.birth_date)) : '';
+    const idNumber = escapujTisk(g.id_number || '');
+    const phone = escapujTisk(g.phone || (isMain ? reservation.guest_phone : ''));
+    const email = escapujTisk(g.email || (isMain ? reservation.guest_email : ''));
+
     let addressParts = [];
     if (g.street || reservation.guest_street) addressParts.push(g.street || reservation.guest_street);
     if (g.city || reservation.guest_city) addressParts.push(g.city || reservation.guest_city);
     if (g.zip) addressParts.push(g.zip);
     if (g.country) addressParts.push(g.country);
-    const addressStr = addressParts.join(', ') || '';
+    const addressStr = escapujTisk(addressParts.join(', ')) || '';
 
     rows.push(`
       <tr>
@@ -89,7 +103,7 @@ export function printReservationSheet(reservation) {
 
   const room = MOCK_ROOMS.find(r => r.id === reservation.room_id) || {
     id: reservation.room_id,
-    name: reservation.room_name || 'Pokoj Hotel u Můstku'
+    name: escapujTisk(reservation.room_name || 'Pokoj Hotel u Můstku')
   };
 
   const cenikProTisk = getStoredCenik();
@@ -129,7 +143,7 @@ export function printReservationSheet(reservation) {
 <html lang="cs">
 <head>
   <meta charset="UTF-8">
-  <title>Rezervační list - ${reservation.code} - Hotel u Můstku</title>
+  <title>Rezervační list - ${escapujTisk(reservation.code)} - Hotel u Můstku</title>
   <style>
     @page {
       size: A4 portrait;
@@ -337,7 +351,7 @@ export function printReservationSheet(reservation) {
 <body>
   <!-- Controls for screen view before printing -->
   <div class="no-print" style="background: #1c1c19; color: #fff; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-radius: 4px;">
-    <div style="font-weight: 700; font-size: 14px;">Tisk rezervačního listu (${reservation.code})</div>
+    <div style="font-weight: 700; font-size: 14px;">Tisk rezervačního listu (${escapujTisk(reservation.code)})</div>
     <div>
       <button onclick="window.print()" style="background: #ece8dd; color: #1c1c19; border: none; padding: 8px 18px; font-weight: 700; font-size: 13.5px; border-radius: 2px; cursor: pointer; margin-right: 10px;">Tisk / Uložit PDF</button>
       <button onclick="window.close()" style="background: #555; color: #fff; border: none; padding: 8px 14px; font-weight: 600; font-size: 13.5px; border-radius: 2px; cursor: pointer;">Zavřít</button>
@@ -346,14 +360,19 @@ export function printReservationSheet(reservation) {
 
   <div class="print-header">
     <div class="hotel-brand">
-      <h1>Hotel u Můstku</h1>
-      <p>Hutní 660, 468 61 Desná v Jizerských horách</p>
+      <h1>Hotel U Můstků</h1>
+      <p>Údolní 368, 468 61 Desná v Jizerských horách</p>
       <p>Tel: +420 777 666 273 | E-mail: hotel@umustku.cz | Web: umustku.cz</p>
-      <p>IČO: 76366052 | DIČ: CZ8905052738</p>
+      <!-- DIČ se sem SCHVÁLNĚ netiskne: obsahuje rodné číslo majitelky
+           a rezervační list dostávají do ruky hosté. Patří jen na daňový
+           doklad. Adresa i IČ byly navíc do 1. 9. 2026 chybné (Hutní 660,
+           IČO 76366052) a nesouhlasily s tím, co uvádí obchodní podmínky
+           a zásady ochrany údajů. -->
+      <p>Lenka Bellingerová · IČ: 74349074 · plátce DPH</p>
     </div>
     <div class="doc-meta">
       <h2>REZERVAČNÍ LIST</h2>
-      <div class="doc-code">Kód: ${reservation.code}</div>
+      <div class="doc-code">Kód: ${escapujTisk(reservation.code)}</div>
       <div>Datum tisku: ${nowCzech.dateStr}</div>
       <div class="doc-status">${getStatusLabel(reservation.status)}</div>
     </div>
@@ -399,7 +418,7 @@ export function printReservationSheet(reservation) {
     <tr><td class="label" style="width: 25%;">Pobyt s pejskem:</td><td class="value">${reservation.has_dog ? 'Ano (150 Kč/den)' : 'Ne'}</td></tr>
     <tr><td class="label" style="width: 25%;">Elektrokolo:</td><td class="value">${reservation.has_ebike ? `${reservation.ebike_count || 1}x ks` : 'Ne'}</td></tr>
     <tr><td class="label" style="width: 25%;">Zimní parkování:</td><td class="value">${reservation.has_winter_parking ? `${reservation.parking_cars_count || 1}x auto (${reservation.winter_parking_price_total || 0} Kč za pobyt)` : 'Ne (0 Kč)'}</td></tr>
-    <tr><td class="label" style="width: 25%;">Poznámka hosta:</td><td class="value">${reservation.guest_note || 'Bez poznámky'}</td></tr>
+    <tr><td class="label" style="width: 25%;">Poznámka hosta:</td><td class="value">${escapujTisk(reservation.guest_note || 'Bez poznámky')}</td></tr>
   </table>
 
   <!-- SEKCIE 4: FINANČNÍ PŘEHLED POBYTU -->

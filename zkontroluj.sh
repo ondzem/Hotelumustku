@@ -16,7 +16,10 @@ cd "$(dirname "$0")"
 BEZ_SITE=0
 [ "${1:-}" = "--bez-site" ] && BEZ_SITE=1
 
-WEB="https://papaya-travesseiro-6b341e.netlify.app"
+# Po přepnutí na ostrou doménu sem patří https://umustku.cz. Netlify
+# tehdy začne z .netlify.app přesměrovávat (301) a kontroly stránek by
+# hlásily chybu, přestože web běží. Dá se přebít: WEB=... ./zkontroluj.sh
+WEB="${WEB:-https://papaya-travesseiro-6b341e.netlify.app}"
 PROSLO=0
 SELHALO=0
 PRESKOCENO=0
@@ -162,6 +165,21 @@ else
   cervena "export kontaktů: $(echo "$VYSTUP" | grep '✗' | head -2 | tr '\n' ' ')"
 fi
 
+# ------------------------------------------------- escapování v administraci
+# Jméno a poznámka hosta i text recenze píše kdokoli z internetu a jdou
+# do innerHTML v administraci. Bez escapování stačilo odeslat rezervaci
+# se značkou a kód se spustil recepčnímu s platnou relací, která má
+# v databázi přístup ke všemu.
+nadpis "Escapování cizího textu"
+NEESCAPOVANE=$(grep -nE '\$\{(r|reservation)\.(guest_name|guest_note|guest_email|guest_phone|text|author_name|room_name)[^}]*\}' \
+  src/components/AdminDashboard.js src/utils/printReservationService.js 2>/dev/null \
+  | grep -v 'escapujText\|escapujTisk' || true)
+if [ -z "$NEESCAPOVANE" ]; then
+  zelena "cizí text jde do administrace jen escapovaný"
+else
+  cervena "neescapovaný cizí text: $(echo "$NEESCAPOVANE" | head -2 | tr '\n' ' ')"
+fi
+
 nadpis "Dialogy"
 NATIVNI=$(grep -rn -E "(^|[^.\w])(window\.)?(confirm|alert|prompt)\(" src --include='*.js' \
   | grep -v "AdminPotvrzeni.js" \
@@ -226,6 +244,25 @@ else
   [ "$KOD" = "403" ] || [ "$KOD" = "401" ] \
     && zelena "odesílání e-mailů odmítá cizí původ ($KOD)" \
     || cervena "odesílání e-mailů přijalo cizí původ ($KOD)"
+
+  # BEZ hlavičky Origin. Tuhle cestu dřív funkce pouštěla („když Origin
+  # chybí, je to volání zevnitř“), jenže hlavičku posílá jen prohlížeč —
+  # curl a jakýkoli skript ji vynechá, takže se kontrola obešla jedním
+  # příkazem. Tělo je schválně neplatné: 403 = zastaveno na původu,
+  # 400 = původ prošel a spadlo to až na validaci.
+  KOD=$(curl -s --max-time 20 -o /dev/null -w "%{http_code}" -X POST "$WEB/.netlify/functions/send-email" \
+        -H "Content-Type: application/json" -d '{}')
+  [ "$KOD" = "403" ] \
+    && zelena "odesílání e-mailů odmítá požadavek bez původu" \
+    || cervena "odesílání e-mailů pustilo požadavek BEZ hlavičky Origin ($KOD) — obejde se curlem!"
+
+  # Cizí web na netlify.app. Takovou adresu si zadarmo pořídí kdokoli,
+  # takže obecné pravidlo na *.netlify.app byla otevřená pošta.
+  KOD=$(curl -s --max-time 20 -o /dev/null -w "%{http_code}" -X POST "$WEB/.netlify/functions/send-email" \
+        -H "Content-Type: application/json" -H "Origin: https://cizi-utocnik-test.netlify.app" -d '{}')
+  [ "$KOD" = "403" ] \
+    && zelena "odesílání e-mailů odmítá cizí web na netlify.app" \
+    || cervena "odesílání e-mailů pustilo cizí netlify.app ($KOD)"
 fi
 
 # ------------------------------------------------------------------ databáze
@@ -260,7 +297,10 @@ else
 
   # Nová recenze čeká na schválení, veřejnosti se ukáže až potom.
   ODP=$(curl -s --max-time 20 "$VITE_SUPABASE_URL/rest/v1/reviews?select=status" -H "$A" -H "$B")
-  echo "$ODP" | grep -q '"status":"pending"' \
+  # Skutečná hodnota je `pending_approval`. Vzorek `"status":"pending"`
+  # ji sice jako předponu chytí, ale jen náhodou — a kdyby se stav
+  # přejmenoval, kontrola by tiše přestala hlídat cokoli.
+  echo "$ODP" | grep -q '"status":"pending_approval"' \
     && cervena "neschválené recenze jsou vidět veřejně!" \
     || zelena "veřejně jsou vidět jen schválené recenze"
 

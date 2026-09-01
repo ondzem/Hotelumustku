@@ -1284,7 +1284,7 @@ const getRoomsPageHTML = () => `
         ${renderRoomBreakdownItem('p12', 'Pokoj 12 - Standard', 'standard', 700)}
       </div>
 
-      <p class="room-breakdown-footer-note">Pobyt na 1 noc: Příplatek +200 Kč / osoba / noc k základní ceně.</p>
+      <p class="room-breakdown-footer-note">Nejkratší pobyt jsou 2 noci. O svátcích (26. 12. – 2. 1.) přijímáme pobyty nejméně na 3 noci.</p>
     </div>
   </section>
 
@@ -4485,7 +4485,7 @@ export const getPodminkyPageHTML = () => `
               <p class="legal-article-text">Za věci, které si do hotelu přinesete, odpovídá ubytovatel podle § 2945 a následujících občanského zákoníku.</p>
               <p class="legal-article-text">Za peníze, klenoty a jiné cennosti odpovídá ubytovatel jen do zákonem stanovené výše, pokud je nepřevzal do úschovy. <strong>Cennosti proto doporučujeme uložit u nás v recepci.</strong></p>
               <p class="legal-article-text">Škodu je nutné oznámit <strong>bez zbytečného odkladu, nejpozději do 15 dnů</strong> od chvíle, kdy jste se o ní dozvěděli. Později už nárok bohužel zaniká — plyne to přímo ze zákona.</p>
-              <p class="legal-article-text">Parkoviště je vybavené závorou a kamerovým systémem. <strong>Nejde však o hlídané parkoviště</strong> ve smyslu smlouvy o úschově a ubytovatel neodpovídá za věci ponechané ve vozidle.</p>
+              <p class="legal-article-text">Parkoviště je vybavené závorou a kamerovým systémem. <strong>Nejde však o parkoviště se závorou</strong> ve smyslu smlouvy o úschově a ubytovatel neodpovídá za věci ponechané ve vozidle.</p>
             </div>
 
             <div class="legal-article-card">

@@ -53,7 +53,7 @@
         "url": "https://umustku.cz/",
         "telephone": "+420777666273",
         "email": "hotel@umustku.cz",
-        "description": "Rodinný horský hotel v Desné v Jizerských horách u splavu řeky Bílé Desné s výhledem na skokanské můstky. Dvanáct nekuřáckých pokojů, poctivá domácí kuchyně a hlídané parkoviště zdarma.",
+        "description": "Rodinný horský hotel v Desné v Jizerských horách u splavu řeky Bílé Desné s výhledem na skokanské můstky. Dvanáct nekuřáckých pokojů, poctivá domácí kuchyně a parkoviště se závorou zdarma.",
         "address": {
           "@type": "PostalAddress",
           "streetAddress": "Údolní 368",
@@ -263,14 +263,10 @@
 }
   </script>
 
-    <!-- Google Analytics 4 -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-X62MWWL0FV"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-X62MWWL0FV', { anonymize_ip: true });
-    </script>
+    <!-- Měřicí kód se NEVKLÁDÁ do HTML. Načte ho až initGA4()
+         v main.js po souhlasu v cookie liště — přesně to slibuje
+         stránka o cookies. Natvrdo zapsaný blok se spouštěl hned
+         při otevření stránky, a po udělení souhlasu podruhé. -->
   </head>
   <body>
     <div id="app">

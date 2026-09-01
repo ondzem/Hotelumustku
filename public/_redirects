@@ -79,6 +79,34 @@
 /admin.html        /admin        301!
 
 # =====================================================================
+#  KLIENTSKÉ CESTY, KTERÉ ZNÁ JEN main.js
+#  Router v main.js tyhle adresy umí, ale žádný soubor jim neodpovídá,
+#  takže při PŘÍMÉM načtení (z e-mailu, záložky, výsledku hledání)
+#  vracely 404. Uvnitř webu fungovaly, protože je řeší pushState —
+#  a právě proto si toho nikdo nevšiml.
+#  Stav 200 (ne 301): adresa má zůstat, jen se obslouží jiným souborem.
+# =====================================================================
+
+/rezervace   /index.html   200
+/booking     /index.html   200
+/novinky     /aktuality.html   200
+/aktivity    /okoli.html   200
+/vylety      /okoli.html   200
+/pokoje      /ubytovani.html   200
+/gastronomie /stravovani.html   200
+/skupinove-akce  /akce.html   200
+/recepce     /admin.html   200
+
+# =====================================================================
+#  WWW NA HLAVNÍ DOMÉNU
+#  Netlify to umí podle primární domény v rozhraní, jenže nastavení
+#  v rozhraní se při přepojení repozitáře 17. 8. 2026 už jednou
+#  vymazalo (viz oddíl 3 v CLAUDE.md). Zápis v repozitáři to přežije.
+# =====================================================================
+
+https://www.umustku.cz/*   https://umustku.cz/:splat   301!
+
+# =====================================================================
 #  ŽÁDNÝ CATCH-ALL
 #  Dřívější pravidlo "/*  /index.html  200" vracelo na KAŽDÉ neexistující
 #  URL homepage se stavem 200 (soft 404). Google to indexoval jako

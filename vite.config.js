@@ -92,9 +92,16 @@ export default defineConfig(({ mode }) => {
           req.on('end', async () => {
             try {
               const { default: handler } = await import('./netlify/functions/send-email.js');
+              // Origin i Authorization se MUSÍ přenést. Funkce teď žádost
+              // bez Origin odmítá (jinak by kontrolu obešel každý skript)
+              // a u zkušebních e-mailů chce token přihlášené recepce —
+              // bez přenosu by lokální vývoj hlásil 403 a 401.
+              const hlavicky = { 'Content-Type': 'application/json' };
+              if (req.headers.origin) hlavicky.Origin = req.headers.origin;
+              if (req.headers.authorization) hlavicky.Authorization = req.headers.authorization;
               const pozadavek = new Request('http://localhost/.netlify/functions/send-email', {
                 method: req.method || 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: hlavicky,
                 body: (req.method === 'GET' || req.method === 'HEAD') ? undefined : telo
               });
               const odpoved = await handler(pozadavek);

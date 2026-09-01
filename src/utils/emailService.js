@@ -1,5 +1,6 @@
 // Transactional Email Service & Audit Log Store for Hotel u Můstku
 import { BANK_ACCOUNT, BANK_NAME, generateSpaydQrUrl, formatCzechPrice, getVariableSymbol } from './pricing.js';
+import { supabase, isSupabaseConfigured } from '../lib/supabaseClient.js';
 
 const LOCAL_STORAGE_EMAIL_LOGS_KEY = 'hotel_umustku_email_logs_v1';
 
@@ -69,10 +70,23 @@ export async function sendEmail({ to, subject, html, type, reservationCode }) {
   let deliveryNote = '';
 
   try {
+    // Kód rezervace se MUSÍ poslat. Serverová funkce podle něj ověří,
+    // že adresa opravdu patří k existující rezervaci — bez toho by
+    // šlo přes ni rozeslat poštu komukoli.
+    const hlavicky = { 'Content-Type': 'application/json' };
+    // Zkušební e-maily z administrace potřebují token přihlášené recepce.
+    if (type === 'test' && isSupabaseConfigured && supabase) {
+      try {
+        const { data } = await supabase.auth.getSession();
+        const token = (data && data.session && data.session.access_token) || '';
+        if (token) hlavicky.Authorization = `Bearer ${token}`;
+      } catch (e) { /* bez tokenu funkce odpoví 401, což se ohlásí níž */ }
+    }
+
     const response = await fetch('/.netlify/functions/send-email', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ to, subject, html, type })
+      headers: hlavicky,
+      body: JSON.stringify({ to, subject, html, type, reservationCode })
     });
 
     if (response.status === 404) {

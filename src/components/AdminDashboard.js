@@ -74,7 +74,8 @@ const ADMIN_EMAIL = (import.meta.env && import.meta.env.VITE_ADMIN_EMAIL) || '';
 
 /** Hledaný výraz jde zpátky do HTML, takže se musí escapovat. */
 const escapujText = (t) => String(t == null ? '' : t)
-  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
 /**
  * Text pro porovnávání při hledání — bez diakritiky a malými písmeny.
@@ -1442,17 +1443,17 @@ export class AdminDashboard {
 
                   <!-- COL 1: KÓD A DATUM -->
                   <div>
-                    <span class="res-code-badge">${r.code || 'HM-2026-0000'}</span>
+                    <span class="res-code-badge">${escapujText(r.code || 'HM-2026-0000')}</span>
                     <div class="res-created-at">${formattedCreated}</div>
                   </div>
 
                   <!-- COL 2: HOST A KONTAKT -->
                   <div>
-                    <div class="res-guest-name">${r.guest_name}</div>
+                    <div class="res-guest-name">${escapujText(r.guest_name)}</div>
                     <div class="res-contact-info">
-                      <div>📞 <a href="tel:${r.guest_phone}" style="color: inherit; text-decoration: none; font-weight: 600;">${r.guest_phone}</a></div>
-                      <div>✉️ <a href="mailto:${r.guest_email}" style="color: #697947; text-decoration: none;">${r.guest_email}</a></div>
-                      ${r.guest_note ? `<div style="margin-top: 4px; color: #4a5a24; font-weight: 500;">📝 ${r.guest_note}</div>` : ''}
+                      <div>📞 <a href="tel:${escapujText(r.guest_phone)}" style="color: inherit; text-decoration: none; font-weight: 600;">${escapujText(r.guest_phone)}</a></div>
+                      <div>✉️ <a href="mailto:${escapujText(r.guest_email)}" style="color: #697947; text-decoration: none;">${escapujText(r.guest_email)}</a></div>
+                      ${r.guest_note ? `<div style="margin-top: 4px; color: #4a5a24; font-weight: 500;">📝 ${escapujText(r.guest_note)}</div>` : ''}
                     </div>
                   </div>
 
@@ -1561,7 +1562,7 @@ export class AdminDashboard {
                             <div class="drawer-guest-entry">
                               <div class="guest-entry-header">
                                 <div class="guest-entry-title">
-                                  1. ${r.guest_name}
+                                  1. ${escapujText(r.guest_name)}
                                   <span class="guest-role-inline">(Hlavní ubytovaný)</span>
                                 </div>
                                 <div class="guest-toggle-trigger">
@@ -1571,10 +1572,10 @@ export class AdminDashboard {
                               </div>
                               <div class="guest-entry-body">
                                 <ul class="drawer-info-list" style="margin-top: 4px;">
-                                  <li><span>Telefon:</span> <strong>${r.guest_phone}</strong></li>
-                                  <li><span>E-mail:</span> <strong>${r.guest_email}</strong></li>
+                                  <li><span>Telefon:</span> <strong>${escapujText(r.guest_phone)}</strong></li>
+                                  <li><span>E-mail:</span> <strong>${escapujText(r.guest_email)}</strong></li>
                                   <li><span>Počet osob:</span> <strong>${r.adults_count || 1} dospělí ${r.children_count > 0 ? `, ${r.children_count} dětí` : ''}</strong></li>
-                                  <li><span>Bydliště:</span> <strong>${r.guest_street ? r.guest_street + ', ' : ''}${r.guest_city || 'Doplní se na recepci'}</strong></li>
+                                  <li><span>Bydliště:</span> <strong>${escapujText(r.guest_street ? r.guest_street + ', ' : '')}${escapujText(r.guest_city || 'Doplní se na recepci')}</strong></li>
                                 </ul>
                               </div>
                             </div>
@@ -1590,7 +1591,7 @@ export class AdminDashboard {
                           <li><span>Pobyt s pejskem:</span> <strong>${r.has_dog ? 'Ano (150 Kč/den)' : 'Ne'}</strong></li>
                           <li><span>Elektrokolo:</span> <strong>${r.has_ebike ? `${r.ebike_count || 1}x ks` : 'Ne'}</strong></li>
                           <li><span>Zimní parkování:</span> <strong>${r.has_winter_parking ? `${r.parking_cars_count || 1}x auto (${r.winter_parking_price_total || 0} Kč za pobyt)` : 'Ne (0 Kč)'}</strong></li>
-                          <li><span>Poznámka hosta:</span> <strong>${r.guest_note || 'Bez poznámky'}</strong></li>
+                          <li><span>Poznámka hosta:</span> <strong>${escapujText(r.guest_note || 'Bez poznámky')}</strong></li>
                         </ul>
                       </div>
 
@@ -1714,7 +1715,7 @@ export class AdminDashboard {
                         <div class="admin-seznam-radek" style="background: #ffffff; border: 1px solid #e0dfd5; border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
                           <div>
                             <div style="display: flex; align-items: center; gap: 8px;">
-                              <span style="font-weight: 800; font-size: 15px; color: #4a5a24; letter-spacing: 0.04em;">${c.code}</span>
+                              <span style="font-weight: 800; font-size: 15px; color: #4a5a24; letter-spacing: 0.04em;">${escapujText(c.code)}</span>
                               <span style="font-size: 11.5px; font-weight: 700; background: #eef2e6; color: #4a5a24; padding: 2px 6px; border-radius: 3px;">-${c.discount_value} %</span>
                             </div>
                             <div style="font-size: 12px; color: #666; margin-top: 4px; display: flex; gap: 12px; flex-wrap: wrap;">
@@ -1908,7 +1909,7 @@ export class AdminDashboard {
                           `}
                           <div style="min-width: 0; flex: 1;">
                             <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 3px;">
-                              <span class="admin-seznam-nazev" style="font-weight: 800; font-size: 14px; color: #1c1c19; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 240px;">${item.title}</span>
+                              <span class="admin-seznam-nazev" style="font-weight: 800; font-size: 14px; color: #1c1c19; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 240px;">${escapujText(item.title)}</span>
                               ${item.is_active ? `
                                 <span style="font-size: 10.5px; font-weight: 700; color: #27ae60; background: #e8f8f5; padding: 2px 7px; border-radius: 4px;">Publikováno</span>
                               ` : `
@@ -1916,7 +1917,7 @@ export class AdminDashboard {
                               `}
                             </div>
                             <div style="font-size: 12px; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                              ${item.content}
+                              ${escapujText(item.content)}
                             </div>
                           </div>
                         </div>
@@ -1996,7 +1997,11 @@ export class AdminDashboard {
           <div class="admin-toast-bottom-widget ${this.toastExiting ? 'is-exiting' : ''}">
             <div class="toast-inner-content">
               <span class="toast-icon-badge">✓</span>
-              <span>${this.adminToastMessage}</span>
+              <!-- Escapuje se až tady, na jednom místě. Hlášky sestavují
+                   různé moduly a některé do nich dávají jméno hosta —
+                   escapovat u každého volajícího zvlášť se dřív nebo
+                   později zapomene. -->
+              <span>${escapujText(this.adminToastMessage)}</span>
             </div>
             <div class="toast-progress-bar">
               <div class="toast-progress-fill"></div>
@@ -2050,9 +2055,9 @@ export class AdminDashboard {
               <div style="background: #ffffff; border: 1px solid #e8e7de; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
                 <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 8px;">
                   <div>
-                    <strong style="font-size: 15px; color: #1c1c19;">${r.full_name || r.author_name}</strong>
+                    <strong style="font-size: 15px; color: #1c1c19;">${escapujText(r.full_name || r.author_name)}</strong>
                     <span style="font-size: 12.5px; color: #697947; background: #edf2e4; padding: 2px 7px; border-radius: 4px; font-weight: 600; margin-left: 8px;">
-                      GDPR: ${r.author_name}
+                      GDPR: ${escapujText(r.author_name)}
                     </span>
                   </div>
                   <div style="display: flex; align-items: center; gap: 10px;">
@@ -2061,7 +2066,7 @@ export class AdminDashboard {
                 </div>
 
                 <p style="margin: 0 0 14px 0; font-size: 14px; color: #333330; line-height: 1.5; background: #fafaf7; padding: 12px; border-radius: 6px; border-left: 3px solid #697947;">
-                  „${r.text}“
+                  „${escapujText(r.text)}“
                 </p>
 
                 <div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
