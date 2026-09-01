@@ -1590,9 +1590,17 @@ export function spustHeroVideo() {
     // i na velké obrazovce. Nula proto znamená „nevím“, ne mobil.
     const sirka = window.innerWidth || document.documentElement.clientWidth || 0;
     const sit = navigator.connection || {};
-    const pomaleNeboUsporne = Boolean(sit.saveData)
-      || ['slow-2g', '2g', '3g'].includes(sit.effectiveType);
-    if ((sirka > 0 && sirka < 768) || pomaleNeboUsporne) return;
+    const jeUzky = sirka > 0 && sirka < 768;
+
+    // Odhad rychlosti se bere vážně jen na úzkém displeji. Chrome hlásí
+    // hned po startu „3g“ i na optice, dokud si připojení nepřeměří —
+    // a video se pak na počítači nepustilo vůbec. Majitel to popisoval
+    // jako „dva dny po sobě se mi nenačetlo“. Opravdu pomalé připojení
+    // (2g) a zapnutý úsporný režim video vypínají pořád.
+    const opravduPomale = ['slow-2g', '2g'].includes(sit.effectiveType);
+    const odhademPomale = sit.effectiveType === '3g';
+    if (jeUzky || Boolean(sit.saveData) || opravduPomale) return;
+    if (odhademPomale && sirka > 0 && sirka < 1024) return;
 
     video.dataset.spusteno = '1';
     zdroj.src = zdroj.dataset.src;

@@ -6556,3 +6556,75 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   .booking-poznamka { padding: 10px 12px; gap: 8px; }
   .booking-poznamka-text { font-size: 12.5px; }
 }
+
+/* ============================================================
+   MIMO SEZÓNU — blok v kalendáři rezervace
+
+   Na rozdíl od tenkých poznámek vedle (svátky, Silvestr) tohle není
+   jednořádkové sdělení, ale vysvětlení, které má hosta uklidnit.
+   Dostává proto vlastní tvar: štítek, nadpis, dva odstavce a telefon.
+   Žádná ikona telefonu — číslo mluví samo a piktogram v tomhle
+   provedení působil lacině.
+   ============================================================ */
+
+.booking-mimo-sezonu {
+  margin: 16px 0 4px 0;
+  padding: 18px 20px;
+  background: #faf9f5;
+  border: 1px solid #e7e5dc;
+  border-left: 3px solid #a8593f;
+  border-radius: 8px;
+}
+
+.mimo-sezonu-stitek {
+  display: inline-block;
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #a8593f;
+  margin-bottom: 10px;
+}
+
+.mimo-sezonu-nadpis {
+  font-family: 'Outfit', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1c1c19;
+  line-height: 1.35;
+  margin: 0 0 10px 0;
+}
+
+.mimo-sezonu-text {
+  font-size: 13.5px;
+  color: #55554e;
+  line-height: 1.65;
+  margin: 0 0 10px 0;
+}
+
+.mimo-sezonu-text:last-of-type { margin-bottom: 14px; }
+
+/* Telefon jako klidný odkaz s podtržením, ne jako tlačítko — tlačítko
+   by se pralo o pozornost s „Potvrdit termín pobytu" hned pod tím. */
+.mimo-sezonu-telefon {
+  display: inline-block;
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #4a5a24;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+}
+
+.mimo-sezonu-telefon:hover { color: #3c491d; }
+
+/* Vzduch pod poznámkami, ať nesedí nalepené na patičce kalendáře. */
+.cal-poznamky { padding-bottom: 6px; }
+
+@media (max-width: 560px) {
+  .booking-mimo-sezonu { padding: 15px 16px; }
+  .mimo-sezonu-nadpis { font-size: 15px; }
+  .mimo-sezonu-text { font-size: 13px; }
+}

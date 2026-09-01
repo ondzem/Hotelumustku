@@ -1,6 +1,13 @@
 /videos/*
   Cache-Control: public, max-age=31536000, immutable
 
+# Hero video leží v KOŘENI (/hotel_hero_video.mp4), takže ho pravidlo
+# /videos/* nechytne. Bez tohohle řádku ho Netlify servíruje s
+# max-age=0, must-revalidate — a 5 MB se stahuje při KAŽDÉ návštěvě
+# znovu. Majitel to popisoval jako „video se mi vůbec nenačte“.
+/*.mp4
+  Cache-Control: public, max-age=31536000, immutable
+
 /*.webp
   Cache-Control: public, max-age=31536000, immutable
 

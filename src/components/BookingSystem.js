@@ -1048,17 +1048,39 @@ export class BookingSystem {
    * upozornění nikdy neukázalo — a host by koukal na červený říjen bez
    * vysvětlení. Takhle to čte přesně ve chvíli, kdy se ptá „proč".
    */
+  /**
+   * Upozornění na zimní přestávku.
+   *
+   * Váže se na ZOBRAZENÝ MĚSÍC, ne na vybraný termín. Zavřené dny jsou
+   * v kalendáři plné a nedají se rozkliknout, takže podle výběru by se
+   * upozornění nikdy neukázalo — a host by koukal na červený říjen bez
+   * vysvětlení. Takhle to čte přesně ve chvíli, kdy se ptá „proč".
+   *
+   * Na formulaci záleží víc než na kódu. Holé „máme zavřeno" čte host
+   * jako „tomu hotelu se nechce", a to majiteli ubližuje. Text proto
+   * pojmenuje DŮVOD, který je v horách samozřejmý — je po podzimu a sníh
+   * ještě nedorazil — a ukáže, že se ten čas využívá na údržbu. Zavření
+   * je pak vidět jako péče o hotel, ne jako lajdáctví. Poslední věta
+   * nechává dveře otevřené, protože při větší skupině se otevřít vyplatí.
+   */
   renderMimoProvozNote(rok, mesic) {
     if (!mesicZasahujeMimoProvoz(rok, mesic)) return '';
 
     return `
-      <div class="booking-poznamka je-mimo-provoz">
-        <span class="booking-poznamka-ikona" aria-hidden="true">☎</span>
-        <span class="booking-poznamka-text">
-          <strong>V období ${popisRozsahu(MIMO_PROVOZ)} máme obvykle zavřeno.</strong>
-          Pro větší skupinu ale hotel po domluvě rádi otevřeme —
-          zavolejte nám na <a href="tel:+420777666273">+420 777 666 273</a> a domluvíme se.
-        </span>
+      <div class="booking-mimo-sezonu">
+        <span class="mimo-sezonu-stitek">Mimo sezónu</span>
+        <p class="mimo-sezonu-nadpis">
+          Mezi podzimem a zimou hotel zavíráme
+        </p>
+        <p class="mimo-sezonu-text">
+          V období <strong>${popisRozsahu(MIMO_PROVOZ)}</strong> je po podzimní sezóně
+          a na sníh je ještě brzy. Tenhle čas v horách využíváme na údržbu a přípravu
+          na zimu, aby vám v sezóně nic nechybělo.
+        </p>
+        <p class="mimo-sezonu-text">
+          Jedete ve větší skupině? Ozvěte se — po domluvě otevřeme i v tomhle období.
+        </p>
+        <a class="mimo-sezonu-telefon" href="tel:+420777666273">+420 777 666 273</a>
       </div>
     `;
   }

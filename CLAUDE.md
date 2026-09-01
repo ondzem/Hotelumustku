@@ -291,6 +291,25 @@ osvědčila a nemají se rozvolňovat:
 
 ---
 
+## Hero video se nenačítalo — dvě příčiny
+
+Majitel hlásil, že video na úvodní stránce nejede. Nebyla to jedna chyba,
+ale dvě, a každá sama o sobě stačila:
+
+- **Video leží v KOŘENI jako `/hotel_hero_video.mp4`.** Pravidla
+  v `public/_headers` cachovala `/videos/*` a `/*.webp`, ale `.mp4`
+  v kořeni nechytla — Netlify ho servíroval s `max-age=0,
+  must-revalidate`, takže se **5 MB stahovalo při každé návštěvě znovu**.
+  Přibylo proto pravidlo `/*.mp4`.
+- **Odhad rychlosti sítě byl moc přísný.** `spustHeroVideo()` vypínal
+  video při `effectiveType` `3g`, jenže Chrome hlásí `3g` i na optice,
+  dokud si připojení nepřeměří — typicky hned po startu prohlížeče.
+  Na počítači se video pak nepustilo vůbec. `3g` teď video zastaví jen
+  na displeji užším než 1024 px; `2g`, `slow-2g` a úsporný režim platí dál.
+
+Že video chybí, není vidět jako díra — pod ním je hero fotka, takže
+stránka vypadá v pořádku a chyba se hlásí špatně („občas to nejede").
+
 ## Svátky, Silvestr a zimní přestávka
 
 Dvě období, která se opakují **každý rok** a řídí se jen dnem a měsícem.
@@ -327,6 +346,16 @@ Pět věcí, které nejsou z kódu vidět:
   dostatečném počtu hostů a dají vědět při potvrzení — ubytování je
   jisté tak jako tak. Není to podmínka ani varování a nesmí se to
   přepsat na příslib.
+
+**Na formulaci zavíracího období záleží víc než na kódu.** Holé „máme
+zavřeno" čte host jako „tomu hotelu se nechce" — a to majiteli ubližuje
+u člověka, který web vidí poprvé. Text proto pojmenuje důvod, který je
+v horách samozřejmý (je po podzimu, sníh ještě nedorazil), a ukáže, že
+se ten čas využívá na údržbu; zavření je pak vidět jako péče o hotel.
+Poslední věta nechává dveře otevřené, protože při větší skupině se
+otevřít vyplatí. Tenhle blok má vlastní tvar (`.booking-mimo-sezonu`)
+— štítek, nadpis, dva odstavce a telefon — protože na rozdíl od
+ostatních dvou poznámek nemá jen informovat, ale uklidnit.
 
 Vzhled: všechna tři sdělení sdílejí `.booking-poznamka` (oddíl „POZNÁMKY
 V REZERVAČNÍM FORMULÁŘI" v `booking.css`) — tenký svislý proužek, znak
