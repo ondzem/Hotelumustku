@@ -1073,9 +1073,8 @@ export class BookingSystem {
           Mezi podzimem a zimou hotel zavíráme
         </p>
         <p class="mimo-sezonu-text">
-          V období <strong>${popisRozsahu(MIMO_PROVOZ)}</strong> je po podzimní sezóně
-          a na sníh je ještě brzy. Tenhle čas v horách využíváme na údržbu a přípravu
-          na zimu, aby vám v sezóně nic nechybělo.
+          V období <strong>${popisRozsahu(MIMO_PROVOZ)}</strong> je po podzimní sezóně.
+          Tenhle čas využíváme na údržbu a přípravu na zimu, aby vám v sezóně nic nechybělo.
         </p>
         <p class="mimo-sezonu-text">
           Jedete ve větší skupině? Ozvěte se — po domluvě otevřeme i v tomhle období.
