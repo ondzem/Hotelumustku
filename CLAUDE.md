@@ -893,6 +893,39 @@ a oznámení píšou lidé zvenčí a jdou do `innerHTML`. Bez escapování sta�
 uložit recenzi s `<img src=x onerror=…>` a kód se spustil každému
 návštěvníkovi včetně recepčního. Na adresy obrázků je `escUrl()`.
 
+**5. Cizí text se do administrace vkládá jen přes `escapujText()`.**
+Jméno a poznámka hosta i text recenze píše kdokoli z internetu a jdou
+do `innerHTML`. Bez escapování stačilo odeslat rezervaci se značkou
+`<img src=x onerror=…>` a kód se spustil recepčnímu s platnou relací —
+ta má podle RLS přístup ke všem tabulkám, takže by šlo vytáhnout osobní
+údaje všech hostů nebo mazat rezervace. **Toast se escapuje až u
+vykreslení**, na jednom místě: hlášky sestavují různé moduly a některé do
+nich dávají jméno hosta, takže escapovat u každého volajícího zvlášť se
+dřív nebo později zapomene. Tisková sestava má vlastní `escapujTisk()` —
+sype se do `document.write()` v okně, které dědí původ webu. Hlídá to
+kontrola „Escapování cizího textu".
+
+**6. Příjemce e-mailu si NEURČUJE volající.** Funkce `send-email` bere
+příjemce, předmět i HTML z požadavku, takže sama o sobě je otevřená
+pošta. Origin se z neprohlížečového klienta nastaví libovolně, spoléhat
+se na něj nejde. Rozhoduje proto **typ zprávy**: `PRIJEMCE_HOTEL` jde
+natvrdo na recepci (ať přišlo cokoli), `PRIJEMCE_HOST` jen na adresu,
+která sedí s existující rezervací (ověřuje se servisním klíčem proti
+databázi podle `reservationCode`), a `test` vyžaduje token přihlášené
+recepce. Poslat spam cizímu člověku by tedy znamenalo, že si ten člověk
+u hotelu nejdřív zarezervoval pobyt.
+
+Dvě díry, které tu byly do 1. 9. 2026 a hlídají je teď kontroly:
+požadavek **bez hlavičky `Origin`** se pouštěl (curl ji neposílá, takže
+se kontrola obešla jedním příkazem) a pravidlo `*.netlify.app` pouštělo
+**libovolný cizí web** — takovou adresu si zadarmo pořídí kdokoli.
+
+**7. Měřicí kód nesmí být natvrdo v HTML.** Na čtyřech stránkách okolí
+byl blok Google Analytics přímo v `<head>`, takže se načetl při otevření
+stránky bez ohledu na cookie lištu — přesně proti tomu, co slibuje
+`cookies.html`. Po udělení souhlasu se pak načetl podruhé. Vkládá ho
+výhradně `initGA4()` v `main.js` po souhlasu.
+
 Bezpečnostní hlavičky jsou v `public/_headers`; `/admin` má navíc
 `noindex` a `no-store`.
 
@@ -1191,7 +1224,7 @@ Pozor na dvě věci, které vypadají jako chyba a nejsou:
 
 ## Jak si ověřit, že to funguje
 
-Nejdřív `./zkontroluj.sh` (nebo `npm run zkontroluj`). Projde 36 kontrol:
+Nejdřív `./zkontroluj.sh` (nebo `npm run zkontroluj`). Projde 39 kontrol:
 sestavení, shodu hlaviček napříč stránkami, matematiku ceníku a zálohy,
 klíče v balíčku, typy e-mailů, dostupnost nasazených stránek, odmítání
 neoprávněných volání serverových funkcí a pravidla v databázi. S přepínačem
