@@ -1065,19 +1065,19 @@ export class BookingSystem {
    */
   renderMimoProvozNote(rok, mesic) {
     if (!mesicZasahujeMimoProvoz(rok, mesic)) return '';
+    // Zavřené upozornění se už v témž otevření kalendáře nevrací.
+    // Bez toho zabíralo přes půl okna a na dny pod ním se nedalo dostat.
+    if (this.state.mimoSezonuSkryto) return '';
 
     return `
       <div class="booking-mimo-sezonu">
+        <button type="button" class="mimo-sezonu-zavrit" id="mimo-sezonu-zavrit" aria-label="Skrýt upozornění">&times;</button>
         <span class="mimo-sezonu-stitek">Mimo sezónu</span>
-        <p class="mimo-sezonu-nadpis">
-          Mezi podzimem a zimou hotel zavíráme
-        </p>
+        <p class="mimo-sezonu-nadpis">Mezi podzimem a zimou hotel zavíráme</p>
         <p class="mimo-sezonu-text">
           V období <strong>${popisRozsahu(MIMO_PROVOZ)}</strong> je po podzimní sezóně.
-          Tenhle čas využíváme na údržbu a přípravu na zimu, aby vám v sezóně nic nechybělo.
-        </p>
-        <p class="mimo-sezonu-text">
-          Jedete ve větší skupině? Ozvěte se — po domluvě otevřeme i v tomhle období.
+          Tento čas využíváme na údržbu a přípravu na zimu. Pro větší skupiny
+          v tomto období pronajímáme <strong>celý objekt</strong> — ozvěte se nám.
         </p>
         <a class="mimo-sezonu-telefon" href="tel:+420777666273">+420 777 666 273</a>
       </div>
@@ -3063,6 +3063,9 @@ export class BookingSystem {
         this.state.tempDateTo = this.state.dateTo;
         this.state.selectingStep = 1;
         this.state.showCalendarModal = true;
+        // Při novém otevření kalendáře se upozornění ukáže znovu — skrytí
+        // platí jen do zavření, ne natrvalo.
+        this.state.mimoSezonuSkryto = false;
         const [y, m] = (this.state.dateFrom || getTodayDateString()).split('-').map(Number);
         this.state.calYearMonth = { year: y, month: m };
         this.render();
@@ -3394,6 +3397,18 @@ export class BookingSystem {
         });
       }
     });
+
+    // Skrytí upozornění na mimosezónu. Nepřekresluje se celé okno kvůli
+    // jedné věci — prvek se jen odstraní, jinak by kalendář poskočil
+    // a odroloval se zpátky nahoru.
+    const btnSkryjMimoSezonu = document.getElementById('mimo-sezonu-zavrit');
+    if (btnSkryjMimoSezonu) {
+      btnSkryjMimoSezonu.addEventListener('click', () => {
+        this.state.mimoSezonuSkryto = true;
+        const blok = btnSkryjMimoSezonu.closest('.booking-mimo-sezonu');
+        if (blok) blok.remove();
+      });
+    }
 
     const calOverlay = document.getElementById('cal-modal-overlay');
     if (calOverlay) {

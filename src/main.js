@@ -949,7 +949,7 @@ const getHomePageHTML = () => {
         data-hero-video
         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; background: transparent;"
       >
-        <source data-src="/hotel_hero_video.mp4" type="video/mp4">
+        <source data-src="/hotel_hero_video.mp4" data-src-mobil="/hotel_hero_video_mobil.mp4" type="video/mp4">
       </video>`;
 
   const aboutTopSrc = isWinter
@@ -1590,20 +1590,24 @@ export function spustHeroVideo() {
     // i na velké obrazovce. Nula proto znamená „nevím“, ne mobil.
     const sirka = window.innerWidth || document.documentElement.clientWidth || 0;
     const sit = navigator.connection || {};
+    // Nula znamená „nevím“ (rozvržení ještě neproběhlo), ne mobil.
     const jeUzky = sirka > 0 && sirka < 768;
 
-    // Odhad rychlosti se bere vážně jen na úzkém displeji. Chrome hlásí
-    // hned po startu „3g“ i na optice, dokud si připojení nepřeměří —
-    // a video se pak na počítači nepustilo vůbec. Majitel to popisoval
-    // jako „dva dny po sobě se mi nenačetlo“. Opravdu pomalé připojení
-    // (2g) a zapnutý úsporný režim video vypínají pořád.
-    const opravduPomale = ['slow-2g', '2g'].includes(sit.effectiveType);
-    const odhademPomale = sit.effectiveType === '3g';
-    if (jeUzky || Boolean(sit.saveData) || opravduPomale) return;
-    if (odhademPomale && sirka > 0 && sirka < 1024) return;
+    // Na „3g“ se schválně NEBERE ohled. Prohlížeč ho hlásí i na optice
+    // a na běžném mobilním připojení, dokud si rychlost nepřeměří —
+    // a video se kvůli tomu nepouštělo ani na počítači, ani na telefonu.
+    // Mobilní verze má 1,4 MB, takže i na opravdové trojce je to pár
+    // vteřin na pozadí. Vypíná to jen úsporný režim a skutečně pomalé
+    // připojení, kde by video ubíralo pásmo dotazům do databáze.
+    if (Boolean(sit.saveData) || ['slow-2g', '2g'].includes(sit.effectiveType)) return;
 
     video.dataset.spusteno = '1';
-    zdroj.src = zdroj.dataset.src;
+    // Na telefonu jde lehčí verze (854 px, 1,4 MB místo 4,8 MB). Dřív se
+    // na mobilu video nepouštělo vůbec, protože plná verze ubírala pásmo
+    // dotazům do databáze a obsazenost v kalendáři naskakovala se
+    // zpožděním. S lehkou verzí to platit přestalo, tak se pouští i tam.
+    const mobilni = zdroj.dataset.srcMobil;
+    zdroj.src = (jeUzky && mobilni) ? mobilni : zdroj.dataset.src;
     zdroj.removeAttribute('data-src');
     video.load();
     video.play().catch(() => { });
@@ -1723,7 +1727,7 @@ export function setSeasonMode(mode, savePreference = true) {
         heroVideo.setAttribute('data-hero-video', '');
         heroVideo.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; background: transparent;';
         heroVideo.innerHTML = `
-          <source data-src="/hotel_hero_video.mp4" type="video/mp4">
+          <source data-src="/hotel_hero_video.mp4" data-src-mobil="/hotel_hero_video_mobil.mp4" type="video/mp4">
         `;
         homeHeroSection.insertBefore(heroVideo, homeHeroSection.firstChild);
       } else {

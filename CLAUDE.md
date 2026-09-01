@@ -301,11 +301,27 @@ ale dvě, a každá sama o sobě stačila:
   v kořeni nechytla — Netlify ho servíroval s `max-age=0,
   must-revalidate`, takže se **5 MB stahovalo při každé návštěvě znovu**.
   Přibylo proto pravidlo `/*.mp4`.
-- **Odhad rychlosti sítě byl moc přísný.** `spustHeroVideo()` vypínal
-  video při `effectiveType` `3g`, jenže Chrome hlásí `3g` i na optice,
-  dokud si připojení nepřeměří — typicky hned po startu prohlížeče.
-  Na počítači se video pak nepustilo vůbec. `3g` teď video zastaví jen
-  na displeji užším než 1024 px; `2g`, `slow-2g` a úsporný režim platí dál.
+- **Odhad rychlosti sítě blokoval video i tam, kde neměl.** Prohlížeč
+  hlásí `effectiveType: 3g` i na optice a na běžném mobilním připojení,
+  dokud si rychlost nepřeměří — video se kvůli tomu nepouštělo ani na
+  počítači, ani na telefonu. Teď na `3g` nebere ohled vůbec; vypíná ho
+  jen úsporný režim (`saveData`) a `2g` / `slow-2g`.
+
+**Na mobilu jde lehčí verze videa.** `hotel_hero_video_mobil.mp4`
+(854 px, 1,4 MB proti 4,8 MB) přes `data-src-mobil` na `<source>`;
+vybírá se v `spustHeroVideo()` podle šířky pod 768 px. Dřív se na
+telefonu video nepouštělo vůbec, protože plná verze ubírala pásmo
+dotazům do databáze a obsazenost v kalendáři naskakovala se zpožděním.
+S lehkou verzí to platit přestalo. Vyrábí se takhle:
+
+```bash
+ffmpeg -i public/hotel_hero_video.mp4 -vf scale=854:-2 -c:v libx264 \
+  -crf 30 -preset slow -profile:v main -an -movflags +faststart \
+  public/hotel_hero_video_mobil.mp4
+```
+
+Adresa musí být na **třech** místech naráz — `index.html` a dvě šablony
+v `main.js` (letní hero a přepnutí sezóny).
 
 Že video chybí, není vidět jako díra — pod ním je hero fotka, takže
 stránka vypadá v pořádku a chyba se hlásí špatně („občas to nejede").

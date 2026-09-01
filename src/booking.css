@@ -6628,3 +6628,30 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   .mimo-sezonu-nadpis { font-size: 15px; }
   .mimo-sezonu-text { font-size: 13px; }
 }
+
+/* Křížek na skrytí upozornění. Blok zabíral na telefonu přes půl okna
+   kalendáře a na dny pod ním se nedalo dostat — po přečtení jde odklidit. */
+.booking-mimo-sezonu { position: relative; }
+
+.mimo-sezonu-zavrit {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: none;
+  color: #8a8a80;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mimo-sezonu-zavrit:hover { background: #efece3; color: #1c1c19; }
+
+/* Místo pro křížek, ať nepřekrývá štítek. */
+.booking-mimo-sezonu .mimo-sezonu-stitek { padding-right: 28px; }
