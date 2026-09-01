@@ -39,7 +39,7 @@ function fazePruhu(zaznam) {
 }
 
 /**
- * Rozdělí „Pokoj 3 - Nadstandard Mahagon" na „Pokoj 3" a „Mahagon".
+ * Rozdělí „Pokoj 4 - Nadstandard Mahagon" na „Pokoj 4" a „Mahagon".
  *
  * Sloupec s názvy je na telefonu široký 88 px a celý název se do něj
  * nevejde — useknuté „Pokoj 10 - S…" nerozliší nic. Číslo a typ pod

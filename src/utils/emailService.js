@@ -611,7 +611,7 @@ export function sendAllTestEmailsTo(recipientEmail = RECEPCE_PRIJEMCE) {
     id: 'res-test-1',
     code: 'HM-2026-TEST',
     room_id: 'p5',
-    room_name: 'Pokoj 2 - Standard',
+    room_name: 'Pokoj 5 - Standard',
     date_from: '2026-08-10',
     date_to: '2026-08-13',
     guest_name: 'Ondřej Zeman',
@@ -633,7 +633,7 @@ export function sendAllTestEmailsTo(recipientEmail = RECEPCE_PRIJEMCE) {
     created_at: new Date().toISOString()
   };
 
-  const mockRoom = { id: 'p5', name: 'Pokoj 2 - Standard', type: 'standard' };
+  const mockRoom = { id: 'p5', name: 'Pokoj 5 - Standard', type: 'standard' };
   const mockPricing = {
     nights: 3,
     totalGuests: 2,

@@ -1018,6 +1018,18 @@ Tabulky: `reservations`, `blocked_dates`, `room_prices`, `disabled_rooms`,
 `discount_codes`, `aktuality`, `reviews`, `contact_messages`,
 `cenik_sezony`, `cenik_ceny`, `cenik_ceny_pokoj`, `cenik_nastaveni`.
 
+**Pokoje 1–6 se 1. 9. 2026 přečíslovaly zrcadlově** (1↔6, 2↔5, 3↔4)
+podle skutečného značení na chodbě. Identifikátory `p1`–`p6`, `pa` se
+NEMĚNILY — drží fyzický pokoj, jeho fotky (`/pokoje/p6/…`), typ,
+rezervace i blokace; změnilo se jen číslo v názvu. **Proto id neodpovídá
+číslu v názvu** (`p6` = „Pokoj 6", ale `p3` = „Pokoj 1") a nikoho nesmí
+napadnout to „srovnat" — přejmenování id by rozpojilo všechny vazby
+v databázi. Turistické (mimo provoz) jsou teď Pokoj 1–3, Mahagon je
+Pokoj 4. Názvy se měnily na čtyřech místech naráz: `MOCK_ROOMS`,
+`room_prices` v databázi, rozpis v `main.js` a statické
+`ubytovani.html`; u existujících rezervací se přepsal uložený
+`room_name`, aby tisk a e-maily neposílaly hosty ke starým dveřím.
+
 Zdrojem pravdy je Supabase, `localStorage` slouží jako záloha pro případ
 výpadku. Vzor: `getStored*()` čte zálohu, `fetch*()` načte z databáze
 a zálohu přepíše. Rezervační formulář tak ukáže ceny i offline.
@@ -1181,11 +1193,12 @@ Nespoléhej na to, že změna vypadá správně v kódu. Osvědčené postupy:
 
 - ~~**Kapacita pokojů.**~~ Opraveno majitelem 17. 8. 2026 (dřívější
   zadání z 16. 8. bylo chybné). Všude jsou **dvě stálá lůžka**, liší se
-  jen přistýlky: Pokoj 1, 7, 10, 11, 12 → 1 přistýlka (3 osoby);
-  Pokoj 2 → 2 přistýlky (4 osoby); Mahagon, Motýl, Zen → bez přistýlky
-  (2 osoby). Turistické pokoje (4, 5, 6) 2 osoby, jsou mimo provoz.
-  Nadstandard tedy pojme jen dva lidi — pozor na texty, které slibují
-  čtyři (strukturovaná data v `ubytovani.html` na to už doplatila).
+  jen přistýlky — čísla níž platí po přečíslování z 1. 9. 2026:
+  Pokoj 6, 7, 10, 11, 12 → 1 přistýlka (3 osoby); Pokoj 5 → 2 přistýlky
+  (4 osoby); Mahagon, Motýl, Zen → bez přistýlky (2 osoby). Turistické
+  pokoje (1, 2, 3) 2 osoby, jsou mimo provoz. Nadstandard tedy pojme jen
+  dva lidi — pozor na texty, které slibují čtyři (strukturovaná data
+  v `ubytovani.html` na to už doplatila).
 - ~~**Ceník naživo neověřený.**~~ Ověřeno 16. 8. 2026 v prohlížeči:
   migrace v databázi proběhla (základní ceník + letní a zimní sezóna),
   uložení cen i termínu sezóny se propíše do Supabase a zkušební výpočet

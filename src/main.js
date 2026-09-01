@@ -1267,12 +1267,12 @@ const getRoomsPageHTML = () => `
       <div class="room-breakdown-list" data-anim-group>
         <!-- SKUPINA 1: POKOJE V PŘÍZEMÍ -->
         <h3 class="room-group-label" data-anim="up">Pokoje v přízemí</h3>
-        ${renderRoomBreakdownItem('p6', 'Pokoj 1 - Standard', 'standard', 700)}
-        ${renderRoomBreakdownItem('p5', 'Pokoj 2 - Standard', 'standard', 700)}
-        ${renderRoomBreakdownItem('pa', 'Pokoj 3 - Nadstandard - Mahagon', 'nadstandard', 890)}
-        ${renderRoomBreakdownItem('p3', 'Pokoj 4 - Turistický', 'standard', 700)}
-        ${renderRoomBreakdownItem('p2', 'Pokoj 5 - Turistický', 'standard', 700)}
-        ${renderRoomBreakdownItem('p1', 'Pokoj 6 - Turistický', 'standard', 700)}
+        ${renderRoomBreakdownItem('p3', 'Pokoj 1 - Turistický', 'standard', 700)}
+        ${renderRoomBreakdownItem('p2', 'Pokoj 2 - Turistický', 'standard', 700)}
+        ${renderRoomBreakdownItem('p1', 'Pokoj 3 - Turistický', 'standard', 700)}
+        ${renderRoomBreakdownItem('pa', 'Pokoj 4 - Nadstandard - Mahagon', 'nadstandard', 890)}
+        ${renderRoomBreakdownItem('p5', 'Pokoj 5 - Standard', 'standard', 700)}
+        ${renderRoomBreakdownItem('p6', 'Pokoj 6 - Standard', 'standard', 700)}
 
         <!-- SKUPINA 2: POKOJE V PATŘE -->
         <h3 class="room-group-label" data-anim="up">Pokoje v patře</h3>
