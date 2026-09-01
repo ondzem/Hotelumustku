@@ -146,6 +146,14 @@ fi
 # Administrace se musí ptát vlastním oknem (AdminPotvrzeni.js). Nativní
 # confirm/alert vypadá jako hlášení prohlížeče, ne jako náš web, a Safari
 # na iPhonu ho umí přebít vlastní hláškou o „dalších dialozích".
+# --------------------------------------------------------- zvláštní období
+nadpis "Svátky a zimní přestávka"
+if VYSTUP=$(node kontrola/terminy.mjs 2>&1); then
+  zelena "minimum nocí, Silvestr a zimní přestávka"
+else
+  cervena "zvláštní období: $(echo "$VYSTUP" | grep '✗' | head -2 | tr '\n' ' ')"
+fi
+
 # ------------------------------------------------------------- export
 nadpis "Export kontaktů"
 if VYSTUP=$(node kontrola/export.mjs 2>&1); then

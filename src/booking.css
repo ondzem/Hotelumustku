@@ -6455,3 +6455,104 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   .export-akce { flex-direction: column-reverse; align-items: stretch; }
   .export-akce > * { width: 100%; }
 }
+
+/* ============================================================
+   POZNÁMKY V REZERVAČNÍM FORMULÁŘI (terminy.js)
+
+   Tři druhy sdělení, jeden tvar: tenký svislý proužek vlevo,
+   znak místo ikony, text. Schválně BEZ výplně v sytých barvách
+   a bez vykřičníků — je to informace, ne varování a už vůbec ne
+   reklamní sdělení. Odlišuje je jen barva proužku.
+   ============================================================ */
+
+.booking-poznamka {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: #faf9f5;
+  border: 1px solid #e7e5dc;
+  border-left: 3px solid #b9bda6;
+  border-radius: 6px;
+}
+
+.booking-poznamka-ikona {
+  font-size: 15px;
+  line-height: 1.45;
+  flex-shrink: 0;
+  color: #8a8a80;
+}
+
+.booking-poznamka-text {
+  font-size: 13px;
+  color: #55554e;
+  line-height: 1.6;
+}
+
+.booking-poznamka-text strong { color: #1c1c19; font-weight: 700; }
+
+.booking-poznamka-text a {
+  color: #4a5a24;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Svátky — chladná modrozelená, ať je poznat od běžné zelené webu. */
+.booking-poznamka.je-svatky { border-left-color: #6b8ea3; }
+.booking-poznamka.je-svatky .booking-poznamka-ikona { color: #6b8ea3; }
+
+/* Silvestr — tlumené zlato. Slavnostní, ale pořád to sedí ke krémové;
+   sytější odstín by vypadal jako upoutávka na akci. */
+.booking-poznamka.je-silvestr {
+  background: #fdfaf1;
+  border-color: #e8dfc4;
+  border-left-color: #b8912f;
+}
+
+.booking-poznamka.je-silvestr .booking-poznamka-ikona { color: #b8912f; }
+
+/* Zavřeno — cihlová. Ne poplašná červená; je to sdělení o provozu,
+   ne chyba. */
+.booking-poznamka.je-mimo-provoz { border-left-color: #a8593f; }
+.booking-poznamka.je-mimo-provoz .booking-poznamka-ikona { color: #a8593f; }
+
+/* Poznámky uvnitř kalendáře sedí těsně pod mřížkou. */
+.cal-poznamky {
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cal-poznamky .booking-poznamka { margin-top: 12px; }
+.cal-poznamky .booking-poznamka + .booking-poznamka { margin-top: 0; }
+
+/* 31. 12. v kalendáři — zlatý prstenec kolem čísla. Barvu pozadí
+   nesmí přebít, tu si drží obsazenost a vybraný termín; proto je to
+   rámeček uvnitř buňky a ne výplň. */
+.cal-day.je-silvestr {
+  position: relative;
+  font-weight: 800;
+}
+
+.cal-day.je-silvestr::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border: 1.5px solid #b8912f;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+/* Ve vybraném termínu prstenec ztmavne, ať je vidět i na zeleném
+   podkladu. */
+.cal-day.je-silvestr.is-selected::after,
+.cal-day.je-silvestr.in-range::after { border-color: #8a6b18; }
+
+@media (max-width: 560px) {
+  .cal-poznamky { padding: 0 12px; }
+  .booking-poznamka { padding: 10px 12px; gap: 8px; }
+  .booking-poznamka-text { font-size: 12.5px; }
+}

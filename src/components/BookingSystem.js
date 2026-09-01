@@ -1,5 +1,10 @@
 import { MOCK_ROOMS, isSupabaseConfigured, supabase, getStoredReservations, saveStoredReservation, sanitizeReservationForSupabase, getStoredBlockedDates, getStoredDiscountCodes, getStoredRoomPrices, getStoredDisabledRooms, getStoredCenik, fetchCenik, fetchRoomPrices, getDeviceRedeemedDiscountCodes, markDiscountCodeRedeemedOnDevice, incrementDiscountCodeUsage } from '../lib/supabaseClient.js';
 import { obsazenostPulek, pulkyDne } from '../utils/obsazenost.js';
+import {
+  minimumNoci, popisNoci, zasahujeDoSvatku, zahrnujeSilvestr, jeSilvestr,
+  mesicZasahujeMimoProvoz, mesicZasahujeSvatky, popisRozsahu,
+  SVATKY, MIMO_PROVOZ,
+} from '../utils/terminy.js';
 import { calculateReservationPrice, generateReservationCode, generateManageToken, BANK_ACCOUNT, BANK_NAME, formatCzechPrice, validateSystemDateIntegrity, isWinterSeason, VYCHOZI_NASTAVENI } from '../utils/pricing.js';
 import { maxOsobNaPokoji, obdobiSOmezenouDostupnosti } from '../utils/cenik.js';
 import { sendEmail, generateEmail1RequestReceived, generateEmail1ReceptionNotification, RECEPCE_PRIJEMCE } from '../utils/emailService.js';
@@ -143,7 +148,13 @@ export class BookingSystem {
     const start = new Date(this.state.dateFrom);
     const end = new Date(this.state.dateTo);
     if (isNaN(start) || isNaN(end)) return false;
-    return Math.ceil((end - start) / 86400000) >= 2;
+    // Minimum se liší podle termínu: přes svátky tři noci, jinak dvě.
+    return Math.ceil((end - start) / 86400000) >= minimumNoci(this.state.dateFrom);
+  }
+
+  /** Kolik nocí je nejméně potřeba u právě rozpracovaného termínu. */
+  minimumNociProVyber(datumPrijezdu) {
+    return minimumNoci(datumPrijezdu || this.state.dateFrom);
   }
 
   syncGuestsArray() {
@@ -979,6 +990,79 @@ export class BookingSystem {
     `;
   }
 
+  /**
+   * Upozornění na Silvestr.
+   *
+   * Majitel pořádá silvestrovský večer s programem a předem do něj
+   * investuje (kapela, výzdoba). Když se sejde pět lidí, nevyplatí se —
+   * a host, který přijede s očekáváním oslavy, by byl zklamaný. Věta
+   * proto říká pravdu dopředu: ubytování je jisté, program ne.
+   *
+   * Schválně to NENÍ varování ani podmínka. Je to informace, kterou si
+   * host přečte jednou a ví, na čem je.
+   */
+  renderSilvestrNote() {
+    if (!this.state.dateFrom || !this.state.dateTo) return '';
+    if (!zahrnujeSilvestr(this.state.dateFrom, this.state.dateTo)) return '';
+
+    return `
+      <div class="booking-poznamka je-silvestr">
+        <span class="booking-poznamka-ikona" aria-hidden="true">✦</span>
+        <span class="booking-poznamka-text">
+          <strong>Váš pobyt zahrnuje Silvestr.</strong>
+          Silvestrovský večer s programem chystáme jen tehdy, když se sejde dost hostů —
+          jestli letos vyjde, dáme vám vědět při potvrzení rezervace.
+          <strong>Ubytování máte jisté tak jako tak.</strong>
+        </span>
+      </div>
+    `;
+  }
+
+  /**
+   * Upozornění na svátky: nejméně tři noci.
+   *
+   * Ukazuje se, jakmile termín do svátků zasahuje — tedy i tehdy, když
+   * je délka v pořádku. Host tak ví, proč tam to pravidlo je, a ne jen
+   * že mu tlačítko nejde zmáčknout.
+   */
+  renderSvatkyNote() {
+    if (!this.state.dateFrom || !this.state.dateTo) return '';
+    if (!zasahujeDoSvatku(this.state.dateFrom, this.state.dateTo)) return '';
+
+    return `
+      <div class="booking-poznamka je-svatky">
+        <span class="booking-poznamka-ikona" aria-hidden="true">❄</span>
+        <span class="booking-poznamka-text">
+          Termín spadá do svátků (<strong>${popisRozsahu(SVATKY)}</strong>).
+          V tomto období přijímáme pobyty nejméně na <strong>${popisNoci(SVATKY.minNoci)}</strong>.
+        </span>
+      </div>
+    `;
+  }
+
+  /**
+   * Upozornění na zimní přestávku.
+   *
+   * Váže se na ZOBRAZENÝ MĚSÍC, ne na vybraný termín. Zavřené dny jsou
+   * v kalendáři plné a nedají se rozkliknout, takže podle výběru by se
+   * upozornění nikdy neukázalo — a host by koukal na červený říjen bez
+   * vysvětlení. Takhle to čte přesně ve chvíli, kdy se ptá „proč".
+   */
+  renderMimoProvozNote(rok, mesic) {
+    if (!mesicZasahujeMimoProvoz(rok, mesic)) return '';
+
+    return `
+      <div class="booking-poznamka je-mimo-provoz">
+        <span class="booking-poznamka-ikona" aria-hidden="true">☎</span>
+        <span class="booking-poznamka-text">
+          <strong>V období ${popisRozsahu(MIMO_PROVOZ)} máme obvykle zavřeno.</strong>
+          Pro větší skupinu ale hotel po domluvě rádi otevřeme —
+          zavolejte nám na <a href="tel:+420777666273">+420 777 666 273</a> a domluvíme se.
+        </span>
+      </div>
+    `;
+  }
+
   renderOmezenaDostupnostNote() {
     if (!this.hasValidDates()) return '';
 
@@ -1580,6 +1664,9 @@ export class BookingSystem {
       if (isFrom) dayClass += ' is-from is-selected';
       if (isTo) dayClass += ' is-to is-selected';
       if (isInRange) dayClass += ' in-range';
+      // 31. 12. se odliší i bez výběru — host tak v kalendáři rovnou vidí,
+      // kde Silvestr leží, a nemusí ho dopočítávat z čísel.
+      if (!isPast && jeSilvestr(dayStr)) dayClass += ' je-silvestr';
 
       const isDisabled = isPast || (jePlne && !lzeJakoOdjezd);
 
@@ -1603,6 +1690,7 @@ export class BookingSystem {
       } else {
         tooltipText = 'Volný den, příjezd možný od 15:00';
       }
+      if (jeSilvestr(dayStr) && !isPast) tooltipText = `Silvestr — ${tooltipText.charAt(0).toLowerCase()}${tooltipText.slice(1)}`;
 
       daysHtml += `
         <button type="button" class="${dayClass}" data-date="${dayStr}" ${isDisabled ? 'disabled' : ''} title="${tooltipText}">
@@ -1610,6 +1698,9 @@ export class BookingSystem {
         </button>
       `;
     }
+
+    // Minimum se řídí dnem příjezdu — přes svátky tři noci, jinak dvě.
+    const minNoci = this.minimumNociProVyber(effectiveFrom);
 
     let tempNights = 1;
     if (effectiveFrom && effectiveTo) {
@@ -1652,6 +1743,21 @@ export class BookingSystem {
             ${daysHtml}
           </div>
 
+          ${mesicZasahujeMimoProvoz(year, month) || mesicZasahujeSvatky(year, month) ? `
+            <div class="cal-poznamky">
+              ${this.renderMimoProvozNote(year, month)}
+              ${mesicZasahujeSvatky(year, month) ? `
+                <div class="booking-poznamka je-svatky">
+                  <span class="booking-poznamka-ikona" aria-hidden="true">❄</span>
+                  <span class="booking-poznamka-text">
+                    Přes svátky (<strong>${popisRozsahu(SVATKY)}</strong>) přijímáme pobyty
+                    nejméně na <strong>${popisNoci(SVATKY.minNoci)}</strong>.
+                  </span>
+                </div>
+              ` : ''}
+            </div>
+          ` : ''}
+
           <div class="cal-modal-footer" style="padding: 16px; border-top: 1px solid #E7E5DC; display: flex; flex-direction: column; gap: 12px;">
             <div class="cal-legend" style="display:flex; flex-wrap:wrap; gap:14px; padding:4px 0 10px 0; border-bottom:1px solid #E7E5DC; margin-bottom:4px;">
               <span class="cal-legend-item">
@@ -1672,14 +1778,16 @@ export class BookingSystem {
                 <span class="cal-summary-label" style="font-size: 14px; font-weight: 700; color: #1C1C19;">
                   Příjezd: ${formatCzechDateStr(effectiveFrom)} &nbsp;|&nbsp; Odjezd: ${formatCzechDateStr(effectiveTo)}
                 </span>
-                ${tempNights < 2 ? `
+                ${tempNights < minNoci ? `
                   <span class="cal-summary-sub" style="font-size: 13.5px; color: #B45309; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; margin-top: 3px;">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                       <circle cx="12" cy="12" r="10"></circle>
                       <line x1="12" y1="8" x2="12" y2="12"></line>
                       <line x1="12" y1="16" x2="12.01" y2="16"></line>
                     </svg>
-                    Minimální délka pobytu jsou 2 noci. Prosíme zvolte pozdější datum odjezdu.
+                    ${minNoci > 2
+                      ? `Přes svátky (${popisRozsahu(SVATKY)}) přijímáme pobyty nejméně na ${popisNoci(minNoci)}. Zvolte prosím pozdější datum odjezdu.`
+                      : `Minimální délka pobytu jsou ${popisNoci(minNoci)}. Prosíme zvolte pozdější datum odjezdu.`}
                   </span>
                 ` : `
                   <span class="cal-summary-sub" style="font-size: 13px; color: #666660; font-weight: 500;">
@@ -1687,8 +1795,8 @@ export class BookingSystem {
                   </span>
                 `}
               </div>
-              <button type="button" class="btn btn-confirm-cal-dates" id="cal-confirm-dates-btn" ${tempNights < 2 ? 'disabled' : ''} style="height: 42px; padding: 0 24px; font-size: 15px; font-weight: 600; color: ${tempNights < 2 ? '#999990' : '#FFFFFF'}; background-color: ${tempNights < 2 ? '#E7E5DC' : '#4A5A24'}; border: none; border-radius: 2px; cursor: ${tempNights < 2 ? 'not-allowed' : 'pointer'}; width: 100%; display: inline-flex; align-items: center; justify-content: center; transition: background 0.15s ease;">
-                ${tempNights < 2 ? 'Potvrdit termín (Min. 2 noci)' : 'Potvrdit termín pobytu'}
+              <button type="button" class="btn btn-confirm-cal-dates" id="cal-confirm-dates-btn" ${tempNights < minNoci ? 'disabled' : ''} style="height: 42px; padding: 0 24px; font-size: 15px; font-weight: 600; color: ${tempNights < minNoci ? '#999990' : '#FFFFFF'}; background-color: ${tempNights < minNoci ? '#E7E5DC' : '#4A5A24'}; border: none; border-radius: 2px; cursor: ${tempNights < minNoci ? 'not-allowed' : 'pointer'}; width: 100%; display: inline-flex; align-items: center; justify-content: center; transition: background 0.15s ease;">
+                ${tempNights < minNoci ? `Potvrdit termín (min. ${popisNoci(minNoci)})` : 'Potvrdit termín pobytu'}
               </button>
             ` : (effectiveFrom ? `
               <div class="cal-range-summary" style="display: flex; flex-direction: column; gap: 2px;">
@@ -1696,7 +1804,7 @@ export class BookingSystem {
                   Příjezd: ${formatCzechDateStr(effectiveFrom)}
                 </span>
                 <span class="cal-summary-sub" style="font-size: 13px; color: #666660; font-weight: 500;">
-                  Nyní klikněte v kalendáři na datum odjezdu (Check-out alespoň po 2 nocích)
+                  Nyní klikněte v kalendáři na datum odjezdu (odjezd nejdřív po ${popisNoci(minNoci)})
                 </span>
               </div>
             ` : `
@@ -1763,7 +1871,8 @@ export class BookingSystem {
             <div class="terms-row-item">
               <span class="terms-row-title">Nejkratší možný pobyt</span>
               <div class="terms-row-desc">
-                <p>Rezervovat lze pobyt na <strong>minimálně 2 noci</strong>. Kratší pobyty hotel nepřijímá.</p>
+                <p>Rezervovat lze pobyt na <strong>minimálně 2 noci</strong>. Kratší pobyty hotel nepřijímá.
+                Přes svátky (<strong>${popisRozsahu(SVATKY)}</strong>) je nejkratší pobyt <strong>${popisNoci(SVATKY.minNoci)}</strong>.</p>
                 <p class="terms-sub-note">Za samostatné obsazení pokoje jedním hostem se nic navíc nepřipočítává — je už zahrnuté v ceně za jednu osobu.</p>
               </div>
             </div>
@@ -1880,6 +1989,8 @@ export class BookingSystem {
                 </button>
               </div>
               
+              ${this.renderSvatkyNote()}
+              ${this.renderSilvestrNote()}
               ${this.renderOmezenaDostupnostNote()}
 
               <div class="terms-card-bottom-row" style="margin-top: 14px;">
@@ -3097,8 +3208,11 @@ export class BookingSystem {
             this.scrollToErrorMessage();
             return;
           }
-          if (diffDays < 2) {
-            this.state.errorMessage = 'Minimální délka pobytu v Hotelu u Můstku jsou 2 noci. Prosíme zvolte delší termín pobytu.';
+          const minNociOdeslani = this.minimumNociProVyber(this.state.dateFrom);
+          if (diffDays < minNociOdeslani) {
+            this.state.errorMessage = minNociOdeslani > 2
+              ? `Přes svátky (${popisRozsahu(SVATKY)}) přijímáme pobyty nejméně na ${popisNoci(minNociOdeslani)}. Prosíme zvolte delší termín pobytu.`
+              : `Minimální délka pobytu v Hotelu u Můstku jsou ${popisNoci(minNociOdeslani)}. Prosíme zvolte delší termín pobytu.`;
             this.render();
             this.scrollToErrorMessage();
             return;

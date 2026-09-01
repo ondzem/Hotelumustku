@@ -291,6 +291,51 @@ osvědčila a nemají se rozvolňovat:
 
 ---
 
+## Svátky, Silvestr a zimní přestávka
+
+Dvě období, která se opakují **každý rok** a řídí se jen dnem a měsícem.
+Veškerá logika je v `src/utils/terminy.js` (čistý modul, testuje ho
+`kontrola/terminy.mjs`); nikde jinde se ta data nepíšou ručně.
+
+| Období | Rozsah | Co dělá |
+|---|---|---|
+| Svátky | 26. 12. – 2. 1. | nejkratší pobyt **3 noci** místo dvou |
+| Zimní přestávka | 5. 10. – 25. 12. | hotel bývá zavřený, po domluvě se otevře |
+
+Pět věcí, které nejsou z kódu vidět:
+
+- **Svátky přecházejí přes Nový rok, takže se rozsah testuje obráceně.**
+  `12-26` je větší než `01-02`, takže obvyklé `mmdd >= od && mmdd <= doo`
+  vrátí u celého období nepravdu a 31. 12. by nepatřilo nikam. Hlídá to
+  `vRozsahuMM_DD`, kde se při přetočeném rozsahu přepíná na „nebo".
+- **Prochází se NOCI pobytu, ne krajní dny.** Noc patří ke dni příjezdu,
+  takže se jde od `date_from` po `date_to` bez posledního dne. Pobyt
+  23. → 26. 12. tedy do svátků nezasahuje (poslední noc je 25.) a odjezd
+  31. 12. neznamená, že host stráví Silvestr v hotelu.
+- **Minimum se počítá z DNE PŘÍJEZDU, ne z celého pobytu.** Kdyby se
+  ptalo na celý pobyt, host by uvízl v kruhu: vybere dvě noci, systém
+  řekne „potřebujete tři", on přidá noc — a teprve tím se do svátků
+  dostane. Takhle pravidlo platí od prvního kliknutí.
+- **Upozornění na zimní přestávku visí na ZOBRAZENÉM MĚSÍCI, ne na
+  výběru.** Zavřené dny má majitel zablokované, takže jsou plné a nedají
+  se rozkliknout — podle výběru by se hláška nikdy neukázala a host by
+  koukal na červený říjen bez vysvětlení. `mesicZasahujeMimoProvoz()` ji
+  proto zobrazí ve chvíli, kdy si ten měsíc otevře.
+- **Silvestrovská hláška slibuje ubytování, ne program.** Majitel do
+  silvestrovského večera předem investuje (kapela, výzdoba) a při pěti
+  hostech se mu nevyplatí. Věta proto říká, že program chystají jen při
+  dostatečném počtu hostů a dají vědět při potvrzení — ubytování je
+  jisté tak jako tak. Není to podmínka ani varování a nesmí se to
+  přepsat na příslib.
+
+Vzhled: všechna tři sdělení sdílejí `.booking-poznamka` (oddíl „POZNÁMKY
+V REZERVAČNÍM FORMULÁŘI" v `booking.css`) — tenký svislý proužek, znak
+místo ikony, žádná sytá výplň. Liší se jen barvou proužku: svátky
+modrozelená, Silvestr tlumené zlato, zavřeno cihlová. **Nesmí to
+vypadat jako sleva ani jako chyba** — je to informace. 31. 12. má
+v kalendáři zlatý prstenec (`.cal-day.je-silvestr::after`), ne výplň;
+tu si drží obsazenost a vybraný termín.
+
 ## Zavírání provozu — tři způsoby, jedno okno
 
 Nepřidávej čtvrtý způsob. Padly už dva pokusy postavit vedle nich další
@@ -1146,7 +1191,7 @@ Pozor na dvě věci, které vypadají jako chyba a nejsou:
 
 ## Jak si ověřit, že to funguje
 
-Nejdřív `./zkontroluj.sh` (nebo `npm run zkontroluj`). Projde 35 kontrol:
+Nejdřív `./zkontroluj.sh` (nebo `npm run zkontroluj`). Projde 36 kontrol:
 sestavení, shodu hlaviček napříč stránkami, matematiku ceníku a zálohy,
 klíče v balíčku, typy e-mailů, dostupnost nasazených stránek, odmítání
 neoprávněných volání serverových funkcí a pravidla v databázi. S přepínačem
