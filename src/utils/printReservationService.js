@@ -387,7 +387,7 @@ export function printReservationSheet(reservation) {
       <tr><td class="label">Počet nocí:</td><td class="value">${pricing.nights} nocí</td></tr>
     </table>
     <table class="info-table">
-      <tr><td class="label">Příjezd (Check-in):</td><td class="value">od 14:00 hod.</td></tr>
+      <tr><td class="label">Příjezd (Check-in):</td><td class="value">od 15:00 hod.</td></tr>
       <tr><td class="label">Odjezd (Check-out):</td><td class="value">do 10:00 hod.</td></tr>
       <tr><td class="label">Počet osob:</td><td class="value">${reservation.adults_count || 1} dospělí ${reservation.children_count > 0 ? `, ${reservation.children_count} dětí` : ''}</td></tr>
     </table>
@@ -433,7 +433,7 @@ export function printReservationSheet(reservation) {
       <strong>${formatCzechPrice(pricing.depositPriceTotal)} Kč ${reservation.status === 'confirmed' ? '(UHRAZENO)' : ''}</strong>
     </div>
     <div class="financial-row total">
-      <span>Zbývající doplatek k úhradě na místě (70 %):</span>
+      <span>Zbývající doplatek k úhradě na místě (${100 - pricing.depositPercentage} %):</span>
       <span>${formatCzechPrice(pricing.remainingPriceTotal)} Kč</span>
     </div>
   </div>

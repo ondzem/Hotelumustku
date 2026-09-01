@@ -1601,7 +1601,7 @@ export class AdminDashboard {
                         <ul class="drawer-info-list">
                           <li><span>Celková cena pobytu:</span> <strong>${formatCzechPrice(r.total_price)} s DPH</strong></li>
                           <li><span>Záloha ${procentoZalohy(r)} % (předem):</span> <strong style="color: #4a5a24;">${formatCzechPrice(r.deposit_price || 0)}</strong></li>
-                          <li><span>Doplatek 70 % (na místě):</span> <strong>${formatCzechPrice(r.remaining_price || Math.round((r.total_price||0)*0.7))}</strong></li>
+                          <li><span>Doplatek ${100 - procentoZalohy(r)} % (na místě):</span> <strong>${formatCzechPrice(r.remaining_price || ((r.total_price || 0) - (r.deposit_price || 0)))}</strong></li>
                           <li><span>Variabilní symbol:</span> <strong>${getVariableSymbol(r.code)}</strong></li>
                         </ul>
                       </div>
@@ -1634,7 +1634,7 @@ export class AdminDashboard {
             <div class="admin-confirm-modal">
               <h3 class="admin-modal-title">Trvalé vymazání rezervace</h3>
               <p class="admin-modal-desc">
-                Opravdu chcete trvale smazat rezervaci <strong>${this.pendingDeleteReservation.code}</strong> (${this.pendingDeleteReservation.guest_name})? Tato akce je nevratná a záznam bude vymazán z databáze.
+                Opravdu chcete trvale smazat rezervaci <strong>${escapujText(this.pendingDeleteReservation.code)}</strong> (${escapujText(this.pendingDeleteReservation.guest_name)})? Tato akce je nevratná a záznam bude vymazán z databáze.
               </p>
               <div class="admin-modal-actions">
                 <button type="button" class="btn-modal-cancel btn-cancel-delete-modal">Zrušit</button>
@@ -1978,7 +1978,7 @@ export class AdminDashboard {
               </div>
 
               <p style="font-size: 14px; color: #444440; line-height: 1.5; margin: 0 0 20px 0;">
-                Opravdu chcete smazat / neschválit recenzi od hosta <strong>„${this.pendingDeleteReview.author_name || this.pendingDeleteReview.full_name || 'Host'}“</strong>? Záznam bude odstraněn z webu i databáze.
+                Opravdu chcete smazat / neschválit recenzi od hosta <strong>„${escapujText(this.pendingDeleteReview.author_name || this.pendingDeleteReview.full_name || 'Host')}“</strong>? Záznam bude odstraněn z webu i databáze.
               </p>
 
               <div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px;">

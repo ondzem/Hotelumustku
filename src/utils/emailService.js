@@ -13,6 +13,27 @@ const LOCAL_STORAGE_EMAIL_LOGS_KEY = 'hotel_umustku_email_logs_v1';
  * hostům v e-mailu o vypršení lhůty pro úhradu zálohy.
  */
 export const HOTEL_EMAIL = 'hotel@umustku.cz';
+/**
+ * Escapování textu, který do e-mailu píše kdokoli z internetu.
+ *
+ * Zprávy z kontaktního formuláře a recenze chodí recepci jako HTML.
+ * Bez escapování si tam host propašuje vlastní odkaz nebo tabulku —
+ * recepčnímu pak přijde z ověřené domény hotelu zpráva, která vypadá
+ * jako systémové sdělení a vede kamkoli. JavaScript poštovní klient
+ * nespustí, ale phishing na vlastní recepci je dost špatný sám o sobě.
+ *
+ * Escapuje se i uvozovka a apostrof — část hodnot jde do atributů
+ * (`href="mailto:…"`), kde by se uvozovkou dal atribut ukončit.
+ */
+export function escapujMail(text) {
+  return String(text == null ? '' : text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 export const HOTEL_TELEFON = '+420 777 666 273';
 
 /**
@@ -692,25 +713,25 @@ export function generateEmailContactNotification({ name, surname, email, phone, 
     <table class="info-table" style="background-color: #ffffff !important; margin: 20px 0; width: 100%; border-collapse: collapse;">
       <tr>
         <td style="color: #555555 !important; width: 140px; padding: 8px 12px; font-weight: 500; border-bottom: 1px solid #f0f0f0;">Jméno a příjmení:</td>
-        <td style="color: #1a1a1a !important; padding: 8px 12px; font-weight: 600; border-bottom: 1px solid #f0f0f0;">${name} ${surname}</td>
+        <td style="color: #1a1a1a !important; padding: 8px 12px; font-weight: 600; border-bottom: 1px solid #f0f0f0;">${escapujMail(name)} ${escapujMail(surname)}</td>
       </tr>
       <tr>
         <td style="color: #555555 !important; padding: 8px 12px; font-weight: 500; border-bottom: 1px solid #f0f0f0;">E-mail:</td>
-        <td style="color: #1a1a1a !important; padding: 8px 12px; border-bottom: 1px solid #f0f0f0;"><a href="mailto:${email}" style="color: #697947 !important; text-decoration: underline; font-weight: 600;">${email}</a></td>
+        <td style="color: #1a1a1a !important; padding: 8px 12px; border-bottom: 1px solid #f0f0f0;"><a href="mailto:${escapujMail(email)}" style="color: #697947 !important; text-decoration: underline; font-weight: 600;">${escapujMail(email)}</a></td>
       </tr>
       ${phone ? `
       <tr>
         <td style="color: #555555 !important; padding: 8px 12px; font-weight: 500; border-bottom: 1px solid #f0f0f0;">Telefon:</td>
-        <td style="color: #1a1a1a !important; padding: 8px 12px; border-bottom: 1px solid #f0f0f0;"><a href="tel:${phone}" style="color: #1a1a1a !important; text-decoration: none;">${phone}</a></td>
+        <td style="color: #1a1a1a !important; padding: 8px 12px; border-bottom: 1px solid #f0f0f0;"><a href="tel:${escapujMail(phone)}" style="color: #1a1a1a !important; text-decoration: none;">${escapujMail(phone)}</a></td>
       </tr>` : ''}
       <tr>
         <td style="color: #555555 !important; padding: 8px 12px; font-weight: 500; vertical-align: top;">Zpráva:</td>
-        <td style="color: #1a1a1a !important; padding: 8px 12px; white-space: pre-wrap; line-height: 1.6;">${message || '<em>Bez textu zprávy</em>'}</td>
+        <td style="color: #1a1a1a !important; padding: 8px 12px; white-space: pre-wrap; line-height: 1.6;">${message ? escapujMail(message) : '<em>Bez textu zprávy</em>'}</td>
       </tr>
     </table>
 
     <div class="alert-box" style="background-color: #fff9ed !important; color: #333333 !important; border-left: 4px solid #697947 !important; padding: 14px 18px; margin-top: 24px; border-radius: 4px;">
-      Na tuto zprávu můžete odpovědět přímo kliknutím na e-mail klienta: <a href="mailto:${email}" style="color: #697947 !important; font-weight: 600;">${email}</a>.
+      Na tuto zprávu můžete odpovědět přímo kliknutím na e-mail klienta: <a href="mailto:${escapujMail(email)}" style="color: #697947 !important; font-weight: 600;">${escapujMail(email)}</a>.
     </div>
     ${getEmailFooter()}
   `;
@@ -735,17 +756,17 @@ export function generateEmailNewReviewNotification({ review }) {
       <tr>
         <td style="color: #555555 !important; width: 150px; padding: 10px 12px; font-weight: 500; border-bottom: 1px solid #f0f0f0;">Jméno hosta:</td>
         <td style="color: #1a1a1a !important; padding: 10px 12px; font-weight: 700; border-bottom: 1px solid #f0f0f0;">
-          ${fullName} <span style="color: #697947; font-weight: 600;">(Zobrazí se jako: ${authorName})</span>
+          ${escapujMail(fullName)} <span style="color: #697947; font-weight: 600;">(Zobrazí se jako: ${escapujMail(authorName)})</span>
         </td>
       </tr>
       <tr>
         <td style="color: #555555 !important; padding: 10px 12px; font-weight: 500; border-bottom: 1px solid #f0f0f0;">Datum odeslání:</td>
-        <td style="color: #1a1a1a !important; padding: 10px 12px; border-bottom: 1px solid #f0f0f0;">${review.date || new Date().toLocaleDateString('cs-CZ')}</td>
+        <td style="color: #1a1a1a !important; padding: 10px 12px; border-bottom: 1px solid #f0f0f0;">${escapujMail(review.date) || new Date().toLocaleDateString('cs-CZ')}</td>
       </tr>
       <tr>
         <td style="color: #555555 !important; padding: 10px 12px; font-weight: 500; vertical-align: top;">Text recenze:</td>
         <td style="color: #1a1a1a !important; padding: 12px; font-style: italic; background-color: #faf9f5; border-radius: 4px; line-height: 1.6; border: 1px solid #eae7dc;">
-          "${review.text || 'Bez textu'}"
+          "${review.text ? escapujMail(review.text) : 'Bez textu'}"
         </td>
       </tr>
     </table>

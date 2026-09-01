@@ -171,9 +171,28 @@ fi
 # se značkou a kód se spustil recepčnímu s platnou relací, která má
 # v databázi přístup ke všemu.
 nadpis "Escapování cizího textu"
-NEESCAPOVANE=$(grep -nE '\$\{(r|reservation)\.(guest_name|guest_note|guest_email|guest_phone|text|author_name|room_name)[^}]*\}' \
-  src/components/AdminDashboard.js src/utils/printReservationService.js 2>/dev/null \
-  | grep -v 'escapujText\|escapujTisk' || true)
+# Vzorek schválně nechytá jen proměnnou `r` nebo `reservation`. Dřív to tak
+# bylo a kontrola svítila zeleně i s dírou v potvrzovacích oknech, kde se
+# stejná data berou z `this.pendingDeleteReservation`. Falešná jistota je
+# horší než žádná kontrola, proto se hledá LIBOVOLNÝ držitel těch polí.
+# Escapované výskyty se z řádku nejdřív VYMAŽOU a teprve zbytek se
+# prohledává. Dřív se filtrovalo `grep -v escapujText`, jenže to zahodí
+# celý řádek — a na tomtéž řádku bývá jedno pole escapované a druhé ne.
+# Přesně tak prošly nezaescapované údaje v potvrzovacích oknech.
+#
+# Hlásí se jen pole, které se opravdu VYPISUJE — tedy `${x.guest_name}`
+# nebo `${x.guest_name || 'Host'}`. Použití v podmínce (`${x.guest_note ?
+# … : ''}`) se přeskakuje; tam se hodnota nevykresluje a hlásit ji
+# znamená planý poplach, který si obsluha odvykne číst.
+POLE='guest_name|guest_note|guest_email|guest_phone|guest_city|text|author_name|full_name|room_name'
+NEESCAPOVANE=""
+for SOUBOR in src/components/AdminDashboard.js src/utils/printReservationService.js; do
+  [ -f "$SOUBOR" ] || continue
+  NALEZ=$(sed -E 's/escapuj(Text|Tisk)\([^)]*\)//g; s/\besc\([^)]*\)//g' "$SOUBOR" \
+    | grep -nE "\\$\{[A-Za-z0-9_.]*\.($POLE)[[:space:]]*(\||\})" || true)
+  [ -n "$NALEZ" ] && NEESCAPOVANE="$NEESCAPOVANE $SOUBOR:$(echo "$NALEZ" | head -2 | tr '\n' ' ')"
+done
+
 if [ -z "$NEESCAPOVANE" ]; then
   zelena "cizí text jde do administrace jen escapovaný"
 else

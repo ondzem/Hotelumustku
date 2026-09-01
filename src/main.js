@@ -4197,7 +4197,7 @@ export const getGdprPageHTML = () => `
                   </tr>
                   <tr>
                     <td>Cookies a údaje z měření návštěvnosti</td>
-                    <td>Podle jednotlivých souborů, nejdéle 14 měsíců. Podrobnosti najdete v <a href="/cookies" style="color: #1c1c19; text-decoration: underline;">zásadách používání cookies</a>.</td>
+                    <td>Podle jednotlivých souborů. Analytické cookies nejdéle 2 roky, nezbytné do jejich smazání ve vašem prohlížeči. Úplný přehled najdete v <a href="/cookies" style="color: #1c1c19; text-decoration: underline;">zásadách používání cookies</a>.</td>
                   </tr>
                 </tbody>
               </table>
@@ -4485,7 +4485,7 @@ export const getPodminkyPageHTML = () => `
               <p class="legal-article-text">Za věci, které si do hotelu přinesete, odpovídá ubytovatel podle § 2945 a následujících občanského zákoníku.</p>
               <p class="legal-article-text">Za peníze, klenoty a jiné cennosti odpovídá ubytovatel jen do zákonem stanovené výše, pokud je nepřevzal do úschovy. <strong>Cennosti proto doporučujeme uložit u nás v recepci.</strong></p>
               <p class="legal-article-text">Škodu je nutné oznámit <strong>bez zbytečného odkladu, nejpozději do 15 dnů</strong> od chvíle, kdy jste se o ní dozvěděli. Později už nárok bohužel zaniká — plyne to přímo ze zákona.</p>
-              <p class="legal-article-text">Parkoviště je vybavené závorou a kamerovým systémem. <strong>Nejde však o parkoviště se závorou</strong> ve smyslu smlouvy o úschově a ubytovatel neodpovídá za věci ponechané ve vozidle.</p>
+              <p class="legal-article-text">Parkoviště je vybavené závorou a kamerovým systémem. <strong>Nejde však o hlídané parkoviště</strong> ve smyslu smlouvy o úschově a ubytovatel neodpovídá za věci ponechané ve vozidle.</p>
             </div>
 
             <div class="legal-article-card">
@@ -4865,7 +4865,7 @@ const getContactPageHTML = () => `
           <div class="directions-left-col" data-anim="up">
             <h3 class="directions-parking-title">Parkování v létě zdarma přímo u hotelu</h3>
             <p class="directions-parking-desc">
-              Uzamykatelné a hlídané kamerovým systémem, bez nutnosti rezervace místa.
+              Se závorou a kamerovým systémem, bez nutnosti rezervace místa.
               V zimě (1. 11. – 15. 4.) za jednorázový poplatek 100 Kč za auto bez ohledu na délku pobytu — přispívá na odhrnování sněhu a údržbu příjezdové cesty.
             </p>
           </div>
@@ -4880,7 +4880,7 @@ const getContactPageHTML = () => `
               <div class="directions-mode-content">
                 <h3 class="directions-mode-title">Autem</h3>
                 <p class="directions-mode-desc">
-                  Z Prahy (Černý Most) je to k hotelu pouhých 108 km — cca 75 minut předpisové jízdy (mimo Liberec). U hotelu na vás čeká bezplatné a bezpečné parkoviště hlídané kamerovým systémem.
+                  Z Prahy (Černý Most) je to k hotelu pouhých 108 km — cca 75 minut předpisové jízdy (mimo Liberec). U hotelu na vás čeká bezplatné parkoviště se závorou a kamerovým systémem.
                 </p>
               </div>
             </div>
