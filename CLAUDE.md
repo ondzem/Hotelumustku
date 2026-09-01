@@ -926,6 +926,23 @@ stránky bez ohledu na cookie lištu — přesně proti tomu, co slibuje
 `cookies.html`. Po udělení souhlasu se pak načetl podruhé. Vkládá ho
 výhradně `initGA4()` v `main.js` po souhlasu.
 
+**7b. Cizí text se escapuje i v E-MAILECH, nejen na webu.** Zpráva
+z kontaktního formuláře a text recenze jdou recepci jako HTML. Bez
+escapování si tam host propašuje vlastní odkaz — recepčnímu přijde
+z ověřené domény hotelu zpráva, která vypadá jako systémové sdělení
+a vede kamkoli. JavaScript poštovní klient nespustí, ale phishing na
+vlastní recepci stačí. Slouží k tomu `escapujMail()` v `emailService.js`;
+escapuje i uvozovku a apostrof, protože část hodnot jde do atributů
+(`href="mailto:…"`), kde by se uvozovkou dal atribut ukončit.
+
+**Kontrola escapování musí escapované výskyty NEJDŘÍV VYMAZAT** a teprve
+zbytek řádku prohledat. Dřív filtrovala `grep -v escapujText`, jenže to
+zahodí celý řádek — a na tomtéž řádku bývá jedno pole escapované a druhé
+ne. Přesně tak prošly neescapované údaje v potvrzovacích oknech a
+kontrola u toho svítila zeleně. Falešná jistota je horší než žádná
+kontrola. Hlásí se jen pole, které se opravdu vypisuje (`${x.guest_name}`
+nebo `${x.guest_name || 'Host'}`), ne použití v podmínce.
+
 **8. Zápis z veřejného klíče je omezený i OBSAHEM, ne jen tabulkou.**
 Návštěvník smí založit recenzi a rezervaci, ale RLS mu nedovolí zvolit si
 stav: recenze jde vložit jen jako `pending_approval`, rezervace jen jako
