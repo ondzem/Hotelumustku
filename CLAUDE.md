@@ -1208,6 +1208,34 @@ recepci a vracela 401, a do `process.env` se nekopíroval
 opravené — kdo bude přidávat další serverovou funkci, musí hlavičky
 přenést taky.
 
+## Rezervační list se TISKNE Z ULOŽENÉ REZERVACE
+
+Sestava je v `src/utils/printReservationService.js`, počítání je oddělené
+do čisté funkce `udajeProTisk()` (testuje ji `kontrola/tisk.mjs`).
+
+- **Počet nocí se počítá z termínu, ne ze sloupce.** Tisk bral
+  `reservation.nights_count`, jenže takový sloupec v databázi není a není
+  ani v `ALLOWED_SUPABASE_COLUMNS` — vycházel vždycky `undefined`. Výpočet
+  ceny z něj udělal jednu noc, takže list tiskl „1 nocí" a cenu za jedinou
+  noc, ať si host vybral jakýkoli termín. Majitel to hlásil jako „nikdy se
+  tam nezapíše správný počet nocí". Jediná pravda je rozdíl `date_from`
+  a `date_to` (`pocetNociZTerminu`).
+- **Částky se berou z rezervace, nepočítají se znovu.** Host dostal
+  potvrzení na konkrétní částku a ta platí; kdyby si list sáhl do
+  aktuálního ceníku, po každé změně cen by tiskl něco jiného, než co má
+  host v e-mailu. Přepočet je jen záchrana pro staré záznamy bez
+  uložených částek (pozná se podle `zPolozek`). Procento zálohy se
+  dopočítá z uložených částek přes `procentoZalohy()`, stejně jako
+  všude jinde.
+- **`formatCzechPrice()` už „Kč" přidává.** V sestavě za ním bylo ještě
+  jedno, takže se tisklo „5 700 Kč Kč" na třech místech.
+- **Čísla se skloňují** (`sklonuj`): 1 noc, 2–4 noci, 5+ nocí; 1 dospělý,
+  2–4 dospělí, 5+ dospělých. Dřív bylo všude „nocí" a „dospělí".
+- **Ceny příplatků se berou z ceníku.** U psa bylo natvrdo „150 Kč/den",
+  zatímco v Příplatcích už dávno bylo něco jiného.
+- **Datum se píše bez nul zleva** — `3. 9. 2026`, ne `03. 09. 2026`.
+  Tisk byl jediné místo v projektu, kde se `parseInt` vynechal.
+
 ## Mazání rezervace — jeden požadavek, ne pět
 
 Smazání rezervace posílalo do databáze až **pět** požadavků: dva čekané
@@ -1396,7 +1424,7 @@ Pozor na dvě věci, které vypadají jako chyba a nejsou:
 
 ## Jak si ověřit, že to funguje
 
-Nejdřív `./zkontroluj.sh` (nebo `npm run zkontroluj`). Projde 42 kontrol:
+Nejdřív `./zkontroluj.sh` (nebo `npm run zkontroluj`). Projde 43 kontrol:
 sestavení, shodu hlaviček napříč stránkami, matematiku ceníku a zálohy,
 klíče v balíčku, typy e-mailů, dostupnost nasazených stránek, odmítání
 neoprávněných volání serverových funkcí a pravidla v databázi. S přepínačem

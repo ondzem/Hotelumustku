@@ -1,5 +1,5 @@
 import { MOCK_ROOMS, getStoredCenik } from '../lib/supabaseClient.js';
-import { calculateReservationPrice, formatCzechPrice, getVariableSymbol } from './pricing.js';
+import { calculateReservationPrice, formatCzechPrice, getVariableSymbol, procentoZalohy, VYCHOZI_NASTAVENI } from './pricing.js';
 
 /**
  * Escapování pro tiskovou sestavu.
@@ -15,9 +15,11 @@ const escapujTisk = (t) => String(t == null ? '' : t)
 
 function formatCzechDateStr(dateStr) {
   if (!dateStr) return '';
-  const parts = dateStr.split('-');
+  const parts = String(dateStr).split('-');
   if (parts.length === 3) {
-    return `${parts[2]}. ${parts[1]}. ${parts[0]}`;
+    // parseInt kvůli nulám zleva: zbytek webu píše „3. 9. 2026", tisk
+    // jako jediný „03. 09. 2026".
+    return `${parseInt(parts[2], 10)}. ${parseInt(parts[1], 10)}. ${parts[0]}`;
   }
   return dateStr;
 }
@@ -32,6 +34,123 @@ function formatCzechDateTimeNow() {
   return {
     dateStr: `${day}. ${month}. ${year}`,
     timeStr: `${hours}:${minutes}`
+  };
+}
+
+/**
+ * Počet nocí pobytu — POČÍTÁ SE Z DAT, ne z uloženého sloupce.
+ *
+ * Tisk bral `reservation.nights_count`, jenže takový sloupec v databázi
+ * není (chybí i v ALLOWED_SUPABASE_COLUMNS), takže vycházel vždycky
+ * `undefined`. Výpočet ceny z něj pak udělal jednu noc a rezervační list
+ * tiskl „1 nocí" a cenu za jedinou noc — ať si host vybral jakýkoli termín.
+ * Jediná spolehlivá pravda je rozdíl `date_from` a `date_to`.
+ */
+export function pocetNociZTerminu(dateFrom, dateTo) {
+  if (!dateFrom || !dateTo) return 0;
+  const od = Date.parse(`${dateFrom}T00:00:00Z`);
+  const doo = Date.parse(`${dateTo}T00:00:00Z`);
+  if (!Number.isFinite(od) || !Number.isFinite(doo)) return 0;
+  return Math.max(0, Math.round((doo - od) / 86400000));
+}
+
+/** České skloňování po číslovce: 1 noc, 2–4 noci, 5+ nocí. */
+export function sklonuj(pocet, jedna, dveAzCtyri, petAVic) {
+  const n = Math.abs(Math.round(Number(pocet) || 0));
+  if (n === 1) return `${pocet} ${jedna}`;
+  if (n >= 2 && n <= 4) return `${pocet} ${dveAzCtyri}`;
+  return `${pocet} ${petAVic}`;
+}
+
+/**
+ * Údaje, které se tisknou na rezervační list.
+ *
+ * **Částky se berou z ULOŽENÉ rezervace, nepočítají se znovu.** Host
+ * dostal potvrzení na konkrétní částku a ta platí; kdyby si list sáhl do
+ * aktuálního ceníku, po každé změně cen by tiskl něco jiného, než co má
+ * host v e-mailu a než co je v databázi. Přepočet z ceníku slouží jen
+ * jako záchrana u starých záznamů, kde částky chybí.
+ *
+ * Čistá funkce bez DOM, aby šla protestovat v Node (`kontrola/tisk.mjs`).
+ */
+export function udajeProTisk(reservation, cenik = { nastaveni: {} }, pokoj = null) {
+  const r = reservation || {};
+  const noci = pocetNociZTerminu(r.date_from, r.date_to);
+  const osob = Math.max(1, parseInt(r.adults_count, 10) || 1);
+  const nastaveni = (cenik && cenik.nastaveni) || {};
+
+  const cislo = (hodnota) => {
+    const v = Number(hodnota);
+    return Number.isFinite(v) ? v : null;
+  };
+
+  let celkem = cislo(r.total_price);
+  let zaloha = cislo(r.deposit_price);
+  let doplatek = cislo(r.remaining_price);
+  let ubytovani = cislo(r.accommodation_price);
+  let sluzby = cislo(r.addons_price);
+  let zPolozek = false;
+
+  // Záchrana pro staré záznamy bez uložených částek.
+  if (celkem === null) {
+    const p = calculateReservationPrice({
+      roomType: (pokoj && pokoj.type) || 'standard',
+      roomId: r.room_id,
+      nights: noci || 1,
+      persons: osob,
+      adults: osob,
+      dateFrom: r.date_from,
+      dateTo: r.date_to,
+      hasDog: r.has_dog,
+      hasEbike: r.has_ebike,
+      ebikeCount: r.ebike_count,
+      hasHalfBoard: r.has_half_board,
+      halfBoardCount: r.half_board_count,
+      hasWinterParking: r.has_winter_parking,
+      parkingCarsCount: r.parking_cars_count,
+      cenik,
+      nastaveni,
+    });
+    celkem = p.totalPrice;
+    zaloha = p.depositPriceTotal;
+    doplatek = p.remainingPriceTotal;
+    ubytovani = p.accommodationPrice;
+    sluzby = p.addonsPrice;
+    zPolozek = true;
+  }
+
+  if (zaloha === null) zaloha = 0;
+  if (doplatek === null) doplatek = Math.max(0, celkem - zaloha);
+
+  // Procento zálohy se dopočítá z toho, co host opravdu zaplatil —
+  // změna nastavení nesmí zpětně přepsat popisek u staré rezervace.
+  const procento = procentoZalohy({ total_price: celkem, deposit_price: zaloha });
+
+  const castka = (klic) => {
+    const v = Number(nastaveni[klic]);
+    return Number.isFinite(v) ? v : VYCHOZI_NASTAVENI[klic];
+  };
+
+  return {
+    noci,
+    popisNoci: noci > 0 ? sklonuj(noci, 'noc', 'noci', 'nocí') : 'neuvedeno',
+    osob,
+    popisOsob: sklonuj(osob, 'dospělý', 'dospělí', 'dospělých'),
+    deti: Math.max(0, parseInt(r.children_count, 10) || 0),
+    popisDeti: sklonuj(Math.max(0, parseInt(r.children_count, 10) || 0), 'dítě', 'děti', 'dětí'),
+    celkem,
+    zaloha,
+    doplatek,
+    ubytovani,
+    sluzby,
+    procentoZalohy: procento,
+    procentoDoplatku: 100 - procento,
+    zPolozek,
+    polopenzeOsob: r.has_half_board
+      ? Math.max(1, parseInt(r.half_board_count, 10) || osob) : 0,
+    cenaPolopenze: castka('polopenze'),
+    cenaPes: castka('pes'),
+    cenaElektrokolo: castka('elektrokolo'),
   };
 }
 
@@ -107,27 +226,7 @@ export function printReservationSheet(reservation) {
   };
 
   const cenikProTisk = getStoredCenik();
-
-  const pricing = calculateReservationPrice({
-    // Dřív se sem posílalo room_id místo kategorie pokoje, takže
-    // se cena počítala vždy podle standardu.
-    roomType: room.type || 'standard',
-    roomId: room.id,
-    nights: reservation.nights_count || null,
-    persons: reservation.adults_count || 1,
-    adults: reservation.adults_count || 1,
-    dateFrom: reservation.date_from,
-    dateTo: reservation.date_to,
-    hasDog: reservation.has_dog,
-    hasEbike: reservation.has_ebike,
-    ebikeCount: reservation.ebike_count,
-    hasHalfBoard: reservation.has_half_board,
-    halfBoardCount: reservation.half_board_count,
-    hasWinterParking: reservation.has_winter_parking,
-    parkingCarsCount: reservation.parking_cars_count,
-    cenik: cenikProTisk,
-    nastaveni: cenikProTisk.nastaveni
-  });
+  const udaje = udajeProTisk(reservation, cenikProTisk, room);
 
   const printWindow = window.open('', '_blank', 'width=920,height=1100,scrollbars=yes,resizable=yes');
   if (!printWindow) {
@@ -384,12 +483,12 @@ export function printReservationSheet(reservation) {
     <table class="info-table">
       <tr><td class="label">Pokoj:</td><td class="value">${room.name}</td></tr>
       <tr><td class="label">Termín pobytu:</td><td class="value">${formatCzechDateStr(reservation.date_from)} — ${formatCzechDateStr(reservation.date_to)}</td></tr>
-      <tr><td class="label">Počet nocí:</td><td class="value">${pricing.nights} nocí</td></tr>
+      <tr><td class="label">Počet nocí:</td><td class="value">${udaje.popisNoci}</td></tr>
     </table>
     <table class="info-table">
       <tr><td class="label">Příjezd (Check-in):</td><td class="value">od 15:00 hod.</td></tr>
       <tr><td class="label">Odjezd (Check-out):</td><td class="value">do 10:00 hod.</td></tr>
-      <tr><td class="label">Počet osob:</td><td class="value">${reservation.adults_count || 1} dospělí ${reservation.children_count > 0 ? `, ${reservation.children_count} dětí` : ''}</td></tr>
+      <tr><td class="label">Počet osob:</td><td class="value">${udaje.popisOsob}${udaje.deti > 0 ? `, ${udaje.popisDeti}` : ''}</td></tr>
     </table>
   </div>
 
@@ -414,10 +513,10 @@ export function printReservationSheet(reservation) {
   <!-- SEKCIE 3: DOPLŇKOVÉ SLUŽBY -->
   <div class="section-title">3. Doplňkové služby & Poznámka</div>
   <table class="info-table">
-    <tr><td class="label" style="width: 25%;">Polopenze:</td><td class="value">${reservation.has_half_board ? `${reservation.half_board_count || reservation.adults_count || 1} osob` : 'Ne'}</td></tr>
-    <tr><td class="label" style="width: 25%;">Pobyt s pejskem:</td><td class="value">${reservation.has_dog ? 'Ano (150 Kč/den)' : 'Ne'}</td></tr>
-    <tr><td class="label" style="width: 25%;">Elektrokolo:</td><td class="value">${reservation.has_ebike ? `${reservation.ebike_count || 1}x ks` : 'Ne'}</td></tr>
-    <tr><td class="label" style="width: 25%;">Zimní parkování:</td><td class="value">${reservation.has_winter_parking ? `${reservation.parking_cars_count || 1}x auto (${reservation.winter_parking_price_total || 0} Kč za pobyt)` : 'Ne (0 Kč)'}</td></tr>
+    <tr><td class="label" style="width: 25%;">Polopenze:</td><td class="value">${reservation.has_half_board ? `${sklonuj(udaje.polopenzeOsob, 'osoba', 'osoby', 'osob')} (${udaje.cenaPolopenze} Kč / osoba a noc)` : 'Ne'}</td></tr>
+    <tr><td class="label" style="width: 25%;">Pobyt s pejskem:</td><td class="value">${reservation.has_dog ? `Ano (${udaje.cenaPes} Kč / noc)` : 'Ne'}</td></tr>
+    <tr><td class="label" style="width: 25%;">Elektrokolo:</td><td class="value">${reservation.has_ebike ? `${sklonuj(Math.max(1, parseInt(reservation.ebike_count, 10) || 1), 'kus', 'kusy', 'kusů')} (${udaje.cenaElektrokolo} Kč / kus a den)` : 'Ne'}</td></tr>
+    <tr><td class="label" style="width: 25%;">Zimní parkování:</td><td class="value">${reservation.has_winter_parking ? `${sklonuj(Math.max(1, parseInt(reservation.parking_cars_count, 10) || 1), 'auto', 'auta', 'aut')} (${formatCzechPrice(reservation.winter_parking_price_total || 0)} za pobyt)` : 'Ne'}</td></tr>
     <tr><td class="label" style="width: 25%;">Poznámka hosta:</td><td class="value">${escapujTisk(reservation.guest_note || 'Bez poznámky')}</td></tr>
   </table>
 
@@ -425,16 +524,20 @@ export function printReservationSheet(reservation) {
   <div class="section-title">4. Finanční přehled a rozpis úhrady</div>
   <div class="financial-box">
     <div class="financial-row">
-      <span>Celková cena pobytu (vč. DPH):</span>
-      <strong>${formatCzechPrice(pricing.totalPrice)} Kč</strong>
+      <span>Ubytování se snídaní${udaje.sluzby > 0 ? ' a doplňkové služby' : ''}:</span>
+      <strong>${formatCzechPrice((udaje.ubytovani || 0) + (udaje.sluzby || 0))}</strong>
     </div>
     <div class="financial-row">
-      <span>Uhrazená záloha (${pricing.depositPercentage} % bankovním převodem, VS ${vsCode}):</span>
-      <strong>${formatCzechPrice(pricing.depositPriceTotal)} Kč ${reservation.status === 'confirmed' ? '(UHRAZENO)' : ''}</strong>
+      <span>Celková cena pobytu (vč. DPH):</span>
+      <strong>${formatCzechPrice(udaje.celkem)}</strong>
+    </div>
+    <div class="financial-row">
+      <span>Záloha (${udaje.procentoZalohy} % bankovním převodem, VS ${vsCode}):</span>
+      <strong>${formatCzechPrice(udaje.zaloha)} ${reservation.status === 'confirmed' ? '(UHRAZENO)' : '(zatím neuhrazeno)'}</strong>
     </div>
     <div class="financial-row total">
-      <span>Zbývající doplatek k úhradě na místě (${100 - pricing.depositPercentage} %):</span>
-      <span>${formatCzechPrice(pricing.remainingPriceTotal)} Kč</span>
+      <span>Zbývající doplatek k úhradě na místě (${udaje.procentoDoplatku} %):</span>
+      <span>${formatCzechPrice(udaje.doplatek)}</span>
     </div>
   </div>
 
