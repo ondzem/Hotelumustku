@@ -448,8 +448,8 @@ export function renderDostupnostModal(ad) {
           <div class="cal-legend" style="display:flex; flex-wrap:wrap; gap:14px; padding:12px 6px 2px 6px; border-top:1px solid #E7E5DC; margin-top:8px;">
             <span class="cal-legend-item"><i class="cal-legend-box" style="background:var(--kal-volno);"></i> Volno</span>
             <span class="cal-legend-item"><i class="cal-legend-box" style="background:var(--kal-vybrano);"></i> Vybraný termín</span>
-            <span class="cal-legend-item"><i class="cal-legend-box" style="background:#f9d9d4;"></i> ${p.roomId === 'all' ? 'Plně obsazeno' : 'Obsazeno'}</span>
             <span class="cal-legend-item"><i class="cal-legend-box" style="background:#fcecc2;"></i> Částečně obsazeno</span>
+            <span class="cal-legend-item"><i class="cal-legend-box" style="background:#f9d9d4;"></i> ${p.roomId === 'all' ? 'Plně obsazeno' : 'Obsazeno'}</span>
             <span class="cal-legend-item" style="opacity: 0.7;"><i class="cal-legend-box" style="background:#e8e6dd; filter: grayscale(0.35);"></i> Už proběhlo</span>
           </div>
 

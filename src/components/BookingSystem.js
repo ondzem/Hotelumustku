@@ -10,6 +10,9 @@ import { maxOsobNaPokoji, obdobiSOmezenouDostupnosti } from '../utils/cenik.js';
 import { sendEmail, generateEmail1RequestReceived, generateEmail1ReceptionNotification, RECEPCE_PRIJEMCE } from '../utils/emailService.js';
 import { fotkyPokoje } from '../utils/roomGalleries.js';
 
+/** Kolik elektrokol si jde nejvýš objednat (nabíječky u hotelu). */
+const MAX_ELEKTROKOL = 4;
+
 function getTodayDateString() {
   const d = new Date();
   const y = d.getFullYear();
@@ -110,9 +113,13 @@ export class BookingSystem {
       children: 0,
       hasDog: false,
       hasEbike: false,
-      ebikeCount: 1,
+      // null znamená „kolik je hostů". Číslo se sem zapíše, teprve když
+      // ho host sám přenastaví — viz pocetPolopenzi() / pocetElektrokol().
+      ebikeCount: null,
+      elektrokoloRucne: false,
       hasHalfBoard: false,
-      halfBoardCount: 2,
+      halfBoardCount: null,
+      polopenzeRucne: false,
       hasWinterParking: false,
       parkingCarsCount: 1,
       guestName: '',
@@ -198,10 +205,12 @@ export class BookingSystem {
         // na jinou stránku, našel po návratu termín i pokoj, ale zaškrtnutou
         // polopenzi nebo psa musel vybírat znovu.
         hasHalfBoard: this.state.hasHalfBoard,
-        halfBoardCount: this.state.halfBoardCount,
+        halfBoardCount: this.pocetPolopenzi(),
+        polopenzeRucne: this.state.polopenzeRucne,
         hasDog: this.state.hasDog,
         hasEbike: this.state.hasEbike,
-        ebikeCount: this.state.ebikeCount,
+        ebikeCount: this.pocetElektrokol(),
+        elektrokoloRucne: this.state.elektrokoloRucne,
         hasWinterParking: this.state.hasWinterParking,
         parkingCarsCount: this.state.parkingCarsCount,
 
@@ -276,6 +285,11 @@ export class BookingSystem {
       for (const klic of ['halfBoardCount', 'ebikeCount', 'parkingCarsCount']) {
         const n = parseInt(zapamatovane[klic], 10);
         if (Number.isFinite(n) && n > 0) this.state[klic] = n;
+      }
+      // Bez těchhle příznaků by se hostovi po návratu ručně nastavený
+      // počet přepsal zpátky na počet osob.
+      for (const klic of ['polopenzeRucne', 'elektrokoloRucne']) {
+        if (typeof zapamatovane[klic] === 'boolean') this.state[klic] = zapamatovane[klic];
       }
 
       // Údaje hosta
@@ -1052,45 +1066,41 @@ export class BookingSystem {
   }
 
   /**
-   * Upozornění na zimní přestávku.
+   * Sdělení o mezisezóně v kalendáři.
    *
    * Váže se na ZOBRAZENÝ MĚSÍC, ne na vybraný termín. Zavřené dny jsou
    * v kalendáři plné a nedají se rozkliknout, takže podle výběru by se
-   * upozornění nikdy neukázalo — a host by koukal na červený říjen bez
-   * vysvětlení. Takhle to čte přesně ve chvíli, kdy se ptá „proč".
-   */
-  /**
-   * Upozornění na zimní přestávku.
-   *
-   * Váže se na ZOBRAZENÝ MĚSÍC, ne na vybraný termín. Zavřené dny jsou
-   * v kalendáři plné a nedají se rozkliknout, takže podle výběru by se
-   * upozornění nikdy neukázalo — a host by koukal na červený říjen bez
+   * sdělení nikdy neukázalo — a host by koukal na červený říjen bez
    * vysvětlení. Takhle to čte přesně ve chvíli, kdy se ptá „proč".
    *
-   * Na formulaci záleží víc než na kódu. Holé „máme zavřeno" čte host
-   * jako „tomu hotelu se nechce", a to majiteli ubližuje. Text proto
-   * pojmenuje DŮVOD, který je v horách samozřejmý — je po podzimu a sníh
-   * ještě nedorazil — a ukáže, že se ten čas využívá na údržbu. Zavření
-   * je pak vidět jako péče o hotel, ne jako lajdáctví. Poslední věta
-   * nechává dveře otevřené, protože při větší skupině se otevřít vyplatí.
+   * NA FORMULACI ZÁLEŽÍ VÍC NEŽ NA KÓDU a majitel na tom trvá. Dřív tu
+   * stálo „Mezi podzimem a zimou hotel zavíráme" — a i s vysvětlením
+   * o údržbě to host čte jako odmítnutí. Znění napsal sám majitel
+   * 2. 9. 2026 a otočil ho do nabídky: v tomhle období hotel není
+   * zavřený, ale VOLNÝ PRO CELOU SKUPINU. Ze zavíračky je tím pádem
+   * prodejní argument. Nevracej to zpátky na „zavřeno".
    */
   renderMimoProvozNote(rok, mesic) {
     if (!mesicZasahujeMimoProvoz(rok, mesic)) return '';
-    // Zavřené upozornění se už v témž otevření kalendáře nevrací.
+    // Zavřené sdělení se už v témž otevření kalendáře nevrací.
     // Bez toho zabíralo přes půl okna a na dny pod ním se nedalo dostat.
     if (this.state.mimoSezonuSkryto) return '';
 
     return `
       <div class="booking-mimo-sezonu">
-        <button type="button" class="mimo-sezonu-zavrit" id="mimo-sezonu-zavrit" aria-label="Skrýt upozornění">&times;</button>
-        <span class="mimo-sezonu-stitek">Mimo sezónu</span>
-        <p class="mimo-sezonu-nadpis">Mezi podzimem a zimou hotel zavíráme</p>
+        <button type="button" class="mimo-sezonu-zavrit" id="mimo-sezonu-zavrit" aria-label="Skrýt sdělení">&times;</button>
+        <span class="mimo-sezonu-stitek">Mezisezóna</span>
+        <p class="mimo-sezonu-nadpis">Vhodné pro skupinové akce!</p>
         <p class="mimo-sezonu-text">
-          V období <strong>${popisRozsahu(MIMO_PROVOZ)}</strong> je po podzimní sezóně.
-          Tento čas využíváme na údržbu a přípravu na zimu. Pro větší skupiny
-          v tomto období pronajímáme <strong>celý objekt</strong> — ozvěte se nám.
+          V období <strong>${popisRozsahu(MIMO_PROVOZ)}</strong> nabízíme hotel
+          přednostně pro skupinové akce. Chcete-li si pronajmout celý objekt nebo
+          více pokojů včetně restaurace, ozvěte se nám — připravíme vám
+          individuální nabídku.
         </p>
-        <a class="mimo-sezonu-telefon" href="tel:+420777666273">+420 777 666 273</a>
+        <div class="mimo-sezonu-odkazy">
+          <a class="mimo-sezonu-vice" href="/akce">Skupinové akce</a>
+          <a class="mimo-sezonu-telefon" href="tel:+420777666273">+420 777 666 273</a>
+        </div>
       </div>
     `;
   }
@@ -1113,10 +1123,10 @@ export class BookingSystem {
       <div class="booking-season-note" style="margin-top: 14px; display: flex; gap: 10px; align-items: flex-start; background: #f7f6f1; border: 1px solid #e0dfd5; border-left: 3px solid #697947; border-radius: 6px; padding: 12px 14px;">
         <span style="font-size: 16px; line-height: 1.3; flex-shrink: 0;">🌿</span>
         <span style="font-size: 13px; color: #55554e; line-height: 1.6;">
-          Váš termín spadá do období <strong>${nazvy}</strong>. Mimo hlavní sezónu si dopřáváme
-          kratší provozní přestávky, takže nabídka pokojů může být omezená.
-          Rezervaci klidně odešlete — <strong>dostupnost vám obratem potvrdíme</strong>
-          a teprve potom platíte zálohu.
+          Váš termín spadá do období <strong>${nazvy}</strong> — bývá tu klid a hotel
+          se v něm často pronajímá celý pro skupinové akce, takže nabídka pokojů
+          může být užší. Rezervaci klidně odešlete,
+          <strong>dostupnost vám obratem potvrdíme</strong> a teprve potom platíte zálohu.
         </span>
       </div>
     `;
@@ -1194,10 +1204,10 @@ export class BookingSystem {
         depositPriceTotal: 0,
         remainingPriceTotal: 0,
         hasHalfBoard: this.state.hasHalfBoard,
-        halfBoardCount: this.state.halfBoardCount || this.state.adults || 2,
+        halfBoardCount: this.pocetPolopenzi(),
         hasDog: this.state.hasDog,
         hasEbike: this.state.hasEbike,
-        ebikeCount: this.state.ebikeCount || 1,
+        ebikeCount: this.pocetElektrokol(),
         isWinterSeason: isWinter,
         hasWinterParking: isWinter && this.state.hasWinterParking,
         parkingCarsCount: this.state.parkingCarsCount || 1,
@@ -1215,9 +1225,9 @@ export class BookingSystem {
       dateTo: this.state.dateTo,
       hasDog: this.state.hasDog,
       hasEbike: this.state.hasEbike,
-      ebikeCount: this.state.ebikeCount || 1,
+      ebikeCount: this.pocetElektrokol(),
       hasHalfBoard: this.state.hasHalfBoard,
-      halfBoardCount: this.state.halfBoardCount || this.state.adults || 2,
+      halfBoardCount: this.pocetPolopenzi(),
       hasWinterParking: this.state.hasWinterParking,
       parkingCarsCount: this.state.parkingCarsCount || 1,
       cenik: this.cenik,
@@ -1230,6 +1240,33 @@ export class BookingSystem {
    * Sníží počet osob, když se do vybraného pokoje nevejdou.
    * Volá se po každé změně pokoje.
    */
+  /**
+   * Kolik osob má polopenzi a kolik je elektrokol.
+   *
+   * Ve výchozím stavu tolik, kolik je ubytovaných hostů — kdo zadá čtyři
+   * osoby a zaškrtne polopenzi, chce ji skoro vždycky pro všechny čtyři.
+   * Dřív tu bylo natvrdo 2 (polopenze) a 1 (kolo), takže si musel počet
+   * doklikat, a když to přehlédl, objednal a zaplatil polopenzi jen pro
+   * část party.
+   *
+   * Jakmile počet sám přenastaví, drží se jeho čísla (`*Rucne`) — jinak
+   * by mu ho pozdější změna počtu hostů tiše přepsala zpátky.
+   */
+  pocetPolopenzi() {
+    const osob = Math.max(1, parseInt(this.state.adults, 10) || 1);
+    if (!this.state.polopenzeRucne) return osob;
+    const zvoleno = parseInt(this.state.halfBoardCount, 10);
+    return Math.min(osob, Math.max(1, Number.isFinite(zvoleno) ? zvoleno : osob));
+  }
+
+  pocetElektrokol() {
+    const osob = Math.max(1, parseInt(this.state.adults, 10) || 1);
+    const strop = Math.max(MAX_ELEKTROKOL, osob);
+    if (!this.state.elektrokoloRucne) return Math.min(strop, osob);
+    const zvoleno = parseInt(this.state.ebikeCount, 10);
+    return Math.min(strop, Math.max(1, Number.isFinite(zvoleno) ? zvoleno : osob));
+  }
+
   osekniPocetOsobNaKapacitu() {
     const pokoj = this.getSelectedRoom();
     const maxOsob = this.maxOsobProPokoj(pokoj);
@@ -1240,7 +1277,8 @@ export class BookingSystem {
       // proto se mu rovnou napíše, co se stalo a proč.
       this.state.errorMessage = `${pokoj ? pokoj.name : 'Pokoj'} má ${this.popisLuzek(pokoj)}, ubytovat se sem tedy může nejvýš ${maxOsob} ${maxOsob === 1 ? 'osoba' : 'osoby'}. Počet hostů jsme z ${puvodne} snížili na ${maxOsob}. Pro větší skupinu zvolte prostornější pokoj, nebo rezervujte pokoje dva.`;
     }
-    if (this.state.halfBoardCount > this.state.adults) {
+    // Ručně zvolená polopenze se srovná dolů; automatická se dopočítá sama.
+    if (this.state.polopenzeRucne && this.state.halfBoardCount > this.state.adults) {
       this.state.halfBoardCount = this.state.adults;
     }
   }
@@ -1839,12 +1877,12 @@ export class BookingSystem {
                 Váš termín
               </span>
               <span class="cal-legend-item">
-                <i class="cal-legend-box" style="background:var(--kal-plno);"></i>
-                ${jedenPokoj ? 'Pokoj obsazený' : 'Obsazeno'}
-              </span>
-              <span class="cal-legend-item">
                 <i class="cal-legend-box" style="background:var(--kal-castecne);"></i>
                 Částečně obsazeno
+              </span>
+              <span class="cal-legend-item">
+                <i class="cal-legend-box" style="background:var(--kal-plno);"></i>
+                ${jedenPokoj ? 'Pokoj obsazený' : 'Obsazeno'}
               </span>
             </div>
             ${effectiveFrom && effectiveTo ? `
@@ -2012,9 +2050,9 @@ export class BookingSystem {
         dateTo: this.state.dateTo,
         hasDog: this.state.hasDog,
         hasEbike: this.state.hasEbike,
-        ebikeCount: this.state.ebikeCount,
+        ebikeCount: this.pocetElektrokol(),
         hasHalfBoard: this.state.hasHalfBoard,
-        halfBoardCount: this.state.halfBoardCount,
+        halfBoardCount: this.pocetPolopenzi(),
         cenik: this.cenik,
         nastaveni: this.cenik && this.cenik.nastaveni,
         discountObj: this.appliedDiscount,
@@ -2240,7 +2278,7 @@ export class BookingSystem {
                       <span class="subcontrol-label">Počet osob s polopenzí:</span>
                       <div class="counter-controls">
                         <button type="button" class="btn-counter btn-counter-minus" data-target="halfBoardCount">-</button>
-                        <span class="counter-value">${pricing.halfBoardCount || this.state.halfBoardCount || this.state.adults || 1}</span>
+                        <span class="counter-value">${this.pocetPolopenzi()}</span>
                         <button type="button" class="btn-counter btn-counter-plus" data-target="halfBoardCount">+</button>
                       </div>
                     </div>
@@ -2268,7 +2306,7 @@ export class BookingSystem {
                       <span class="subcontrol-label">Počet elektrokol:</span>
                       <div class="counter-controls">
                         <button type="button" class="btn-counter btn-counter-minus" data-target="ebikeCount">-</button>
-                        <span class="counter-value">${pricing.ebikeCount || this.state.ebikeCount || 1}</span>
+                        <span class="counter-value">${this.pocetElektrokol()}</span>
                         <button type="button" class="btn-counter btn-counter-plus" data-target="ebikeCount">+</button>
                       </div>
                     </div>
@@ -3174,16 +3212,19 @@ export class BookingSystem {
             this.state.adults = isPlus
               ? Math.min(maxOsob, this.state.adults + 1)
               : Math.max(1, this.state.adults - 1);
-            if (this.state.halfBoardCount > this.state.adults) {
+            if (this.state.polopenzeRucne && this.state.halfBoardCount > this.state.adults) {
               this.state.halfBoardCount = this.state.adults;
             }
           } else if (target === 'halfBoardCount') {
-            const maxHB = this.state.adults || 2;
-            const currentHB = this.state.halfBoardCount ?? maxHB;
-            this.state.halfBoardCount = isPlus ? Math.min(maxHB, currentHB + 1) : Math.max(1, currentHB - 1);
+            const maxHB = Math.max(1, this.state.adults || 1);
+            const soucasne = this.pocetPolopenzi();
+            this.state.halfBoardCount = isPlus ? Math.min(maxHB, soucasne + 1) : Math.max(1, soucasne - 1);
+            this.state.polopenzeRucne = true;
           } else if (target === 'ebikeCount') {
-            const currentE = this.state.ebikeCount || 1;
-            this.state.ebikeCount = isPlus ? Math.min(4, currentE + 1) : Math.max(1, currentE - 1);
+            const strop = Math.max(MAX_ELEKTROKOL, this.state.adults || 1);
+            const soucasne = this.pocetElektrokol();
+            this.state.ebikeCount = isPlus ? Math.min(strop, soucasne + 1) : Math.max(1, soucasne - 1);
+            this.state.elektrokoloRucne = true;
           } else if (target === 'parkingCarsCount') {
             const currentCars = this.state.parkingCarsCount || 1;
             this.state.parkingCarsCount = isPlus ? Math.min(5, currentCars + 1) : Math.max(1, currentCars - 1);
@@ -3200,9 +3241,6 @@ export class BookingSystem {
       if (addonHalfBoard) {
         addonHalfBoard.addEventListener('change', (e) => {
           this.state.hasHalfBoard = e.target.checked;
-          if (this.state.hasHalfBoard && !this.state.halfBoardCount) {
-            this.state.halfBoardCount = this.state.adults;
-          }
           this.render();
         });
       }
@@ -3215,9 +3253,6 @@ export class BookingSystem {
       if (addonEbike) {
         addonEbike.addEventListener('change', (e) => {
           this.state.hasEbike = e.target.checked;
-          if (this.state.hasEbike && !this.state.ebikeCount) {
-            this.state.ebikeCount = 1;
-          }
           this.render();
         });
       }

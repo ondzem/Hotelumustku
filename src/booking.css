@@ -6655,6 +6655,27 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .mimo-sezonu-telefon:hover { color: #3c491d; }
 
+/* Odkaz na Skupinové akce vedle telefonu — host se z kalendáře dostane
+   rovnou na stránku, kde je nabídka pro celý objekt popsaná. */
+.mimo-sezonu-odkazy {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 18px;
+}
+
+.mimo-sezonu-vice {
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #4a5a24;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+}
+
+.mimo-sezonu-vice:hover { color: #3c491d; }
+
 /* Vzduch pod poznámkami, ať nesedí nalepené na patičce kalendáře. */
 .cal-poznamky { padding-bottom: 6px; }
 

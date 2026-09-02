@@ -127,6 +127,10 @@ vybraný termín (příjezd, dny mezi, odjezd) tmavě zelená s bílým číslem
 plno červená, částečně oranžová, minulost šedá. Půlený den má volnou
 půlku zelenou, ne bílou. Legendy začínají položkou Volno.
 
+**Legenda jde odshora podle obsazenosti:** Volno → Váš termín →
+Částečně obsazeno → Obsazeno. Majitel chtěl, aby to šlo řadově za sebou,
+ne skokem od plna k částečnému.
+
 **ČERVENÁ a ORANŽOVÁ znamenají každá něco jiného a obě musí zůstat.**
 Červená = vybraný pokoj je ten den zabraný (nejde kliknout). Oranžová =
 vybraný pokoj je volný, ale **jinde v hotelu už rezervace je** — jde
@@ -425,7 +429,7 @@ Veškerá logika je v `src/utils/terminy.js` (čistý modul, testuje ho
 | Období | Rozsah | Co dělá |
 |---|---|---|
 | Svátky | 26. 12. – 2. 1. | nejkratší pobyt **3 noci** místo dvou |
-| Zimní přestávka | 5. 10. – 25. 12. | hotel bývá zavřený, po domluvě se otevře |
+| Mezisezóna | 1. 10. – 25. 12. | hotel se nabízí přednostně skupinám |
 
 Pět věcí, které nejsou z kódu vidět:
 
@@ -453,15 +457,22 @@ Pět věcí, které nejsou z kódu vidět:
   jisté tak jako tak. Není to podmínka ani varování a nesmí se to
   přepsat na příslib.
 
-**Na formulaci zavíracího období záleží víc než na kódu.** Holé „máme
-zavřeno" čte host jako „tomu hotelu se nechce" — a to majiteli ubližuje
-u člověka, který web vidí poprvé. Text proto pojmenuje důvod, který je
-v horách samozřejmý (je po podzimu, sníh ještě nedorazil), a ukáže, že
-se ten čas využívá na údržbu; zavření je pak vidět jako péče o hotel.
-Poslední věta nechává dveře otevřené, protože při větší skupině se
-otevřít vyplatí. Tenhle blok má vlastní tvar (`.booking-mimo-sezonu`)
-— štítek, nadpis, dva odstavce a telefon — protože na rozdíl od
-ostatních dvou poznámek nemá jen informovat, ale uklidnit.
+**Na formulaci mezisezóny záleží víc než na kódu — a je to NABÍDKA, ne
+omluva.** Nejdřív tam stálo „máme zavřeno", pak „Mezi podzimem a zimou
+hotel zavíráme" s vysvětlením o údržbě. Obojí host čte jako odmítnutí.
+Znění napsal 2. 9. 2026 sám majitel a otočil ho do prodejního argumentu:
+štítek **Mezisezóna**, nadpis **Vhodné pro skupinové akce!** a věta, že
+v období 1. 10. – 25. 12. hotel nabízíme přednostně skupinám — celý
+objekt nebo víc pokojů i s restaurací, s individuální nabídkou. Pod tím
+odkaz na Skupinové akce a telefon. **Nevracej to na „zavřeno".**
+
+Konstanta se pořád jmenuje `MIMO_PROVOZ` (kvůli vazbám v kódu), ale
+směrem k hostovi se o zavírání nikde nemluví. Stejné přeladění platí
+i pro poznámku u vybraného termínu (`renderSezonaNote`), pro odstavec
+o mezisezóně v Podmínkách a pro odstavec `.events-mezisezona` v sekci
+„Celý hotel jen pro vás" na stránce Skupinové akce. Ten je schválně
+jednovětý — sekce už nese dost informací a majitel výslovně nechtěl,
+aby ji další blok zahltil.
 
 Vzhled: všechna tři sdělení sdílejí `.booking-poznamka` (oddíl „POZNÁMKY
 V REZERVAČNÍM FORMULÁŘI" v `booking.css`) — tenký svislý proužek, znak
@@ -1207,6 +1218,20 @@ recepci a vracela 401, a do `process.env` se nekopíroval
 `VITE_SUPABASE_ANON_KEY`, bez kterého se token nemá čím ověřit. Obojí je
 opravené — kdo bude přidávat další serverovou funkci, musí hlavičky
 přenést taky.
+
+## Počty u doplňkových služeb se řídí počtem hostů
+
+Polopenze i nabíjení elektrokola se ve výchozím stavu nabízejí pro
+**tolik osob, kolik je ubytovaných**. Dřív tam bylo natvrdo 2 (polopenze)
+a 1 (kolo), takže host, který zadal čtyři osoby a zaškrtl polopenzi,
+objednal a zaplatil polopenzi pro dva — a nemusel si toho všimnout.
+
+Počítá to `pocetPolopenzi()` / `pocetElektrokol()` v `BookingSystem.js`;
+`halfBoardCount` a `ebikeCount` jsou ve stavu `null`, dokud si host počet
+sám nepřenastaví. Teprve pak se uloží číslo a nastaví `polopenzeRucne` /
+`elektrokoloRucne` — bez těch příznaků by mu pozdější změna počtu hostů
+ručně zvolený počet tiše přepsala zpátky. Příznaky se ukládají i do
+`sessionStorage`, jinak by se po návratu na stránku vrátil původní stav.
 
 ## Rezervační list se TISKNE Z ULOŽENÉ REZERVACE
 

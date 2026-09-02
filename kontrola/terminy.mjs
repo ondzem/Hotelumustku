@@ -50,12 +50,12 @@ console.log('\nProchází se NOCI, ne krajní dny');
   ok(zahrnujeSilvestr('2026-12-31', '2027-01-01'), 'příjezd 31. 12. Silvestr zahrnuje');
 }
 
-console.log('\nZimní přestávka');
+console.log('\nMezisezóna');
 {
-  ok(jeMimoProvoz('2026-10-05'), '5. 10. je první zavřený den');
-  ok(jeMimoProvoz('2026-12-25'), '25. 12. je poslední zavřený den');
-  ok(!jeMimoProvoz('2026-10-04'), '4. 10. je ještě otevřeno');
-  ok(!jeMimoProvoz('2026-12-26'), '26. 12. už zavřeno není — navazují svátky');
+  ok(jeMimoProvoz('2026-10-01'), '1. 10. je první den mezisezóny');
+  ok(jeMimoProvoz('2026-12-25'), '25. 12. je poslední den mezisezóny');
+  ok(!jeMimoProvoz('2026-09-30'), '30. 9. do mezisezóny ještě nepatří');
+  ok(!jeMimoProvoz('2026-12-26'), '26. 12. už ne — navazují svátky');
   ok(zasahujeMimoProvoz('2026-11-10', '2026-11-12'), 'listopadový pobyt spadá do přestávky');
   ok(!zasahujeMimoProvoz('2026-08-10', '2026-08-12'), 'srpnový pobyt ne');
 }
@@ -87,7 +87,7 @@ console.log('\nPopisky');
 {
   ok(popisNoci(1) === '1 noc' && popisNoci(2) === '2 noci' && popisNoci(5) === '5 nocí', 'skloňování nocí');
   ok(popisRozsahu(SVATKY) === '26. 12. – 2. 1.', 'rozsah svátků: ' + popisRozsahu(SVATKY));
-  ok(popisRozsahu(MIMO_PROVOZ) === '5. 10. – 25. 12.', 'rozsah přestávky: ' + popisRozsahu(MIMO_PROVOZ));
+  ok(popisRozsahu(MIMO_PROVOZ) === '1. 10. – 25. 12.', 'rozsah mezisezóny: ' + popisRozsahu(MIMO_PROVOZ));
 }
 
 console.log(chyb === 0 ? '\nTermíny: vše v pořádku\n' : `\nTermíny: ${chyb} chyb\n`);

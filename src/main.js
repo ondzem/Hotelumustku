@@ -3452,6 +3452,11 @@ const getEventsPageHTML = () => `
         <div class="about-text">
           <p>Plánujete skupinovou akci? Po předchozí dohodě pro vás zajistíme kompletní pronájem celého hotelu — ubytování, společenské prostory i pohoštění na jednom místě.</p>
           <p>Postaráme se o rodinnou atmosféru a hladký průběh celé akce v klidném údolí Jizerských hor, stranou ruchu a s naprostým soukromím pro skupiny až do 34 osob.</p>
+          <p class="events-mezisezona">
+            <strong>Od 1. 10. do 25. 12. máme nejvíc místa.</strong> V tomhle období
+            nabízíme hotel přednostně skupinám — vyberete si termín i pokoje
+            a domluvíme individuální cenu.
+          </p>
         </div>
         <a href="/kontakt#form-sekce" class="btn btn-about btn-events-about-cta" id="events-about-cta-btn">Nezávazně poptat termín</a>
       </div>
@@ -4402,7 +4407,7 @@ export const getPodminkyPageHTML = () => `
               </table>
               <p class="legal-article-text" style="margin-top: 16px;">Uvedené částky slouží k představě o struktuře ceny a platí k datu zveřejnění tohoto dokumentu. <strong>Závazná je vždy ta cena, kterou máte uvedenou ve finálním potvrzení rezervace.</strong> Ubytovatel může ceník do budoucna změnit, na již potvrzené rezervace to však nemá žádný vliv.</p>
 
-              <p class="legal-article-text" style="margin-top: 16px;"><strong>Provoz mimo hlavní sezónu.</strong> V jarní a podzimní mezisezóně si dopřáváme kratší provozní přestávky na údržbu a odpočinek, takže hotel nemusí být otevřený každý termín a nabídka pokojů může být omezená. Rezervaci lze podat i na tato období — <strong>ubytovatel vám dostupnost potvrdí před výzvou k úhradě zálohy</strong>. Pokud termín nelze potvrdit, rezervace nevzniká a nic neplatíte.</p>
+              <p class="legal-article-text" style="margin-top: 16px;"><strong>Provoz v mezisezóně.</strong> V jarní a podzimní mezisezóně nabízíme hotel přednostně pro skupinové akce a pronájem celého objektu, takže nabídka jednotlivých pokojů může být v těchto termínech užší. Rezervaci lze podat i na tato období — <strong>ubytovatel vám dostupnost potvrdí před výzvou k úhradě zálohy</strong>. Pokud termín nelze potvrdit, rezervace nevzniká a nic neplatíte.</p>
             </div>
 
             <div class="legal-article-card">

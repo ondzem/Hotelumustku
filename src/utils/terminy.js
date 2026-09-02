@@ -7,8 +7,9 @@
 //
 //  1. SVÁTKY (26. 12. – 2. 1.) — pobyt nejméně na tři noci. Přechází
 //     přes Nový rok, takže se rozsah testuje obráceně (viz vMM_DD).
-//  2. MIMO PROVOZ (5. 10. – 25. 12.) — hotel bývá zavřený, ale při
-//     větší skupině se dá po domluvě otevřít.
+//  2. MEZISEZÓNA (1. 10. – 25. 12.) — hotel v tomhle období nabízíme
+//     přednostně pro skupinové akce: celý objekt nebo víc pokojů
+//     i s restaurací. Nic neblokuje, je to jen sdělení v kalendáři.
 //
 //  Modul je čistý: žádná síť, žádný DOM. Dá se spustit v Node a
 //  protestovat, což taky dělá kontrola/terminy.mjs.
@@ -17,8 +18,14 @@
 /** Svátky kolem Silvestra — nejméně tři noci. */
 export const SVATKY = { od: '12-26', doo: '01-02', minNoci: 3 };
 
-/** Zimní přestávka, kdy hotel běžně nejede. */
-export const MIMO_PROVOZ = { od: '10-05', doo: '12-25' };
+/**
+ * Mezisezóna — období vhodné pro skupinové akce.
+ *
+ * Rozsah 1. 10. – 25. 12. určil majitel 2. 9. 2026 (dřív začínal 5. 10.).
+ * Název konstanty zůstal `MIMO_PROVOZ` kvůli vazbám, ale směrem k hostovi
+ * se o zavírání nemluví — viz `renderMimoProvozNote` v BookingSystem.
+ */
+export const MIMO_PROVOZ = { od: '10-01', doo: '12-25' };
 
 /** Kolik nocí je potřeba mimo svátky. */
 export const MIN_NOCI = 2;
@@ -53,7 +60,7 @@ export function jeSilvestr(datum) {
   return naMM_DD(datum) === '12-31';
 }
 
-/** Spadá konkrétní den do zimní přestávky? */
+/** Spadá konkrétní den do mezisezóny? */
 export function jeMimoProvoz(datum) {
   return vRozsahuMM_DD(naMM_DD(datum), MIMO_PROVOZ.od, MIMO_PROVOZ.doo);
 }
@@ -97,7 +104,7 @@ export function zahrnujeSilvestr(od, doo) {
   return nociPobytu(od, doo).some(jeSilvestr);
 }
 
-/** Zasahuje pobyt do zimní přestávky? */
+/** Zasahuje pobyt do mezisezóny? */
 export function zasahujeMimoProvoz(od, doo) {
   return nociPobytu(od, doo).some(jeMimoProvoz);
 }
@@ -121,7 +128,7 @@ export function popisNoci(pocet) {
 }
 
 /**
- * Protíná zobrazený měsíc zimní přestávku?
+ * Protíná zobrazený měsíc mezisezónu?
  *
  * Používá se v kalendáři: host, který listuje říjnem a vidí všechno
  * červené, potřebuje vědět PROČ. Podle výběru by se to říct nedalo —
