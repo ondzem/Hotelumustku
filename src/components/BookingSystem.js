@@ -1780,7 +1780,7 @@ export class BookingSystem {
             <span>Po</span><span>Út</span><span>St</span><span>Čt</span><span>Pá</span><span>So</span><span>Ne</span>
           </div>
 
-          <div class="cal-grid">
+          <div class="cal-grid${jedenPokoj ? ' je-jeden-pokoj' : ''}">
             ${daysHtml}
           </div>
 
@@ -1818,6 +1818,10 @@ export class BookingSystem {
                 <i class="cal-legend-box" style="background:var(--kal-castecne);"></i>
                 Částečně obsazeno
               </span>`}
+              <span class="cal-legend-item">
+                <i class="cal-legend-box je-pulka${jedenPokoj ? ' je-jeden-pokoj' : ''}"></i>
+                Napůl volno — odjezd do 10:00, příjezd od 15:00
+              </span>
             </div>
             ${effectiveFrom && effectiveTo ? `
               <div class="cal-range-summary" style="display: flex; flex-direction: column; gap: 2px;">

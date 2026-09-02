@@ -127,6 +127,16 @@ vybraný termín (příjezd, dny mezi, odjezd) tmavě zelená s bílým číslem
 plno červená, částečně oranžová, minulost šedá. Půlený den má volnou
 půlku zelenou, ne bílou. Legendy začínají položkou Volno.
 
+**Legenda musí vysvětlovat i PŮLENÝ den.** Byl to jediný stav, který
+v ní chyběl — majitel se ptal, co znamená ta oranžová, kterou v legendě
+nenašel (2. 9. 2026). Čtvereček `.cal-legend-box.je-pulka` nese tutéž
+úhlopříčku jako buňka. **U jednoho pokoje je půlka ČERVENÁ, ne oranžová**
+(`.cal-grid.je-jeden-pokoj`): jeden pokoj nemůže být obsazený částečně,
+takže oranžová tam byla čtvrtý stav bez významu. Pravidla pro administraci
+musí začínat předkem `.dostupnost-kalendar` / `.rucni-cal-overlay` — bez
+něj přebijí i web (stojí v souboru níž) a mřížka pak má jiný odstín než
+legenda.
+
 **Minulé dny v kalendáři nedostávají barvu obsazenosti.** Růžová a žlutá
 v už proběhlém týdnu vypadaly jako rozbité vykreslení a vedly k hlášení,
 že „na volný den nejde kliknout" — přitom šlo prostě o včerejšek. Veřejný
