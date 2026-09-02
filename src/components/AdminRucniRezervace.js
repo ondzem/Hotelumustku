@@ -18,6 +18,7 @@
 
 import { MOCK_ROOMS, saveStoredReservation } from '../lib/supabaseClient.js';
 import { calculateReservationPrice, generateReservationCode, generateManageToken, formatCzechPrice } from '../utils/pricing.js';
+import { obsazenostPulek, stavPulky, tridaPulek } from '../utils/obsazenost.js';
 import { maxOsobNaPokoji } from '../utils/cenik.js';
 import { adminPotvrzeni } from './AdminPotvrzeni.js';
 
@@ -212,38 +213,31 @@ const dnesStr = () => new Date().toISOString().split('T')[0];
  */
 function obsazenostDne(ad, den, roomId) {
   const prodejne = MOCK_ROOMS.filter(r => !r.isDisabled);
-  const zabranyPokoj = (r) => {
-    const rezervace = (ad.reservations || []).some(x =>
-      x.room_id === r.id
-      && !(x.status && (String(x.status).startsWith('cancelled') || x.status === 'stornováno'))
-      && den >= x.date_from && den < x.date_to);
-    if (rezervace) return true;
-    return (ad.blockedDates || []).some(b =>
-      (b.room_id === 'all' || b.room_id === r.id) && den >= b.date_from && den < b.date_to);
-  };
+  const jeAktivni = (x) => !(x.status && (String(x.status).startsWith('cancelled') || x.status === 'stornováno'));
+
   // Půlené dny: date_from znamená obsazeno až od 15:00, date_to zase jen
   // do 10:00. Bez toho vypadá den výměny hostů jako celý zabraný a recepční
   // do něj nezapíše příjezd, i když by mohla.
-  const zacinaVDen = (r) => (ad.reservations || []).some(x =>
-    x.room_id === r
-    && !(x.status && (String(x.status).startsWith('cancelled') || x.status === 'stornováno'))
-    && x.date_from === den)
-    || (ad.blockedDates || []).some(b => (b.room_id === 'all' || b.room_id === r) && b.date_from === den);
+  const cb = {
+    obsazeno: (id) =>
+      (ad.reservations || []).some(x => x.room_id === id && jeAktivni(x) && den >= x.date_from && den < x.date_to)
+      || (ad.blockedDates || []).some(b => (b.room_id === 'all' || b.room_id === id) && den >= b.date_from && den < b.date_to),
+    zacina: (id) =>
+      (ad.reservations || []).some(x => x.room_id === id && jeAktivni(x) && x.date_from === den)
+      || (ad.blockedDates || []).some(b => (b.room_id === 'all' || b.room_id === id) && b.date_from === den),
+    konci: (id) =>
+      (ad.reservations || []).some(x => x.room_id === id && jeAktivni(x) && x.date_to === den)
+      || (ad.blockedDates || []).some(b => (b.room_id === 'all' || b.room_id === id) && b.date_to === den),
+  };
 
-  const konciVDen = (r) => (ad.reservations || []).some(x =>
-    x.room_id === r
-    && !(x.status && (String(x.status).startsWith('cancelled') || x.status === 'stornováno'))
-    && x.date_to === den)
-    || (ad.blockedDates || []).some(b => (b.room_id === 'all' || b.room_id === r) && b.date_to === den);
+  const vsechny = prodejne.map(r => r.id);
+  const pulkyVybrane = obsazenostPulek(roomId ? [roomId] : vsechny, cb);
+  const pulkyHotel = roomId ? obsazenostPulek(vsechny, cb) : pulkyVybrane;
 
-  const zabrany = roomId ? zabranyPokoj({ id: roomId }) : false;
   return {
-    vybranyZabrany: zabrany,
-    // Příjezd hlásíme u obsazeného dne, odjezd u volného — a když nastanou
-    // oba, je zabraná celá buňka a nepůlí se.
-    prijezdVybraneho: Boolean(roomId && zabrany && zacinaVDen(roomId) && !konciVDen(roomId)),
-    odjezdVybraneho: Boolean(roomId && !zabrany && konciVDen(roomId) && !zacinaVDen(roomId)),
-    obsazeno: prodejne.filter(zabranyPokoj).length,
+    dopoledne: stavPulky(pulkyVybrane.dopoledne, pulkyVybrane.celkem, pulkyHotel.dopoledne),
+    odpoledne: stavPulky(pulkyVybrane.odpoledne, pulkyVybrane.celkem, pulkyHotel.odpoledne),
+    obsazeno: pulkyHotel.odpoledne,
     celkem: prodejne.length,
   };
 }
@@ -468,14 +462,20 @@ function renderKalendar(ad, f) {
 
   for (let d = 1; d <= dnuVMesici; d++) {
     const den = `${year}-${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-    const { vybranyZabrany, prijezdVybraneho, odjezdVybraneho, obsazeno, celkem } = obsazenostDne(ad, den, f.room_id);
-    const castecne = !vybranyZabrany && obsazeno > 0 && obsazeno < celkem;
+    const { dopoledne, odpoledne, obsazeno, celkem } = obsazenostDne(ad, den, f.room_id);
+    const vybranyZabrany = odpoledne === 'plno';
+    const castecne = odpoledne === 'castecne';
+    const jeVybrany = Boolean(den === od || den === doo || (od && doo && den > od && den < doo));
 
     let tridy = 'cal-day';
-    if (vybranyZabrany) tridy += ' is-full';
-    else if (castecne) tridy += ' is-partial';
-    if (odjezdVybraneho) tridy += ' is-turnover-day';
-    if (prijezdVybraneho) tridy += ' is-arrival-day';
+    // Ve vybraném rozsahu vyhrává podklad výběru, jinak se kreslí půlky.
+    if (jeVybrany) {
+      if (vybranyZabrany) tridy += ' is-full';
+      else if (castecne) tridy += ' is-partial';
+    } else {
+      const trida = tridaPulek(dopoledne, odpoledne);
+      if (trida) tridy += ' ' + trida;
+    }
     if (den === od) tridy += ' is-from is-selected';
     if (den === doo) tridy += ' is-to is-selected';
     if (od && doo && den > od && den < doo) tridy += ' in-range';
@@ -516,9 +516,8 @@ function renderKalendar(ad, f) {
           <div class="cal-legend" style="display:flex; flex-wrap:wrap; gap:14px; padding:4px 0 10px 0; border-bottom:1px solid #E7E5DC; margin-bottom:4px;">
             <span class="cal-legend-item"><i class="cal-legend-box" style="background:var(--kal-volno);"></i> Volno</span>
             <span class="cal-legend-item"><i class="cal-legend-box" style="background:var(--kal-vybrano);"></i> Vybraný termín</span>
-            <span class="cal-legend-item"><i class="cal-legend-box" style="background:#f9d9d4;"></i> Tento pokoj obsazený</span>
+            <span class="cal-legend-item"><i class="cal-legend-box" style="background:#f9d9d4;"></i> ${f.room_id ? 'Tento pokoj obsazený' : 'Plně obsazeno'}</span>
             <span class="cal-legend-item"><i class="cal-legend-box" style="background:#fcecc2;"></i> Částečně obsazeno</span>
-            <span class="cal-legend-item"><i class="cal-legend-box je-pulka"></i> Odjezd do 10:00, příjezd od 15:00</span>
           </div>
 
           <div class="cal-range-summary" style="display: flex; flex-direction: column; gap: 2px;">

@@ -141,10 +141,30 @@ se počítal jen vybraný pokoj, takže při výběru pokoje oranžová zmizela
 odjakživa; web a Dostupnost se k němu vrátily. **Nikdy nesluč obojí do
 jednoho čísla.**
 
-Legenda vypisuje všechny stavy, které se v mřížce můžou objevit, včetně
-půleného dne (`.cal-legend-box.je-pulka` nese tutéž úhlopříčku). Půlka se
-řídí obsazeností té buňky — u půleného dne je vybraný pokoj VOLNÝ, takže
-červená půlka by lhala.
+**Každá POLOVINA dne má vlastní stav, ne barvu odvozenou z celého dne.**
+Rozhoduje `stavPulky()` a `tridaPulek()` v `src/utils/obsazenost.js`
+(sdílí je všechny tři kalendáře, hlídá `kontrola/pulene-dny.mjs`). Když
+mají obě půlky tentýž stav, kreslí se celá buňka (`is-full` /
+`is-partial` / nic); jinak vznikne úhlopříčka `pulka-<dopoledne>-<odpoledne>`
+— šest kombinací, ne dvě. Levý horní roh je ráno, pravý dolní odpoledne.
+
+Do 2. 9. 2026 byly jen dvě třídy (odjezdový / příjezdový den) a barva
+obsazené půlky se brala z CELÉHO dne. Na konci blokace to lhalo: poslední
+den je `date_to`, tedy den už obsazený není, takže buňka nebyla „plná" a
+obsazené dopoledne se vykreslilo oranžově, jako by šlo o cizí pokoj.
+Majitel to popsal přesně: „začátek blokace se půlí správně, konec ne."
+Šest kombinací navíc umí i to, co dvě třídy neuměly — třeba červené
+dopoledne (končí blokace tohohle pokoje) a oranžové odpoledne (obsazený
+je jen cizí pokoj).
+
+**Půlka může vzniknout i kvůli CIZÍMU pokoji**, takže u toho vybraného
+tam žádný odjezd ani příjezd být nemusí. Popisek se proto na `odjezd` /
+`prijezd` smí ptát až po ověření, že nejsou null — jinak Dostupnost při
+výběru pokoje spadne na `Cannot read properties of null`.
+
+Legenda vypisuje jen stavy, ne časy. Věta o odjezdu do 10:00 a příjezdu
+od 15:00 v ní byla a majitel ji nechal smazat — časy patří do popisku
+u dne, ne do legendy.
 
 **Minulé dny v kalendáři nedostávají barvu obsazenosti.** Růžová a žlutá
 v už proběhlém týdnu vypadaly jako rozbité vykreslení a vedly k hlášení,

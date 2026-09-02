@@ -45,13 +45,39 @@ export function obsazenostPulek(pokoje, { obsazeno, zacina, konci }) {
 }
 
 /**
- * Které půlce dne patří barva. Půlí se jen tehdy, když je druhá polovina
- * úplně prázdná — jinak by úhlopříčka tvrdila, že je půl dne volných,
- * přestože tam pořád někdo je.
+ * Stav JEDNÉ poloviny dne: 'plno' | 'castecne' | 'volno'.
+ *
+ * Půlka musí znát svůj stav sama. Do 2. 9. 2026 se barva půlky brala
+ * z celého dne, a to lhalo přesně na konci blokace: poslední den je
+ * `date_to`, tedy den už obsazený NENÍ, takže buňka nebyla „plná" a
+ * obsazené dopoledne se vykreslilo oranžově, jako by šlo o cizí pokoj.
+ * Majitel to popsal tak, že „začátek blokace se půlí správně, konec ne".
+ *
+ * @param obsazenoVybrane  kolik pokojů z vybraných je v téhle půlce zabraných
+ * @param celkemVybrane    kolik pokojů se sleduje (1 u konkrétního pokoje)
+ * @param obsazenoHotel    kolik pokojů je zabraných v celém hotelu
  */
-export function pulkyDne({ dopoledne, odpoledne }) {
-  return {
-    prijezdovy: dopoledne === 0 && odpoledne > 0,   // bílá nahoře, barva dole
-    odjezdovy: dopoledne > 0 && odpoledne === 0,    // barva nahoře, bílá dole
-  };
+export function stavPulky(obsazenoVybrane, celkemVybrane, obsazenoHotel) {
+  if (celkemVybrane > 0 && obsazenoVybrane >= celkemVybrane) return 'plno';
+  if (obsazenoHotel > 0) return 'castecne';
+  return 'volno';
+}
+
+/**
+ * Třída pro buňku dne podle obou polovin.
+ *
+ * Když mají obě půlky tentýž stav, kreslí se celá buňka — půlit by
+ * znamenalo tvrdit rozdíl, který tam není. Jinak vznikne úhlopříčka
+ * `pulka-<dopoledne>-<odpoledne>`; levý horní roh je ráno, pravý dolní
+ * odpoledne. Díky tomu umí buňka i kombinace, na které staré
+ * dvě třídy (odjezdový / příjezdový den) nestačily — třeba obsazené
+ * dopoledne (červená) a odpoledne obsazený jen cizí pokoj (oranžová).
+ */
+export function tridaPulek(dopoledne, odpoledne) {
+  if (dopoledne === odpoledne) {
+    if (dopoledne === 'plno') return 'is-full';
+    if (dopoledne === 'castecne') return 'is-partial';
+    return '';
+  }
+  return `pulka-${dopoledne}-${odpoledne}`;
 }

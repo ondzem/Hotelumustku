@@ -3610,33 +3610,36 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   color: #999999 !important;
 }
 
-/* Přestupní den — dopoledne obsazeno, odpoledne volno.
-   Úhlopříčka čte čas: levý horní roh ráno, pravý dolní odpoledne. */
-.cal-day.is-turnover-day {
+/* PŮLENÝ DEN — úhlopříčka čte čas: levý horní roh je ráno, pravý dolní
+   odpoledne. Každá půlka má VLASTNÍ barvu podle svého stavu, proto je
+   tříd šest a ne dvě. Dřív se barva obsazené půlky brala z celého dne,
+   takže konec blokace (den, který už obsazený není) vycházel oranžově,
+   i když v pokoji do 10:00 pořád někdo byl. */
+.cal-day[class*="pulka-"] {
   position: relative;
-  background: linear-gradient(to bottom right, var(--kal-castecne) 0 50%, var(--kal-volno) 50% 100%) !important;
   color: #1c1c19 !important;
   cursor: pointer !important;
   text-shadow: none !important;
+  text-decoration: none !important;
 }
 
-/* Příjezdový den — do 15:00 volno, potom obsazeno. Zrcadlo toho výš. */
-.cal-day.is-arrival-day {
-  position: relative;
-  background: linear-gradient(to bottom right, var(--kal-volno) 0 50%, var(--kal-castecne) 50% 100%) !important;
-  color: #1c1c19 !important;
-  cursor: pointer !important;
-  text-shadow: none !important;
-}
-
-/* Plně obsazený hotel má i v půlce sytější barvu. */
-.cal-day.is-full.is-turnover-day {
+.cal-day.pulka-plno-volno {
   background: linear-gradient(to bottom right, var(--kal-plno) 0 50%, var(--kal-volno) 50% 100%) !important;
-  text-decoration: none !important;
 }
-.cal-day.is-full.is-arrival-day {
+.cal-day.pulka-plno-castecne {
+  background: linear-gradient(to bottom right, var(--kal-plno) 0 50%, var(--kal-castecne) 50% 100%) !important;
+}
+.cal-day.pulka-castecne-volno {
+  background: linear-gradient(to bottom right, var(--kal-castecne) 0 50%, var(--kal-volno) 50% 100%) !important;
+}
+.cal-day.pulka-castecne-plno {
+  background: linear-gradient(to bottom right, var(--kal-castecne) 0 50%, var(--kal-plno) 50% 100%) !important;
+}
+.cal-day.pulka-volno-plno {
   background: linear-gradient(to bottom right, var(--kal-volno) 0 50%, var(--kal-plno) 50% 100%) !important;
-  text-decoration: none !important;
+}
+.cal-day.pulka-volno-castecne {
+  background: linear-gradient(to bottom right, var(--kal-volno) 0 50%, var(--kal-castecne) 50% 100%) !important;
 }
 
 
@@ -3658,14 +3661,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   flex-shrink: 0;
   display: inline-block;
   border: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-/* Půlený den v legendě. Úhlopříčka čte čas stejně jako v mřížce:
-   levý horní roh je ráno, pravý dolní odpoledne. Bez téhle položky
-   zůstával šikmý den jediným stavem, který legenda nevysvětlovala —
-   a právě na něj se majitel ptal (2. 9. 2026). */
-.cal-legend-box.je-pulka {
-  background: linear-gradient(to bottom right, var(--kal-castecne) 0 50%, var(--kal-volno) 50% 100%);
 }
 
 .cal-modal-footer {
@@ -5184,41 +5179,38 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 /* Minulé dny zůstávají klikatelné (majitel se ptá i zpětně),
    jen jsou tlumené, aby nepletly. */
-/* Půlené dny v administraci. Úhlopříčka čte čas: levý horní roh je ráno,
-   pravý dolní odpoledne. Musí být za .is-partial i .is-full, jinak je plná
-   barva přebije.
-
-   Odjezdový den — do 10:00 se odjíždí, potom volno. */
-.dostupnost-kalendar .cal-day.is-turnover-day,
-.rucni-cal-overlay .cal-day.is-turnover-day {
-  background: linear-gradient(to bottom right, #fcecc2 0 50%, var(--kal-volno) 50% 100%) !important;
+/* Půlené dny v administraci — tytéž kombinace jako na webu, jen v jejích
+   sytějších odstínech. Musí být za .is-partial i .is-full, jinak je plná
+   barva přebije. */
+.dostupnost-kalendar .cal-day[class*="pulka-"],
+.rucni-cal-overlay .cal-day[class*="pulka-"] {
   border-color: #e6e3d8 !important;
   color: #1c1c19 !important;
 }
 
-/* Příjezdový den — do 15:00 ještě volno, potom obsazeno. Zrcadlo toho výš. */
-.dostupnost-kalendar .cal-day.is-arrival-day,
-.rucni-cal-overlay .cal-day.is-arrival-day {
-  background: linear-gradient(to bottom right, var(--kal-volno) 0 50%, #fcecc2 50% 100%) !important;
-  border-color: #e6e3d8 !important;
-  color: #1c1c19 !important;
-}
-
-/* Plně obsazený hotel má i v půlce sytější barvu, ať je poznat od částečné. */
-.dostupnost-kalendar .cal-day.is-full.is-turnover-day,
-.rucni-cal-overlay .cal-day.is-full.is-turnover-day {
+.dostupnost-kalendar .cal-day.pulka-plno-volno,
+.rucni-cal-overlay .cal-day.pulka-plno-volno {
   background: linear-gradient(to bottom right, #f9d9d4 0 50%, var(--kal-volno) 50% 100%) !important;
 }
-
-.dostupnost-kalendar .cal-day.is-full.is-arrival-day,
-.rucni-cal-overlay .cal-day.is-full.is-arrival-day {
+.dostupnost-kalendar .cal-day.pulka-plno-castecne,
+.rucni-cal-overlay .cal-day.pulka-plno-castecne {
+  background: linear-gradient(to bottom right, #f9d9d4 0 50%, #fcecc2 50% 100%) !important;
+}
+.dostupnost-kalendar .cal-day.pulka-castecne-volno,
+.rucni-cal-overlay .cal-day.pulka-castecne-volno {
+  background: linear-gradient(to bottom right, #fcecc2 0 50%, var(--kal-volno) 50% 100%) !important;
+}
+.dostupnost-kalendar .cal-day.pulka-castecne-plno,
+.rucni-cal-overlay .cal-day.pulka-castecne-plno {
+  background: linear-gradient(to bottom right, #fcecc2 0 50%, #f9d9d4 50% 100%) !important;
+}
+.dostupnost-kalendar .cal-day.pulka-volno-plno,
+.rucni-cal-overlay .cal-day.pulka-volno-plno {
   background: linear-gradient(to bottom right, var(--kal-volno) 0 50%, #f9d9d4 50% 100%) !important;
 }
-
-/* Legenda v administraci nese tytéž odstíny jako její mřížka. */
-.dostupnost-kalendar .cal-legend-box.je-pulka,
-.rucni-cal-overlay .cal-legend-box.je-pulka {
-  background: linear-gradient(to bottom right, #fcecc2 0 50%, var(--kal-volno) 50% 100%);
+.dostupnost-kalendar .cal-day.pulka-volno-castecne,
+.rucni-cal-overlay .cal-day.pulka-volno-castecne {
+  background: linear-gradient(to bottom right, var(--kal-volno) 0 50%, #fcecc2 50% 100%) !important;
 }
 /* Půlka v barvě obsazenosti se přes vybraný den už nekreslí — vybraný
    rozsah drží podklad sám (viz AdminDostupnost.js, `jeVybrany`), aby ho
@@ -5361,8 +5353,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 /* Volný den je zelený i v administraci — stejná paleta jako na webu. */
-.dostupnost-kalendar .cal-day:not(.is-full):not(.is-partial):not(.is-selected):not(.in-range):not(.cal-day-empty),
-.rucni-cal-overlay .cal-day:not(.is-full):not(.is-partial):not(.is-selected):not(.in-range):not(.cal-day-empty) {
+.dostupnost-kalendar .cal-day:not(.is-full):not(.is-partial):not(.is-selected):not(.in-range):not(.cal-day-empty):not([class*="pulka-"]),
+.rucni-cal-overlay .cal-day:not(.is-full):not(.is-partial):not(.is-selected):not(.in-range):not(.cal-day-empty):not([class*="pulka-"]) {
   background: var(--kal-volno);
   border: 1px solid var(--kal-volno-ramecek);
   color: var(--kal-volno-text);

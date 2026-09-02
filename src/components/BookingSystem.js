@@ -1,5 +1,5 @@
 import { MOCK_ROOMS, isSupabaseConfigured, supabase, getStoredReservations, saveStoredReservation, sanitizeReservationForSupabase, getStoredBlockedDates, getStoredDiscountCodes, getStoredRoomPrices, getStoredDisabledRooms, getStoredCenik, fetchCenik, fetchRoomPrices, getDeviceRedeemedDiscountCodes, markDiscountCodeRedeemedOnDevice, incrementDiscountCodeUsage } from '../lib/supabaseClient.js';
-import { obsazenostPulek, pulkyDne } from '../utils/obsazenost.js';
+import { obsazenostPulek, stavPulky, tridaPulek } from '../utils/obsazenost.js';
 import {
   minimumNoci, popisNoci, zasahujeDoSvatku, zahrnujeSilvestr, jeSilvestr,
   mesicZasahujeMimoProvoz, mesicZasahujeSvatky, popisRozsahu,
@@ -1689,9 +1689,20 @@ export class BookingSystem {
         : false;
       const lzeJakoOdjezd = !isPast && jePlne && dayStr === prvniPlnyPoPrijezdu && dostNoci;
 
-      const pulky = isPast ? { dopoledne: 0, odpoledne: 0 } : this.obsazenostPulekDne(dayStr, roomIdForCal);
-      // Půlí se jen tehdy, když je druhá polovina dne opravdu prázdná.
-      const { prijezdovy: jePrijezdovy, odjezdovy: jeOdjezdovy } = pulkyDne(pulky);
+      // Každá polovina dne si nese vlastní stav. Do 2. 9. 2026 se barva
+      // půlky brala z celého dne, takže poslední den blokace (ten už
+      // obsazený není) vyšel oranžově, přestože v pokoji do 10:00 pořád
+      // někdo byl — majitel to hlásil jako „konec blokace se nepůlí".
+      const pulkyVybrane = this.obsazenostPulekDne(dayStr, roomIdForCal);
+      const pulkyHotel = jedenPokoj ? this.obsazenostPulekDne(dayStr, 'all') : pulkyVybrane;
+      const dopoledne = stavPulky(pulkyVybrane.dopoledne, pulkyVybrane.celkem, pulkyHotel.dopoledne);
+      const odpoledne = stavPulky(pulkyVybrane.odpoledne, pulkyVybrane.celkem, pulkyHotel.odpoledne);
+      // Pro popisek rozhoduje VYBRANÝ pokoj: buňka se půlí i kvůli cizímu
+      // pokoji a věta „do 10:00 se odjíždí" by u volného pokoje mátla.
+      const pokojDopoledne = pulkyVybrane.celkem > 0 && pulkyVybrane.dopoledne >= pulkyVybrane.celkem;
+      const pokojOdpoledne = pulkyVybrane.celkem > 0 && pulkyVybrane.odpoledne >= pulkyVybrane.celkem;
+      const jeOdjezdovy = pokojDopoledne && !pokojOdpoledne;
+      const jePrijezdovy = !pokojDopoledne && pokojOdpoledne;
       // Vybraný termín má přednost před obsazeností hotelu. Host si potřebuje
       // přečíst, co si vybral; půlka v barvě obsazenosti mu přes vlastní
       // příjezd přemalovala zelenou na oranžovou a vypadalo to, že den
@@ -1704,12 +1715,17 @@ export class BookingSystem {
       // nemá řešit, jestli bylo 10. plno — a růžová v minulosti vypadala jako
       // porouchané vykreslení, ne jako „tenhle den už je pryč".
       if (!isPast) {
-        if (jePlne) dayClass += ' is-full';
-        else if (jeCastecne) dayClass += ' is-partial';
+        // Vybraný den nese jen plnou barvu obsazenosti — úhlopříčku by
+        // stejně přebil zelený podklad výběru a host by nepoznal, co si vybral.
+        if (jeVybrany) {
+          if (jePlne) dayClass += ' is-full';
+          else if (jeCastecne) dayClass += ' is-partial';
+        } else {
+          const trida = tridaPulek(dopoledne, odpoledne);
+          if (trida) dayClass += ' ' + trida;
+        }
       }
       if (lzeJakoOdjezd) dayClass += ' je-jen-odjezd';
-      if (!isPast && !jeVybrany && jeOdjezdovy) dayClass += ' is-turnover-day';
-      if (!isPast && !jeVybrany && jePrijezdovy) dayClass += ' is-arrival-day';
       if (isFrom) dayClass += ' is-from is-selected';
       if (isTo) dayClass += ' is-to is-selected';
       if (isInRange) dayClass += ' in-range';
@@ -1829,10 +1845,6 @@ export class BookingSystem {
               <span class="cal-legend-item">
                 <i class="cal-legend-box" style="background:var(--kal-castecne);"></i>
                 Částečně obsazeno
-              </span>
-              <span class="cal-legend-item">
-                <i class="cal-legend-box je-pulka"></i>
-                Odjezd do 10:00, příjezd od 15:00
               </span>
             </div>
             ${effectiveFrom && effectiveTo ? `
