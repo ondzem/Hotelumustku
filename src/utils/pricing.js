@@ -2,9 +2,11 @@
 import {
   rozpisNoci,
   cenaZaOsobuNoc,
+  soloPriplatek,
   najdiSezonu,
   popisRozpisu,
   PRAZDNY_CENIK,
+  VYCHOZI_SOLO,
 } from './cenik.js';
 
 export const BANK_ACCOUNT = '293470312/0300';
@@ -22,7 +24,10 @@ export const VYCHOZI_NASTAVENI = {
   pes: 150,              // Kč / noc
   elektrokolo: 15,       // Kč / kus / den
   zimni_parkovani: 100,  // Kč / auto / POBYT, ne za noc — viz výpočet níž
-  mestsky_poplatek: 0,   // Kč / osoba / noc, 0 = zahrnuto v ceně
+  // Příplatek za jednu osobu na pokoji, Kč / NOC. Městský poplatek tu
+  // byl a je zrušený: je v ceně, majitel ho z Příplatků vyhodil 2. 9. 2026.
+  solo_standard: VYCHOZI_SOLO.standard,
+  solo_nadstandard: VYCHOZI_SOLO.nadstandard,
   zaloha_procent: 30,    // % z celkové ceny
 };
 
@@ -74,7 +79,6 @@ function nast(nastaveni, klic) {
 }
 
 export const DEPOSIT_PERCENTAGE = VYCHOZI_NASTAVENI.zaloha_procent;
-export const CITY_TAX_PER_ADULT_NIGHT = VYCHOZI_NASTAVENI.mestsky_poplatek;
 export const HALF_BOARD_PER_PERSON_NIGHT = VYCHOZI_NASTAVENI.polopenze;
 export const DOG_PER_DAY = VYCHOZI_NASTAVENI.pes;
 export const EBIKE_PER_DAY = VYCHOZI_NASTAVENI.elektrokolo;
@@ -182,6 +186,7 @@ export function calculateReservationPrice({
   if (noci.length === 0) {
     const dnes = new Date().toISOString().split('T')[0];
     const sazba = cenaZaOsobuNoc({ datumStr: dnes, roomId, kategorie, pocetOsob: totalGuests, cenik });
+    const solo = totalGuests === 1 ? soloPriplatek(kategorie, cenik) : 0;
     noci = Array.from({ length: safeNights }, () => ({
       datum: dnes,
       jeVikend: false,
@@ -189,11 +194,19 @@ export function calculateReservationPrice({
       cenaZaOsobu: sazba,
       zakladniCenaZaOsobu: sazba,
       vikendovyPriplatek: 0,
-      cenaZaNoc: sazba * totalGuests,
+      soloPriplatek: solo,
+      cenaZaNoc: sazba * totalGuests + solo,
     }));
   }
 
-  let accommodationPrice = noci.reduce((s, n) => s + n.cenaZaNoc, 0);
+  // Příplatek za jednu osobu na pokoji se vede zvlášť, aby ho host viděl
+  // jako vlastní řádek — majitel chce, aby „skočil" do rozpisu ve chvíli,
+  // kdy host sníží počet osob na jednu. Do ceny ubytování (a do databáze)
+  // se ale započítává, protože je to cena pokoje, ne doplňková služba.
+  const soloPriplatekCelkem = noci.reduce((s, n) => s + (n.soloPriplatek || 0), 0);
+  const soloPriplatekZaNoc = noci[0] ? (noci[0].soloPriplatek || 0) : 0;
+  const ubytovaniBezPriplatku = noci.reduce((s, n) => s + n.cenaZaNoc, 0) - soloPriplatekCelkem;
+  let accommodationPrice = ubytovaniBezPriplatku + soloPriplatekCelkem;
 
   const weekendNights = noci.filter(n => n.jeVikend).length;
   const weekdayNights = noci.length - weekendNights;
@@ -210,12 +223,13 @@ export function calculateReservationPrice({
   //    Hotel jednonoční pobyty nepřijímá — rezervační formulář vyžaduje
   //    minimálně dvě noci, takže příplatek by stejně nikdy nenastal.
   //
-  //    Příplatek za sólo obsazení tu taky NENÍ. Dřív se připočítával
-  //    zvlášť, ale v ceníku je "1 osoba" vlastní sloupec, takže by se
-  //    stejná věc počítala dvakrát.
+  //    Příplatek za jednu osobu je už uvnitř `noci` (rozpisNoci), tady se
+  //    nepřičítá podruhé.
 
-  // 3. Městský poplatek — ve výchozím nastavení 0, protože je v ceně
-  const cityTax = nast(nastaveni, 'mestsky_poplatek') * totalGuests * safeNights;
+  // 3. Městský poplatek je v ceně a z Příplatků zmizel. Sloupec `city_tax`
+  //    v databázi zůstal, proto se posílá nula — ne undefined, jinak by
+  //    staré rozpisy v administraci sčítaly NaN.
+  const cityTax = 0;
 
   // 4. Doplňkové služby
   const isWinter = isWinterSeason(dateFrom, dateTo);
@@ -270,6 +284,11 @@ export function calculateReservationPrice({
     noci,
     sezonaNazev: sezonaAktualni ? sezonaAktualni.nazev : 'Základní ceník',
     cenaZaOsobuNoc: weekdayRate,
+    ubytovaniBezPriplatku,
+    soloPriplatekZaNoc,
+    soloPriplatekCelkem,
+    formattedUbytovaniBezPriplatku: formatCzechPrice(ubytovaniBezPriplatku),
+    formattedSoloPriplatekCelkem: formatCzechPrice(soloPriplatekCelkem),
 
     baseRatePerPersonNight: weekdayRate,
     weekdayRate,

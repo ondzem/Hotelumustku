@@ -5,11 +5,16 @@
  *   1. SEZÓNA        — podle data noci (zima / léto / základní / jednorázová)
  *   2. KATEGORIE     — standard / nadstandard / turistický, s možností
  *                      výjimky pro jeden konkrétní pokoj
- *   3. POČET OSOB    — čím víc lidí na pokoji, tím nižší cena za osobu
+ *   3. POČET OSOB    — čím víc lidí na pokoji, tím nižší cena za osobu;
+ *                      ceník začíná u DVOU osob, sólo host platí cenu pro
+ *                      dva plus příplatek za jednu osobu na pokoji
  *
  * Navíc víkendový příplatek (pátek, sobota, neděle), který se liší podle
  * kategorie pokoje a platí stejně pro všechny sezóny — nastavuje se na
  * obrazovce Příplatky (klíče vikend_standard / vikend_nadstandard).
+ * Stejně tak příplatek za jednu osobu (solo_standard / solo_nadstandard),
+ * Kč za noc: majitel ho chce ladit podle obsazenosti, ne přepisovat sloupec
+ * v každém období zvlášť.
  *
  * Tenhle soubor je čistá matematika bez sítě a bez DOM, aby se dal
  * spolehlivě testovat.
@@ -19,15 +24,30 @@
 export const MAX_OSOB_V_CENIKU = 4;
 
 /**
+ * Nejnižší počet osob, pro který ceník drží sloupec. Sloupec „1 osoba"
+ * byl zrušen 2. 9. 2026 na přání majitele: sólo host platí cenu pro dva
+ * plus příplatek za jednu osobu (viz `soloPriplatek`). Majitel tak mění
+ * jedno číslo v Příplatcích a nemusí přepisovat sloupec v každém období.
+ */
+export const MIN_OSOB_V_CENIKU = 2;
+
+/**
  * Záchranné ceny, když se ceník nestihne načíst nebo je databáze prázdná.
  * Opsáno z ceníku na umustku.cz platného od 1. 1. 2026.
  * Hodnoty jsou v Kč za OSOBU a NOC se snídaní.
  */
 export const VYCHOZI_CENY = {
-  standard:    { 1: 890, 2: 740, 3: 720, 4: 700 },
-  nadstandard: { 1: 1780, 2: 890, 3: 890, 4: 890 },
-  turisticky:  { 1: 890, 2: 740, 3: 720, 4: 700 },
+  standard:    { 2: 740, 3: 720, 4: 700 },
+  nadstandard: { 2: 890, 3: 890, 4: 890 },
+  turisticky:  { 2: 740, 3: 720, 4: 700 },
 };
+
+/**
+ * Záchranný příplatek za jednu osobu na pokoji, Kč / NOC (ne za osobu —
+ * osoba je jen jedna). Odvozeno ze starého ceníku: standard 890 vs 740,
+ * nadstandard 1780 vs 890, kde sólo host platil celý pokoj.
+ */
+export const VYCHOZI_SOLO = { standard: 150, nadstandard: 890 };
 
 /** Prázdný ceník — používá se, dokud se nenačtou data. */
 export const PRAZDNY_CENIK = { sezony: [], ceny: [], cenyPokoj: [], nastaveni: {} };
@@ -99,10 +119,11 @@ export function najdiSezonu(datumStr, sezony = []) {
 
 /**
  * Ořízne počet osob na sloupec, který ceník opravdu má.
- * Víc lidí, než kolik je sloupců, platí cenu posledního sloupce.
+ * Víc lidí, než kolik je sloupců, platí cenu posledního sloupce;
+ * jedna osoba platí sazbu pro dva (příplatek se přičítá zvlášť).
  */
 function sloupecOsob(pocetOsob) {
-  const n = Math.max(1, parseInt(pocetOsob, 10) || 1);
+  const n = Math.max(MIN_OSOB_V_CENIKU, parseInt(pocetOsob, 10) || MIN_OSOB_V_CENIKU);
   return Math.min(n, MAX_OSOB_V_CENIKU);
 }
 
@@ -177,6 +198,23 @@ export function vikendovyPriplatek(kategorie = 'standard', cenik = PRAZDNY_CENIK
   const p = Number(cenik.nastaveni && cenik.nastaveni['vikend_' + kat]);
   if (Number.isFinite(p) && p >= 0) return p;
   return VYCHOZI_VIKEND[kat];
+}
+
+/**
+ * Příplatek za jednu osobu na pokoji (Kč / noc).
+ *
+ * Host, který přijede sám, platí sazbu pro DVĚ osoby (jednu) plus tento
+ * příplatek — tak to majitel chce: „když je cena pro dvě osoby 2 000,
+ * pro jednu nebude 1 000, ale 1 600". Nastavuje se v Příplatcích podle
+ * kategorie pokoje; turistický sdílí hodnotu se standardem. Nula od
+ * admina znamená „bez příplatku" — když je mrtvo, vezme i sólo hosta bez
+ * přirážky.
+ */
+export function soloPriplatek(kategorie = 'standard', cenik = PRAZDNY_CENIK) {
+  const kat = kategorie === 'nadstandard' ? 'nadstandard' : 'standard';
+  const p = Number(cenik.nastaveni && cenik.nastaveni['solo_' + kat]);
+  if (Number.isFinite(p) && p >= 0) return p;
+  return VYCHOZI_SOLO[kat];
 }
 
 /**
@@ -259,6 +297,11 @@ export function rozpisNoci({
   const [r, m, d] = String(dateFrom).split('-').map(Number);
   if (!r || !m || !d) return noci;
 
+  const osob = Math.max(1, parseInt(pocetOsob, 10) || 1);
+  // Sólo host: sazba pro dva + příplatek za noc. Příplatek je za NOC, ne
+  // za osobu — osoba je jen jedna, takže se nenásobí.
+  const solo = osob === 1 ? soloPriplatek(kategorie, cenik) : 0;
+
   for (let i = 0; i < pocetNoci; i++) {
     const dt = new Date(Date.UTC(r, m - 1, d));
     dt.setUTCDate(dt.getUTCDate() + i);
@@ -278,7 +321,8 @@ export function rozpisNoci({
       cenaZaOsobu: zaklad + priplatek,
       zakladniCenaZaOsobu: zaklad,
       vikendovyPriplatek: priplatek,
-      cenaZaNoc: (zaklad + priplatek) * Math.max(1, parseInt(pocetOsob, 10) || 1),
+      soloPriplatek: solo,
+      cenaZaNoc: (zaklad + priplatek) * osob + solo,
     });
   }
 

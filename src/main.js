@@ -2,8 +2,9 @@ import './style.css';
 import './booking.css';
 import { BookingSystem } from './components/BookingSystem.js';
 import { AdminDashboard } from './components/AdminDashboard.js';
-import { getStoredRoomPrices, getStoredDisabledRooms, MOCK_ROOMS, saveContactMessage, getStoredNewsItems, getStoredReviews, saveStoredReview, formatGDPRName, getStoredCenik, fetchCenik, fetchRoomPrices } from './lib/supabaseClient.js';
-import { cenaZaOsobuNoc, maxOsobNaPokoji } from './utils/cenik.js';
+import { getStoredDisabledRooms, MOCK_ROOMS, saveContactMessage, getStoredNewsItems, getStoredReviews, saveStoredReview, formatGDPRName, getStoredCenik, fetchCenik, fetchRoomPrices } from './lib/supabaseClient.js';
+import { cenaZaOsobuNoc } from './utils/cenik.js';
+import { formatCzechPrice } from './utils/pricing.js';
 import { sendEmail, generateEmailContactNotification, generateEmailNewReviewNotification, RECEPCE_PRIJEMCE } from './utils/emailService.js';
 import { initScrollReveal } from './utils/scrollReveal.js';
 import { fotkyPokoje } from './utils/roomGalleries.js';
@@ -50,47 +51,43 @@ window.syncCustomRoomNamesToDOM = syncCustomRoomNamesToDOM;
 /**
  * Doplní na kartách pokojů cenu „od …“.
  *
- * Bere se nejnižší cena za osobu a noc, tedy sloupec pro plně
- * obsazený pokoj — se snídaní. To odpovídá tomu, co host zaplatí,
- * když přijede v největším počtu, a je to zároveň nejnižší číslo,
- * jaké se ho může týkat.
+ * Ukazuje se cena POKOJE za noc při dvou osobách — a pod ní, kolik to
+ * je za osobu. Dřív tam byla nejnižší sazba za osobu (sloupec pro plně
+ * obsazený pokoj); majitel to 2. 9. 2026 zamítl: „když je cena za osobu
+ * 1 000, tak ať tam svítí 2 000 za noc, ne 1 000 za osobu". Cena za
+ * osobu sama o sobě mátla, protože host ji četl jako cenu pokoje.
+ * Dvě osoby jsou minimální obsazenost, na které ceník stojí.
  */
 export function syncDynamicRoomPricesToDOM() {
   const cenik = getStoredCenik();
-  const roomPrices = getStoredRoomPrices();
   const dnes = new Date().toISOString().split('T')[0];
 
   document.querySelectorAll('.room-breakdown-item[data-room]').forEach(item => {
     const roomId = item.dataset.room;
     const priceAmountEl = item.querySelector('.price-amount');
+    const priceDetailEl = item.querySelector('.price-detail');
     if (!priceAmountEl || !roomId) return;
 
     const rmObj = MOCK_ROOMS.find(r => r.id === roomId);
     if (!rmObj) return;
 
-    const ulozene = roomPrices.find(p => p.room_id === roomId) || {};
-    const maxOsob = maxOsobNaPokoji({
-      zakladni_luzka: ulozene.zakladni_luzka != null ? ulozene.zakladni_luzka : rmObj.capacity,
-      max_pristylek: ulozene.max_pristylek != null ? ulozene.max_pristylek : rmObj.extraBeds,
+    const zaOsobu = cenaZaOsobuNoc({
+      datumStr: dnes,
+      roomId,
+      kategorie: rmObj.type,
+      pocetOsob: 2,
+      cenik,
     });
+    if (!(zaOsobu > 0)) return;
 
-    // Projdi všechny možné počty osob a vezmi nejnižší cenu za osobu
-    let nejnizsi = null;
-    for (let osob = 1; osob <= maxOsob; osob++) {
-      const c = cenaZaOsobuNoc({
-        datumStr: dnes,
-        roomId,
-        kategorie: rmObj.type,
-        pocetOsob: osob,
-        cenik,
-      });
-      if (c > 0 && (nejnizsi === null || c < nejnizsi)) nejnizsi = c;
-    }
-
-    if (nejnizsi) {
-      priceAmountEl.textContent = `od ${nejnizsi} Kč`;
-    }
+    priceAmountEl.textContent = `od ${formatCzechPrice(zaOsobu * 2)}`;
+    if (priceDetailEl) priceDetailEl.textContent = popisCenyZaOsobu(zaOsobu);
   });
+}
+
+/** Podtitulek pod cenou pokoje — stejný text v šabloně i po přepočtu. */
+function popisCenyZaOsobu(zaOsobu) {
+  return `za pokoj pro 2 osoby • ${formatCzechPrice(zaOsobu)} za osobu a noc`;
 }
 window.syncDynamicRoomPricesToDOM = syncDynamicRoomPricesToDOM;
 
@@ -205,11 +202,11 @@ export const renderRoomBreakdownItem = (roomId, defaultRoomName, priceType, pric
             <div class="drawer-action-btns">
               <div class="room-drawer-price-wrap" data-price="${priceType}" ${isDisabled ? 'style="display: none;"' : ''}>
                 <div class="price-main-block">
-                  <span class="price-amount">od ${priceAmount} Kč</span>
+                  <span class="price-amount">od ${formatCzechPrice(priceAmount * 2)}</span>
                   <span class="price-suffix">/ noc</span>
                 </div>
                 <div class="price-sub-block">
-                  <span class="price-detail">za osobu • cena dle počtu osob</span>
+                  <span class="price-detail">${popisCenyZaOsobu(priceAmount)}</span>
                 </div>
               </div>
               <button class="btn btn-booking btn-room-reserve">Zvolit pokoj</button>
@@ -1267,21 +1264,21 @@ const getRoomsPageHTML = () => `
       <div class="room-breakdown-list" data-anim-group>
         <!-- SKUPINA 1: POKOJE V PŘÍZEMÍ -->
         <h3 class="room-group-label" data-anim="up">Pokoje v přízemí</h3>
-        ${renderRoomBreakdownItem('p3', 'Pokoj 1 - Turistický', 'standard', 700)}
-        ${renderRoomBreakdownItem('p2', 'Pokoj 2 - Turistický', 'standard', 700)}
-        ${renderRoomBreakdownItem('p1', 'Pokoj 3 - Turistický', 'standard', 700)}
-        ${renderRoomBreakdownItem('pa', 'Pokoj 4 - Nadstandard - Mahagon', 'nadstandard', 890)}
-        ${renderRoomBreakdownItem('p5', 'Pokoj 5 - Standard', 'standard', 700)}
-        ${renderRoomBreakdownItem('p6', 'Pokoj 6 - Standard', 'standard', 700)}
+        ${renderRoomBreakdownItem('p3', 'Pokoj 1 - Turistický', 'standard', 800)}
+        ${renderRoomBreakdownItem('p2', 'Pokoj 2 - Turistický', 'standard', 800)}
+        ${renderRoomBreakdownItem('p1', 'Pokoj 3 - Turistický', 'standard', 800)}
+        ${renderRoomBreakdownItem('pa', 'Pokoj 4 - Nadstandard - Mahagon', 'nadstandard', 1000)}
+        ${renderRoomBreakdownItem('p5', 'Pokoj 5 - Standard', 'standard', 800)}
+        ${renderRoomBreakdownItem('p6', 'Pokoj 6 - Standard', 'standard', 800)}
 
         <!-- SKUPINA 2: POKOJE V PATŘE -->
         <h3 class="room-group-label" data-anim="up">Pokoje v patře</h3>
-        ${renderRoomBreakdownItem('p7', 'Pokoj 7 - Standard', 'standard', 700)}
-        ${renderRoomBreakdownItem('a1', 'Pokoj 8 - Nadstandard - Motýl', 'nadstandard', 890)}
-        ${renderRoomBreakdownItem('zen', 'Pokoj 9 - Nadstandard - Zen', 'nadstandard', 890)}
-        ${renderRoomBreakdownItem('p10', 'Pokoj 10 - Standard', 'standard', 700)}
-        ${renderRoomBreakdownItem('p11', 'Pokoj 11 - Standard', 'standard', 700)}
-        ${renderRoomBreakdownItem('p12', 'Pokoj 12 - Standard', 'standard', 700)}
+        ${renderRoomBreakdownItem('p7', 'Pokoj 7 - Standard', 'standard', 800)}
+        ${renderRoomBreakdownItem('a1', 'Pokoj 8 - Nadstandard - Motýl', 'nadstandard', 1000)}
+        ${renderRoomBreakdownItem('zen', 'Pokoj 9 - Nadstandard - Zen', 'nadstandard', 1000)}
+        ${renderRoomBreakdownItem('p10', 'Pokoj 10 - Standard', 'standard', 800)}
+        ${renderRoomBreakdownItem('p11', 'Pokoj 11 - Standard', 'standard', 800)}
+        ${renderRoomBreakdownItem('p12', 'Pokoj 12 - Standard', 'standard', 800)}
       </div>
 
       <p class="room-breakdown-footer-note">Nejkratší pobyt jsou 2 noci. O svátcích (26. 12. – 2. 1.) přijímáme pobyty nejméně na 3 noci.</p>
@@ -4368,9 +4365,9 @@ export const getPodminkyPageHTML = () => `
               <ul style="line-height: 1.7; color: #4a4a46; padding-left: 20px;">
                 <li><strong>Termín pobytu</strong> — sazby se liší podle sezóny (zimní, letní, mezisezóna) a o víkendech může platit příplatek. Pobyt zasahující do dvou sezón se rozpočítá po jednotlivých nocích.</li>
                 <li><strong>Kategorie pokoje</strong> — Standard, Nadstandard (A, A1, Zen) a Turistický pokoj mají odlišné sazby.</li>
-                <li><strong>Počet osob na pokoji</strong> — cena za osobu klesá s počtem ubytovaných. Sazba pro jednoho hosta je nejvyšší, protože pokrývá celý pokoj; <strong>žádný další příplatek za samostatné obsazení se k ní už nepřičítá</strong>.</li>
+                <li><strong>Počet osob na pokoji</strong> — cena za osobu klesá s počtem ubytovaných. Ceník začíná u <strong>dvou osob</strong>; host, který přijede sám, platí sazbu pro dvě osoby a k ní <strong>příplatek za jednu osobu na pokoji</strong> (částka za noc podle kategorie pokoje, uvedená v rozpisu ceny).</li>
               </ul>
-              <p class="legal-article-text">Ubytování se snídaní začíná na <strong>700 Kč za osobu a noc</strong>. Přesnou cenu pro váš konkrétní termín, pokoj a počet osob <strong>spočítá rezervační formulář</strong> ještě před odesláním rezervace — uvidíte ji v rozpisu včetně všech příplatků a doplňkových služeb.</p>
+              <p class="legal-article-text">Ubytování se snídaní začíná na <strong>1 600 Kč za pokoj pro dvě osoby a noc</strong> (800 Kč za osobu). Přesnou cenu pro váš konkrétní termín, pokoj a počet osob <strong>spočítá rezervační formulář</strong> ještě před odesláním rezervace — uvidíte ji v rozpisu včetně všech příplatků a doplňkových služeb.</p>
 
               <p class="legal-article-text"><strong>Příplatky a doplňkové služby.</strong> Tyto položky se sezónou ani počtem osob nemění:</p>
               <table class="legal-info-table">

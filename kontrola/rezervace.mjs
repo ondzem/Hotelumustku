@@ -73,7 +73,7 @@ overit('nula od admina se respektuje', nulovaZaloha.depositPercentage, 0);
 // Do 22. 8. 2026 se násobilo počtem nocí; u týdenního pobytu z toho
 // vyšel sedminásobek toho, co majitel účtuje.
 {
-  const nastaveni = { polopenze: 195, pes: 150, elektrokolo: 15, zimni_parkovani: 100, mestsky_poplatek: 0, zaloha_procent: 30 };
+  const nastaveni = { polopenze: 195, pes: 150, elektrokolo: 15, zimni_parkovani: 100, zaloha_procent: 30 };
   const parkovne = (nights, cars, dateFrom) => calculateReservationPrice({
     roomId: 'p6', dateFrom, nights, adults: 2,
     hasWinterParking: true, parkingCarsCount: cars, nastaveni,
@@ -92,6 +92,36 @@ overit('nula od admina se respektuje', nulovaZaloha.depositPercentage, 0);
   });
   overit('pes zůstal za noc', p.dogPriceTotal, 150 * 3);
   overit('elektrokolo zůstalo za noc a kus', p.ebikePriceTotal, 15 * 2 * 3);
+}
+
+// --- Příplatek za jednu osobu na pokoji ---------------------------------
+// Sloupec „1 osoba" v ceníku není; sólo host platí sazbu pro dva plus
+// příplatek za NOC z Příplatků. Host ho má vidět jako vlastní řádek,
+// do ceny ubytování (a do databáze) se ale započítává.
+{
+  const cenik = {
+    sezony: [{ id: 'z', je_zakladni: true, nazev: 'Základní' }],
+    ceny: [{ sezona_id: 'z', kategorie: 'standard', pocet_osob: 2, cena_za_osobu_noc: 800 }],
+    cenyPokoj: [],
+    nastaveni: { solo_standard: 200, vikend_standard: 0, zaloha_procent: 30 },
+  };
+  const sam = calculateReservationPrice({
+    roomType: 'standard', roomId: 'p6', nights: 3, persons: 1, adults: 1,
+    dateFrom: '2026-09-07', dateTo: '2026-09-10', cenik, nastaveni: cenik.nastaveni,
+  });
+  overit('sólo: ubytování bez příplatku', sam.ubytovaniBezPriplatku, 800 * 3);
+  overit('sólo: příplatek za pobyt', sam.soloPriplatekCelkem, 200 * 3);
+  overit('sólo: příplatek za noc', sam.soloPriplatekZaNoc, 200);
+  overit('sólo: ubytování do databáze i s příplatkem', sam.accommodationPrice, 800 * 3 + 200 * 3);
+  overit('sólo: celkem', sam.totalPrice, 3000);
+  overit('městský poplatek zmizel', sam.cityTax, 0);
+
+  const dva = calculateReservationPrice({
+    roomType: 'standard', roomId: 'p6', nights: 3, persons: 2, adults: 2,
+    dateFrom: '2026-09-07', dateTo: '2026-09-10', cenik, nastaveni: cenik.nastaveni,
+  });
+  overit('dva: bez příplatku', dva.soloPriplatekCelkem, 0);
+  overit('dva: celkem', dva.totalPrice, 800 * 2 * 3);
 }
 
 process.exit(chyb ? 1 : 0);

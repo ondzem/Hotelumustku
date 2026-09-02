@@ -2,7 +2,7 @@
  * Kontrola matematiky ceníku. Běží v Node, bez prohlížeče a bez sítě —
  * `src/utils/cenik.js` je schválně čistý modul, takže jde protestovat sám.
  */
-import { cenaZaOsobuNoc, vikendovyPriplatek, VYCHOZI_CENY, najdiSezonu, jeVSezone, maxOsobNaPokoji }
+import { cenaZaOsobuNoc, vikendovyPriplatek, soloPriplatek, rozpisNoci, VYCHOZI_CENY, najdiSezonu, jeVSezone, maxOsobNaPokoji }
   from '../src/utils/cenik.js';
 
 let chyb = 0;
@@ -12,14 +12,36 @@ const overit = (popis, skutecnost, ocekavani) => {
 };
 
 // Ceník hotelu — cena za OSOBU a noc, klesá s počtem lidí na pokoji.
-overit('standard 1 osoba', cenaZaOsobuNoc({ kategorie: 'standard', pocetOsob: 1 }), 890);
 overit('standard 2 osoby', cenaZaOsobuNoc({ kategorie: 'standard', pocetOsob: 2 }), 740);
 overit('standard 3 osoby', cenaZaOsobuNoc({ kategorie: 'standard', pocetOsob: 3 }), 720);
 overit('standard 4 osoby', cenaZaOsobuNoc({ kategorie: 'standard', pocetOsob: 4 }), 700);
-// U nadstandardu není 1780 chyba: sólo host platí celý pokoj.
-overit('nadstandard 1 osoba', cenaZaOsobuNoc({ kategorie: 'nadstandard', pocetOsob: 1 }), 1780);
 overit('nadstandard 2 osoby', cenaZaOsobuNoc({ kategorie: 'nadstandard', pocetOsob: 2 }), 890);
 overit('turistický = standard', VYCHOZI_CENY.turisticky, VYCHOZI_CENY.standard);
+
+// Sloupec „1 osoba" v ceníku není (zrušen 2. 9. 2026). Sólo host platí
+// sazbu pro DVA a k tomu příplatek za jednu osobu na pokoji, Kč / NOC.
+overit('1 osoba = sazba pro dva', cenaZaOsobuNoc({ kategorie: 'standard', pocetOsob: 1 }), 740);
+overit('1 osoba nadstandard = sazba pro dva', cenaZaOsobuNoc({ kategorie: 'nadstandard', pocetOsob: 1 }), 890);
+overit('sólo příplatek standard', soloPriplatek('standard'), 150);
+overit('sólo příplatek nadstandard', soloPriplatek('nadstandard'), 890);
+overit('sólo příplatek turistický = standard', soloPriplatek('turisticky'), 150);
+overit('sólo příplatek z nastavení',
+  soloPriplatek('nadstandard', { nastaveni: { solo_nadstandard: 600 } }), 600);
+overit('sólo 0 se respektuje', soloPriplatek('standard', { nastaveni: { solo_standard: 0 } }), 0);
+{
+  // Příklad majitele: cena pro dva 2 000 (1 000 / os), pro jednoho 1 600.
+  const cenik = {
+    sezony: [{ id: 'z', je_zakladni: true, nazev: 'Základní' }],
+    ceny: [{ sezona_id: 'z', kategorie: 'nadstandard', pocet_osob: 2, cena_za_osobu_noc: 1000 }],
+    cenyPokoj: [], nastaveni: { solo_nadstandard: 600, vikend_nadstandard: 0 },
+  };
+  const noci = rozpisNoci({ dateFrom: '2026-09-07', nights: 2, kategorie: 'nadstandard', pocetOsob: 1, cenik });
+  overit('sólo noc = sazba pro dva + příplatek', noci[0].cenaZaNoc, 1600);
+  overit('sólo příplatek se nenásobí osobami', noci[0].soloPriplatek, 600);
+  const dva = rozpisNoci({ dateFrom: '2026-09-07', nights: 2, kategorie: 'nadstandard', pocetOsob: 2, cenik });
+  overit('dvě osoby bez příplatku', dva[0].cenaZaNoc, 2000);
+  overit('dvě osoby: soloPriplatek 0', dva[0].soloPriplatek, 0);
+}
 
 // Víkendový příplatek se řídí kategorií pokoje, ne sezónou.
 overit('víkend standard', vikendovyPriplatek('standard'), 60);

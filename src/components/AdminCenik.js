@@ -32,7 +32,7 @@
  */
 
 import { MOCK_ROOMS, isSupabaseConfigured, supabase, saveStoredCenik, saveStoredCustomRoomName } from '../lib/supabaseClient.js';
-import { MAX_OSOB_V_CENIKU, jeVSezone, vikendovyPriplatek, VYCHOZI_CENY } from '../utils/cenik.js';
+import { MAX_OSOB_V_CENIKU, MIN_OSOB_V_CENIKU, jeVSezone, vikendovyPriplatek, soloPriplatek, VYCHOZI_CENY } from '../utils/cenik.js';
 
 const KATEGORIE = [
   { klic: 'standard', nazev: 'Standard' },
@@ -40,7 +40,11 @@ const KATEGORIE = [
   { klic: 'turisticky', nazev: 'Turistický' },
 ];
 
-const SLOUPCE_OSOB = Array.from({ length: MAX_OSOB_V_CENIKU }, (_, i) => i + 1);
+// Sloupce začínají u dvou osob. Sloupec „1 osoba" majitel zrušil 2. 9. 2026:
+// sólo host platí sazbu pro dva plus příplatek za jednu osobu z Příplatků,
+// takže se jedno číslo ladí na jednom místě a ne v každém období zvlášť.
+const SLOUPCE_OSOB = Array.from(
+  { length: MAX_OSOB_V_CENIKU - MIN_OSOB_V_CENIKU + 1 }, (_, i) => i + MIN_OSOB_V_CENIKU);
 
 /** 2. pádem se skloňuje datum: "1. listopadu". */
 const MESICE = ['ledna', 'února', 'března', 'dubna', 'května', 'června',
@@ -104,6 +108,49 @@ function slozDatum(den, mesic, rok) {
   const dd = String(Math.max(1, Math.min(31, Number(den) || 1))).padStart(2, '0');
   const mm = String(Math.max(1, Math.min(12, Number(mesic) || 1))).padStart(2, '0');
   return rok ? `${rok}-${mm}-${dd}` : `${mm}-${dd}`;
+}
+
+/**
+ * Kolik dní opakující se období trvá, včetně obou krajů.
+ *
+ * Rozsah přes Nový rok (od > do) se počítá dokola. Rok se bere nepřestupný,
+ * na jeden den navíc tady nezáleží.
+ */
+function delkaObdobiDni(od, doKdy) {
+  const denVRoce = (h) => Math.round(
+    (Date.UTC(2026, (Number(h.mesic) || 1) - 1, Number(h.den) || 1) - Date.UTC(2026, 0, 1)) / 86400000);
+  const a = denVRoce(od);
+  const b = denVRoce(doKdy);
+  return b >= a ? b - a + 1 : 365 - a + b + 1;
+}
+
+/**
+ * Věta pod výběrem termínu: jak dlouho období trvá.
+ *
+ * Vznikla 2. 9. 2026 kvůli období „Vánoce/Silvestr", které bylo uložené
+ * od 25. LEDNA do 2. ledna — obsluha při zakládání nechala u „od" výchozí
+ * měsíc. Protože rozsah smí přecházet přes Nový rok, znamenalo to období
+ * dlouhé 343 dní s nejvyšší prioritou, takže vánoční ceny platily skoro
+ * celý rok a majitel hlásil, že „se ceny počítají špatně". Číslo dní tu
+ * chybu ukáže hned; nad půl roku se věta zbarví a zeptá se na měsíc.
+ */
+function popisDelkyObdobi(od, doKdy, opakuje = true) {
+  if (!opakuje) {
+    return { text: 'Jednorázové období platí jen v uvedeném roce.', styl: 'color: #96958a;' };
+  }
+  const dni = delkaObdobiDni(od, doKdy);
+  const presRok = denMesicKlic(doKdy) < denMesicKlic(od);
+  const podezrele = dni > 183;
+  const text = `Období trvá <strong>${dni} ${dni === 1 ? 'den' : (dni < 5 ? 'dny' : 'dní')}</strong>`
+    + (presRok ? ' a přechází přes Nový rok' : '')
+    + (podezrele
+      ? '. To je víc než půl roku — zkontrolujte, jestli u „Platí od" nebo „Platí do" nezůstal jiný měsíc, než jste chtěli.'
+      : '. Období smí přecházet přes Nový rok — třeba od 1. listopadu do 15. dubna.');
+  return { text, styl: podezrele ? 'color: #b7362e; font-weight: 600;' : 'color: #96958a;' };
+}
+
+function denMesicKlic(h) {
+  return `${String(Number(h.mesic) || 1).padStart(2, '0')}-${String(Number(h.den) || 1).padStart(2, '0')}`;
 }
 
 /** Vybraná sezóna, s návratem k základní. */
@@ -470,7 +517,7 @@ function obrazovkaCenyTabulka(ad) {
     krokovnik: 'KROK 2 ZE 2',
     titul: escapuj(sezona.nazev),
     napoveda: jeZakladni
-      ? 'Vyplňte, kolik stojí <strong>jedna osoba na jednu noc</strong>. Čím víc lidí na pokoji, tím nižší cena za osobu — proto ta čísla klesají zleva doprava. <strong>Šedé číslo v prázdném políčku je cena, která platí teď</strong> — přepište ji svou částkou, nebo políčko nechte prázdné a zůstane v platnosti.'
+      ? 'Vyplňte, kolik stojí <strong>jedna osoba na jednu noc</strong> při dvou, třech a čtyřech lidech na pokoji. Čím víc lidí, tím nižší cena za osobu — proto ta čísla klesají zleva doprava. Host, který přijede sám, platí sazbu pro dvě osoby plus příplatek z Příplatků. <strong>Šedé číslo v prázdném políčku je cena, která platí teď</strong> — přepište ji svou částkou, nebo políčko nechte prázdné a zůstane v platnosti.'
       : 'Nahoře nastavíte, kdy období platí, dole kolik v něm stojí nocleh. Vyplňte jen ceny, které se <strong>liší od základního ceníku</strong>. <strong>Šedé číslo v prázdném políčku je cena, která platí teď</strong> — přepište ji svou částkou, nebo políčko nechte prázdné a zůstane v platnosti.',
     zpet: { krok: 'ceny-sezona', popis: 'Zpět na výběr období' },
     obsah: `
@@ -498,8 +545,8 @@ function obrazovkaCenyTabulka(ad) {
             ${vyberDatumu('sezona-do', doKdy, 'Platí do (včetně)')}
           </div>
 
-          <p style="margin: 12px 0 0 0; font-size: 13.5px; color: #96958a; line-height: 1.55;">
-            Období smí přecházet přes Nový rok — třeba od 1. listopadu do 15. dubna.
+          <p class="cenik-delka-obdobi" style="margin: 12px 0 0 0; font-size: 13.5px; line-height: 1.55; ${popisDelkyObdobi(od, doKdy, opakuje).styl}">
+            ${popisDelkyObdobi(od, doKdy, opakuje).text}
           </p>
         `}
 
@@ -560,9 +607,13 @@ function obrazovkaCenyTabulka(ad) {
           O víkendu (pátek, sobota, neděle) se k cenám automaticky připočítává příplatek:
           <strong style="color: #1c1c19;">standard a turistický +${vikendovyPriplatek('standard', ad.cenik)} Kč</strong>,
           <strong style="color: #1c1c19;">nadstandard +${vikendovyPriplatek('nadstandard', ad.cenik)} Kč</strong>
-          za osobu a noc. Platí stejně pro všechna období.
+          za osobu a noc.
+          Host sám na pokoji platí sazbu pro dvě osoby a k tomu
+          <strong style="color: #1c1c19;">standard +${soloPriplatek('standard', ad.cenik)} Kč</strong>,
+          <strong style="color: #1c1c19;">nadstandard +${soloPriplatek('nadstandard', ad.cenik)} Kč</strong>
+          za noc. Obojí platí stejně pro všechna období.
         </span>
-        <button type="button" data-cenik-krok="priplatky" data-cenik-cil="vikend_standard" style="${S.btnVedlejsi} flex-shrink: 0;">Změnit příplatek</button>
+        <button type="button" data-cenik-krok="priplatky" data-cenik-cil="vikend_standard" style="${S.btnVedlejsi} flex-shrink: 0;">Změnit příplatky</button>
       </div>
 
       <div style="${S.blok} padding-top: 14px; padding-bottom: ${otevreno ? '18px' : '14px'};">
@@ -1006,6 +1057,25 @@ export function bindCenikModal(ad) {
         el.style.display = opakEl.checked ? 'none' : 'block';
       });
     });
+  }
+
+  // --- délka období ---
+  // Přepočítá se v DOM, ne přes render() — překreslení by odrolovalo okno
+  // a smazalo rozepsané ceny pod termínem.
+  const delkaEl = c.querySelector('.cenik-delka-obdobi');
+  if (delkaEl) {
+    const prepocitej = () => {
+      const cti = (predpona) => ({
+        den: (c.querySelector(`.cenik-${predpona}-den`) || {}).value,
+        mesic: (c.querySelector(`.cenik-${predpona}-mesic`) || {}).value,
+      });
+      const opakuje = opakEl ? opakEl.checked : true;
+      const p = popisDelkyObdobi(cti('sezona-od'), cti('sezona-do'), opakuje);
+      delkaEl.innerHTML = p.text;
+      delkaEl.style.cssText = `margin: 12px 0 0 0; font-size: 13.5px; line-height: 1.55; ${p.styl}`;
+    };
+    c.querySelectorAll('.cenik-sezona-od-den, .cenik-sezona-od-mesic, .cenik-sezona-do-den, .cenik-sezona-do-mesic, .cenik-sezona-opakuje')
+      .forEach(el => el.addEventListener('change', prepocitej));
   }
 
   // --- rozbalení výjimek ---

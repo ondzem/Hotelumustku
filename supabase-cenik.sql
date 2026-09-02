@@ -239,8 +239,8 @@ INSERT INTO public.cenik_nastaveni (klic, hodnota, popis, jednotka, poradi) VALU
   ('pes',              150, 'Poplatek za psa',                'Kč / noc',         2),
   ('elektrokolo',       15, 'Poplatek za elektrokolo',        'Kč / kus / den',   3),
   ('zimni_parkovani',   50, 'Zimní parkování',                'Kč / auto / noc',  4),
-  ('priplatek_1_noc',  200, 'Příplatek za pobyt na 1 noc',    'Kč / osoba',       5),
-  ('mestsky_poplatek',   0, 'Městský poplatek (0 = v ceně)',  'Kč / osoba / noc', 6),
+  ('solo_standard',    150, 'Příplatek za jednu osobu na pokoji — Standard a turistický', 'Kč / noc', 5),
+  ('solo_nadstandard', 890, 'Příplatek za jednu osobu na pokoji — Nadstandard',           'Kč / noc', 6),
   ('zaloha_procent',    30, 'Záloha předem',                  '% z celkové ceny', 7),
   ('vikend_standard',    60, 'Víkendový příplatek — Standard (pá, so, ne)',    'Kč / osoba / noc', 8),
   ('vikend_nadstandard', 100, 'Víkendový příplatek — Nadstandard (pá, so, ne)', 'Kč / osoba / noc', 9)

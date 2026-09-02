@@ -160,6 +160,8 @@ export function spoctiRucniCenu(f, cenik) {
     return {
       ...casti[0],
       accommodationPrice: soucet('accommodationPrice'),
+      ubytovaniBezPriplatku: soucet('ubytovaniBezPriplatku'),
+      soloPriplatekCelkem: soucet('soloPriplatekCelkem'),
       addonsPrice: soucet('addonsPrice'),
       cityTax: soucet('cityTax'),
       winterParkingPriceTotal: soucet('winterParkingPriceTotal'),
@@ -660,7 +662,8 @@ export function renderRucniRezervaceModal(ad) {
 
           <div style="background: #faf9f5; border-radius: 6px; padding: 12px 14px; margin-bottom: 14px; font-size: 13.5px; color: #55554e; line-height: 1.9;">
             ${cena ? `
-              <div style="display: flex; justify-content: space-between;"><span>Ubytování se snídaní${cena.nightBreakdownLabel ? ` (${escapuj(cena.nightBreakdownLabel)})` : ''}</span><strong style="color: #1c1c19;">${formatCzechPrice(cena.accommodationPrice)}</strong></div>
+              <div style="display: flex; justify-content: space-between;"><span>Ubytování se snídaní${cena.nightBreakdownLabel ? ` (${escapuj(cena.nightBreakdownLabel)})` : ''}</span><strong style="color: #1c1c19;">${formatCzechPrice(cena.ubytovaniBezPriplatku ?? cena.accommodationPrice)}</strong></div>
+              ${cena.soloPriplatekCelkem > 0 ? `<div style="display: flex; justify-content: space-between;"><span>Příplatek za jednu osobu na pokoji</span><strong style="color: #1c1c19;">${formatCzechPrice(cena.soloPriplatekCelkem)}</strong></div>` : ''}
               ${cena.addonsPrice > 0 ? `<div style="display: flex; justify-content: space-between;"><span>Doplňkové služby</span><strong style="color: #1c1c19;">${formatCzechPrice(cena.addonsPrice)}</strong></div>` : ''}
               <div style="display: flex; justify-content: space-between; border-top: 1px solid #e4e2d8; margin-top: 6px; padding-top: 6px;"><span>Podle ceníku celkem</span><strong style="color: #1c1c19;">${formatCzechPrice(cena.totalPrice)}</strong></div>
             ` : '<span>Cenu spočítáme, jakmile vyberete termín pobytu.</span>'}

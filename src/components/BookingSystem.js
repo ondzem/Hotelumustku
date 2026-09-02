@@ -609,11 +609,8 @@ export class BookingSystem {
    * končí, ale jiný pokoj je 25. obsazený celý, hotel dopoledne prázdný
    * NENÍ a půlit se nesmí. Podrobně v src/utils/obsazenost.js.
    */
-  obsazenostPulekDne(dateStr) {
-    const prodejne = (this.roomsList || []).filter((r) => !(
-      r.isDisabled ||
-      (this.disabledRooms || []).some((d) => d.room_id === r.id && d.is_disabled)
-    ));
+  obsazenostPulekDne(dateStr, roomId = 'all') {
+    const prodejne = this.prodejnePokoje(roomId);
 
     const jeAktivni = (r) => !(r.status && (r.status.startsWith('cancelled') || r.status === 'stornováno'));
 
@@ -628,8 +625,18 @@ export class BookingSystem {
     });
   }
 
-  getDayOccupancy(dateStr) {
-    const prodejne = (this.roomsList || []).filter((r) => {
+  /**
+   * Pokoje, které se do obsazenosti počítají.
+   *
+   * S konkrétním `roomId` jen ten jeden. Kalendář dřív barvil vždycky
+   * celý hotel, i když měl host vybraný pokoj — den svítil zeleně
+   * (jiné pokoje volné), host ho zvolil a formulář mu vzápětí oznámil,
+   * že JEHO pokoj je obsazený. Majitel to hlásil jako „volné datum se
+   * ukazuje jako zabrané". Teď se barví to, co si host opravdu vybírá.
+   */
+  prodejnePokoje(roomId = 'all') {
+    return (this.roomsList || []).filter((r) => {
+      if (roomId && roomId !== 'all' && r.id !== roomId) return false;
       const vypnuty = Boolean(
         r.isDisabled ||
         (this.disabledRooms || []).some(
@@ -638,6 +645,10 @@ export class BookingSystem {
       );
       return !vypnuty;
     });
+  }
+
+  getDayOccupancy(dateStr, roomId = 'all') {
+    const prodejne = this.prodejnePokoje(roomId);
 
     const celkem = prodejne.length;
     if (celkem === 0) return { obsazeno: 0, celkem: 0 };
@@ -1171,6 +1182,7 @@ export class BookingSystem {
         dogPriceTotal: 0,
         ebikePriceTotal: 0,
         cityTax: 0,
+        soloPriplatekCelkem: 0,
         discountAmount: 0,
         discountPercent: 0,
         discountLabel: '',
@@ -1590,6 +1602,11 @@ export class BookingSystem {
     if (!this.state.showCalendarModal) return '';
 
     const roomIdForCal = this.state.selectedRoomId || this.state.pendingRoomId || 'all';
+    // Kalendář barví obsazenost toho, co si host vybírá: konkrétní pokoj,
+    // nebo celý hotel, dokud pokoj vybraný není. Viz prodejnePokoje().
+    const pokojKalendare = roomIdForCal !== 'all'
+      ? (this.roomsList || []).find(r => r.id === roomIdForCal) : null;
+    const jedenPokoj = Boolean(pokojKalendare);
 
     const effectiveFrom = this.state.tempDateFrom;
     const effectiveTo = this.state.tempDateTo;
@@ -1633,7 +1650,7 @@ export class BookingSystem {
       for (let i = 0; i < 400; i++) {
         kurzor.setDate(kurzor.getDate() + 1);
         const dStr = `${kurzor.getFullYear()}-${String(kurzor.getMonth() + 1).padStart(2, '0')}-${String(kurzor.getDate()).padStart(2, '0')}`;
-        const { obsazeno, celkem } = this.getDayOccupancy(dStr);
+        const { obsazeno, celkem } = this.getDayOccupancy(dStr, roomIdForCal);
         if (celkem > 0 && obsazeno >= celkem) { prvniPlnyPoPrijezdu = dStr; break; }
       }
     }
@@ -1642,7 +1659,7 @@ export class BookingSystem {
       const dayStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       const isPast = dayStr < todayStr;
 
-      const { obsazeno, celkem } = this.getDayOccupancy(dayStr);
+      const { obsazeno, celkem } = this.getDayOccupancy(dayStr, roomIdForCal);
       const jePlne = celkem > 0 && obsazeno >= celkem;
       const jeCastecne = obsazeno > 0 && obsazeno < celkem;
 
@@ -1661,7 +1678,7 @@ export class BookingSystem {
         : false;
       const lzeJakoOdjezd = !isPast && jePlne && dayStr === prvniPlnyPoPrijezdu && dostNoci;
 
-      const pulky = isPast ? { dopoledne: 0, odpoledne: 0 } : this.obsazenostPulekDne(dayStr);
+      const pulky = isPast ? { dopoledne: 0, odpoledne: 0 } : this.obsazenostPulekDne(dayStr, roomIdForCal);
       // Půlí se jen tehdy, když je druhá polovina dne opravdu prázdná.
       const { prijezdovy: jePrijezdovy, odjezdovy: jeOdjezdovy } = pulkyDne(pulky);
       // Vybraný termín má přednost před obsazeností hotelu. Host si potřebuje
@@ -1695,7 +1712,7 @@ export class BookingSystem {
       if (isPast) {
         tooltipText = 'Tento den už je za námi';
       } else if (lzeJakoOdjezd) {
-        tooltipText = 'Plně obsazeno — jde zvolit už jen jako den odjezdu';
+        tooltipText = `${jedenPokoj ? 'Pokoj je obsazený' : 'Plně obsazeno'} — jde zvolit už jen jako den odjezdu`;
       } else if (jeOdjezdovy) {
         tooltipText = `Do 10:00 se odjíždí, potom je volno${jeCastecne ? ` (obsazeno ${obsazeno} z ${celkem})` : ''}`;
       } else if (jePrijezdovy) {
@@ -1703,7 +1720,7 @@ export class BookingSystem {
       } else if (jeCastecne) {
         tooltipText = `Volno máme, obsazeno je ${obsazeno} z ${celkem} pokojů`;
       } else if (jePlne) {
-        tooltipText = 'Tento den je hotel plně obsazený';
+        tooltipText = jedenPokoj ? 'Tento den je pokoj obsazený' : 'Tento den je hotel plně obsazený';
       } else if (isFrom) {
         tooltipText = 'Váš příjezd — ubytování od 15:00';
       } else if (isTo) {
@@ -1735,8 +1752,11 @@ export class BookingSystem {
       <div class="cal-modal-overlay" id="cal-modal-overlay">
         <div class="cal-modal-card">
           <div class="cal-modal-header" style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
-            <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="display: flex; flex-direction: column; gap: 2px; min-width: 0;">
               <span class="cal-month-title">${monthNames[month - 1]} ${year}</span>
+              <span class="cal-pokoj-popis" style="font-size: 12.5px; color: #6b6b60; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                ${jedenPokoj ? `Obsazenost: <strong>${pokojKalendare.name}</strong>` : 'Obsazenost celého hotelu'}
+              </span>
             </div>
             <div style="display: flex; align-items: center; gap: 8px;">
               <button type="button" class="btn btn-cal-nav cal-nav-btn${jeNejstarsiMesic ? ' je-nedostupne' : ''}" id="cal-prev-month"
@@ -1783,12 +1803,13 @@ export class BookingSystem {
             <div class="cal-legend" style="display:flex; flex-wrap:wrap; gap:14px; padding:4px 0 10px 0; border-bottom:1px solid #E7E5DC; margin-bottom:4px;">
               <span class="cal-legend-item">
                 <i class="cal-legend-box" style="background:#fbe3e0;"></i>
-                Obsazeno
+                ${jedenPokoj ? 'Pokoj obsazený' : 'Obsazeno'}
               </span>
+              ${jedenPokoj ? '' : `
               <span class="cal-legend-item">
                 <i class="cal-legend-box" style="background:#fdf3d7;"></i>
                 Částečně obsazeno
-              </span>
+              </span>`}
               <span class="cal-legend-item">
                 <i class="cal-legend-box" style="background:#eef3e6;"></i>
                 Váš termín
@@ -2291,7 +2312,7 @@ export class BookingSystem {
               </div>
 
               <!-- ROZPIS CENY: ubytování + doplňky + sleva pod sebou, ať si host umí sám sečíst celkovou částku -->
-              ${((room && this.state.dateFrom && this.state.dateTo) || pricing.hasHalfBoard || pricing.hasDog || pricing.hasEbike || pricing.hasWinterParking || pricing.cityTax > 0 || pricing.discountAmount > 0) ? `
+              ${((room && this.state.dateFrom && this.state.dateTo) || pricing.hasHalfBoard || pricing.hasDog || pricing.hasEbike || pricing.hasWinterParking || pricing.soloPriplatekCelkem > 0 || pricing.discountAmount > 0) ? `
                 <div class="summary-total-divider"></div>
                 <div class="summary-rows">
                   ${room && this.state.dateFrom && this.state.dateTo ? `
@@ -2300,17 +2321,17 @@ export class BookingSystem {
                         <span class="row-label">Ubytování se snídaní</span>
                         <span class="row-details">(${pricing.totalGuests}x os, ${nights}x noc)</span>
                       </div>
-                      <span class="row-price">${pricing.formattedAccommodationPrice}</span>
+                      <span class="row-price">${pricing.formattedUbytovaniBezPriplatku}</span>
                     </div>
                   ` : ''}
 
-                  ${pricing.cityTax > 0 ? `
+                  ${pricing.soloPriplatekCelkem > 0 ? `
                     <div class="summary-row">
                       <div class="row-info">
-                        <span class="row-label">Poplatek z pobytu</span>
-                        <span class="row-details">(+${this.castka('mestsky_poplatek')} Kč/os/noc • ${pricing.totalGuests || this.state.adults}x os, ${nights}x noc)</span>
+                        <span class="row-label">Příplatek za jednu osobu na pokoji</span>
+                        <span class="row-details">(+${pricing.soloPriplatekZaNoc} Kč/noc • ${nights}x noc)</span>
                       </div>
-                      <span class="row-price">+${pricing.cityTax} Kč</span>
+                      <span class="row-price">+${pricing.formattedSoloPriplatekCelkem}</span>
                     </div>
                   ` : ''}
 
@@ -2721,16 +2742,16 @@ export class BookingSystem {
                         <span class="row-label">Ubytování se snídaní</span>
                         <span class="row-details">(${currentPricing.totalGuests}x os, ${nights}x noc)</span>
                       </div>
-                      <span class="row-price">${currentPricing.formattedAccommodationPrice}</span>
+                      <span class="row-price">${currentPricing.formattedUbytovaniBezPriplatku}</span>
                     </div>
 
-                    ${currentPricing.cityTax > 0 ? `
+                    ${currentPricing.soloPriplatekCelkem > 0 ? `
                       <div class="summary-row">
                         <div class="row-info">
-                          <span class="row-label">Poplatek z pobytu</span>
-                          <span class="row-details">(+${this.castka('mestsky_poplatek')} Kč/os/noc)</span>
+                          <span class="row-label">Příplatek za jednu osobu na pokoji</span>
+                          <span class="row-details">(+${currentPricing.soloPriplatekZaNoc} Kč/noc • ${nights}x noc)</span>
                         </div>
-                        <span class="row-price">+${currentPricing.cityTax} Kč</span>
+                        <span class="row-price">+${currentPricing.formattedSoloPriplatekCelkem}</span>
                       </div>
                     ` : ''}
 

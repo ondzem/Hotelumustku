@@ -102,6 +102,16 @@ představuje člověk. Aby to nemátlo, je pod tlačítky věta, která oba
 výklady vypíše čísly. Nesjednocuj to na jeden výklad — 18. 8. 2026 se
 ukázalo, že blokace končila o den dřív, než majitel čekal.
 
+**Veřejný kalendář barví obsazenost toho, co si host vybírá.** Dokud
+nemá vybraný pokoj, celý hotel (červená = plno, žlutá = částečně); jakmile
+pokoj vybere — třeba tlačítkem Zvolit pokoj na kartě — jen ten jeden
+pokoj, a v hlavičce kalendáře je napsané který. Do 2. 9. 2026 se barvil
+vždycky celý hotel: den svítil zeleně, protože jiné pokoje byly volné,
+host ho zvolil a formulář mu hned nato oznámil, že JEHO pokoj je
+obsazený. Majitel to hlásil jako „volné datum se ukazuje jako zabrané".
+`roomIdForCal` se počítal už dřív, jen se nikde nepoužíval; teď ho berou
+`getDayOccupancy()` i `obsazenostPulekDne()` (`prodejnePokoje()`).
+
 **Minulé dny v kalendáři nedostávají barvu obsazenosti.** Růžová a žlutá
 v už proběhlém týdnu vypadaly jako rozbité vykreslení a vedly k hlášení,
 že „na volný den nejde kliknout" — přitom šlo prostě o včerejšek. Veřejný
@@ -129,12 +139,28 @@ na GitHub, sestaví web lokálně a nahraje hotový `dist` i funkce.
 
 Cena klesá s počtem lidí na pokoji — přesně podle ceníku hotelu:
 
-| Kategorie | 1 osoba | 2 osoby | 3 osoby | 4 osoby |
+| Kategorie | 2 osoby | 3 osoby | 4 osoby | sólo příplatek / noc |
 |---|---|---|---|---|
-| Standard | 890 | 740 | 720 | 700 |
-| Nadstandard | 1780 | 890 | 890 | 890 |
+| Standard | 740 | 720 | 700 | +150 |
+| Nadstandard | 890 | 890 | 890 | +890 |
 
-U nadstandardu není 1780 chyba: sólo host platí celý pokoj.
+**Sloupec „1 osoba" v ceníku NENÍ** (zrušen 2. 9. 2026 na přání
+majitele). Host, který přijede sám, platí sazbu pro dvě osoby (jednou)
+plus **příplatek za jednu osobu na pokoji** z Příplatků
+(`solo_standard`, `solo_nadstandard`, Kč / NOC — osoba je jen jedna,
+nenásobí se). Majitelův příklad: cena pro dva 2 000 → pro jednoho ne
+1 000, ale 1 600. Chce ho ladit podle obsazenosti (když je mrtvo, dá
+nulu), proto je to jedno číslo v Příplatcích a ne sloupec v každém
+období. `MIN_OSOB_V_CENIKU = 2` v `cenik.js`; řádky `cenik_ceny`
+s `pocet_osob = 1` v databázi zůstaly, výpočet je nečte. V rozpisu ceny
+je příplatek vlastní řádek (`soloPriplatekCelkem`), do
+`accommodation_price` v databázi se ale započítává — je to cena pokoje.
+
+**Karta pokoje ukazuje cenu POKOJE pro dvě osoby**, ne nejnižší sazbu za
+osobu („od 2 000 Kč / noc — za pokoj pro 2 osoby • 1 000 Kč za osobu
+a noc"). Sazba za osobu sama o sobě mátla: host ji četl jako cenu pokoje
+a majitel viděl „2 000 za osobu". Statické `ubytovani.html` a šablona
+v `main.js` musí ukazovat totéž (`popisCenyZaOsobu`).
 
 Každá noc se oceňuje **zvlášť** — sama si najde svou sezónu a pozná,
 jestli je víkend. Pobyt přes přelom sezóny se tím rozpočítá sám.
@@ -162,9 +188,19 @@ nocí, takže týdenní pobyt platil sedminásobek. Násobí se jen počtem aut.
 Hlídá to `kontrola/rezervace.mjs`. Pes a elektrokolo se za noc počítají
 dál — pozor na to při úpravách, jsou hned vedle v témže výpočtu.
 
-**Příplatek za sólo obsazení se nepřipočítává.** Sloupec „1 osoba" už ho
-obsahuje — kdyby se přidal zvlášť, počítal by se dvakrát. Příplatek za
-pobyt na jednu noc (+200 / osoba) platí dál.
+**Městský poplatek z Příplatků zmizel** (je v ceně); sloupec `city_tax`
+v databázi zůstal a posílá se nula. Příplatek za pobyt na jednu noc
+nemůže nastat — formulář vyžaduje dvě noci.
+
+**Období se smí zadat i přes Nový rok, a právě proto se snadno zadá
+špatně.** Období „Vánoce/Silvestr" bylo 2. 9. 2026 uložené od **25. ledna**
+do 2. ledna — obsluha nechala u „Platí od" výchozí měsíc. Rozsah přes
+Nový rok se bere dokola, takže z toho vyšlo období dlouhé 343 dní
+s nejvyšší prioritou a vánoční ceny platily skoro celý rok; majitel to
+hlásil jako „standard a nadstandard se počítají špatně" a host jako
+„na Silvestra je nadstandard víc než dvojnásobek". Pod výběrem termínu je
+proto věta „Období trvá N dní" (`popisDelkyObdobi` v `AdminCenik.js`),
+která nad půl roku zčervená a zeptá se na měsíc.
 
 Sezóny s datem `MM-DD` platí každý rok a smí přecházet přes Nový rok
 (zima `11-01` → `04-15`). Sezóny s celým datem `YYYY-MM-DD` jsou
