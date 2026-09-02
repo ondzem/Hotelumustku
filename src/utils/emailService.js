@@ -37,6 +37,19 @@ export function escapujMail(text) {
 export const HOTEL_TELEFON = '+420 777 666 273';
 
 /**
+ * Datum pro hosta: „12. 10. 2026", ne „2026-10-12".
+ *
+ * E-maily posílaly holé ISO datum z databáze, takže host v potvrzení
+ * i ve stornu četl strojový tvar. Zbytek projektu má na to
+ * `formatCzechDateStr()`, e-maily jako jediné ne.
+ */
+function formatujDatum(datum) {
+  const casti = String(datum || '').split('-');
+  if (casti.length !== 3) return datum || '';
+  return `${parseInt(casti[2], 10)}. ${parseInt(casti[1], 10)}. ${casti[0]}`;
+}
+
+/**
  * Kam CHODÍ UPOZORNĚNÍ pro recepci — nová žádost o rezervaci, zpráva
  * z kontaktního formuláře, nová recenze.
  *
@@ -331,7 +344,7 @@ function getEmailFooter() {
               </div>
               <div class="email-footer" style="background-color: #fafbf8 !important; padding: 24px 28px; border-top: 1px solid #e0e4d6; font-size: 13.5px; color: #555555; text-align: center;">
                 <p style="margin: 0 0 6px 0; color: #1a1a1a !important;"><strong>Hotel u Můstku</strong> • Údolní 368, 468 61 Desná v Jizerských horách 1</p>
-                <p style="margin: 0; color: #555555 !important;">📞 Telefon: <a href="tel:+420777666273" style="color: #697947 !important; text-decoration: none;">+420 777 666 273</a> | ✉️ E-mail: <a href="mailto:hotel@umustku.cz" style="color: #697947 !important; text-decoration: none;">hotel@umustku.cz</a></p>
+                <p style="margin: 0; color: #555555 !important;">📞 Telefon: <a href="tel:${HOTEL_TELEFON.replace(/\s/g, '')}" style="color: #697947 !important; text-decoration: none;">${HOTEL_TELEFON}</a> | ✉️ E-mail: <a href="mailto:${HOTEL_EMAIL}" style="color: #697947 !important; text-decoration: none;">${HOTEL_EMAIL}</a></p>
               </div>
             </div>
           </td>
@@ -360,7 +373,7 @@ export function generateEmail1RequestReceived({ reservation, room, pricing }) {
     <table class="info-table" style="background-color: #ffffff !important;">
       <tr><td style="color: #555555 !important;">Kód žádosti:</td><td style="color: #1a1a1a !important;">${reservation.code}</td></tr>
       <tr><td style="color: #555555 !important;">Pokoj:</td><td style="color: #1a1a1a !important;">${room.name}</td></tr>
-      <tr><td style="color: #555555 !important;">Termín:</td><td style="color: #1a1a1a !important;">${reservation.date_from} až ${reservation.date_to} (${pricing.nights} nocí)</td></tr>
+      <tr><td style="color: #555555 !important;">Termín:</td><td style="color: #1a1a1a !important;">${formatujDatum(reservation.date_from)} až ${formatujDatum(reservation.date_to)} (${pricing.nights} nocí)</td></tr>
       <tr><td style="color: #555555 !important;">Ubytovaní hosté:</td><td style="color: #1a1a1a !important;">${guestsSummary}</td></tr>
       <tr><td style="color: #555555 !important;">Celková cena pobytu:</td><td style="color: #1a1a1a !important;">${pricing.totalPrice} Kč</td></tr>
       <tr><td style="color: #555555 !important;">Záloha k úhradě po schválení (${pricing.depositPercentage} %):</td><td><strong style="color:#697947 !important;">${pricing.depositPriceTotal} Kč</strong></td></tr>
@@ -387,7 +400,7 @@ export function generateEmail1ReceptionNotification({ reservation, room, pricing
       <tr><td style="color: #555555 !important;">Hlavní kontakt:</td><td style="color: #1a1a1a !important;">${reservation.guest_name} (${reservation.guest_phone}, ${reservation.guest_email})</td></tr>
       <tr><td style="color: #555555 !important;">Seznam hostů (${guestsCount}):</td><td style="color: #1a1a1a !important;">${guestsHtml}</td></tr>
       <tr><td style="color: #555555 !important;">Pokoj:</td><td style="color: #1a1a1a !important;">${room.name}</td></tr>
-      <tr><td style="color: #555555 !important;">Termín:</td><td style="color: #1a1a1a !important;">${reservation.date_from} až ${reservation.date_to} (${pricing.nights} nocí)</td></tr>
+      <tr><td style="color: #555555 !important;">Termín:</td><td style="color: #1a1a1a !important;">${formatujDatum(reservation.date_from)} až ${formatujDatum(reservation.date_to)} (${pricing.nights} nocí)</td></tr>
       <tr><td style="color: #555555 !important;">Celková cena:</td><td style="color: #1a1a1a !important;">${formatCzechPrice(pricing.totalPrice)} (Záloha ${pricing.depositPercentage} %: ${formatCzechPrice(pricing.depositPriceTotal)})</td></tr>
       ${reservation.guest_note ? `<tr><td style="color: #555555 !important;">Poznámka hosta:</td><td style="color: #1a1a1a !important;">${reservation.guest_note}</td></tr>` : ''}
     </table>
@@ -409,7 +422,7 @@ export function generateEmail2ApprovalAndPaymentRequest({ reservation, room, pri
   const html = `
     ${getEmailHeader(`Rezervace schválena — Pokyny k ${pricing.depositPercentage}% záloze`)}
     <p style="color: #1a1a1a !important;">Vážený/á <strong>${reservation.guest_name}</strong>,</p>
-    <p style="color: #333333 !important;">s radostí vám oznamujeme, že vaši žádost o rezervaci pokoje <strong>${room.name}</strong> v termínu <strong>${reservation.date_from} až ${reservation.date_to}</strong> recepce schválila!</p>
+    <p style="color: #333333 !important;">s radostí vám oznamujeme, že vaši žádost o rezervaci pokoje <strong>${room.name}</strong> v termínu <strong>${formatujDatum(reservation.date_from)} až ${formatujDatum(reservation.date_to)}</strong> recepce schválila!</p>
 
     <div class="alert-box-success" style="background-color: #f2f8f2 !important; color: #1a1a1a !important;">
       <strong style="color: #27ae60 !important;">✅ Pokoj je pro vás rezervován.</strong> Pro dokončení závazné rezervace prosíme o úhradu ${pricing.depositPercentage}% zálohy <strong style="color: #1a1a1a !important; background-color: #dceada !important; padding: 2px 7px !important; border-radius: 3px !important; border: 1px solid #b2d8b2 !important; font-weight: 800 !important;">do 3 pracovních dnů</strong>.
@@ -459,7 +472,7 @@ export function generateEmail3FinalConfirmation({ reservation, room, pricing }) 
     <table class="info-table" style="background-color: #ffffff !important;">
       <tr><td style="color: #555555 !important;">Kód rezervace:</td><td style="color: #1a1a1a !important;"><strong>${reservation.code}</strong></td></tr>
       <tr><td style="color: #555555 !important;">Pokoj:</td><td style="color: #1a1a1a !important;">${room.name}</td></tr>
-      <tr><td style="color: #555555 !important;">Termín:</td><td style="color: #1a1a1a !important;">${reservation.date_from} až ${reservation.date_to} (${pricing.nights} nocí)</td></tr>
+      <tr><td style="color: #555555 !important;">Termín:</td><td style="color: #1a1a1a !important;">${formatujDatum(reservation.date_from)} až ${formatujDatum(reservation.date_to)} (${pricing.nights} nocí)</td></tr>
       <tr><td style="color: #555555 !important;">Ubytovaní hosté:</td><td style="color: #1a1a1a !important;">${guestsSummary}</td></tr>
       <tr><td style="color: #555555 !important;">Zaplacená záloha (${pricing.depositPercentage} %):</td><td><span style="color:#27ae60 !important; font-weight:bold;">${formatCzechPrice(pricing.depositPriceTotal)} (Zaplaceno)</span></td></tr>
       <tr><td style="color: #555555 !important;">Doplatek na místě (${100 - pricing.depositPercentage} %):</td><td><strong style="color:#1a1a1a !important;">${formatCzechPrice(pricing.remainingPriceTotal)}</strong> (při příjezdu)</td></tr>
@@ -514,24 +527,25 @@ export function generateEmailCancellation({ reservation, room, reasonNote }) {
     </div>
 
     <div style="background-color: #F9FAF7 !important; border: 1px solid #E7E5DC !important; border-radius: 12px !important; padding: 20px 24px !important; margin: 24px 0 !important;">
-      <h4 style="margin: 0 0 12px 0 !important; font-size: 16px !important; font-weight: 700 !important; color: #4A5A24 !important;">💡 Co dělat dál? Rádi pro vás najdeme jiný termín!</h4>
+      <h4 style="margin: 0 0 12px 0 !important; font-size: 16px !important; font-weight: 700 !important; color: #4A5A24 !important;">💡 Co dělat dál? Rádi vám najdeme jiný pokoj nebo termín</h4>
       <p style="margin: 0 0 14px 0 !important; font-size: 14.5px !important; color: #333333 !important; line-height: 1.6 !important;">
         Při odeslání žádosti jste <strong>neplatili žádné peníze (0 Kč)</strong>, takže se žádná platba nestornuje ani se nemusí vracet.
       </p>
       <ul style="margin: 0 !important; padding-left: 20px !important; font-size: 14.5px !important; color: #2C2C28 !important; line-height: 1.6 !important;">
-        <li style="margin-bottom: 8px !important;"><strong>Výběr jiného termínu:</strong> Rádi vám nabídneme volné návazné termíny. Stačí vytvořit novou žádost na našem webu <a href="https://umustku.cz/#rezervace" style="color: #697947 !important; font-weight: 700 !important;">umustku.cz</a>.</li>
-        <li style="margin-bottom: 8px !important;"><strong>Osobní domluva na recepci:</strong> Zavolejte nám na <strong>+420 777 666 273</strong> a společně vybereme ideální termín.</li>
+        <li style="margin-bottom: 8px !important;"><strong>Jiný pokoj ve stejném termínu:</strong> Často máme na vámi vybrané dny volný jiný pokoj — termín vám tak zůstane. Stačí se nám ozvat.</li>
+        <li style="margin-bottom: 8px !important;"><strong>Jiný termín:</strong> Rádi vám nabídneme volné navazující termíny. Novou žádost podáte na našem webu <a href="https://umustku.cz/#rezervace" style="color: #697947 !important; font-weight: 700 !important;">umustku.cz</a>.</li>
+        <li style="margin-bottom: 8px !important;"><strong>Domluva na recepci:</strong> Zavolejte nám na <strong>${HOTEL_TELEFON}</strong> a společně vybereme pokoj i termín, které vám budou vyhovovat.</li>
       </ul>
     </div>
 
     <table class="info-table" style="background-color: #ffffff !important;">
       <tr><td style="color: #555555 !important;">Kód žádosti:</td><td style="color: #1a1a1a !important;"><strong>${reservation.code}</strong></td></tr>
       <tr><td style="color: #555555 !important;">Požadovaný pokoj:</td><td style="color: #1a1a1a !important;">${room ? room.name : (reservation.room_name || 'Vybraný pokoj')}</td></tr>
-      <tr><td style="color: #555555 !important;">Požadovaný termín:</td><td style="color: #1a1a1a !important;">${reservation.date_from} až ${reservation.date_to}</td></tr>
+      <tr><td style="color: #555555 !important;">Požadovaný termín:</td><td style="color: #1a1a1a !important;">${formatujDatum(reservation.date_from)} až ${formatujDatum(reservation.date_to)}</td></tr>
       <tr><td style="color: #555555 !important;">Stav žádosti:</td><td><strong style="color: #d9534f !important;">Stornováno / Zamítnuto</strong></td></tr>
     </table>
 
-    <p style="font-size:13.5px; color:#666666 !important; text-align: center !important; margin-top: 24px !important;">Děkujeme za pochopení a těšíme se na vaši návštěvu v náhradním termínu.</p>
+    <p style="font-size:13.5px; color:#666666 !important; text-align: center !important; margin-top: 24px !important;">Děkujeme za pochopení — věříme, že společně najdeme pokoj i termín, který vám bude sedět.</p>
     ${getEmailFooter()}
   `;
   return { subject: `Informace k vaší žádosti o rezervaci ${reservation.code} — Hotel u Můstku`, html };
@@ -557,7 +571,7 @@ export function generateEmailCancellationRefund({ reservation, room, reasonNote,
   const html = `
     ${getEmailHeader('Storno rezervace a vrácení uhrazené zálohy')}
     <p style="color: #1a1a1a !important;">Vážený/á <strong>${reservation.guest_name}</strong>,</p>
-    <p style="color: #333333 !important;">velice nás to mrzí, ale vaši potvrzenou rezervaci <strong>${reservation.code}</strong> v termínu <strong>${reservation.date_from} až ${reservation.date_to}</strong> jsme nuceni stornovat.</p>
+    <p style="color: #333333 !important;">velice nás to mrzí, ale vaši potvrzenou rezervaci <strong>${reservation.code}</strong> v termínu <strong>${formatujDatum(reservation.date_from)} až ${formatujDatum(reservation.date_to)}</strong> jsme nuceni stornovat.</p>
 
     <div style="background-color: #fff8f8 !important; border: 1px solid #f5c6cb !important; border-radius: 12px !important; padding: 18px 22px !important; margin: 24px 0 !important; color: #721c24 !important;">
       <strong style="color: #721c24 !important;">⚠️ Důvod storna:</strong><br>
@@ -583,16 +597,16 @@ export function generateEmailCancellationRefund({ reservation, room, reasonNote,
     </div>
 
     <div style="background-color: #F9FAF7 !important; border: 1px solid #E7E5DC !important; border-radius: 12px !important; padding: 20px 24px !important; margin: 24px 0 !important;">
-      <h4 style="margin: 0 0 12px 0 !important; font-size: 16px !important; font-weight: 700 !important; color: #4A5A24 !important;">💡 Nebo pro vás rádi najdeme náhradní termín</h4>
+      <h4 style="margin: 0 0 12px 0 !important; font-size: 16px !important; font-weight: 700 !important; color: #4A5A24 !important;">💡 Nebo pro vás rádi najdeme náhradní pokoj či termín</h4>
       <p style="margin: 0 !important; font-size: 14.5px !important; color: #333333 !important; line-height: 1.6 !important;">
-        Pokud máte o pobyt stále zájem, můžeme místo vrácení peněz <strong>převést zálohu na jiný termín</strong>. Napište nám to prosím v odpovědi nebo zavolejte na <strong>${HOTEL_TELEFON}</strong> a společně vybereme datum, které vám bude vyhovovat.
+        Pokud máte o pobyt stále zájem, můžeme místo vrácení peněz <strong>převést zálohu na jiný pokoj nebo termín</strong> — mnohdy se dá podržet i termín, který jste si vybrali, jen v jiném pokoji. Napište nám to prosím v odpovědi nebo zavolejte na <strong>${HOTEL_TELEFON}</strong> a společně vybereme pokoj i datum, které vám budou vyhovovat.
       </p>
     </div>
 
     <table class="info-table" style="background-color: #ffffff !important;">
       <tr><td style="color: #555555 !important;">Kód rezervace:</td><td style="color: #1a1a1a !important;"><strong>${reservation.code}</strong></td></tr>
       <tr><td style="color: #555555 !important;">Pokoj:</td><td style="color: #1a1a1a !important;">${room ? room.name : (reservation.room_name || 'Vybraný pokoj')}</td></tr>
-      <tr><td style="color: #555555 !important;">Termín:</td><td style="color: #1a1a1a !important;">${reservation.date_from} až ${reservation.date_to}</td></tr>
+      <tr><td style="color: #555555 !important;">Termín:</td><td style="color: #1a1a1a !important;">${formatujDatum(reservation.date_from)} až ${formatujDatum(reservation.date_to)}</td></tr>
       <tr><td style="color: #555555 !important;">Uhrazená záloha:</td><td style="color: #1a1a1a !important;"><strong>${zalohaText}</strong></td></tr>
       <tr><td style="color: #555555 !important;">Stav rezervace:</td><td><strong style="color: #d9534f !important;">Stornováno — záloha se vrací</strong></td></tr>
     </table>
@@ -608,7 +622,7 @@ export function generateEmailPaymentExpired({ reservation, room }) {
   const html = `
     ${getEmailHeader('Informace k vaší žádosti o rezervaci')}
     <p style="color: #1a1a1a !important;">Vážený/á <strong>${reservation.guest_name}</strong>,</p>
-    <p style="color: #333333 !important;">ozýváme se vám ohledně vaší žádosti o rezervaci <strong>${reservation.code}</strong> na pobyt v termínu <strong>${reservation.date_from} až ${reservation.date_to}</strong> v Hotelu u Můstku.</p>
+    <p style="color: #333333 !important;">ozýváme se vám ohledně vaší žádosti o rezervaci <strong>${reservation.code}</strong> na pobyt v termínu <strong>${formatujDatum(reservation.date_from)} až ${formatujDatum(reservation.date_to)}</strong> v Hotelu u Můstku.</p>
 
     <div style="background-color: #fff8f8 !important; border: 1px solid #f5c6cb !important; border-radius: 12px !important; padding: 18px 22px !important; margin: 24px 0 !important; color: #721c24 !important;">
       <strong style="color: #721c24 !important;">⚠️ Důvod uvolnění předběžné rezervace:</strong><br>
@@ -623,15 +637,15 @@ export function generateEmailPaymentExpired({ reservation, room }) {
         Pokud byla platba odeslána na poslední chvíli nebo máte o pobyt v našem hotelu stále zájem, rádi s vámi možnost ubytování prověříme:
       </p>
       <ul style="margin: 0 !important; padding-left: 20px !important; font-size: 14.5px !important; color: #2C2C28 !important; line-height: 1.6 !important;">
-        <li style="margin-bottom: 8px !important;"><strong>Osobní domluva na recepci:</strong> Zavolejte nám na <strong>+420 777 666 273</strong> nebo napište na <strong>${HOTEL_EMAIL}</strong>. Pokud je pokoj stále volný, rezervaci vám rádi obnovíme.</li>
-        <li style="margin-bottom: 8px !important;"><strong>Vytvořit novou rezervaci:</strong> Můžete si kdykoliv vybrat nový termín na našem webu <a href="https://umustku.cz/#rezervace" style="color: #697947 !important; font-weight: 700 !important;">umustku.cz</a>.</li>
+        <li style="margin-bottom: 8px !important;"><strong>Osobní domluva na recepci:</strong> Zavolejte nám na <strong>${HOTEL_TELEFON}</strong> nebo napište na <strong>${HOTEL_EMAIL}</strong>. Pokud je pokoj stále volný, rezervaci vám rádi obnovíme; když ne, najdeme vám jiný pokoj nebo termín.</li>
+        <li style="margin-bottom: 8px !important;"><strong>Vytvořit novou rezervaci:</strong> Můžete si kdykoliv vybrat nový pokoj i termín na našem webu <a href="https://umustku.cz/#rezervace" style="color: #697947 !important; font-weight: 700 !important;">umustku.cz</a>.</li>
       </ul>
     </div>
 
     <table class="info-table" style="background-color: #ffffff !important;">
       <tr><td style="color: #555555 !important;">Kód žádosti:</td><td style="color: #1a1a1a !important;"><strong>${reservation.code}</strong></td></tr>
       <tr><td style="color: #555555 !important;">Požadovaný pokoj:</td><td style="color: #1a1a1a !important;">${room ? room.name : (reservation.room_name || 'Vybraný pokoj')}</td></tr>
-      <tr><td style="color: #555555 !important;">Požadovaný termín:</td><td style="color: #1a1a1a !important;">${reservation.date_from} až ${reservation.date_to}</td></tr>
+      <tr><td style="color: #555555 !important;">Požadovaný termín:</td><td style="color: #1a1a1a !important;">${formatujDatum(reservation.date_from)} až ${formatujDatum(reservation.date_to)}</td></tr>
       <tr><td style="color: #555555 !important;">Stav žádosti:</td><td><strong style="color: #d9534f !important;">Zrušeno – vypršení lhůty pro úhradu zálohy (3 dny)</strong></td></tr>
     </table>
 

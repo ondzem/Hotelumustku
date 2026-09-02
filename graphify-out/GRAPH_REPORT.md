@@ -1,16 +1,16 @@
 # Graph Report - Hotel u mustku  (2026-09-02)
 
 ## Corpus Check
-- 66 files · ~244,907 words
+- 66 files · ~245,299 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 873 nodes · 1928 edges · 53 communities (47 shown, 6 thin omitted)
+- 873 nodes · 1928 edges · 50 communities (44 shown, 6 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 29 edges (avg confidence: 0.71)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `ed28cb51`
+- Built from commit: `ca5466d1`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -23,8 +23,7 @@
 - AdminCenik.js
 - SEO-ROADMAP.md
 - CLAUDE.md — projektová dokumentace
-- Výlety v zimě — SEO texty
-- Pravidla a pokyny pro tlačítka a responzivitu v projektu Hotel u Můstku
+- Okolí (Aktivity) Page
 - Hotel u Můstků — web a rezervační systém
 - package.json
 - .agents/SEO-ROADMAP.md
@@ -32,9 +31,7 @@
 - AdminDostupnost.js
 - supabase-novy-projekt.sql
 - Cyklistika — SEO texty
-- SEO & Copywriting kontext — Hotel U Můstků
 - public.reservations
-- Okolí (Aktivity) Page
 - AdminDashboard.js
 - FÁZE 7 — Rychlost a přístupnost ✅ UZAVŘENO
 - CO DĚLAT PŘÍŠTĚ
@@ -75,14 +72,14 @@
 ## Surprising Connections (you probably didn't know these)
 - `SEO Fáze 6 — Lokální SEO (vyřazeno)` --references--> `index.html — úvodní stránka`  [INFERRED]
   SEO-ROADMAP.md → index.html
-- `Ubytování & Pokoje Page` --conceptually_related_to--> `Faktické zákazy (bezbariérovost, trampolína)`  [INFERRED]
-  ubytovani.html → .agents/SEO-CONTEXT.md
-- `Obchodní podmínky Page` --references--> `Storno podmínky`  [EXTRACTED]
-  podminky.html → .agents/SEO-CONTEXT.md
 - `src/style.css (Global Stylesheet)` --implements--> `Button Design System`  [INFERRED]
   okoli.html → .agents/AGENTS.md
 - `src/style.css (Global Stylesheet)` --implements--> `Hero Section System`  [INFERRED]
   okoli.html → .agents/AGENTS.md
+- `src/style.css (Global Stylesheet)` --implements--> `Pravidlo pro výšku okna`  [INFERRED]
+  okoli.html → .agents/AGENTS.md
+- `index.html — úvodní stránka` --references--> `Cookie lišta a GA4 gating`  [INFERRED]
+  index.html → CLAUDE.md
 
 ## Import Cycles
 - None detected.
@@ -95,7 +92,7 @@
 - **Sdílená HTML kostra stránek (nav, header, styly, schema)** — okoli, podminky, stravovani, ubytovani, site_header_component, src_style, schema_hotel_jsonld [EXTRACTED 0.95]
 - **Tři nástroje na zavírání provozu** — table_blocked_dates, table_disabled_rooms, src_components_admindostupnost, src_utils_cenik [EXTRACTED 0.95]
 
-## Communities (53 total, 6 thin omitted)
+## Communities (50 total, 6 thin omitted)
 
 ### Community 0 - "main.js"
 Cohesion: 0.06
@@ -110,12 +107,12 @@ Cohesion: 0.43
 Nodes (6): cervena(), nadpis(), prazdne_nebo_chyba(), seda(), zkontroluj.sh script, zelena()
 
 ### Community 3 - "Výlety autem — SEO texty"
-Cohesion: 0.13
-Nodes (15): 10. Funpark a Lunapark Babylon v Liberci, 11. Státní zámek Sychrov, 12. Výletní restaurace Obří sud v Lázních Libverda, 13. Rozhledna Královka s restaurací, 14. Muzeum skla a bižuterie v Jablonci nad Nisou, 1. Bobová dráha Janov nad Nisou, 2. Ještěd v Liberci, 3. Rozhledna Bramberk s restaurací (+7 more)
+Cohesion: 0.07
+Nodes (26): 10. Funpark a Lunapark Babylon v Liberci, 11. Státní zámek Sychrov, 12. Výletní restaurace Obří sud v Lázních Libverda, 13. Rozhledna Královka s restaurací, 14. Muzeum skla a bižuterie v Jablonci nad Nisou, 1. Bobová dráha Janov nad Nisou, 2. Ještěd v Liberci, 3. Rozhledna Bramberk s restaurací (+18 more)
 
 ### Community 4 - "BookingSystem.js"
 Cohesion: 0.07
-Nodes (33): this.castka(klic) v BookingSystem, Minimum dvě noci (hasValidDates), BookingSystem, formatCzechDateStr(), getTodayDateString(), isDummyIdNumber(), isDummyName(), isValidEmail() (+25 more)
+Nodes (31): this.castka(klic) v BookingSystem, Minimum dvě noci (hasValidDates), BookingSystem, formatCzechDateStr(), getTodayDateString(), isDummyIdNumber(), isDummyName(), isValidEmail() (+23 more)
 
 ### Community 5 - "AdminCenik.js"
 Cohesion: 0.10
@@ -129,13 +126,9 @@ Nodes (39): public/404.html, public/llms.txt, public/_redirects, public/robots.t
 Cohesion: 0.06
 Nodes (40): admin.html — recepční portál, akce.html — skupinové akce, aktuality.html — aktuality, CLAUDE.md — projektová dokumentace, Cookie lišta a GA4 gating, spustHeroVideo() — podmíněné spuštění hero videa, Kapacita pokojů (17. 8. 2026), VITE_ prefix pro klientské env proměnné (+32 more)
 
-### Community 8 - "Výlety v zimě — SEO texty"
-Cohesion: 0.18
-Nodes (11): 10. Funpark a Lunapark Babylon v Liberci, 1. Ski areál Černá Říčka v Desné, 2. Jizerská magistrála pro běžkaře, 3. Aquapark a wellness centrum Babylon Liberec, 4. Ještěd, 5. Skiareál Jizerky – Tanvaldský Špičák, 6. Muzeum skla a bižuterie v Jablonci nad Nisou, 7. Dinopark Liberec (+3 more)
-
-### Community 9 - "Pravidla a pokyny pro tlačítka a responzivitu v projektu Hotel u Můstku"
-Cohesion: 0.10
-Nodes (21): 📱 1. Mobilní verze (<768px), 1. Pixelový `min-height` nesmí nikdy přesáhnout okno, 1. Rozměry a typografie, 2. Konzistentní boční padding (Postranní odsazení), 2. Rozměry počítané ze šířky musí mít strop podle výšky, 📱 2. Tabletová verze (768px - 1028.98px), 💻 3. Desktopová verze (1029px+), 3. Obsah v hero se nepozicuje pevnými pixely shora (+13 more)
+### Community 9 - "Okolí (Aktivity) Page"
+Cohesion: 0.05
+Nodes (50): 📱 1. Mobilní verze (<768px), 1. Pixelový `min-height` nesmí nikdy přesáhnout okno, 1. Rozměry a typografie, 2. Konzistentní boční padding (Postranní odsazení), 2. Rozměry počítané ze šířky musí mít strop podle výšky, 📱 2. Tabletová verze (768px - 1028.98px), 💻 3. Desktopová verze (1029px+), 3. Obsah v hero se nepozicuje pevnými pixely shora (+42 more)
 
 ### Community 10 - "Hotel u Můstků — web a rezervační systém"
 Cohesion: 0.10
@@ -146,16 +139,16 @@ Cohesion: 0.11
 Nodes (17): dependencies, qrcode, @supabase/supabase-js, devDependencies, vite, name, private, scripts (+9 more)
 
 ### Community 12 - ".agents/SEO-ROADMAP.md"
-Cohesion: 0.13
-Nodes (13): FÁZE 0 — Přístupy a základna měření ✅, FÁZE 5 — Optimalizace pro AI vyhledávače ✅ (co jde udělat před spuštěním), FÁZE 6 — Lokální SEO ⏹️ VYŘAZENO ZE ZAKÁZKY, FÁZE 8 — Měření ✅, JAK POZNÁME, ŽE JE TO 100 %, ⚠️ Jak číst nezaškrtnuté položky, 🔁 Pravidelná údržba — NENÍ TO CHECKLIST, PRŮBĚH (+5 more)
+Cohesion: 0.15
+Nodes (11): FÁZE 0 — Přístupy a základna měření ✅, FÁZE 5 — Optimalizace pro AI vyhledávače ✅ (co jde udělat před spuštěním), FÁZE 6 — Lokální SEO ⏹️ VYŘAZENO ZE ZAKÁZKY, FÁZE 8 — Měření ✅, JAK POZNÁME, ŽE JE TO 100 %, ⚠️ Jak číst nezaškrtnuté položky, 🔁 Pravidelná údržba — NENÍ TO CHECKLIST, PRŮBĚH (+3 more)
 
 ### Community 13 - "AdminRucniRezervace.js"
-Cohesion: 0.19
-Nodes (26): adminPotvrzeni(), escapuj(), bindRucniRezervaceModal(), CELY_HOTEL, dnesStr(), dostupnostPokoje(), escapuj(), formatCzechDateStr() (+18 more)
+Cohesion: 0.11
+Nodes (40): BLOKACE, dotazy(), hotel(), jeden(), NAVAZUJE, POKOJE, POKOJE2, SAM (+32 more)
 
 ### Community 14 - "AdminDostupnost.js"
-Cohesion: 0.09
-Nodes (44): celyHotel, plachta(), v, BLOKACE, dotazy(), hotel(), jeden(), NAVAZUJE (+36 more)
+Cohesion: 0.14
+Nodes (30): celyHotel, plachta(), v, bindDostupnostModal(), dnesStr(), escapuj(), formatCzechDateStr(), MESICE (+22 more)
 
 ### Community 15 - "supabase-novy-projekt.sql"
 Cohesion: 0.15
@@ -165,17 +158,9 @@ Nodes (12): public.aktuality, public.blocked_dates, public.cenik_ceny, public.ce
 Cohesion: 0.20
 Nodes (10): 1. Singltrek pod Smrkem, 2. Trasa kolem vodní nádrže Souš, 3. Cyklostezka Járy Cimrmana č. 3019, 4. Hřebenová cyklotrasa na Smědavu, 5. Bikepark Tanvaldský Špičák, 6. Rozhledna Štěpánka na kole, 7. Jizerská magistrála pro cyklisty, 8. Cyklotrasa údolím řeky Kamenice (+2 more)
 
-### Community 17 - "SEO & Copywriting kontext — Hotel U Můstků"
-Cohesion: 0.20
-Nodes (10): 1. Co je projekt, 2. Cílová skupina (priorita shora dolů), 3. USP — o co se copy vždycky opírá, 4. Fakta pro texty (nikdy si nevymýšlet jiná), 5. Stav SEO — co chybí (audit k 31. 7. 2026), 6. Copy pravidla, 7. Kde jsou zdrojová data, Fakturační údaje — ověřeno v ARES 1. 8. 2026 (+2 more)
-
-### Community 19 - "Okolí (Aktivity) Page"
-Cohesion: 0.21
-Nodes (17): Button Design System, Ceník 2026, Hero Section System, Hlavní navigační stránky, Okolí (Aktivity) Page, Obchodní podmínky Page, BreadcrumbList JSON-LD, FAQPage schema (okoli) (+9 more)
-
 ### Community 20 - "AdminDashboard.js"
 Cohesion: 0.06
-Nodes (78): Pravidlo — date_to je výlučné, nactiVsechnyRadky(), posunDatum(), zobrazRozsahBlokace(), ALLOWED_SUPABASE_COLUMNS, decrementDiscountCodeUsage(), DEFAULT_REVIEWS, deleteStoredBlockedDate() (+70 more)
+Nodes (80): Pravidlo — date_to je výlučné, nactiVsechnyRadky(), posunDatum(), zobrazRozsahBlokace(), ALLOWED_SUPABASE_COLUMNS, decrementDiscountCodeUsage(), DEFAULT_REVIEWS, deleteStoredBlockedDate() (+72 more)
 
 ### Community 21 - "FÁZE 7 — Rychlost a přístupnost ✅ UZAVŘENO"
 Cohesion: 0.25
@@ -250,7 +235,7 @@ Cohesion: 0.29
 Nodes (4): bezNastaveni, bezNastaveni2, nulovaZaloha, p
 
 ## Knowledge Gaps
-- **278 isolated node(s):** `S`, `S`, `CELY_HOTEL`, `MESICE`, `TRIDY_STAVU` (+273 more)
+- **278 isolated node(s):** `GUEST_REVIEWS`, `SIPKY_DOLU`, `preloadedCategories`, `CATEGORIES_DATA`, `app` (+273 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -259,15 +244,15 @@ _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `src/style.css (Global Stylesheet)` connect `Okolí (Aktivity) Page` to `main.js`?**
   _High betweenness centrality (0.260) - this node is a cross-community bridge._
-- **Why does `Okolí (Aktivity) Page` connect `Okolí (Aktivity) Page` to `.agents/SEO-ROADMAP.md`?**
+- **Why does `Okolí (Aktivity) Page` connect `Okolí (Aktivity) Page` to `Výlety autem — SEO texty`, `.agents/SEO-ROADMAP.md`?**
   _High betweenness centrality (0.164) - this node is a cross-community bridge._
 - **Why does `index.html — úvodní stránka` connect `CLAUDE.md — projektová dokumentace` to `main.js`?**
   _High betweenness centrality (0.084) - this node is a cross-community bridge._
-- **What connects `S`, `S`, `CELY_HOTEL` to the rest of the system?**
+- **What connects `GUEST_REVIEWS`, `SIPKY_DOLU`, `preloadedCategories` to the rest of the system?**
   _278 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `main.js` be split into smaller, more focused modules?**
   _Cohesion score 0.0636030636030636 - nodes in this community are weakly interconnected._
 - **Should `cenik.js` be split into smaller, more focused modules?**
   _Cohesion score 0.14285714285714285 - nodes in this community are weakly interconnected._
 - **Should `Výlety autem — SEO texty` be split into smaller, more focused modules?**
-  _Cohesion score 0.13333333333333333 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07142857142857142 - nodes in this community are weakly interconnected._
