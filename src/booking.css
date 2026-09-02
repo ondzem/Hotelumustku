@@ -3472,6 +3472,28 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   min-height: 0;
 }
 
+/* BARVY KALENDÁŘŮ — jedna paleta pro web, Dostupnost i ruční zápis.
+   Volný den je ZELENÝ, ne bílý: majitel bílé políčko četl jako
+   „nedostupné" a ptal se, proč nejde nic vybrat (2. 9. 2026). Vybraný
+   termín je tmavě zelený — příjezd, dny mezi i odjezd — aby se od volných
+   dnů lišil sytostí, ne odstínem. Obsazenost zůstává červená (plno) a
+   oranžová (částečně); půlený den má volnou půlku zelenou, ne bílou. */
+:root {
+  --kal-volno: #eef3e6;
+  --kal-volno-text: #3f4d20;
+  --kal-volno-ramecek: #dbe4cd;
+  --kal-volno-hover: #dfe8cf;
+  --kal-vybrano: #697947;
+  --kal-vybrano-mezi: #7b8b55;
+  --kal-vybrano-text: #ffffff;
+  --kal-vybrano-ramecek: #4f5c34;
+  --kal-plno: #fbe3e0;
+  --kal-plno-text: #b03a2e;
+  --kal-castecne: #fdf3d7;
+  --kal-castecne-text: #8a6d1f;
+  --kal-minulost: #f1f1ee;
+}
+
 .cal-day-empty {
   height: 48px;
 }
@@ -3479,12 +3501,12 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .cal-day {
   height: 48px;
   box-sizing: border-box;
-  border: none;
-  background: none;
+  border: 1px solid var(--kal-volno-ramecek);
+  background: var(--kal-volno);
   font-family: 'Outfit', sans-serif;
   font-size: 15.5px;
   font-weight: 500;
-  color: #1a1a1a;
+  color: var(--kal-volno-text);
   border-radius: 1px;
   cursor: pointer;
   display: flex;
@@ -3494,7 +3516,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .cal-day:hover:not(.is-disabled) {
-  background-color: #eef3e6;
+  background-color: var(--kal-volno-hover);
   color: #697947;
 }
 
@@ -3536,17 +3558,19 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .cal-day.is-selected {
-  background-color: #eef3e6 !important;
-  color: #1c1c19 !important;
+  background-color: var(--kal-vybrano) !important;
+  color: var(--kal-vybrano-text) !important;
   font-weight: 700 !important;
-  border: 1px solid #eef3e6 !important;
+  border: 1px solid var(--kal-vybrano-ramecek) !important;
 }
 
+/* Dny mezi příjezdem a odjezdem — o odstín světlejší než kraje, ale
+   pořád tmavě zelené s bílým číslem, ať celý pobyt drží jako jeden blok. */
 .cal-day.in-range {
-  background: #eef3e6 !important;
-  color: #4a5a24 !important;
+  background: var(--kal-vybrano-mezi) !important;
+  color: var(--kal-vybrano-text) !important;
   font-weight: 700 !important;
-  border: 1px solid #dbe4cd !important;
+  border: 1px solid var(--kal-vybrano-mezi) !important;
 }
 
 /* Váš den PŘÍJEZDU.
@@ -3558,17 +3582,19 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .cal-day.is-from,
 .cal-day.is-to {
   position: relative;
-  background: #cadbb0 !important;
-  color: #2f3a16 !important;
+  background: var(--kal-vybrano) !important;
+  color: var(--kal-vybrano-text) !important;
   font-weight: 800 !important;
-  border: 1px solid #697947 !important;
+  border: 1px solid var(--kal-vybrano-ramecek) !important;
   text-shadow: none !important;
 }
 
+/* Minulý den — šedý, ne zelený; zelená by slibovala, že jde vybrat. */
 .cal-day.is-disabled {
-  color: #cccccc;
+  background: var(--kal-minulost);
+  border-color: var(--kal-minulost);
+  color: #b5b5ae;
   cursor: not-allowed;
-  opacity: 0.4;
 }
 
 .cal-day.is-occupied {
@@ -3588,7 +3614,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
    Úhlopříčka čte čas: levý horní roh ráno, pravý dolní odpoledne. */
 .cal-day.is-turnover-day {
   position: relative;
-  background: linear-gradient(to bottom right, #fdf3d7 0 50%, #ffffff 50% 100%) !important;
+  background: linear-gradient(to bottom right, var(--kal-castecne) 0 50%, var(--kal-volno) 50% 100%) !important;
   color: #1c1c19 !important;
   cursor: pointer !important;
   text-shadow: none !important;
@@ -3597,7 +3623,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 /* Příjezdový den — do 15:00 volno, potom obsazeno. Zrcadlo toho výš. */
 .cal-day.is-arrival-day {
   position: relative;
-  background: linear-gradient(to bottom right, #ffffff 0 50%, #fdf3d7 50% 100%) !important;
+  background: linear-gradient(to bottom right, var(--kal-volno) 0 50%, var(--kal-castecne) 50% 100%) !important;
   color: #1c1c19 !important;
   cursor: pointer !important;
   text-shadow: none !important;
@@ -3605,11 +3631,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 /* Plně obsazený hotel má i v půlce sytější barvu. */
 .cal-day.is-full.is-turnover-day {
-  background: linear-gradient(to bottom right, #fbe3e0 0 50%, #ffffff 50% 100%) !important;
+  background: linear-gradient(to bottom right, var(--kal-plno) 0 50%, var(--kal-volno) 50% 100%) !important;
   text-decoration: none !important;
 }
 .cal-day.is-full.is-arrival-day {
-  background: linear-gradient(to bottom right, #ffffff 0 50%, #fbe3e0 50% 100%) !important;
+  background: linear-gradient(to bottom right, var(--kal-volno) 0 50%, var(--kal-plno) 50% 100%) !important;
   text-decoration: none !important;
 }
 
@@ -3631,6 +3657,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   border-radius: 2px;
   flex-shrink: 0;
   display: inline-block;
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .cal-modal-footer {
@@ -5156,7 +5183,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
    Odjezdový den — do 10:00 se odjíždí, potom volno. */
 .dostupnost-kalendar .cal-day.is-turnover-day,
 .rucni-cal-overlay .cal-day.is-turnover-day {
-  background: linear-gradient(to bottom right, #fcecc2 0 50%, #ffffff 50% 100%) !important;
+  background: linear-gradient(to bottom right, #fcecc2 0 50%, var(--kal-volno) 50% 100%) !important;
   border-color: #e6e3d8 !important;
   color: #1c1c19 !important;
 }
@@ -5164,7 +5191,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 /* Příjezdový den — do 15:00 ještě volno, potom obsazeno. Zrcadlo toho výš. */
 .dostupnost-kalendar .cal-day.is-arrival-day,
 .rucni-cal-overlay .cal-day.is-arrival-day {
-  background: linear-gradient(to bottom right, #ffffff 0 50%, #fcecc2 50% 100%) !important;
+  background: linear-gradient(to bottom right, var(--kal-volno) 0 50%, #fcecc2 50% 100%) !important;
   border-color: #e6e3d8 !important;
   color: #1c1c19 !important;
 }
@@ -5172,12 +5199,12 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 /* Plně obsazený hotel má i v půlce sytější barvu, ať je poznat od částečné. */
 .dostupnost-kalendar .cal-day.is-full.is-turnover-day,
 .rucni-cal-overlay .cal-day.is-full.is-turnover-day {
-  background: linear-gradient(to bottom right, #f9d9d4 0 50%, #ffffff 50% 100%) !important;
+  background: linear-gradient(to bottom right, #f9d9d4 0 50%, var(--kal-volno) 50% 100%) !important;
 }
 
 .dostupnost-kalendar .cal-day.is-full.is-arrival-day,
 .rucni-cal-overlay .cal-day.is-full.is-arrival-day {
-  background: linear-gradient(to bottom right, #ffffff 0 50%, #f9d9d4 50% 100%) !important;
+  background: linear-gradient(to bottom right, var(--kal-volno) 0 50%, #f9d9d4 50% 100%) !important;
 }
 
 /* Půlka v barvě obsazenosti se přes vybraný den už nekreslí — vybraný
@@ -5250,9 +5277,9 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 /* Dny mezi příjezdem a odjezdem */
 .dostupnost-kalendar .cal-day.in-range,
 .rucni-cal-overlay .cal-day.in-range {
-  background-color: #e3ecd5 !important;
-  color: #4a5a24 !important;
-  border: 1px solid #e3ecd5 !important;
+  background-color: var(--kal-vybrano-mezi) !important;
+  color: var(--kal-vybrano-text) !important;
+  border: 1px solid var(--kal-vybrano-mezi) !important;
   font-weight: 700 !important;
 }
 
@@ -5265,10 +5292,10 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .rucni-cal-overlay .cal-day.is-from,
 .dostupnost-kalendar .cal-day.is-to,
 .rucni-cal-overlay .cal-day.is-to {
-  background: #cadbb0 !important;
+  background: var(--kal-vybrano) !important;
   background-image: none !important;
-  color: #33401a !important;
-  border: 2px solid #697947 !important;
+  color: var(--kal-vybrano-text) !important;
+  border: 2px solid var(--kal-vybrano-ramecek) !important;
   font-weight: 800 !important;
   text-shadow: none !important;
 }
@@ -5276,7 +5303,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .dostupnost-kalendar .cal-day.is-selected .dostupnost-pocet,
 .dostupnost-kalendar .cal-day.is-from .dostupnost-pocet,
 .dostupnost-kalendar .cal-day.is-to .dostupnost-pocet {
-  color: #33401a !important;
+  color: rgba(255, 255, 255, 0.85) !important;
 }
 
 /* Obsazený den uvnitř vybraného rozsahu.
@@ -5288,17 +5315,17 @@ input[type="date"]::-webkit-calendar-picker-indicator {
    obsazenost nese výrazný RÁMEČEK a barva čísla. */
 .dostupnost-kalendar .cal-day.is-full.in-range,
 .rucni-cal-overlay .cal-day.is-full.in-range {
-  background-color: #cadbb0 !important;
-  color: #99302a !important;
-  border: 2px solid #c9524a !important;
+  background-color: var(--kal-vybrano-mezi) !important;
+  color: var(--kal-vybrano-text) !important;
+  border: 2px solid #e0574d !important;
   font-weight: 700 !important;
 }
 
 .dostupnost-kalendar .cal-day.is-partial.in-range,
 .rucni-cal-overlay .cal-day.is-partial.in-range {
-  background-color: #cadbb0 !important;
-  color: #7a5c12 !important;
-  border: 2px solid #d9a83a !important;
+  background-color: var(--kal-vybrano-mezi) !important;
+  color: var(--kal-vybrano-text) !important;
+  border: 2px solid #f0c04a !important;
   font-weight: 700 !important;
 }
 
@@ -5308,21 +5335,24 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .dostupnost-kalendar .cal-day.is-partial.is-selected,
 .rucni-cal-overlay .cal-day.is-full.is-selected,
 .rucni-cal-overlay .cal-day.is-partial.is-selected {
-  background: #b9cf98 !important;
-  border: 2px solid #697947 !important;
+  background: var(--kal-vybrano) !important;
+  color: var(--kal-vybrano-text) !important;
+  border: 2px solid var(--kal-vybrano-ramecek) !important;
   font-weight: 700 !important;
 }
 
 /* Počet volných pokojů uvnitř výběru ať zůstane čitelný na zeleném. */
 .dostupnost-kalendar .cal-day.in-range .dostupnost-pocet,
 .dostupnost-kalendar .cal-day.is-selected .dostupnost-pocet {
-  color: #33401a !important;
+  color: rgba(255, 255, 255, 0.85) !important;
 }
 
-/* Volné dny dostanou jemnou konturu, ať mřížka nevypadá prázdně */
+/* Volný den je zelený i v administraci — stejná paleta jako na webu. */
 .dostupnost-kalendar .cal-day:not(.is-full):not(.is-partial):not(.is-selected):not(.in-range):not(.cal-day-empty),
 .rucni-cal-overlay .cal-day:not(.is-full):not(.is-partial):not(.is-selected):not(.in-range):not(.cal-day-empty) {
-  border: 1px solid #e7e5dc;
+  background: var(--kal-volno);
+  border: 1px solid var(--kal-volno-ramecek);
+  color: var(--kal-volno-text);
 }
 
 /* =====================================================================
@@ -6549,7 +6579,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 /* Ve vybraném termínu prstenec ztmavne, ať je vidět i na zeleném
    podkladu. */
 .cal-day.je-silvestr.is-selected::after,
-.cal-day.je-silvestr.in-range::after { border-color: #8a6b18; }
+.cal-day.je-silvestr.in-range::after { border-color: #ecd27a; }
 
 @media (max-width: 560px) {
   .cal-poznamky { padding: 0 12px; }

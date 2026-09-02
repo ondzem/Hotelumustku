@@ -112,6 +112,21 @@ obsazený. Majitel to hlásil jako „volné datum se ukazuje jako zabrané".
 `roomIdForCal` se počítal už dřív, jen se nikde nepoužíval; teď ho berou
 `getDayOccupancy()` i `obsazenostPulekDne()` (`prodejnePokoje()`).
 
+**Archivovaná rezervace obsazuje dál — všude stejně.** Web (`BookingSystem`)
+a ruční zápis (`obsazenostDne`) archiv nikdy nevynechávaly, Dostupnost
+(`zabranyDuvod`, `odjezdVDen`, `prijezdVDen`) ho do 2. 9. 2026 vynechávala.
+Archivovaný budoucí pobyt tak byl v Dostupnosti volný a na webu obsazený;
+a v minulých měsících po archivaci zmizelo, kdo tam byl. Archiv je jen
+odklizení ze seznamu, ne storno — tři místa, jedna pravda.
+
+**Volný den je ZELENÝ, ne bílý, a výběr je tmavě zelený.** Majitel bílé
+políčko četl jako „nedostupné" a ptal se, proč nejde nic vybrat. Paleta
+je v proměnných `--kal-*` na začátku oddílu kalendáře v `booking.css`
+a platí pro web, Dostupnost i ruční zápis naráz: volno světle zelená,
+vybraný termín (příjezd, dny mezi, odjezd) tmavě zelená s bílým číslem,
+plno červená, částečně oranžová, minulost šedá. Půlený den má volnou
+půlku zelenou, ne bílou. Legendy začínají položkou Volno.
+
 **Minulé dny v kalendáři nedostávají barvu obsazenosti.** Růžová a žlutá
 v už proběhlém týdnu vypadaly jako rozbité vykreslení a vedly k hlášení,
 že „na volný den nejde kliknout" — přitom šlo prostě o včerejšek. Veřejný

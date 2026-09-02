@@ -514,9 +514,10 @@ function renderKalendar(ad, f) {
 
         <div class="cal-modal-footer" style="padding: 16px; border-top: 1px solid #E7E5DC; display: flex; flex-direction: column; gap: 12px;">
           <div class="cal-legend" style="display:flex; flex-wrap:wrap; gap:14px; padding:4px 0 10px 0; border-bottom:1px solid #E7E5DC; margin-bottom:4px;">
+            <span class="cal-legend-item"><i class="cal-legend-box" style="background:var(--kal-volno);"></i> Volno</span>
+            <span class="cal-legend-item"><i class="cal-legend-box" style="background:var(--kal-vybrano);"></i> Vybraný termín</span>
             <span class="cal-legend-item"><i class="cal-legend-box" style="background:#f9d9d4;"></i> Tento pokoj obsazený</span>
             <span class="cal-legend-item"><i class="cal-legend-box" style="background:#fcecc2;"></i> Částečně obsazeno</span>
-            <span class="cal-legend-item"><i class="cal-legend-box" style="background:#cadbb0; border-color:#697947;"></i> Vybraný termín</span>
           </div>
 
           <div class="cal-range-summary" style="display: flex; flex-direction: column; gap: 2px;">

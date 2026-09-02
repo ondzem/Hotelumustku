@@ -1802,18 +1802,22 @@ export class BookingSystem {
           <div class="cal-modal-footer" style="padding: 16px; border-top: 1px solid #E7E5DC; display: flex; flex-direction: column; gap: 12px;">
             <div class="cal-legend" style="display:flex; flex-wrap:wrap; gap:14px; padding:4px 0 10px 0; border-bottom:1px solid #E7E5DC; margin-bottom:4px;">
               <span class="cal-legend-item">
-                <i class="cal-legend-box" style="background:#fbe3e0;"></i>
+                <i class="cal-legend-box" style="background:var(--kal-volno);"></i>
+                Volno
+              </span>
+              <span class="cal-legend-item">
+                <i class="cal-legend-box" style="background:var(--kal-vybrano);"></i>
+                Váš termín
+              </span>
+              <span class="cal-legend-item">
+                <i class="cal-legend-box" style="background:var(--kal-plno);"></i>
                 ${jedenPokoj ? 'Pokoj obsazený' : 'Obsazeno'}
               </span>
               ${jedenPokoj ? '' : `
               <span class="cal-legend-item">
-                <i class="cal-legend-box" style="background:#fdf3d7;"></i>
+                <i class="cal-legend-box" style="background:var(--kal-castecne);"></i>
                 Částečně obsazeno
               </span>`}
-              <span class="cal-legend-item">
-                <i class="cal-legend-box" style="background:#eef3e6;"></i>
-                Váš termín
-              </span>
             </div>
             ${effectiveFrom && effectiveTo ? `
               <div class="cal-range-summary" style="display: flex; flex-direction: column; gap: 2px;">

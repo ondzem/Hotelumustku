@@ -83,10 +83,17 @@ export function prazdnyPrehled() {
 }
 
 /** Je pokoj v daný den zabraný? Vrací důvod, nebo null. */
+/*
+ * Archivovaná rezervace obsazuje dál. Dřív se tu `is_archived` vynechávalo,
+ * jenže web ani ruční zápis ho nevynechávají — archivovaný pobyt tak byl
+ * v Dostupnosti volný a na webu obsazený, a majitel hlásil, že „volné
+ * datum je zabrané". Archiv je jen odklizení z hlavního seznamu, ne
+ * storno; a v minulých měsících má být vidět, kdo tam byl, i po
+ * archivaci.
+ */
 export function zabranyDuvod(ad, den, roomId) {
   const rezervace = (ad.reservations || []).find(r =>
     r.room_id === roomId
-    && !r.is_archived
     && !(r.status && (String(r.status).startsWith('cancelled') || r.status === 'stornováno'))
     && den >= r.date_from && den < r.date_to);
   if (rezervace) return { typ: 'rezervace', popis: rezervace.guest_name || 'Rezervace', zaznam: rezervace };
@@ -109,7 +116,6 @@ export function zabranyDuvod(ad, den, roomId) {
 export function odjezdVDen(ad, den, roomId) {
   const rezervace = (ad.reservations || []).find(r =>
     r.room_id === roomId
-    && !r.is_archived
     && !(r.status && (String(r.status).startsWith('cancelled') || r.status === 'stornováno'))
     && r.date_to === den);
   if (rezervace) return { typ: 'rezervace', popis: rezervace.guest_name || 'Rezervace' };
@@ -130,7 +136,6 @@ export function odjezdVDen(ad, den, roomId) {
 export function prijezdVDen(ad, den, roomId) {
   const rezervace = (ad.reservations || []).find(r =>
     r.room_id === roomId
-    && !r.is_archived
     && !(r.status && (String(r.status).startsWith('cancelled') || r.status === 'stornováno'))
     && r.date_from === den);
   if (rezervace) return { typ: 'rezervace', popis: rezervace.guest_name || 'Rezervace' };
@@ -416,9 +421,10 @@ export function renderDostupnostModal(ad) {
           <div class="cal-grid">${dny}</div>
 
           <div class="cal-legend" style="display:flex; flex-wrap:wrap; gap:14px; padding:12px 6px 2px 6px; border-top:1px solid #E7E5DC; margin-top:8px;">
+            <span class="cal-legend-item"><i class="cal-legend-box" style="background:var(--kal-volno);"></i> Volno</span>
+            <span class="cal-legend-item"><i class="cal-legend-box" style="background:var(--kal-vybrano);"></i> Vybraný termín</span>
             <span class="cal-legend-item"><i class="cal-legend-box" style="background:#f9d9d4;"></i> ${p.roomId === 'all' ? 'Plně obsazeno' : 'Obsazeno'}</span>
             ${p.roomId === 'all' ? '<span class="cal-legend-item"><i class="cal-legend-box" style="background:#fcecc2;"></i> Částečně obsazeno</span>' : ''}
-            <span class="cal-legend-item"><i class="cal-legend-box" style="background:#cadbb0; border-color:#697947;"></i> Vybraný termín</span>
             <span class="cal-legend-item" style="opacity: 0.7;"><i class="cal-legend-box" style="background:#e8e6dd; filter: grayscale(0.35);"></i> Už proběhlo</span>
           </div>
 
