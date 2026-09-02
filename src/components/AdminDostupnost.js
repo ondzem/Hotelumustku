@@ -177,10 +177,17 @@ function stavDne(ad, den, roomId) {
 
   if (roomId !== 'all') {
     const d = zabranyDuvod(ad, den, roomId);
+    // Kolik pokojů je zabraných v CELÉM hotelu — kvůli oranžové. Recepční
+    // (a na webu host) tak vidí, že se hotel plní, i když tenhle pokoj
+    // zrovna volný je. Bez toho svítí kalendář jednoho pokoje celý zeleně.
+    const vsechny = prodejnePokoje(ad);
+    const hotelObsazeno = vsechny.filter(r => zabranyDuvod(ad, den, r.id)).length;
     return {
       volno: d ? 0 : 1,
       celkem: 1,
       duvod: d,
+      hotelObsazeno,
+      hotelCelkem: vsechny.length,
       odjezd: odjezdovy ? odjezdVDen(ad, den, roomId) : null,
       prijezd: prijezdovy ? prijezdVDen(ad, den, roomId) : null,
     };
@@ -214,9 +221,13 @@ export function renderDostupnostModal(ad) {
 
   for (let d = 1; d <= dnuVMesici; d++) {
     const den = `${year}-${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-    const { volno, celkem, duvod, odjezd, prijezd, odjezdy, prijezdy } = stavDne(ad, den, p.roomId);
+    const { volno, celkem, duvod, odjezd, prijezd, odjezdy, prijezdy, hotelObsazeno, hotelCelkem } = stavDne(ad, den, p.roomId);
     const plne = volno === 0;
-    const castecne = volno > 0 && volno < celkem;
+    // Červená = tenhle pokoj (nebo celý hotel) je zabraný, oranžová = volný,
+    // ale jinde v hotelu už rezervace je. Stejné pravidlo jako na webu.
+    const castecne = p.roomId === 'all'
+      ? (volno > 0 && volno < celkem)
+      : (!plne && hotelObsazeno > 0 && hotelObsazeno < hotelCelkem);
     const maOdjezd = p.roomId === 'all' ? (odjezdy || 0) > 0 : Boolean(odjezd);
     const maPrijezd = p.roomId === 'all' ? (prijezdy || 0) > 0 : Boolean(prijezd);
     // Odjezd i příjezd v jeden den znamená, že jsou obě půlky zabrané —
@@ -241,7 +252,9 @@ export function renderDostupnostModal(ad) {
 
     const popisStavu = p.roomId === 'all'
       ? (plne ? 'Plně obsazeno' : `Volných pokojů: ${volno} z ${celkem}`)
-      : (duvod ? (duvod.typ === 'blokace' ? `Blokace: ${duvod.popis}` : `Obsazeno — ${duvod.popis}`) : 'Volno');
+      : (duvod
+        ? (duvod.typ === 'blokace' ? `Blokace: ${duvod.popis}` : `Obsazeno — ${duvod.popis}`)
+        : (castecne ? `Volno — v hotelu obsazeno ${hotelObsazeno} z ${hotelCelkem}` : 'Volno'));
     let popisPrestupu = '';
     if (jeOdjezdovy) {
       popisPrestupu = p.roomId === 'all'
@@ -418,14 +431,14 @@ export function renderDostupnostModal(ad) {
             <span>Po</span><span>Út</span><span>St</span><span>Čt</span><span>Pá</span><span>So</span><span>Ne</span>
           </div>
 
-          <div class="cal-grid${p.roomId === 'all' ? '' : ' je-jeden-pokoj'}">${dny}</div>
+          <div class="cal-grid">${dny}</div>
 
           <div class="cal-legend" style="display:flex; flex-wrap:wrap; gap:14px; padding:12px 6px 2px 6px; border-top:1px solid #E7E5DC; margin-top:8px;">
             <span class="cal-legend-item"><i class="cal-legend-box" style="background:var(--kal-volno);"></i> Volno</span>
             <span class="cal-legend-item"><i class="cal-legend-box" style="background:var(--kal-vybrano);"></i> Vybraný termín</span>
             <span class="cal-legend-item"><i class="cal-legend-box" style="background:#f9d9d4;"></i> ${p.roomId === 'all' ? 'Plně obsazeno' : 'Obsazeno'}</span>
-            ${p.roomId === 'all' ? '<span class="cal-legend-item"><i class="cal-legend-box" style="background:#fcecc2;"></i> Částečně obsazeno</span>' : ''}
-            <span class="cal-legend-item"><i class="cal-legend-box je-pulka${p.roomId === 'all' ? '' : ' je-jeden-pokoj'}"></i> Napůl volno — odjezd do 10:00, příjezd od 15:00</span>
+            <span class="cal-legend-item"><i class="cal-legend-box" style="background:#fcecc2;"></i> Částečně obsazeno</span>
+            <span class="cal-legend-item"><i class="cal-legend-box je-pulka"></i> Odjezd do 10:00, příjezd od 15:00</span>
             <span class="cal-legend-item" style="opacity: 0.7;"><i class="cal-legend-box" style="background:#e8e6dd; filter: grayscale(0.35);"></i> Už proběhlo</span>
           </div>
 

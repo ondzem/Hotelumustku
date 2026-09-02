@@ -1659,9 +1659,20 @@ export class BookingSystem {
       const dayStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       const isPast = dayStr < todayStr;
 
-      const { obsazeno, celkem } = this.getDayOccupancy(dayStr, roomIdForCal);
-      const jePlne = celkem > 0 && obsazeno >= celkem;
-      const jeCastecne = obsazeno > 0 && obsazeno < celkem;
+      // Dvě různé věci naráz, proto dva dotazy:
+      //   ČERVENÁ  — vybraný pokoj (nebo celý hotel) je ten den zabraný,
+      //   ORANŽOVÁ — vybraný pokoj volný, ale někde v hotelu už rezervace je.
+      // Oranžová je záměrně i u konkrétního pokoje: host má vidět, že se
+      // hotel plní, jinak mu celý měsíc svítí zeleně a termín nespěchá.
+      // Do 2. 9. 2026 se počítal jen vybraný pokoj, takže oranžová z výběru
+      // jednoho pokoje zmizela úplně. Ruční zápis v administraci to takhle
+      // dělal odjakživa (`obsazenostDne`), tohle je návrat k témuž pravidlu.
+      const vybraný = this.getDayOccupancy(dayStr, roomIdForCal);
+      const hotel = jedenPokoj ? this.getDayOccupancy(dayStr, 'all') : vybraný;
+      const obsazeno = hotel.obsazeno;
+      const celkem = hotel.celkem;
+      const jePlne = vybraný.celkem > 0 && vybraný.obsazeno >= vybraný.celkem;
+      const jeCastecne = !jePlne && obsazeno > 0 && obsazeno < celkem;
 
       const isFrom = dayStr === effectiveFrom;
       const isTo = dayStr === effectiveTo;
@@ -1718,7 +1729,9 @@ export class BookingSystem {
       } else if (jePrijezdovy) {
         tooltipText = `Do 15:00 je ještě volno, potom se přijíždí${jeCastecne ? ` (obsazeno ${obsazeno} z ${celkem})` : ''}`;
       } else if (jeCastecne) {
-        tooltipText = `Volno máme, obsazeno je ${obsazeno} z ${celkem} pokojů`;
+        tooltipText = jedenPokoj
+          ? `Tento pokoj je volný — v hotelu je obsazeno ${obsazeno} z ${celkem} pokojů`
+          : `Volno máme, obsazeno je ${obsazeno} z ${celkem} pokojů`;
       } else if (jePlne) {
         tooltipText = jedenPokoj ? 'Tento den je pokoj obsazený' : 'Tento den je hotel plně obsazený';
       } else if (isFrom) {
@@ -1780,7 +1793,7 @@ export class BookingSystem {
             <span>Po</span><span>Út</span><span>St</span><span>Čt</span><span>Pá</span><span>So</span><span>Ne</span>
           </div>
 
-          <div class="cal-grid${jedenPokoj ? ' je-jeden-pokoj' : ''}">
+          <div class="cal-grid">
             ${daysHtml}
           </div>
 
@@ -1813,14 +1826,13 @@ export class BookingSystem {
                 <i class="cal-legend-box" style="background:var(--kal-plno);"></i>
                 ${jedenPokoj ? 'Pokoj obsazený' : 'Obsazeno'}
               </span>
-              ${jedenPokoj ? '' : `
               <span class="cal-legend-item">
                 <i class="cal-legend-box" style="background:var(--kal-castecne);"></i>
                 Částečně obsazeno
-              </span>`}
+              </span>
               <span class="cal-legend-item">
-                <i class="cal-legend-box je-pulka${jedenPokoj ? ' je-jeden-pokoj' : ''}"></i>
-                Napůl volno — odjezd do 10:00, příjezd od 15:00
+                <i class="cal-legend-box je-pulka"></i>
+                Odjezd do 10:00, příjezd od 15:00
               </span>
             </div>
             ${effectiveFrom && effectiveTo ? `

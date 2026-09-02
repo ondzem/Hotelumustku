@@ -3629,17 +3629,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   text-shadow: none !important;
 }
 
-/* Jeden vybraný pokoj nemůže být obsazený „částečně" — buď v něm někdo je,
-   nebo není. Oranžová půlka tam proto nemá co dělat: host ji četl jako
-   čtvrtý stav, který v legendě chybí. V režimu jednoho pokoje je půlka
-   červená a znamená totéž co celý červený den, jen na polovinu dne. */
-.cal-grid.je-jeden-pokoj .cal-day.is-turnover-day {
-  background: linear-gradient(to bottom right, var(--kal-plno) 0 50%, var(--kal-volno) 50% 100%) !important;
-}
-.cal-grid.je-jeden-pokoj .cal-day.is-arrival-day {
-  background: linear-gradient(to bottom right, var(--kal-volno) 0 50%, var(--kal-plno) 50% 100%) !important;
-}
-
 /* Plně obsazený hotel má i v půlce sytější barvu. */
 .cal-day.is-full.is-turnover-day {
   background: linear-gradient(to bottom right, var(--kal-plno) 0 50%, var(--kal-volno) 50% 100%) !important;
@@ -3677,10 +3666,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
    a právě na něj se majitel ptal (2. 9. 2026). */
 .cal-legend-box.je-pulka {
   background: linear-gradient(to bottom right, var(--kal-castecne) 0 50%, var(--kal-volno) 50% 100%);
-}
-
-.cal-legend-box.je-pulka.je-jeden-pokoj {
-  background: linear-gradient(to bottom right, var(--kal-plno) 0 50%, var(--kal-volno) 50% 100%);
 }
 
 .cal-modal-footer {
@@ -5230,28 +5215,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   background: linear-gradient(to bottom right, var(--kal-volno) 0 50%, #f9d9d4 50% 100%) !important;
 }
 
-/* Jeden pokoj — půlka červená, viz stejné pravidlo pro web výš.
-   Selektor MUSÍ začínat předkem administrace: bez něj přebíjel i web
-   (stojí v souboru níž) a mřížka pak měla jiný odstín než legenda. */
-.dostupnost-kalendar .cal-grid.je-jeden-pokoj .cal-day.is-turnover-day,
-.rucni-cal-overlay .cal-grid.je-jeden-pokoj .cal-day.is-turnover-day {
-  background: linear-gradient(to bottom right, #f9d9d4 0 50%, var(--kal-volno) 50% 100%) !important;
-}
-.dostupnost-kalendar .cal-grid.je-jeden-pokoj .cal-day.is-arrival-day,
-.rucni-cal-overlay .cal-grid.je-jeden-pokoj .cal-day.is-arrival-day {
-  background: linear-gradient(to bottom right, var(--kal-volno) 0 50%, #f9d9d4 50% 100%) !important;
-}
-
 /* Legenda v administraci nese tytéž odstíny jako její mřížka. */
 .dostupnost-kalendar .cal-legend-box.je-pulka,
 .rucni-cal-overlay .cal-legend-box.je-pulka {
   background: linear-gradient(to bottom right, #fcecc2 0 50%, var(--kal-volno) 50% 100%);
 }
-.dostupnost-kalendar .cal-legend-box.je-pulka.je-jeden-pokoj,
-.rucni-cal-overlay .cal-legend-box.je-pulka.je-jeden-pokoj {
-  background: linear-gradient(to bottom right, #f9d9d4 0 50%, var(--kal-volno) 50% 100%);
-}
-
 /* Půlka v barvě obsazenosti se přes vybraný den už nekreslí — vybraný
    rozsah drží podklad sám (viz AdminDostupnost.js, `jeVybrany`), aby ho
    šlo přečíst vcelku. Obsazenost u vybraných dnů nese rámeček. */

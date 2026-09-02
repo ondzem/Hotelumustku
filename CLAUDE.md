@@ -127,15 +127,24 @@ vybraný termín (příjezd, dny mezi, odjezd) tmavě zelená s bílým číslem
 plno červená, částečně oranžová, minulost šedá. Půlený den má volnou
 půlku zelenou, ne bílou. Legendy začínají položkou Volno.
 
-**Legenda musí vysvětlovat i PŮLENÝ den.** Byl to jediný stav, který
-v ní chyběl — majitel se ptal, co znamená ta oranžová, kterou v legendě
-nenašel (2. 9. 2026). Čtvereček `.cal-legend-box.je-pulka` nese tutéž
-úhlopříčku jako buňka. **U jednoho pokoje je půlka ČERVENÁ, ne oranžová**
-(`.cal-grid.je-jeden-pokoj`): jeden pokoj nemůže být obsazený částečně,
-takže oranžová tam byla čtvrtý stav bez významu. Pravidla pro administraci
-musí začínat předkem `.dostupnost-kalendar` / `.rucni-cal-overlay` — bez
-něj přebijí i web (stojí v souboru níž) a mřížka pak má jiný odstín než
-legenda.
+**ČERVENÁ a ORANŽOVÁ znamenají každá něco jiného a obě musí zůstat.**
+Červená = vybraný pokoj je ten den zabraný (nejde kliknout). Oranžová =
+vybraný pokoj je volný, ale **jinde v hotelu už rezervace je** — jde
+kliknout. Oranžová je tam schválně kvůli tomu, jak to působí na hosta:
+kdyby byl celý měsíc zelený, nikdo nespěchá; když vidí, že se hotel plní,
+rezervuje dřív. Majitel na tom trvá.
+
+Proto se v kalendáři počítají DVĚ obsazenosti — vybraný pokoj (červená)
+a celý hotel (oranžová). Mezi 2. 9. 2026 (`ee34c37`) a opravou téhož dne
+se počítal jen vybraný pokoj, takže při výběru pokoje oranžová zmizela
+úplně a měsíc svítil zeleně. Ruční zápis (`obsazenostDne`) to takhle dělal
+odjakživa; web a Dostupnost se k němu vrátily. **Nikdy nesluč obojí do
+jednoho čísla.**
+
+Legenda vypisuje všechny stavy, které se v mřížce můžou objevit, včetně
+půleného dne (`.cal-legend-box.je-pulka` nese tutéž úhlopříčku). Půlka se
+řídí obsazeností té buňky — u půleného dne je vybraný pokoj VOLNÝ, takže
+červená půlka by lhala.
 
 **Minulé dny v kalendáři nedostávají barvu obsazenosti.** Růžová a žlutá
 v už proběhlém týdnu vypadaly jako rozbité vykreslení a vedly k hlášení,
