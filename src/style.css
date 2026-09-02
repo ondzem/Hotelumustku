@@ -1437,29 +1437,6 @@ h3 {
   margin-bottom: 56px;
 }
 
-/* Mezisezóna na stránce Skupinové akce.
-   Období, kdy je hotel volný pro celou skupinu, je pro tuhle stránku
-   prodejní argument — proto se od okolního textu odliší, ale zůstává
-   jedním odstavcem. Sekce už nese dost informací a majitel výslovně
-   nechtěl, aby ji další blok zahltil. */
-.events-mezisezona {
-  font-size: 16.5px !important;
-  line-height: 1.6 !important;
-  color: #33401a !important;
-  background: #f2f5ec;
-  border-left: 3px solid #697947;
-  border-radius: 0 6px 6px 0;
-  padding: 14px 18px !important;
-  margin: 0 0 24px 0 !important;
-}
-
-@media (max-width: 768px) {
-  .events-mezisezona {
-    font-size: 15.5px !important;
-    padding: 12px 15px !important;
-  }
-}
-
 .btn-about {
   height: 45px;
   padding: 0 28px;

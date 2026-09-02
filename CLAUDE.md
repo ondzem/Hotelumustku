@@ -469,10 +469,15 @@ odkaz na Skupinové akce a telefon. **Nevracej to na „zavřeno".**
 Konstanta se pořád jmenuje `MIMO_PROVOZ` (kvůli vazbám v kódu), ale
 směrem k hostovi se o zavírání nikde nemluví. Stejné přeladění platí
 i pro poznámku u vybraného termínu (`renderSezonaNote`), pro odstavec
-o mezisezóně v Podmínkách a pro odstavec `.events-mezisezona` v sekci
-„Celý hotel jen pro vás" na stránce Skupinové akce. Ten je schválně
-jednovětý — sekce už nese dost informací a majitel výslovně nechtěl,
-aby ji další blok zahltil.
+o mezisezóně v Podmínkách a pro odstavec v sekci „Celý hotel jen pro vás"
+na stránce Skupinové akce.
+
+Ten poslední je schválně **obyčejný `<p>` bez vlastního vzhledu** —
+žádný rámeček, barva ani tučné písmo. Nejdřív měl vlastní styl
+(`.events-mezisezona`) a majitel to zamítl: „nechtěl jsem to označovat
+rámečkem ani tučným textem, musí to zapadnout stejně jako ostatní texty,
+aby to lidi poznali, ale nebilo je to do očí." Je jednovětý ze stejného
+důvodu — sekce už nese dost informací.
 
 Vzhled: všechna tři sdělení sdílejí `.booking-poznamka` (oddíl „POZNÁMKY
 V REZERVAČNÍM FORMULÁŘI" v `booking.css`) — tenký svislý proužek, znak
