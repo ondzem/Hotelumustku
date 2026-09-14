@@ -1512,7 +1512,9 @@ export class BookingSystem {
       }
     }
 
-    saveStoredReservation(reservationData);
+    // Jen do zálohy v prohlížeči — do databáze rezervaci právě zapsala
+    // serverová funkce a anonymní klíč do ní psát nesmí.
+    saveStoredReservation(reservationData, true);
 
     if (typeof window.gtag === 'function') {
       window.gtag('event', 'rezervace_odeslana', {

@@ -148,7 +148,16 @@ export function sanitizeReservationForSupabase(raw) {
   return sanitized;
 }
 
-export const saveStoredReservation = (reservation) => {
+/**
+ * @param jenLokalne  přeskočí zápis do databáze a uloží jen zálohu
+ *   v prohlížeči. Používá to veřejný formulář: rezervaci už zapsala
+ *   serverová funkce (s ověřeným tokenem), takže druhý zápis z prohlížeče
+ *   je zbytečný — a po `supabase-OCHRANA-BOTU.sql` by navíc selhal,
+ *   protože anonymní klíč do `reservations` psát nesmí. Administrace
+ *   volá tuhle funkci bez příznaku: běží pod přihlášeným účtem, na který
+ *   se zákaz nevztahuje.
+ */
+export const saveStoredReservation = (reservation, jenLokalne = false) => {
   const current = getStoredReservations();
   const existingIdx = current.findIndex(r => (r.id && reservation.id && String(r.id) === String(reservation.id)) || (r.code && reservation.code && String(r.code) === String(reservation.code)));
   if (existingIdx >= 0) {
@@ -165,7 +174,7 @@ export const saveStoredReservation = (reservation) => {
     console.error('Failed to save reservation locally:', err);
   }
 
-  if (isSupabaseConfigured && supabase) {
+  if (!jenLokalne && isSupabaseConfigured && supabase) {
     const payload = sanitizeReservationForSupabase(reservation);
     supabase.from('reservations').upsert([payload]).then(({ error }) => {
       if (error) console.error('Supabase async upsert reservation error:', error);
