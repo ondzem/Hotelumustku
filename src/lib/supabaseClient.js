@@ -1,5 +1,6 @@
 // Supabase client initialization & Mock Store for offline/demo execution
 import { createClient } from '@supabase/supabase-js';
+import { odesliFormular } from '../utils/ochranaFormularu.js';
 
 const supabaseUrl = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_SUPABASE_URL) || (typeof process !== 'undefined' && process.env && process.env.VITE_SUPABASE_URL) || 'https://okgbsclaenbxfvxrbjgm.supabase.co';
 const supabaseAnonKey = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_SUPABASE_ANON_KEY) || (typeof process !== 'undefined' && process.env && process.env.VITE_SUPABASE_ANON_KEY) || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rZ2JzY2xhZW5ieGZ2eHJiamdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4NjE1OTYsImV4cCI6MjEwMjQzNzU5Nn0.UmlC5AXnlWvhW4vyoSCYLZ_G1GjfMSjRTEkaBccNwFo';
@@ -698,33 +699,29 @@ export const initStoredDisabledRoomsInMock = () => {
 initStoredDisabledRoomsInMock();
 
 // Uložení zprávy z kontaktního formuláře do Supabase databáze
-export const saveContactMessage = async (messageData) => {
-  if (isSupabaseConfigured && supabase) {
-    try {
-      // Bez `.select()`. Kdo zprávu píše, nemá právo si ji přečíst zpátky —
-      // kontaktní zprávy jsou vidět jen recepci. Vyžádané vrácení vloženého
-      // řádku by proto skončilo chybou 42501 a formulář by hlásil selhání,
-      // i když se zpráva ve skutečnosti uložila.
-      const { error } = await supabase
-        .from('contact_messages')
-        .insert([{
-          name: messageData.name,
-          surname: messageData.surname,
-          email: messageData.email,
-          phone: messageData.phone || '',
-          message: messageData.message || '',
-          status: 'new'
-        }]);
+/**
+ * Uloží zprávu z kontaktního formuláře.
+ *
+ * Zapisuje se přes serverovou funkci, která ověří token z Turnstile —
+ * anonymní klíč z prohlížeče už do tabulky psát nesmí. Kdyby směl, robot
+ * si ho přečte ve zdrojáku a posílá zprávy rovnou do Supabase, aniž by
+ * stránku vůbec otevřel.
+ */
+export const saveContactMessage = async (messageData, token = '') => {
+  if (isSupabaseConfigured) {
+    const vysledek = await odesliFormular('zprava', {
+      name: messageData.name,
+      surname: messageData.surname,
+      email: messageData.email,
+      phone: messageData.phone || '',
+      message: messageData.message || '',
+    }, token);
 
-      if (error) {
-        console.error('Chyba při ukládání kontaktní zprávy do Supabase:', error);
-        return { success: false, error };
-      }
-      return { success: true, data: null };
-    } catch (err) {
-      console.error('Výjimka při ukládání kontaktní zprávy:', err);
-      return { success: false, error: err };
+    if (!vysledek.ok) {
+      console.error('Chyba při ukládání kontaktní zprávy:', vysledek.chyba);
+      return { success: false, error: new Error(vysledek.chyba) };
     }
+    return { success: true, data: null };
   }
   return { success: true, isMock: true };
 };
@@ -1435,7 +1432,7 @@ export const getStoredReviews = async () => {
   return inMemoryReviews;
 };
 
-export const saveStoredReview = async (reviewPayload) => {
+export const saveStoredReview = async (reviewPayload, token = '') => {
   const gdprAuthor = formatGDPRName(reviewPayload.full_name || reviewPayload.author_name);
   const nowISO = new Date().toISOString();
   const d = new Date();
@@ -1461,21 +1458,23 @@ export const saveStoredReview = async (reviewPayload) => {
   // Always save to localStorage
   safeSetLocalStorage(REVIEWS_LOCAL_KEY, inMemoryReviews);
 
-  // Save to Supabase if available
-  if (isSupabaseConfigured && supabase) {
-    try {
-      // Taky bez `.select()`. Nová recenze čeká na schválení a veřejně
-      // čitelné jsou jen schválené, takže by se vložený řádek nevrátil.
-      const { error } = await supabase
-        .from('reviews')
-        .insert([payload]);
+  // Zápis vede přes serverovou funkci s ověřením tokenu — stejný důvod
+  // jako u kontaktní zprávy. `status` si server nastaví sám, takže si
+  // nikdo nevloží rovnou schválenou recenzi na web.
+  if (isSupabaseConfigured) {
+    const vysledek = await odesliFormular('recenze', {
+      id: payload.id,
+      full_name: payload.full_name,
+      author_name: payload.author_name,
+      text: payload.text,
+      date: payload.date,
+      created_at: payload.created_at,
+    }, token);
 
-      if (!error) {
-        return { success: true, data: payload };
-      }
-    } catch (err) {
-      console.warn('Supabase insert review failed, stored locally:', err);
-    }
+    if (vysledek.ok) return { success: true, data: payload };
+
+    console.warn('Recenzi se nepodařilo uložit:', vysledek.chyba);
+    return { success: false, data: payload, error: new Error(vysledek.chyba) };
   }
 
   return { success: true, data: payload, isLocalOnly: true };
