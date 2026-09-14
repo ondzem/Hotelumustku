@@ -9,6 +9,7 @@ import { calculateReservationPrice, generateReservationCode, generateManageToken
 import { maxOsobNaPokoji, obdobiSOmezenouDostupnosti } from '../utils/cenik.js';
 import { sendEmail, generateEmail1RequestReceived, generateEmail1ReceptionNotification, RECEPCE_PRIJEMCE } from '../utils/emailService.js';
 import { fotkyPokoje } from '../utils/roomGalleries.js';
+import { pripravOchranu, tokenZOchrany, resetOchrany, odesliFormular } from '../utils/ochranaFormularu.js';
 
 /** Kolik elektrokol si jde nejvýš objednat (nabíječky u hotelu). */
 const MAX_ELEKTROKOL = 4;
@@ -1488,17 +1489,26 @@ export class BookingSystem {
       created_at: new Date().toISOString(),
     };
 
-    if (isSupabaseConfigured && supabase) {
-      try {
-        const payload = sanitizeReservationForSupabase(reservationData);
-        const { error } = await supabase.from('reservations').insert([payload]);
-        if (error) {
-          console.error('Failed to insert reservation into Supabase:', error);
-        } else {
-          console.log('✅ Reservation inserted into Supabase:', code);
-        }
-      } catch (err) {
-        console.error('Exception inserting reservation into Supabase:', err);
+    // Zápis vede přes serverovou funkci, která ověří token z Turnstile.
+    // Přímý zápis z prohlížeče anonymním klíčem byl zrušen — ten klíč je
+    // ve zdrojáku stránky, takže robot posílal rezervace rovnou do
+    // Supabase a formulář vůbec neotevřel.
+    if (isSupabaseConfigured) {
+      const ochrana = this.container.querySelector('#ochrana-rezervace');
+      const token = await tokenZOchrany(ochrana);
+      const payload = sanitizeReservationForSupabase(reservationData);
+      const vysledek = await odesliFormular('rezervace', payload, token);
+      resetOchrany(ochrana);
+
+      if (!vysledek.ok) {
+        // Rezervace se NEULOŽILA, takže se nesmí tvářit, že prošla —
+        // host by čekal na potvrzení, které nikdy nepřijde.
+        console.error('Rezervaci se nepodařilo uložit:', vysledek.chyba);
+        this.state.errorMessage = vysledek.chyba;
+        this.state.isSubmitting = false;
+        this.render();
+        this.scrollToErrorMessage();
+        return;
       }
     }
 
@@ -2914,6 +2924,11 @@ export class BookingSystem {
                   <span>✓ Wi-Fi ZDARMA</span>
                 </div>
 
+                <!-- Ochrana proti robotům. Widget se ověří sám na pozadí,
+                     host obvykle nic neklikne. Patří k odesílacímu
+                     tlačítku, ne nad údaje hostů. -->
+                <div id="ochrana-rezervace" class="ochrana-formulare" data-akce="rezervace"></div>
+
                 <button type="submit" class="btn btn-booking-submit btn-confirm-booking ${this.state.isSubmitting ? 'is-loading' : ''}" ${this.state.isSubmitting ? 'disabled' : ''}>
                   ${this.state.isSubmitting ? `
                     <span class="btn-spinner" aria-hidden="true"></span>
@@ -3075,6 +3090,12 @@ export class BookingSystem {
   }
 
   attachEventListeners() {
+    // Widget ochrany se připraví hned, jakmile je formulář na obrazovce.
+    // Token se shání na pozadí, takže než host doplní údaje, je hotový
+    // a odeslání se kvůli němu nezdrží.
+    const ochrana = this.container.querySelector('#ochrana-rezervace');
+    if (ochrana) pripravOchranu(ochrana);
+
     this.container.querySelectorAll('.btn-step-nav').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();

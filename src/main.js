@@ -8,6 +8,7 @@ import { formatCzechPrice } from './utils/pricing.js';
 import { sendEmail, generateEmailContactNotification, generateEmailNewReviewNotification, RECEPCE_PRIJEMCE } from './utils/emailService.js';
 import { initScrollReveal } from './utils/scrollReveal.js';
 import { fotkyPokoje } from './utils/roomGalleries.js';
+import { pripravOchranu, tokenZOchrany, resetOchrany } from './utils/ochranaFormularu.js';
 
 /**
  * Ošetří text, který se vkládá do HTML.
@@ -2262,6 +2263,8 @@ const initInteractivity = () => {
                 <input type="text" id="hp-review-field" tabindex="-1" autocomplete="off">
               </div>
 
+              <div id="ochrana-recenze" class="ochrana-formulare" data-akce="recenze"></div>
+
               <div class="form-field" id="field-wrap-review-name">
                 <label for="review-fullname-input" class="form-label">Jméno a Příjmení <span class="required" style="color: #c62828;">*</span></label>
                 <input type="text" id="review-fullname-input" class="form-input" placeholder="např. Jan Novák" required>
@@ -2310,6 +2313,10 @@ const initInteractivity = () => {
     `;
     navControls.appendChild(btn);
   }
+
+  // Widget ochrany se připraví hned s oknem, ne až při odeslání — token
+  // se shání na pozadí a než host recenzi napíše, je hotový.
+  pripravOchranu(document.getElementById('ochrana-recenze'));
 
   const closeModalBtn = document.getElementById('btn-close-review-modal');
   const cancelModalBtn = document.getElementById('btn-cancel-review-modal');
@@ -2494,8 +2501,17 @@ const initInteractivity = () => {
         status: 'pending_approval'
       };
 
+      // Token se sežene až tady — widget se připravuje od otevření okna,
+      // takže je hotový a čekání je nulové.
+      const ochranaRecenze = document.getElementById('ochrana-recenze');
+      const tokenRecenze = await tokenZOchrany(ochranaRecenze);
+
       try {
-        await saveStoredReview(reviewRecord);
+        const ulozeno = await saveStoredReview(reviewRecord, tokenRecenze);
+        resetOchrany(ochranaRecenze);
+        if (ulozeno && ulozeno.success === false) {
+          throw new Error(ulozeno.error ? ulozeno.error.message : 'Recenzi se nepodařilo uložit.');
+        }
       } catch (saveErr) {
         console.error('Error saving review to store/DB:', saveErr);
       }
@@ -4815,6 +4831,8 @@ const getContactPageHTML = () => `
               </label>
             </div>
 
+            <div id="ochrana-kontakt" class="ochrana-formulare" data-akce="kontakt"></div>
+
             <div class="contact-form-submit-wrap">
               <button type="submit" class="btn btn-contact-submit">Odeslat zprávu</button>
             </div>
@@ -4991,6 +5009,9 @@ const initContactPageInteractivity = () => {
       }
     };
 
+    // Totéž u kontaktního formuláře.
+    pripravOchranu(document.getElementById('ochrana-kontakt'));
+
     requiredInputs.forEach(inp => {
       if (!inp) return;
       inp.addEventListener('invalid', function () {
@@ -5079,8 +5100,14 @@ const initContactPageInteractivity = () => {
 
           const payload = { name, surname, email, phone, message };
 
-          // 1. Uložení do Supabase databáze
-          await saveContactMessage(payload);
+          // 1. Uložení přes serverovou funkci (ověří token z Turnstile)
+          const ochranaKontakt = document.getElementById('ochrana-kontakt');
+          const tokenKontakt = await tokenZOchrany(ochranaKontakt);
+          const ulozeno = await saveContactMessage(payload, tokenKontakt);
+          resetOchrany(ochranaKontakt);
+          if (!ulozeno.success) {
+            throw new Error(ulozeno.error ? ulozeno.error.message : 'Zprávu se nepodařilo odeslat.');
+          }
 
           // 2. Upozornění pro recepci — zatím na soukromou adresu majitele
           const emailTemplate = generateEmailContactNotification(payload);
