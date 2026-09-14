@@ -7,9 +7,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   // VITE_SUPABASE_ANON_KEY tu musí být taky: serverová funkce pro fotky
   // jím ověřuje token přihlášené recepce a bez něj vrací 500.
-  // TURNSTILE_SECRET_KEY potřebuje funkce pro zápis formulářů — bez něj
-  // by lokálně odmítla každou rezervaci, recenzi i zprávu.
-  for (const klic of ['RESEND_API_KEY', 'SUPABASE_SERVICE_ROLE_KEY', 'VITE_SUPABASE_URL', 'VITE_SUPABASE_ANON_KEY', 'TURNSTILE_SECRET_KEY']) {
+  for (const klic of ['RESEND_API_KEY', 'SUPABASE_SERVICE_ROLE_KEY', 'VITE_SUPABASE_URL', 'VITE_SUPABASE_ANON_KEY']) {
     if (env[klic] && !process.env[klic]) process.env[klic] = env[klic];
   }
 
@@ -112,43 +110,6 @@ export default defineConfig(({ mode }) => {
               res.end(await odpoved.text());
             } catch (err) {
               console.error('Chyba serverové funkce e-mailu ve vývoji:', err);
-              res.statusCode = 500;
-              res.setHeader('Content-Type', 'application/json');
-              res.end(JSON.stringify({ error: String(err && err.message) }));
-            }
-          });
-        });
-      }
-    },
-    {
-      /**
-       * Totéž pro zápis veřejných formulářů (rezervace, recenze,
-       * kontakt). Bez tohohle by lokálně žádný formulář neuložil nic —
-       * zápis už nejde z prohlížeče přímo do Supabase, ale jedině přes
-       * tuhle funkci, která ověřuje token z Turnstile.
-       */
-      name: 'serverova-funkce-formularu-ve-vyvoji',
-      configureServer(server) {
-        server.middlewares.use('/.netlify/functions/zapis-formulare', async (req, res) => {
-          let telo = '';
-          req.on('data', (kus) => { telo += kus; });
-          req.on('end', async () => {
-            try {
-              const { default: handler } = await import('./netlify/functions/zapis-formulare.js');
-              const hlavicky = { 'Content-Type': 'application/json' };
-              // Origin se musí přenést — funkce žádost bez něj odmítá.
-              if (req.headers.origin) hlavicky.Origin = req.headers.origin;
-              const pozadavek = new Request('http://localhost/.netlify/functions/zapis-formulare', {
-                method: req.method || 'POST',
-                headers: hlavicky,
-                body: (req.method === 'GET' || req.method === 'HEAD') ? undefined : telo
-              });
-              const odpoved = await handler(pozadavek);
-              res.statusCode = odpoved.status;
-              res.setHeader('Content-Type', 'application/json');
-              res.end(await odpoved.text());
-            } catch (err) {
-              console.error('Chyba serverové funkce formulářů ve vývoji:', err);
               res.statusCode = 500;
               res.setHeader('Content-Type', 'application/json');
               res.end(JSON.stringify({ error: String(err && err.message) }));

@@ -1117,51 +1117,6 @@ která zkusí registraci a čeká `signup_disabled`.
 Bezpečnostní hlavičky jsou v `public/_headers`; `/admin` má navíc
 `noindex` a `no-store`.
 
-## Ochrana formulářů proti robotům
-
-**Zápis z veřejných formulářů vede JEDINĚ přes serverovou funkci.**
-Rezervace, recenze i kontaktní zpráva se dřív zapisovaly přímo
-z prohlížeče anonymním klíčem. Ten klíč je vidět ve zdrojáku stránky,
-takže si ho robot přečte a posílá zápisy rovnou do Supabase REST API —
-formulář vůbec neotevře. **Honeypot ani captcha na to nemají jak
-dosáhnout, protože se nikdy nevykreslí.** Kdo tohle nepochopí, přidá
-captchu do formuláře a bude si myslet, že je hotovo.
-
-- `netlify/functions/zapis-formulare.js` — ověří token u Cloudflare
-  Turnstile a teprve pak zapíše servisním klíčem.
-- `src/utils/ochranaFormularu.js` — vykreslí widget, sežene token,
-  pošle ho s daty. Token **neověřuje prohlížeč**, jen ho přepošle.
-- `supabase-OCHRANA-BOTU.sql` — odebere anonymnímu klíči právo zapisovat
-  do `reservations`, `reviews` a `contact_messages`. Bez tohohle kroku je
-  captcha jen ozdoba a zadní vrátka zůstanou otevřená.
-
-Pět věcí, které nejsou z kódu vidět:
-
-- **Pořadí nasazení je závazné.** Nejdřív do Netlify obě proměnné
-  (`VITE_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`), pak nasadit web,
-  ověřit, že formuláře jdou odeslat, a **teprve potom** spustit SQL.
-  Opačně přestanou formuláře fungovat.
-- **`VITE_TURNSTILE_SITE_KEY` se zapéká při SESTAVENÍ.** Přidat ji do
-  Netlify až po nasazení nestačí — musí se nasadit znovu.
-- **Testovací klíč Cloudflare se dosazuje jen ve vývoji**
-  (`import.meta.env.DEV`). Na produkci schválně ne: s testovacím klíčem
-  na obou stranách projde všechno, formuláře vypadají v pořádku
-  a ochrana není žádná. Tichá díra je horší než rozbitý formulář.
-- **Stav si nastavuje server, ne volající** (`VYNUCENE`
-  v `zapis-formulare.js`). I kdyby někdo token obešel, nevloží si rovnou
-  schválenou recenzi ani potvrzenou rezervaci. Ověřeno: poslaný
-  `status: 'read'` se zapsal jako `new`.
-- **Seznam povolených sloupců je ve funkci ZNOVU** a schválně se nesdílí
-  s `ALLOWED_SUPABASE_COLUMNS`. Ten filtruje, co posílá náš web; sem
-  chodí i to, co si vymyslí útočník. Sdílený seznam by se dřív nebo
-  později rozšířil kvůli administraci a otevřel by i tenhle vchod.
-- **Token je jednorázový.** Po odeslání se musí zavolat `resetOchrany()`,
-  jinak druhý pokus (po chybě ve vyplnění) skončí hláškou o neověření.
-
-Turnstile je zvolený místo reCAPTCHY proto, že **nenastavuje cookies** —
-nespadá tedy do cookie lišty. reCAPTCHA by souhlas potřebovala a formulář
-by šlo odeslat až po odkliknutí analytických cookies.
-
 ## Storno rezervace — dva různé e-maily
 
 **Náhrada se nabízí ve dvou osách: POKOJ i TERMÍN.** Zamítá se vždycky
