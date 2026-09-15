@@ -1594,17 +1594,20 @@ Nespoléhej na to, že změna vypadá správně v kódu. Osvědčené postupy:
   tedy osobní údaje hostů, a repozitář je veřejný. Jsou v `.gitignore`.
 - **Spuštění domény.** Po přepnutí na `umustku.cz` odeslat sitemapu
   a požádat o indexaci.
-- **PŘEPNUTÍ DNS SHODILO POŠTU CELÉ DOMÉNY.** Zjištěno 2. 9. 2026: zóna
-  na Netlify (nameservery `*.nsone.net`) obsahuje jen `A` záznamy webu.
-  Chybí **MX, SPF i poddomény `webmail` / `mail` / `autoconfig`**, které
-  byly ve staré zóně u Forpsi — na `@umustku.cz` proto nedorazí e-mail
-  odnikud. Poštovní schránky u Forpsi žijou dál, jen k nim nevede cesta.
-  Přidat MX a SPF v Netlify → Domains → umustku.cz → DNS records; přesné
-  hodnoty pro tuhle doménu dá Forpsi (chat/tiket v admin.forpsi.com),
-  protože „Editace DNS záznamů" je u nich nedostupná, když doména běží
-  na cizích nameserverech. Do té doby nemá smysl řešit velikost schránky.
+- ~~**PŘEPNUTÍ DNS SHODILO POŠTU CELÉ DOMÉNY.**~~ Opraveno 15. 9. 2026.
+  Zóna na Netlify (nameservery `*.nsone.net`) obsahovala po přepnutí jen
+  `A` záznamy webu — chyběly **MX, SPF i poddomény `webmail` / `mail` /
+  `autoconfig`** ze staré zóny u Forpsi, takže na `@umustku.cz` nedorazil
+  e-mail odnikud. Schránky u Forpsi přitom žily dál, jen k nim nevedla
+  cesta. Záznamy jsou doplněné v Netlify → Domains → umustku.cz → DNS
+  records (`MX 10 mxavas.forpsi.com`, `v=spf1 include:_spf.forpsi.com
+  include:amazonses.com ~all`, `webmail` → `webmail.forpsi.com`); přesné
+  hodnoty dal Forpsi, protože „Editace DNS záznamů" je u nich nedostupná,
+  když doména běží na cizích nameserverech.
   **Při každé další změně nameserverů se musí přenést CELÁ zóna, ne jen
-  web.**
+  web.** Tohle je jediná chyba v projektu, která shodila službu mimo web
+  — kdo mění nameservery, ověří starou zónu ZÁZNAM PO ZÁZNAMU, ne jen to,
+  že se stránka načte.
 
 ---
 
