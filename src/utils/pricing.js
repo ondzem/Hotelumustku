@@ -21,8 +21,8 @@ import {
  * Předčíslí se píše s pomlčkou (`19-2000145399/0800`), jinak se slije
  * s číslem účtu a IBAN vyjde špatně.
  */
-export const BANK_ACCOUNT = '293470312/0300';
-export const BANK_NAME = 'ČSOB';
+export const BANK_ACCOUNT = '3724012019/3030';
+export const BANK_NAME = 'Air Bank';
 
 /**
  * Výchozí hodnoty příplatků.
