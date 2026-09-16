@@ -1162,6 +1162,33 @@ Turnstile je zvolený místo reCAPTCHY proto, že **nenastavuje cookies** —
 nespadá tedy do cookie lišty. reCAPTCHA by souhlas potřebovala a formulář
 by šlo odeslat až po odkliknutí analytických cookies.
 
+## Bankovní spojení a QR platba
+
+Číslo účtu je v kódu na **jednom** místě — `BANK_ACCOUNT` a `BANK_NAME`
+v `src/utils/pricing.js`. Odtud si ho bere e-mail s pokyny k záloze
+i `generateSpaydQrUrl()`, který z něj počítá IBAN do QR kódu.
+
+Textem je ale ještě v **Podmínkách, a to dvakrát** — v `podminky.html`
+i v šabloně v `main.js` (viz oddíl 1). Statická stránka si modul
+naimportovat nemůže, takže se to opsat musí. Když se změní jen jedno
+místo, uvidí host jiný účet podle toho, kudy na stránku přišel, než na
+jaký mu přijde QR kód. Hlídá to `kontrola/qr-platba.mjs`, která obě
+stránky čte a porovnává s `BANK_ACCOUNT`.
+
+**Předčíslí se do IBANu nesmí slít s číslem účtu.** Český IBAN má pevnou
+skladbu — `CZ` + 2 kontrolní číslice + 4 kód banky + 6 předčíslí +
+10 číslo účtu, dohromady vždy 24 znaků. Do 16. 9. 2026 se z čísla účtu
+vymazalo všechno kromě číslic, takže z `19-2000145399/0800` vzniklo
+dvanáctimístné `192000145399` a IBAN měl 26 znaků. Zrádné na tom je, že
+**kontrolní číslice se dopočítají z čehokoli**, takže takový IBAN projde
+i kontrolou mod 97 a na pohled vypadá v pořádku. Rozkládá to
+`rozlozUcet()`, počítá `ibanZUctu()` a kontrola ověřuje délku i umístění
+každé části zvlášť, ne jen kontrolní součet.
+
+Účet, kterým hotel platil dřív, nechávej v platnosti, dokud nedojdou
+zálohy k rezervacím, které si host odnesl ve starém e-mailu — QR kód už
+odeslaný zpětně nepřepíšeš.
+
 ## Storno rezervace — dva různé e-maily
 
 **Náhrada se nabízí ve dvou osách: POKOJ i TERMÍN.** Zamítá se vždycky
@@ -1515,7 +1542,7 @@ Pozor na dvě věci, které vypadají jako chyba a nejsou:
 
 ## Jak si ověřit, že to funguje
 
-Nejdřív `./zkontroluj.sh` (nebo `npm run zkontroluj`). Projde 43 kontrol:
+Nejdřív `./zkontroluj.sh` (nebo `npm run zkontroluj`). Projde 44 kontrol:
 sestavení, shodu hlaviček napříč stránkami, matematiku ceníku a zálohy,
 klíče v balíčku, typy e-mailů, dostupnost nasazených stránek, odmítání
 neoprávněných volání serverových funkcí a pravidla v databázi. S přepínačem

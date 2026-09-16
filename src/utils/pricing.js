@@ -9,6 +9,18 @@ import {
   VYCHOZI_SOLO,
 } from './cenik.js';
 
+/**
+ * Bankovní spojení hotelu.
+ *
+ * Odtud se bere číslo účtu do e-mailu s pokyny k záloze i IBAN do QR
+ * kódu — nikam jinam do kódu se nepíše. Textem je ale ještě v Podmínkách,
+ * a to na DVOU místech naráz (`podminky.html` i šablona v `main.js`),
+ * protože statická stránka o tenhle modul nezavadí. Při změně účtu se
+ * musí přepsat všechna tři místa; hlídá to `kontrola/qr-platba.mjs`.
+ *
+ * Předčíslí se píše s pomlčkou (`19-2000145399/0800`), jinak se slije
+ * s číslem účtu a IBAN vyjde špatně.
+ */
 export const BANK_ACCOUNT = '293470312/0300';
 export const BANK_NAME = 'ČSOB';
 
@@ -342,12 +354,50 @@ export function formatCzechPrice(val) {
 }
 
 /**
+ * Rozloží české číslo účtu na předčíslí, číslo a kód banky.
+ *
+ * Předčíslí je oddělené pomlčkou a **nesmí se slít s číslem účtu** —
+ * z `19-2000145399/0800` se dřív vyrobilo dvanáctimístné „192000145399",
+ * takže IBAN vyšel o dva znaky delší, než český IBAN být smí (24 znaků).
+ * Kontrolní číslice se přitom počítaly z toho rozbitého základu, takže
+ * takový IBAN prošel i kontrolou mod 97 a chyba nebyla nijak vidět —
+ * peníze by ale doputovaly špatně nebo vůbec.
+ */
+export function rozlozUcet(ucet) {
+  const text = String(ucet || BANK_ACCOUNT);
+  const [pred, kod] = text.split('/');
+  const [predcisli, cislo] = String(pred || '').includes('-')
+    ? String(pred).split('-')
+    : ['', pred];
+
+  return {
+    predcisli: String(predcisli || '').replace(/[^0-9]/g, ''),
+    cislo: String(cislo || '').replace(/[^0-9]/g, ''),
+    kodBanky: String(kod || '').replace(/[^0-9]/g, '').padStart(4, '0'),
+  };
+}
+
+/**
+ * Spočítá IBAN z českého čísla účtu.
+ *
+ * Skladba je pevná: CZ + 2 kontrolní číslice + 4 kód banky + 6 předčíslí
+ * + 10 číslo účtu, tedy vždy 24 znaků. Předčíslí i číslo se doplňují
+ * nulami zleva; kdo je nedoplní, dostane kratší řetězec a jiné kontrolní
+ * číslice.
+ */
+export function ibanZUctu(ucet) {
+  const { predcisli, cislo, kodBanky } = rozlozUcet(ucet);
+  const bban = kodBanky + predcisli.padStart(6, '0') + cislo.padStart(10, '0');
+  // Kontrolní číslice: BBAN + „CZ" přepsané na čísla (C=12, Z=35) + „00",
+  // celé modulo 97, a od 98 odečíst zbytek.
+  const zbytek = BigInt(bban + '123500') % 97n;
+  return `CZ${String(98n - zbytek).padStart(2, '0')}${bban}`;
+}
+
+/**
  * Generates Czech SPAYD QR Code image URL (scannable by all Czech bank mobile apps)
  */
 export function generateSpaydQrUrl({ bankAccount = BANK_ACCOUNT, amount = 0, vs = '', message = 'Hotel u Mustku' }) {
-  const parts = String(bankAccount || '293470312/0300').split('/');
-  const accountNumber = (parts[0] || '293470312').replace(/[^0-9]/g, '');
-  const bankCode = (parts[1] || '0300').replace(/[^0-9]/g, '').padStart(4, '0');
   const cleanVs = String(vs).replace(/[^0-9]/g, '') || '2026001';
   const safeAmount = Number(amount || 0).toFixed(2);
   const cleanMsg = String(message || 'Zaloha ubytovani')
@@ -356,13 +406,7 @@ export function generateSpaydQrUrl({ bankAccount = BANK_ACCOUNT, amount = 0, vs 
     .replace(/[^a-zA-Z0-9 -]/g, '')
     .substring(0, 60);
 
-  // Exact IBAN calculation for Czech bank accounts (ČSOB 0300)
-  const ibanPaddedNumber = accountNumber.padStart(10, '0');
-  const ibanPaddedPrefix = '000000';
-  const bban = bankCode + ibanPaddedPrefix + ibanPaddedNumber;
-  const checkNum = BigInt(bban + '123500') % 97n;
-  const checkDigits = String(98n - checkNum).padStart(2, '0');
-  const iban = `CZ${checkDigits}${bban}`;
+  const iban = ibanZUctu(bankAccount);
 
   // Standard Czech SPAYD string format (ČBA standard)
   const spaydString = `SPD*1.0*ACC:${iban}*AM:${safeAmount}*CC:CZK*X-VS:${cleanVs}*MSG:${cleanMsg}`;
