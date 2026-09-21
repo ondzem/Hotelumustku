@@ -37,7 +37,7 @@ else
   read -r -s -p "Zopakujte heslo: " HESLO2; echo
   [ "$HESLO" = "$HESLO2" ] || { echo "Hesla se neshodují, nic se nezměnilo."; exit 1; }
 fi
-[ ${#HESLO} -ge 12 ] || { echo "Heslo musí mít aspoň 12 znaků, nic se nezměnilo."; exit 1; }
+[ -n "$HESLO" ] || { echo "Heslo je prázdné, nic se nezměnilo."; exit 1; }
 
 json() { python3 -c 'import json,sys; print(json.dumps(sys.argv[1]))' "$1"; }
 pole() { python3 -c 'import json,sys; d=json.load(sys.stdin); print(eval(sys.argv[1]))' "$1"; }
