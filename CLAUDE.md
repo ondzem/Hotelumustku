@@ -1020,6 +1020,20 @@ tím dostane do zdrojáku, což nevadí — je to uživatelské jméno, ne pří
 údaj. Když proměnná chybí, formulář si o e-mail řekne, aby se nikdo
 nezamkl venku.
 
+**2b. Změna hesla a odhlášení všech zařízení: `./zmenit-heslo-recepce.sh`.**
+Heslo se zadává jen do terminálu (nezobrazuje se), skript ho nastaví
+servisním klíčem, ověří přihlášením a pak zavolá `logout?scope=global`,
+který zruší všechny relace účtu. Nikdy heslo neposílej do chatu ani ho
+nenastavuj „za majitele" — viz oddíl o testování administrace.
+
+Samotná změna hesla **přihlášená zařízení neodhlásí** — relace žijí dál.
+A zrušenou relaci administrace dřív nepoznala: `obnovPrihlaseni()` volal
+jen `getSession()`, který čte prohlížeč a na server se neptá. Teď ji
+ověřuje `getUser()` (zrušená relace vrátí 403) a `onAuthStateChange`
+přepne na přihlášení, když obnova tokenu za běhu selže. Už vydaný
+přístupový token pro čtení dat platí ale dál až do vypršení (hodina) —
+PostgREST kontroluje jen podpis, ne existenci relace.
+
 **2. Administrace se přihlašuje do Supabase Auth.** Dřív se porovnával
 otisk hesla v prohlížeči a do databáze se chodilo týmž anon klíčem jako za
 návštěvníka — přihlášení tedy nechránilo vůbec nic. Navíc stačilo

@@ -226,6 +226,20 @@ export class AdminDashboard {
       });
     }
 
+    // Když se relace zruší za běhu (vyprší a obnova tokenu selže, protože
+    // ji na serveru někdo odhlásil), musí se okno přepnout na přihlášení.
+    // Jinak by administrace dál vypadala otevřená a jen by jí tiše
+    // přestala chodit data.
+    if (!this._relaceHlidana && isSupabaseConfigured && supabase) {
+      this._relaceHlidana = true;
+      supabase.auth.onAuthStateChange((udalost) => {
+        if (udalost === 'SIGNED_OUT' && this.isAuthenticated) {
+          this.isAuthenticated = false;
+          this.render();
+        }
+      });
+    }
+
     // Nejdřív se zeptáme Supabase, jestli platí přihlášení z minule.
     // Bez tohohle by po obnovení stránky recepční vypadl, i když má
     // token pořád platný.
@@ -781,12 +795,34 @@ export class AdminDashboard {
     this.init();
   }
 
-  /** Obnoví přihlášení po znovunačtení stránky. */
+  /**
+   * Obnoví přihlášení po znovunačtení stránky.
+   *
+   * `getSession()` jen přečte relaci z prohlížeče a na server se neptá,
+   * takže relace zrušená na serveru (změna hesla, odhlášení všech
+   * zařízení skriptem `zmenit-heslo-recepce.sh`) by tu dál vypadala
+   * platně, dokud nevyprší token. Proto se ji ještě ověří `getUser()`.
+   *
+   * Odhlašuje se jen při odmítnutí serverem (401/403). Výpadek sítě
+   * vrací taky chybu, ale kvůli němu recepčního vyhazovat nechceme.
+   */
   async obnovPrihlaseni() {
     if (!isSupabaseConfigured || !supabase) return false;
     const { data } = await supabase.auth.getSession();
-    this.isAuthenticated = Boolean(data && data.session);
-    return this.isAuthenticated;
+    if (!data || !data.session) {
+      this.isAuthenticated = false;
+      return false;
+    }
+
+    const { error } = await supabase.auth.getUser();
+    if (error && [401, 403].includes(error.status)) {
+      try { await supabase.auth.signOut({ scope: 'local' }); } catch (e) {}
+      this.isAuthenticated = false;
+      return false;
+    }
+
+    this.isAuthenticated = true;
+    return true;
   }
 
   /**
