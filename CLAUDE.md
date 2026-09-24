@@ -682,6 +682,48 @@ Dvě věci, které nejsou z kódu vidět:
   nespojí právě to šrafování — a hlavně je to jiná věc než host, takže
   se nesmí splést. Legenda pod plachtou vypisuje všechny čtyři stavy.
 
+## Kalendář nad seznamem rezervací
+
+Měsíční kalendář mezi tlačítky Export / Nová rezervace a seznamem karet
+(`AdminKalendar.js`, matematika v `src/utils/kalendarRezervaci.js`,
+hlídá `kontrola/kalendar.mjs`). Klepnutí na den zúží seznam pod ním na
+rezervace, kterých se ten den týká. Vznikl na přání majitele jako
+rychlá odpověď na „co mám dvacátého šestého", aby se kvůli tomu
+nemuselo otevírat okno Dostupnosti.
+
+**Není to čtvrtý způsob, jak zavírat provoz, a nic nezapisuje.** Jen
+filtruje seznam. Plánuje se dál v Dostupnosti — tam je obsazenost po
+pokojích a zápis rezervace i blokace. Kdyby sem někdo přidal zápis,
+vznikne přesně ta duplicita, kterou popisuje oddíl „Zavírání provozu".
+
+Pět věcí, které nejsou z kódu vidět:
+
+- **Do seznamu spadne i ten, kdo ten den ODJÍŽDÍ.** `date_to` je
+  výlučné, takže odjezd není „nic" — recepční ten pokoj ten den
+  uklízí a potřebuje ho v seznamu vidět. Rozlišuje to `vztahKeDni()`
+  na příjezd / pobyt / odjezd.
+- **Tečka v buňce je semafor fází**, tedy stejná barva jako proužek
+  karty a pruh v plachtě (`--faze1/2/3` a šedá u storna). Odstín se tu
+  nikdy nepíše natvrdo; se čtvrtým místem, kde ta barva něco znamená,
+  je o to důležitější to držet pohromadě.
+- **Storno má tečku, ale nepočítá se do obsazenosti.** Den, kde všechno
+  odpadlo, musí vypadat volně. Do souhrnu se vypisuje zvlášť
+  („3 stornované"), protože v seznamu pod kalendářem ty rezervace jsou
+  — bez toho řádku by počty nesouhlasily s počtem karet.
+- **Archiv se do teček počítá.** Archivovaná rezervace pořád obsazuje
+  (viz oddíl 2); v seznamu ale je jen ve své sekci, takže souhrn může
+  být o archivované vyšší než počet karet.
+- **Buňka není čtverec.** Přes `aspect-ratio` vycházela na 1440 px
+  vysoká 181 px a kalendář zabral obrazovku dřív než seznam, kvůli
+  kterému tam je. Výška je proto `clamp(38px, 5.2vw, 54px)` a mřížka má
+  strop `max-width: 900px`. Na telefonu má buňka pevných 44 px na výšku
+  kvůli dotyku; do šířky se na 320px displeji víc než 37 px vejít
+  nedá, sloupců je sedm.
+
+Vybraný den přežije překliknutí měsíce i sekce — souhrn se proto
+vykresluje i tehdy, když vybraný den v zobrazeném měsíci není. Jinak by
+seznam zůstal zúžený a nebylo by podle čeho poznat proč.
+
 ## Plachta dostupnosti — pokoje v řádcích, dny ve sloupcích
 
 Okno 📆 Dostupnost a blokace má **dva pohledy** a přepínají se nahoře:
@@ -1556,7 +1598,7 @@ Pozor na dvě věci, které vypadají jako chyba a nejsou:
 
 ## Jak si ověřit, že to funguje
 
-Nejdřív `./zkontroluj.sh` (nebo `npm run zkontroluj`). Projde 44 kontrol:
+Nejdřív `./zkontroluj.sh` (nebo `npm run zkontroluj`). Projde 45 kontrol:
 sestavení, shodu hlaviček napříč stránkami, matematiku ceníku a zálohy,
 klíče v balíčku, typy e-mailů, dostupnost nasazených stránek, odmítání
 neoprávněných volání serverových funkcí a pravidla v databázi. S přepínačem

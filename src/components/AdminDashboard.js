@@ -8,6 +8,7 @@ import { printReservationSheet } from '../utils/printReservationService.js';
 import { renderCenikModal, bindCenikModal } from './AdminCenik.js';
 import { renderRucniRezervaceModal, bindRucniRezervaceModal, prazdnaRucniRezervace } from './AdminRucniRezervace.js';
 import { renderDostupnostModal, bindDostupnostModal, prazdnyPrehled } from './AdminDostupnost.js';
+import { renderKalendarRezervaci, bindKalendarRezervaci, filtrPodleDne, prazdnyKalendar } from './AdminKalendar.js';
 
 function formatCzechDateStr(dateStr) {
   if (!dateStr) return '';
@@ -191,6 +192,10 @@ export class AdminDashboard {
     this.tempValidUntil = '';
     this.selectedRoomFilter = 'all';
     this.statusFilter = 'all';
+    // Měsíční kalendář nad seznamem: zobrazený měsíc a vybraný den.
+    // Drží se na instanci ze stejného důvodu jako hledaný výraz —
+    // administrace se překresluje přes innerHTML.
+    this.kalendar = prazdnyKalendar();
     // Hledaný výraz v seznamu rezervací. Drží se na instanci, ne v DOM —
     // administrace se překresluje přes innerHTML a políčko by se vyprázdnilo
     // pokaždé, když se na pozadí načtou nová data.
@@ -1331,11 +1336,13 @@ export class AdminDashboard {
     const sediHledani = (r) => !hledani || textProHledani(r, nazevPokoje(r)).includes(hledani);
 
     const vSekci = this.statusFilter === 'archived' ? archivedReservations : activeReservations;
-    const filteredReservations = vSekci.filter(r => {
+    // Vybraný den z kalendáře se skládá s ostatními filtry stejně jako
+    // hledání — zužuje to, co je vidět, nepřepíná sekci ani stav.
+    const filteredReservations = filtrPodleDne(this, vSekci.filter(r => {
       const matchRoom = this.selectedRoomFilter === 'all' || r.room_id === this.selectedRoomFilter;
       const matchStatus = this.statusFilter === 'all' || this.statusFilter === 'archived' || r.status === this.statusFilter;
       return matchRoom && matchStatus && sediHledani(r);
-    });
+    }));
 
     // Kolik by hledání našlo, kdyby se nekoukalo na stav, pokoj a archiv.
     // Recepční hledá hosta, ne stav — a když je host o záložku vedle nebo
@@ -1457,13 +1464,19 @@ export class AdminDashboard {
           </button>
         </div>
 
+        <!-- KALENDÁŘ NAD SEZNAMEM (AdminKalendar.js) — klepnutí na den
+             zúží seznam pod ním na rezervace, kterých se ten den týká. -->
+        ${renderKalendarRezervaci(this)}
+
         <!-- SEZNAM KARET REZERVACÍ -->
         <div class="admin-reservations-container">
           ${filteredReservations.length === 0 ? `
             <div class="admin-res-card admin-prazdny-seznam" style="text-align: center; padding: 48px 24px; color: #666660;">
               <p style="margin: 0; font-size: 16px; font-weight: 600;">${this.hledanyVyraz
                 ? `Nic neodpovídá výrazu „${escapujText(this.hledanyVyraz)}".`
-                : 'Žádné rezervace neodpovídají vybraným filtrům.'}</p>
+                : this.kalendar && this.kalendar.vybranyDen
+                  ? `Na ${formatCzechDateStr(this.kalendar.vybranyDen)} tu nic není.`
+                  : 'Žádné rezervace neodpovídají vybraným filtrům.'}</p>
               ${this.hledanyVyraz && nalezenoJinde > 0
                 ? `<p style="margin: 8px 0 0 0; font-size: 13.5px;">Jinde ${nalezenoJinde === 1 ? 'je 1 rezervace, která odpovídá' : `jsou ${nalezenoJinde} rezervace, které odpovídají`}. <button type="button" class="admin-hledani-vsude" data-cil="${kam.cil}">${kam.popisek}</button></p>`
                 : ''}
@@ -2579,6 +2592,7 @@ export class AdminDashboard {
       });
     }
     bindDostupnostModal(this);
+    bindKalendarRezervaci(this);
 
     if (btnCancelDelete) {
       btnCancelDelete.addEventListener('click', () => {

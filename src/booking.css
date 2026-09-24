@@ -6711,3 +6711,281 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 /* Místo pro křížek, ať nepřekrývá štítek. */
 .booking-mimo-sezonu .mimo-sezonu-stitek { padding-right: 28px; }
+
+/* ============================================================
+   KALENDÁŘ NAD SEZNAMEM REZERVACÍ  (AdminKalendar.js)
+   ============================================================
+   Rychlý filtr seznamu na jedno klepnutí. Barvy teček jsou semafor
+   fází (--faze1/2/3) a paleta kalendáře (--kal-*) — nic se tu nepíše
+   natvrdo, aby se odstíny nerozešly s kartami a s plachtou.
+
+   Buňky jsou čtvercové přes aspect-ratio, ne pevnou výšku: mřížka se
+   tím plynule zmenšuje s šířkou okna a na telefonu nezůstanou čísla,
+   do kterých se nedá trefit. Minimum drží min-height.
+   ============================================================ */
+
+.kal-rez {
+  background: #ffffff;
+  border: 1px solid #e7e5dc;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+.kal-rez-hlavicka {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.kal-rez-mesic {
+  flex: 1 1 auto;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1c1c19;
+  letter-spacing: -0.01em;
+}
+
+.kal-rez-sipka {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  line-height: 1;
+  color: #1c1c19;
+  background: #ffffff;
+  border: 1px solid #e7e5dc;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.kal-rez-sipka:hover { background: #f4f2eb; border-color: #d8d5c8; }
+
+.kal-rez-dnes {
+  flex: 0 0 auto;
+  height: 34px;
+  padding: 0 12px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #4f5c34;
+  background: var(--kal-volno);
+  border: 1px solid var(--kal-volno-ramecek);
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+}
+
+.kal-rez-dnes:hover { background: var(--kal-volno-hover); }
+
+/* Mřížka se na širokém monitoru nenatahuje donekonečna. Bez stropu
+   vycházela na 1440px buňka 181 px vysoká a kalendář zabral celou
+   obrazovku dřív, než začal seznam, kvůli kterému tu je. */
+.kal-rez-mrizka {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.kal-rez-nazev-dne {
+  text-align: center;
+  font-size: 11.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #8a8a80;
+  padding-bottom: 4px;
+}
+
+.kal-rez-den {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  width: 100%;
+  /* Výška se řídí šířkou okna, ne poměrem stran buňky: čtvercová buňka
+     je na desktopu zbytečně vysoká a na telefonu zas tak nízká, že se
+     do čísla nedá trefit. Spodní hranice drží dotykovou plochu. */
+  height: clamp(38px, 5.2vw, 54px);
+  padding: 0;
+  background: #ffffff;
+  border: 1px solid #ecebe3;
+  border-radius: 8px;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.kal-rez-den:hover { background: #f4f2eb; border-color: #d8d5c8; }
+.kal-rez-den:active { transform: scale(0.96); }
+
+.kal-rez-cislo {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #1c1c19;
+  line-height: 1;
+}
+
+/* Minulost se jen ztlumí, nezakazuje — majitel se do starých měsíců
+   dívá schválně, když dohledává, kdo tam byl. */
+.kal-rez-den.je-minulost { opacity: 0.7; }
+
+/* Dny ze sousedního měsíce drží mřížku celá, ale nemají tahat oko. */
+.kal-rez-den.je-cizi-mesic { background: #fbfaf7; border-color: #f2f1ea; }
+.kal-rez-den.je-cizi-mesic .kal-rez-cislo { color: #a8a89e; font-weight: 500; }
+
+/* Dnešek nese prstenec, ne výplň — výplň patří vybranému dni. */
+.kal-rez-den.je-dnes { border-color: var(--kal-vybrano); box-shadow: inset 0 0 0 1px var(--kal-vybrano); }
+
+.kal-rez-den.je-vybrany,
+.kal-rez-den.je-vybrany.je-cizi-mesic {
+  background: var(--kal-vybrano);
+  border-color: var(--kal-vybrano-ramecek);
+  opacity: 1;
+}
+
+.kal-rez-den.je-vybrany .kal-rez-cislo,
+.kal-rez-den.je-vybrany.je-cizi-mesic .kal-rez-cislo {
+  color: var(--kal-vybrano-text);
+  font-weight: 700;
+}
+
+/* Zavřený den nese tentýž šrafovaný proužek jako blokace jinde
+   v administraci — je to jiná věc než host a nesmí se s ním splést. */
+.kal-rez-den.je-blokovany::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: 3px;
+  height: 3px;
+  border-radius: 2px;
+  background: repeating-linear-gradient(45deg, var(--faze1) 0 3px, #ffffff 3px 6px);
+}
+
+.kal-rez-tecky {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-height: 6px;
+}
+
+.kal-rez-tecka {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  flex: 0 0 auto;
+}
+
+.kal-rez-tecka.tecka-pending_approval { background: var(--faze1); }
+.kal-rez-tecka.tecka-awaiting_deposit { background: var(--faze2); }
+.kal-rez-tecka.tecka-confirmed        { background: var(--faze3); }
+.kal-rez-tecka.tecka-cancelled        { background: #95a5a6; }
+
+/* Na vybraném (tmavém) dni by se tečky ztratily — dostanou světlý lem. */
+.kal-rez-den.je-vybrany .kal-rez-tecka { box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.9); }
+
+.kal-rez-souhrn {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #ecebe3;
+  font-size: 14px;
+  color: #1c1c19;
+}
+
+.kal-rez-souhrn-datum { display: flex; align-items: center; gap: 8px; }
+
+.kal-rez-znacka-zavreno {
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--faze1-tmava);
+  background: var(--faze1-svetla);
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.kal-rez-souhrn-cisla { display: flex; flex-wrap: wrap; gap: 4px 14px; color: #666660; }
+.kal-rez-souhrn-cisla strong { color: #1c1c19; }
+
+.kal-rez-zrusit {
+  margin-left: auto;
+  height: 32px;
+  padding: 0 12px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #1c1c19;
+  background: #ffffff;
+  border: 1px solid #e7e5dc;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.kal-rez-zrusit:hover { background: #f4f2eb; }
+
+.kal-rez-legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin-top: 12px;
+  font-size: 12.5px;
+  color: #666660;
+}
+
+.kal-rez-legenda-polozka { display: inline-flex; align-items: center; gap: 6px; }
+
+.kal-rez-vzorek-zavreno {
+  width: 14px;
+  height: 4px;
+  border-radius: 2px;
+  background: repeating-linear-gradient(45deg, var(--faze1) 0 3px, #ffffff 3px 6px);
+  display: inline-block;
+}
+
+/* Telefon a tablet: mřížka se drží stejné svislé linky jako zbytek
+   administrace (12 px), buňky se smrsknou, ale zůstanou nad hranicí,
+   kde se do čísla ještě dá trefit prstem. */
+@media (max-width: 768px) {
+  .kal-rez { padding: 12px; border-radius: 10px; }
+  .kal-rez-mrizka { gap: 3px; }
+  /* 44 px na výšku kvůli dotyku — do šířky se na 320px displeji
+     víc než 37 px vejít nedá, sloupců je sedm. */
+  .kal-rez-den { height: 44px; border-radius: 6px; }
+  .kal-rez-cislo { font-size: 13.5px; }
+  .kal-rez-mesic { font-size: 15px; }
+  .kal-rez-souhrn { font-size: 13.5px; }
+  .kal-rez-zrusit { margin-left: 0; }
+}
+
+@media (max-width: 400px) {
+  .kal-rez { padding: 10px; }
+  .kal-rez-mrizka { gap: 2px; }
+  .kal-rez-den { height: 44px; }
+  .kal-rez-nazev-dne { font-size: 10.5px; }
+  .kal-rez-tecka { width: 5px; height: 5px; }
+}
+
+.kal-rez-souhrn-cisla .kal-rez-souhrn-storno { color: #8a8a80; }
