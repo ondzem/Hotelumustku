@@ -417,9 +417,28 @@ export function generateSpaydQrUrl({ bankAccount = BANK_ACCOUNT, amount = 0, vs 
 /**
  * Generates unique Reservation Code e.g. HM-2026-0143
  */
+/**
+ * Kód rezervace z pořadového čísla — `HM-2026-2014`.
+ *
+ * Číslo přiděluje databáze (`dalsi_cislo_rezervace()`, viz
+ * `supabase-CISLOVANI-REZERVACI.sql`), ne prohlížeč: dva hosté klikající
+ * ve stejnou vteřinu by si jinak odnesli tentýž kód a s ním i tentýž
+ * variabilní symbol.
+ */
+export function kodZCisla(cislo, rok = new Date().getFullYear()) {
+  return `HM-${rok}-${cislo}`;
+}
+
+/**
+ * Nouzový kód, když databáze číslo nevydá.
+ *
+ * Náhodné devítimístné číslo schválně vybočuje z řady (ta má čtyři
+ * místa od 2000), aby bylo na první pohled poznat, že se něco nepovedlo,
+ * a aby nemohlo kolidovat s pořadovým číslem.
+ */
 export function generateReservationCode() {
   const year = new Date().getFullYear();
-  const randomNum = Math.floor(1000 + Math.random() * 9000);
+  const randomNum = Math.floor(100000000 + Math.random() * 900000000);
   return `HM-${year}-${randomNum}`;
 }
 

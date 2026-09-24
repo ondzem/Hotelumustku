@@ -16,8 +16,8 @@
 //  by bylo překvapení.
 // ---------------------------------------------------------------------
 
-import { MOCK_ROOMS, saveStoredReservation } from '../lib/supabaseClient.js';
-import { calculateReservationPrice, generateReservationCode, generateManageToken, formatCzechPrice } from '../utils/pricing.js';
+import { MOCK_ROOMS, saveStoredReservation, supabase, isSupabaseConfigured } from '../lib/supabaseClient.js';
+import { calculateReservationPrice, generateReservationCode, generateManageToken, formatCzechPrice, kodZCisla } from '../utils/pricing.js';
 import { obsazenostPulek, stavPulky, tridaPulek } from '../utils/obsazenost.js';
 import { maxOsobNaPokoji } from '../utils/cenik.js';
 import { adminPotvrzeni } from './AdminPotvrzeni.js';
@@ -707,6 +707,32 @@ export function renderRucniRezervaceModal(ad) {
 }
 
 /**
+ * Přidělí rezervacím čísla z řady (viz `supabase-CISLOVANI-REZERVACI.sql`).
+ *
+ * Čísla vydává databáze, ne prohlížeč — dvě administrace otevřené
+ * vedle sebe by jinak založily dvě rezervace s týmž kódem. Celý hotel
+ * se zapisuje jako několik rezervací, takže si každá bere vlastní číslo.
+ *
+ * Když databáze číslo nevydá, zůstane nouzový kód ze
+ * `sestavRucniRezervaci()` — rezervace se tím neztratí a podle
+ * devítimístného čísla je hned poznat, že ji má obsluha opravit.
+ */
+export async function ocislujRezervace(rezervace) {
+  if (!isSupabaseConfigured || !supabase) return rezervace;
+  for (const r of rezervace) {
+    try {
+      const { data, error } = await supabase.rpc('dalsi_cislo_rezervace');
+      if (error || !data) throw error || new Error('prázdná odpověď');
+      r.cislo = Number(data);
+      r.code = kodZCisla(r.cislo);
+    } catch (e) {
+      console.error('Číslo rezervace se nepodařilo přidělit:', e);
+    }
+  }
+  return rezervace;
+}
+
+/**
  * Sestaví rezervaci ve stejném tvaru, v jakém ji ukládá web.
  *
  * Vrací { chyba } při nevyplněných povinných údajích, jinak { rezervace }.
@@ -1065,6 +1091,11 @@ export function bindRucniRezervaceModal(ad) {
       ad.rucniOdesila = true;
       ulozit.disabled = true;
       ulozit.textContent = 'Ukládám…';
+
+      // Čísla se berou až tady, těsně před zápisem. Kdyby se braly při
+      // otevření okna, spotřebovala by je i rezervace, kterou obsluha
+      // nakonec nezaložila, a v řadě by zůstala díra.
+      await ocislujRezervace(zapisovane);
 
       zapisovane.forEach(r => saveStoredReservation(r));
       ad.reservations = [...zapisovane, ...(ad.reservations || [])];

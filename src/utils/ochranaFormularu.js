@@ -154,7 +154,12 @@ export async function odesliFormular(typ, data, token) {
       body: JSON.stringify({ typ, turnstileToken: token, data }),
     });
 
-    if (r.ok) return { ok: true };
+    // Tělo odpovědi se vrací celé — u rezervace v něm přijde kód, který
+    // právě přidělila databáze (`kod`).
+    if (r.ok) {
+      const telo = await r.json().catch(() => ({}));
+      return { ok: true, ...telo };
+    }
 
     const telo = await r.json().catch(() => ({}));
     return { ok: false, chyba: telo.error || 'Odeslání se nezdařilo.' };

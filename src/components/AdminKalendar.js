@@ -16,9 +16,25 @@
  * storno. Nikdy tu nepiš odstín natvrdo.
  */
 import { MESICE, dnesStr } from './AdminDostupnost.js';
-import { mrizkaMesice, shrnutiDne, rezervaceNaDen } from '../utils/kalendarRezervaci.js';
+import { mrizkaMesice, shrnutiDne, rezervaceNaDen, vztahKeDni } from '../utils/kalendarRezervaci.js';
 
 const DNY = ['po', 'út', 'st', 'čt', 'pá', 'so', 'ne'];
+
+/**
+ * Šipky jsou KRESLENÉ, ne znaky „‹" a „›".
+ *
+ * Znak se v tlačítku nikdy nevycentruje spolehlivě: písmo mu přidává
+ * vlastní mezeru nahoře a dole a ta je v každém řezu jiná, takže se
+ * šipka o pár pixelů posune — a po každé změně písma znovu. Čára v SVG
+ * se kreslí do vlastní soustavy a `viewBox` ji drží přesně uprostřed.
+ */
+const sipka = (smer) => `
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+       stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <polyline points="${smer === 'vlevo' ? '15 5 8 12 15 19' : '9 5 16 12 9 19'}"></polyline>
+  </svg>`;
+const SIPKA_VLEVO = sipka('vlevo');
+const SIPKA_VPRAVO = sipka('vpravo');
 
 const POPIS_TECKY = {
   pending_approval: 'Ke schválení',
@@ -96,9 +112,9 @@ export function renderKalendarRezervaci(ad) {
   return `
     <section class="kal-rez" aria-label="Kalendář rezervací">
       <div class="kal-rez-hlavicka">
-        <button type="button" class="kal-rez-sipka" data-posun="-1" aria-label="Předchozí měsíc">‹</button>
+        <button type="button" class="kal-rez-sipka" data-posun="-1" aria-label="Předchozí měsíc">${SIPKA_VLEVO}</button>
         <div class="kal-rez-mesic">${MESICE[k.mesic]} ${k.rok}</div>
-        <button type="button" class="kal-rez-sipka" data-posun="1" aria-label="Další měsíc">›</button>
+        <button type="button" class="kal-rez-sipka" data-posun="1" aria-label="Další měsíc">${SIPKA_VPRAVO}</button>
         <button type="button" class="kal-rez-dnes">Dnes</button>
       </div>
 
@@ -166,6 +182,25 @@ export function bindKalendarRezervaci(ad) {
       ad.render();
     });
   }
+}
+
+/**
+ * Proč je karta ve vyfiltrovaném seznamu.
+ *
+ * Bez tohohle popisku to vypadá jako chyba: klepnutím na 22. září
+ * vyjedou pobyty s termínem 13.–24. 9. a majitel v nich dvaadvacátého
+ * nikde nevidí, i když jím prochází. Odznak to řekne natvrdo.
+ */
+export function popisVztahuKeDni(ad, rezervace) {
+  const den = ad.kalendar && ad.kalendar.vybranyDen;
+  if (!den) return '';
+  const vztah = vztahKeDni(rezervace, den);
+  if (!vztah) return '';
+  const [, m, d] = den.split('-').map(Number);
+  const datum = `${d}. ${m}.`;
+  if (vztah === 'prijezd') return `příjezd ${datum}`;
+  if (vztah === 'odjezd') return `odjezd ${datum}`;
+  return `probíhá ${datum}`;
 }
 
 /** Filtr seznamu podle vybraného dne. Bez výběru vrací vše. */

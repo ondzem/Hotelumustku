@@ -61,6 +61,9 @@ const ALLOWED_SUPABASE_COLUMNS = new Set([
   'has_dog', 'has_ebike', 'ebike_count', 'has_half_board', 'half_board_count',
   'total_price', 'deposit_price', 'remaining_price', 'accommodation_price',
   'city_tax', 'addons_price', 'status', 'created_at',
+  // Pořadové číslo v řadě od 2000. Bez něj by se zápis tiše zahodil
+  // a rezervace by v knize zůstala bez čísla.
+  'cislo',
   // Archiv a zimní parkování — skutečné sloupce v databázi.
   // Dřív se ukládaly jako falešný host uvnitř pole guests, což rozbíjelo
   // počet hostů v ubytovací knize, v e-mailu i na tištěném lístku.

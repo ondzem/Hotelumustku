@@ -8,7 +8,7 @@ import { printReservationSheet } from '../utils/printReservationService.js';
 import { renderCenikModal, bindCenikModal } from './AdminCenik.js';
 import { renderRucniRezervaceModal, bindRucniRezervaceModal, prazdnaRucniRezervace } from './AdminRucniRezervace.js';
 import { renderDostupnostModal, bindDostupnostModal, prazdnyPrehled } from './AdminDostupnost.js';
-import { renderKalendarRezervaci, bindKalendarRezervaci, filtrPodleDne, prazdnyKalendar } from './AdminKalendar.js';
+import { renderKalendarRezervaci, bindKalendarRezervaci, filtrPodleDne, prazdnyKalendar, popisVztahuKeDni } from './AdminKalendar.js';
 
 function formatCzechDateStr(dateStr) {
   if (!dateStr) return '';
@@ -1510,8 +1510,9 @@ export class AdminDashboard {
                   <div class="res-room-col">
                     <div class="res-room-title">${room.name || r.room_name || 'Pokoj'}</div>
                     <div class="res-stay-dates">
-                      <strong>${r.date_from} → ${r.date_to}</strong>
+                      <strong>${formatCzechDateStr(r.date_from)} → ${formatCzechDateStr(r.date_to)}</strong>
                     </div>
+                    ${popisVztahuKeDni(this, r) ? `<span class="res-duvod-dne">${popisVztahuKeDni(this, r)}</span>` : ''}
                   </div>
 
                   <!-- COL 4: FINANCE A STAV -->

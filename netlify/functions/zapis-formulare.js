@@ -143,6 +143,31 @@ async function tokenJePlatny(token, ip) {
   }
 }
 
+/**
+ * Vyzvedne pořadové číslo rezervace z databáze.
+ *
+ * Číslo NESMÍ přidělovat prohlížeč: dva hosté odesílající formulář ve
+ * stejnou chvíli by dostali tentýž kód a s ním i tentýž variabilní
+ * symbol, takže by na účet přišly dvě platby k jedné rezervaci.
+ * Posloupnost v Postgresu vydá každému volajícímu jiné číslo.
+ */
+async function dalsiCisloRezervace(url, klic) {
+  const r = await fetch(`${url}/rest/v1/rpc/dalsi_cislo_rezervace`, {
+    method: 'POST',
+    headers: {
+      apikey: klic,
+      Authorization: `Bearer ${klic}`,
+      'Content-Type': 'application/json',
+    },
+    body: '{}',
+  });
+  if (!r.ok) {
+    console.error('Číslo rezervace se nepodařilo vyzvednout:', r.status, await r.text());
+    return null;
+  }
+  return Number(await r.json());
+}
+
 /** Propustí jen povolené sloupce a dosadí hodnoty, které určuje server. */
 function ocistiData(typ, data) {
   const zdroj = (data && typeof data === 'object') ? data : {};
@@ -188,6 +213,22 @@ export default async function handler(request) {
     return odpoved(500, { error: 'Server není správně nastavený.' });
   }
 
+  // Rezervaci přiděluje číslo server, ať si volající poslal cokoli.
+  let kod = null;
+  const radek = ocistiData(typ, data);
+  if (typ === 'rezervace') {
+    const cislo = await dalsiCisloRezervace(url, klic);
+    if (cislo) {
+      kod = `HM-${new Date().getFullYear()}-${cislo}`;
+      radek.cislo = cislo;
+      radek.code = kod;
+    }
+    // Když posloupnost neodpoví (ještě neproběhla migrace, výpadek),
+    // rezervace se přesto uloží s nouzovým kódem z prohlížeče. Odmítnout
+    // hosta kvůli číslování by bylo horší než díra v řadě — a ta se
+    // dorovná při dalším spuštění `supabase-CISLOVANI-REZERVACI.sql`.
+  }
+
   try {
     const r = await fetch(`${url}/rest/v1/${TABULKA[typ]}`, {
       method: 'POST',
@@ -200,7 +241,7 @@ export default async function handler(request) {
         // prohlížeče, kde už jednou byly, ale nemá smysl to opakovat.
         Prefer: 'return=minimal',
       },
-      body: JSON.stringify([ocistiData(typ, data)]),
+      body: JSON.stringify([radek]),
     });
 
     if (!r.ok) {
@@ -209,7 +250,10 @@ export default async function handler(request) {
       return odpoved(502, { error: 'Zápis se nepodařilo uložit.' });
     }
 
-    return odpoved(200, { ok: true });
+    // Kód se vrací, protože ho prohlížeč ukazuje hostovi a posílá
+    // v e-mailu. Kdyby si nechal ten svůj, četl by host jiné číslo, než
+    // je v knize.
+    return odpoved(200, kod ? { ok: true, kod } : { ok: true });
   } catch (e) {
     console.error('Výjimka při zápisu formuláře:', e);
     return odpoved(500, { error: 'Zápis se nepodařilo uložit.' });

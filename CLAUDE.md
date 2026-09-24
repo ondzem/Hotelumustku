@@ -720,9 +720,52 @@ Pět věcí, které nejsou z kódu vidět:
   kvůli dotyku; do šířky se na 320px displeji víc než 37 px vejít
   nedá, sloupců je sedm.
 
+**Karta ve vyfiltrovaném seznamu říká, PROČ tam je** (`popisVztahuKeDni`).
+Majitel klepl na 22. září a v seznamu uviděl pobyty s termínem
+13.–24. 9., ve kterých dvaadvacáté nikde nestojí — vypadalo to jako
+chyba, i když filtr počítal správně. Odznak „probíhá 22. 9." to řekne
+natvrdo. Termín na kartě se od té doby taky formátuje česky
+(`formatCzechDateStr`), ne jako `2026-09-13`.
+
 Vybraný den přežije překliknutí měsíce i sekce — souhrn se proto
 vykresluje i tehdy, když vybraný den v zobrazeném měsíci není. Jinak by
 seznam zůstal zúžený a nebylo by podle čeho poznat proč.
+
+## Číslo rezervace jde v řadě od 2000
+
+Kód je `HM-<rok>-<pořadové číslo>` a čísla jdou za sebou od **2000**
+(`supabase-CISLOVANI-REZERVACI.sql`). Dřív to byla náhodná čtyřčíslí,
+takže to vypadalo jako pořadí, ale nebylo — a z kódu nešlo poznat,
+kolikátá rezervace to je. Řada začíná na 2000 schválně, aby první host
+nedostal „objednávku číslo 1".
+
+**Číslo vydává databáze, ne prohlížeč.** Posloupnost
+`rezervace_cislo_seq` a funkce `dalsi_cislo_rezervace()`; dva hosté
+odesílající formulář ve stejné vteřině by si jinak odnesli tentýž kód —
+a s ním i tentýž variabilní symbol platby. Veřejnému formuláři přiděluje
+číslo serverová funkce (`zapis-formulare.js`) servisním klíčem a vrací ho
+v odpovědi, ruční zápis si ho bere přes `supabase.rpc()`
+(`ocislujRezervace` v `AdminRucniRezervace.js`).
+
+**Kód z odpovědi musí přebít ten předběžný.** Prohlížeč si před
+odesláním sestaví rezervaci včetně nouzového kódu; po úspěšném zápisu ho
+přepíše tím z databáze. Bez toho by host viděl a dostal e-mailem jiné
+číslo, než jaké je v knize — a `send-email` by mu potvrzení vůbec
+neposlal, protože příjemce ověřuje proti kódu v databázi.
+
+**Číslo se po stornu NEVRACÍ do oběhu.** Stornovaná rezervace si ho
+nechá. Kdyby se vydalo znovu, měli by dva různí hosté tentýž kód
+v e-mailu i tentýž variabilní symbol, takže by se platba nedala
+přiřadit. Mezera v řadě je proti tomu neškodná a navíc je z ní poznat,
+že se něco stornovalo.
+
+**Nouzový kód má devět číslic** (`generateReservationCode`). Použije se,
+jen když posloupnost neodpoví — rezervace se tím neztratí a podle
+délky čísla je hned vidět, že v řadě není. Další spuštění migrace ji
+dorovná.
+
+Sloupec `cislo` musí zůstat v `ALLOWED_SUPABASE_COLUMNS`, jinak se
+zápis tiše zahodí a rezervace zůstane bez čísla.
 
 ## Plachta dostupnosti — pokoje v řádcích, dny ve sloupcích
 

@@ -1500,6 +1500,13 @@ export class BookingSystem {
       const vysledek = await odesliFormular('rezervace', payload, token);
       resetOchrany(ochrana);
 
+      // Kód přiděluje databáze až při zápisu, takže ten předběžný se
+      // tady přepíše tím skutečným. Host ho vidí na potvrzení a má ho
+      // v e-mailu — musí sedět s tím, co je v knize.
+      if (vysledek.ok && vysledek.kod) {
+        reservationData.code = vysledek.kod;
+      }
+
       if (!vysledek.ok) {
         // Rezervace se NEULOŽILA, takže se nesmí tvářit, že prošla —
         // host by čekal na potvrzení, které nikdy nepřijde.
@@ -1545,7 +1552,7 @@ export class BookingSystem {
         subject: email1Guest.subject,
         html: email1Guest.html,
         type: 'email_1_request_received',
-        reservationCode: code
+        reservationCode: reservationData.code
       });
 
       const email1Reception = generateEmail1ReceptionNotification({ reservation: reservationData, room, pricing });
@@ -1554,7 +1561,7 @@ export class BookingSystem {
         subject: email1Reception.subject,
         html: email1Reception.html,
         type: 'email_1_reception_notification',
-        reservationCode: code
+        reservationCode: reservationData.code
       });
     } catch (emailErr) {
       console.error('Failed to dispatch Phase 1 emails:', emailErr);

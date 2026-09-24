@@ -6753,6 +6753,9 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   letter-spacing: -0.01em;
 }
 
+/* Ikona uvnitř je SVG, ne znak — viz komentář v AdminKalendar.js.
+   `line-height: 0` navíc odřízne i poslední zbytek řádkové mezery,
+   kterou by prohlížeč přidal kolem vloženého prvku. */
 .kal-rez-sipka {
   flex: 0 0 auto;
   width: 34px;
@@ -6760,8 +6763,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
-  line-height: 1;
+  line-height: 0;
+  padding: 0;
   color: #1c1c19;
   background: #ffffff;
   border: 1px solid #e7e5dc;
@@ -6771,6 +6774,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .kal-rez-sipka:hover { background: #f4f2eb; border-color: #d8d5c8; }
+.kal-rez-sipka svg { display: block; }
 
 .kal-rez-dnes {
   flex: 0 0 auto;
@@ -6989,3 +6993,19 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .kal-rez-souhrn-cisla .kal-rez-souhrn-storno { color: #8a8a80; }
+
+/* Proč je karta ve vyfiltrovaném seznamu — ukazuje se jen při vybraném
+   dni v kalendáři. Pobyt 13.–24. 9. jinak vypadá, že mezi vyfiltrované
+   dvaadvacáté nepatří. */
+.res-duvod-dne {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #4f5c34;
+  background: var(--kal-volno);
+  border: 1px solid var(--kal-volno-ramecek);
+  border-radius: 4px;
+  padding: 1px 6px;
+}
