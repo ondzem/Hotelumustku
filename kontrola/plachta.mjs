@@ -56,13 +56,23 @@ const celyHotel = { reservations: [], blockedDates: [{ room_id: 'all', date_from
 overit('blokace celého hotelu u p1', plachta(celyHotel, 'p1').length, 1);
 overit('blokace celého hotelu u p7', plachta(celyHotel, 'p7').length, 1);
 
-// Cizí pokoj a stornované či archivované rezervace se nekreslí.
+// Cizí pokoj a stornované rezervace se nekreslí. Archiv ano — viz níž.
 overit('cizí pokoj', plachta({ reservations: [rez('p2', '2026-08-10', '2026-08-12')], blockedDates: [] }, 'p1').length, 0);
 overit('stornovaná rezervace', plachta({ reservations: [rez('p1', '2026-08-10', '2026-08-12', { status: 'cancelled' })], blockedDates: [] }).length, 0);
-overit('archivovaná rezervace', plachta({ reservations: [rez('p1', '2026-08-10', '2026-08-12', { is_archived: true })], blockedDates: [] }).length, 0);
 
 // Únor 2026 má 28 dnů — poslední sloupec nesmí přetéct.
 v = pruhyProPokoj({ reservations: [rez('p1', '2026-02-27', '2026-03-02')], blockedDates: [] }, 'p1', 2026, 2, 28);
 overit('konec kratšího měsíce', tvar(v[0]), { zac: 27, kon: 29, zacOrez: false, konOrez: true });
+
+// --- archiv zůstává v plachtě vidět -----------------------------------
+// Archiv je jen odklizení ze seznamu, ne storno. Když se archivovaná
+// rezervace z plachty vypustí, vypadá měsíc zpětně volný — a přesně to
+// tu do 24. 9. 2026 bylo.
+v = plachta({ reservations: [rez('p1', '2026-08-10', '2026-08-14', { is_archived: true })], blockedDates: [] });
+overit('archivovaná rezervace je v plachtě vidět', v.length, 1);
+v = plachta({ reservations: [rez('p1', '2026-08-10', '2026-08-14', { isArchived: true })], blockedDates: [] });
+overit('archiv zapsaný camelCase taky', v.length, 1);
+v = plachta({ reservations: [rez('p1', '2026-08-10', '2026-08-14', { status: 'cancelled', is_archived: true })], blockedDates: [] });
+overit('stornovaná rezervace v plachtě není ani v archivu', v.length, 0);
 
 process.exit(chyb ? 1 : 0);

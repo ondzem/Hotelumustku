@@ -96,9 +96,12 @@ export function pruhyProPokoj(ad, roomId, year, month, dnuVMesici) {
     });
   };
 
+  // Archiv se NEVYNECHÁVÁ. Archivovaná rezervace je jen odklizená ze
+  // seznamu, pobyt proběhl — v plachtě musí zůstat vidět, jinak by
+  // zpětný pohled na měsíc lhal a pokoj by vypadal volný. Storno naopak
+  // pryč patří: to se nekoná. Stejné pravidlo drží kalendář i web.
   (ad.reservations || [])
     .filter(r => r.room_id === roomId
-      && !r.is_archived
       && !(r.status && (String(r.status).startsWith('cancelled') || r.status === 'stornováno')))
     .forEach(r => pridej(r, 'rezervace', r.guest_name || 'Rezervace', r.code || ''));
 

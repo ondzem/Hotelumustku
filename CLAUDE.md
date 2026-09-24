@@ -794,6 +794,13 @@ volný Mahagon a Pokoj 7". Tak to dělají hotelové systémy, které zná.
   polovina znamenala při každé změně okna něco jiného.
 - **Blokace celého hotelu (`room_id: 'all'`) musí být v řádku každého
   pokoje.** Jinak by pokoj vypadal volný, přestože zavřený je.
+- **Archiv se z plachty NEVYNECHÁVÁ.** Do 24. 9. 2026 tu bylo
+  `!r.is_archived`, takže archivovaný pobyt z měsíce zmizel a zpětný
+  pohled lhal — pokoj vypadal volný, i když tam někdo byl. Archiv je jen
+  odklizení ze seznamu, ne storno; stornovaná rezervace v plachtě být
+  nesmí, archivovaná ano. Hlídá to `kontrola/plachta.mjs`. Ověřeno i na
+  webu: archivovaný pobyt drží den odjezdu půlený (`pulka-plno-volno`),
+  takže host na obsazený termín nenaklikne.
 - **Na okraji měsíce se půlka vypouští.** Pobyt přesahující do dalšího
   měsíce dojede až na kraj mřížky (`konOrez`), jinak by to vypadalo, že
   tam končí. Hlídá to `kontrola/plachta.mjs`.
