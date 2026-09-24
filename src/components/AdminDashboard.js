@@ -1493,7 +1493,11 @@ export class AdminDashboard {
                   <!-- COL 1: KÓD A DATUM -->
                   <div>
                     <span class="res-code-badge">${escapujText(r.code || 'HM-2026-0000')}</span>
-                    <div class="res-created-at">${formattedCreated}</div>
+                    <!-- Datum VZNIKU rezervace, ne termínu pobytu. Bez
+                         popisku si ho majitel přečetl jako termín a divil
+                         se, proč rezervace „z 22. září" nevyjede, když na
+                         dvaadvacáté klepne v kalendáři. -->
+                    <div class="res-created-at">přijato ${formattedCreated}</div>
                   </div>
 
                   <!-- COL 2: HOST A KONTAKT -->
