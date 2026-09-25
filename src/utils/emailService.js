@@ -387,7 +387,12 @@ export function generateEmail1RequestReceived({ reservation, room, pricing }) {
 }
 
 // E-MAIL 1 (Pro recepci): Upozornění na novou žádost
-export function generateEmail1ReceptionNotification({ reservation, room, pricing }) {
+/**
+ * `zdroj` je nepovinný — vypíše se jen tehdy, když se zjistil. Prázdný
+ * řádek „Přišel z: —" by v e-mailu jen zabíral místo a majitel by si
+ * ho odvykl číst.
+ */
+export function generateEmail1ReceptionNotification({ reservation, room, pricing, zdroj = '' }) {
   const guestsCount = reservation.guests ? reservation.guests.length : (reservation.adults_count || 1);
   const guestsHtml = (reservation.guests && reservation.guests.length > 0)
     ? reservation.guests.map((g, i) => `<strong>${i + 1}. ${g.name}</strong> ${g.is_main ? '(Hlavní kontakt)' : ''} ${g.birth_date ? `• Nar: ${g.birth_date}` : ''}`).join('<br>')
@@ -403,6 +408,7 @@ export function generateEmail1ReceptionNotification({ reservation, room, pricing
       <tr><td style="color: #555555 !important;">Termín:</td><td style="color: #1a1a1a !important;">${formatujDatum(reservation.date_from)} až ${formatujDatum(reservation.date_to)} (${pricing.nights} nocí)</td></tr>
       <tr><td style="color: #555555 !important;">Celková cena:</td><td style="color: #1a1a1a !important;">${formatCzechPrice(pricing.totalPrice)} (Záloha ${pricing.depositPercentage} %: ${formatCzechPrice(pricing.depositPriceTotal)})</td></tr>
       ${reservation.guest_note ? `<tr><td style="color: #555555 !important;">Poznámka hosta:</td><td style="color: #1a1a1a !important;">${reservation.guest_note}</td></tr>` : ''}
+      ${zdroj ? `<tr><td style="color: #555555 !important;">Přišel z:</td><td style="color: #1a1a1a !important;">${escapujMail(zdroj)}</td></tr>` : ''}
     </table>
     ${getEmailFooter()}
   `;
@@ -719,7 +725,7 @@ export function sendAllTestEmailsTo(recipientEmail = RECEPCE_PRIJEMCE) {
 }
 
 // Generování šablony e-mailu pro zprávu z kontaktního formuláře (Design 1:1 dle rezervačních e-mailů)
-export function generateEmailContactNotification({ name, surname, email, phone, message }) {
+export function generateEmailContactNotification({ name, surname, email, phone, message, zdroj = '' }) {
   const html = `
     ${getEmailHeader('Nová zpráva z kontaktního formuláře')}
     <p style="color: #1a1a1a !important; font-size: 15.5px; line-height: 1.5; margin-bottom: 20px;">Někdo vám odeslal novou zprávu přes kontaktní formulář na webu <strong>Hotel u Můstku</strong>:</p>
@@ -737,6 +743,10 @@ export function generateEmailContactNotification({ name, surname, email, phone, 
       <tr>
         <td style="color: #555555 !important; padding: 8px 12px; font-weight: 500; border-bottom: 1px solid #f0f0f0;">Telefon:</td>
         <td style="color: #1a1a1a !important; padding: 8px 12px; border-bottom: 1px solid #f0f0f0;"><a href="tel:${escapujMail(phone)}" style="color: #1a1a1a !important; text-decoration: none;">${escapujMail(phone)}</a></td>
+      </tr>` : ''}
+      ${zdroj ? `<tr>
+        <td style="color: #555555 !important; padding: 8px 12px; font-weight: 500; border-bottom: 1px solid #f0f0f0;">Přišel z:</td>
+        <td style="color: #1a1a1a !important; padding: 8px 12px; border-bottom: 1px solid #f0f0f0;">${escapujMail(zdroj)}</td>
       </tr>` : ''}
       <tr>
         <td style="color: #555555 !important; padding: 8px 12px; font-weight: 500; vertical-align: top;">Zpráva:</td>

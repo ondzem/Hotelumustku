@@ -10,6 +10,7 @@ import { maxOsobNaPokoji, obdobiSOmezenouDostupnosti } from '../utils/cenik.js';
 import { sendEmail, generateEmail1RequestReceived, generateEmail1ReceptionNotification, RECEPCE_PRIJEMCE } from '../utils/emailService.js';
 import { fotkyPokoje } from '../utils/roomGalleries.js';
 import { pripravOchranu, tokenZOchrany, resetOchrany, odesliFormular } from '../utils/ochranaFormularu.js';
+import { merFormular, zdrojNavstevy } from '../utils/mereni.js';
 
 /** Kolik elektrokol si jde nejvýš objednat (nabíječky u hotelu). */
 const MAX_ELEKTROKOL = 4;
@@ -1523,6 +1524,10 @@ export class BookingSystem {
     // serverová funkce a anonymní klíč do ní psát nesmí.
     saveStoredReservation(reservationData, true);
 
+    // Poptávka prošla. Měří se stejnou událostí jako ostatní formuláře,
+    // aby šly v přehledu porovnat mezi sebou; `tema` nese pokoj.
+    merFormular('rezervace', room?.name || 'neuvedeno');
+
     if (typeof window.gtag === 'function') {
       window.gtag('event', 'rezervace_odeslana', {
         value: pricing.totalPrice,
@@ -1555,7 +1560,7 @@ export class BookingSystem {
         reservationCode: reservationData.code
       });
 
-      const email1Reception = generateEmail1ReceptionNotification({ reservation: reservationData, room, pricing });
+      const email1Reception = generateEmail1ReceptionNotification({ reservation: reservationData, room, pricing, zdroj: zdrojNavstevy() });
       await sendEmail({
         to: RECEPCE_PRIJEMCE,
         subject: email1Reception.subject,

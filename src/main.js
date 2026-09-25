@@ -6,6 +6,7 @@ import { getStoredDisabledRooms, MOCK_ROOMS, saveContactMessage, getStoredNewsIt
 import { cenaZaOsobuNoc } from './utils/cenik.js';
 import { formatCzechPrice } from './utils/pricing.js';
 import { sendEmail, generateEmailContactNotification, generateEmailNewReviewNotification, RECEPCE_PRIJEMCE } from './utils/emailService.js';
+import { initMereniKontaktu, zapamatujZdroj, zdrojNavstevy, merFormular } from './utils/mereni.js';
 import { initScrollReveal } from './utils/scrollReveal.js';
 import { fotkyPokoje } from './utils/roomGalleries.js';
 import { pripravOchranu, tokenZOchrany, resetOchrany } from './utils/ochranaFormularu.js';
@@ -2516,6 +2517,8 @@ const initInteractivity = () => {
         console.error('Error saving review to store/DB:', saveErr);
       }
 
+      merFormular('recenze', 'recenze');
+
       // Upozornění na novou recenzi — zatím na soukromou adresu majitele.
       try {
         const emailTemplate = generateEmailNewReviewNotification({
@@ -4165,13 +4168,15 @@ export const getGdprPageHTML = () => `
                   </tr>
                   <tr>
                     <td><strong>Měření návštěvnosti webu</strong></td>
-                    <td>Anonymizovaná IP adresa, typ zařízení a prohlížeče, navštívené stránky, doba návštěvy, zdroj příchodu.</td>
+                    <td>Anonymizovaná IP adresa, typ zařízení a prohlížeče, navštívené stránky, doba návštěvy, zdroj příchodu. Počítáme také odeslané formuláře a klepnutí na telefon a e-mail — jen jako čísla, bez vašeho jména a bez obsahu zprávy.</td>
                     <td>Váš souhlas udělený v cookie liště, který můžete kdykoli odvolat<br><span style="opacity: 0.75;">(čl. 6 odst. 1 písm. a) GDPR)</span></td>
                   </tr>
                 </tbody>
               </table>
 
               <p class="legal-article-text" style="margin-top: 20px;"><strong>Údaje dětí.</strong> Pokud s vámi cestují děti, evidujeme o nich pouze údaje, které nám ukládá zákon o evidenci ubytovaných. Za správnost těchto údajů odpovídá jejich zákonný zástupce, který rezervaci provádí. Web ani rezervační formulář nejsou určeny k tomu, aby je vyplňovaly děti samostatně.</p>
+
+              <p class="legal-article-text"><strong>Odkud jste k nám přišli.</strong> Při první návštěvě si web zapamatuje, odkud jste na něj přišli (například z Facebooku, z vyhledávače nebo přes odkaz z letáku), a tento údaj připojí ke zprávě, kterou nám odešlete — abychom věděli, co lidem pomáhá nás najít. Uložený je jen ve vašem prohlížeči a jen do zavření karty; žádnou osobu z něj nelze určit.</p>
 
               <p class="legal-article-text"><strong>Citlivé údaje nezpracováváme.</strong> Nesbíráme žádné údaje o zdravotním stavu, náboženském vyznání, politických názorech ani jiné zvláštní kategorie údajů podle čl. 9 GDPR. Prosíme, neuvádějte je ani do poznámky k rezervaci — pokud potřebujete sdělit něco citlivého, zavolejte nám.</p>
             </div>
@@ -5109,8 +5114,14 @@ const initContactPageInteractivity = () => {
             throw new Error(ulozeno.error ? ulozeno.error.message : 'Zprávu se nepodařilo odeslat.');
           }
 
-          // 2. Upozornění pro recepci — zatím na soukromou adresu majitele
-          const emailTemplate = generateEmailContactNotification(payload);
+          // Poptávka prošla — teprve teď se měří. Na kliknutí na
+          // tlačítko by se počítaly i nepovedené pokusy.
+          merFormular('kontakt', 'zprava');
+
+          // 2. Upozornění pro recepci — se zdrojem návštěvy, ať majitel
+          //    v e-mailu vidí, co člověka na web přivedlo, aniž by
+          //    musel otevírat Analytics.
+          const emailTemplate = generateEmailContactNotification({ ...payload, zdroj: zdrojNavstevy() });
           sendEmail({
             to: RECEPCE_PRIJEMCE,
             subject: emailTemplate.subject,
@@ -6590,6 +6601,13 @@ window.addEventListener('load', () => {
   requestAnimationFrame(naVrchol);
 }, { once: true });
 initCookieManager();
+
+// Měření poptávek. Zdroj se zapamatuje hned při prvním načtení — když
+// host proklikne web a teprve pak odešle formulář, referrer už bude náš
+// vlastní web a bylo by pozdě. Posluchač na telefon a e-mail se věší na
+// dokument, takže platí i pro odkazy, které teprve vzniknou.
+zapamatujZdroj();
+initMereniKontaktu();
 
 initOnasRozbaleni();
 

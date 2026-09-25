@@ -79,6 +79,7 @@ if node kontrola/pulene-dny.mjs; then zelena "půlené dny při překryvu termí
 if node kontrola/tisk.mjs; then zelena "údaje na rezervačním listu"; else cervena "údaje na rezervačním listu"; fi
 if node kontrola/qr-platba.mjs; then zelena "IBAN a účet v QR platbě"; else cervena "IBAN a účet v QR platbě"; fi
 if node kontrola/kalendar.mjs; then zelena "kalendář nad seznamem rezervací"; else cervena "kalendář nad seznamem rezervací"; fi
+if node kontrola/mereni.mjs; then zelena "měření poptávek a zdroj návštěvy"; else cervena "měření poptávek a zdroj návštěvy"; fi
 
 # ------------------------------------------------------------------- klíče
 # Do prohlížeče smí jen anon klíč. Servisní klíč a klíč k Resendu tam

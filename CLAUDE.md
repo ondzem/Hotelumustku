@@ -1295,6 +1295,29 @@ každé části zvlášť, ne jen kontrolní součet.
 zálohy k rezervacím, které si host odnesl ve starém e-mailu — QR kód už
 odeslaný zpětně nepřepíšeš.
 
+## Měření poptávek
+
+Měří se tři věci a nic víc: odeslaný formulář (`odeslani_formulare`),
+klik na telefon (`klik_telefon`) a klik na e-mail (`klik_email`). Vše
+vede přes `src/utils/mereni.js`; přehled pro klienta je
+v `docs/mereni-poptavek.md`, hlídá `kontrola/mereni.mjs`.
+
+- **Souhlas se čte při KAŽDÉ události, ne jednou při startu.** GA4 se
+  sice načítá až po souhlasu, ale `window.gtag` po odvolání souhlasu
+  v paměti stránky zůstane — bez té kontroly by se měřilo dál, dokud
+  host stránku neobnoví.
+- **Odkazy se poznají samy** (jeden delegovaný posluchač na `tel:`
+  a `mailto:`). Ruční značky u jednotlivých odkazů by se zapomněly
+  v obsahu z administrace i v šablonách vykreslených při přechodu.
+- **Měří se až ÚSPĚCH zápisu**, ne kliknutí na tlačítko — jinak by se
+  počítaly i nepovedené pokusy.
+- **Do analytiky nesmí osobní údaje.** Parametry nesou jen `formular`,
+  `tema`, `misto` a `zdroj`; jméno, e-mail, telefon ani text zprávy ne.
+- **Zdroj platí z PRVNÍHO doteku** a drží se v `sessionStorage`. Kdyby
+  se přepisoval, stálo by u každé poptávky, že přišla z našeho webu —
+  referrer je při prokliku po webu náš vlastní. Do e-mailu recepci se
+  přidává řádek „Přišel z"; v e-mailech hostovi není.
+
 ## Storno rezervace — dva různé e-maily
 
 **Náhrada se nabízí ve dvou osách: POKOJ i TERMÍN.** Zamítá se vždycky
@@ -1648,7 +1671,7 @@ Pozor na dvě věci, které vypadají jako chyba a nejsou:
 
 ## Jak si ověřit, že to funguje
 
-Nejdřív `./zkontroluj.sh` (nebo `npm run zkontroluj`). Projde 45 kontrol:
+Nejdřív `./zkontroluj.sh` (nebo `npm run zkontroluj`). Projde 46 kontrol:
 sestavení, shodu hlaviček napříč stránkami, matematiku ceníku a zálohy,
 klíče v balíčku, typy e-mailů, dostupnost nasazených stránek, odmítání
 neoprávněných volání serverových funkcí a pravidla v databázi. S přepínačem
